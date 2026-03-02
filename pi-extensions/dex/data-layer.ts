@@ -5,10 +5,9 @@
  */
 
 import * as fs from "node:fs";
-import * as os from "node:os";
 import * as path from "node:path";
 
-const VAULT_PATH = process.env.VAULT_PATH || path.join(os.homedir(), "Claudesidian");
+const VAULT_PATH = process.env.VAULT_PATH || "/Users/dave/Claudesidian";
 const TASKS_PATH = path.join(VAULT_PATH, "03-Tasks/Tasks.md");
 const WEEK_PRIORITIES_PATH = path.join(VAULT_PATH, "02-Week_Priorities");
 const DAILY_PLAN_PATH = path.join(VAULT_PATH, "01-Daily_Plan");
