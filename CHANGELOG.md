@@ -7,6 +7,20 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.18.3] — Market intelligence skills + evidence traceability (2026-03-20)
+
+Market workflows lived only under `.agents/skills/`, so `/intelligence-scanning` and related commands were easy to miss. **Canonical skills** now live in `.claude/skills/` (same as other slash commands); `.agents/skills/` keeps **short stubs** that point at those files so nothing drifts. `process-meetings` follows the same pattern.
+
+**Also:**
+
+* `06-Resources/Intel/README.md` explains the legacy `Intel/` path vs the active **`Market_intelligence/`** hub; `core/paths.py` adds `MARKET_INTELLIGENCE_DIR`.
+* Example **`EV-2026-03-001`** row in `PRDs/Evidence_register.md` with a pointer from `Posts.md` — proof of the discovery → PRD link.
+* `06-Resources/Market_intelligence/ARCHITECTURE.md` documents the flow (mermaid) and known gaps.
+
+**What you need to do:** Use `/intelligence-scanning`, `/daily-intelligence-brief`, and `/weekly-market-discovery` like any other skill; optional: read `06-Resources/Market_intelligence/ARCHITECTURE.md`.
+
+---
+
 ## [1.18.2] — Fix Background Meeting Sync Installation (2026-03-12)
 
 `install-automation.sh` failed because it referenced two files that no longer exist: `granola-auth.cjs` (deprecated — Granola now stores credentials in `supabase.json` automatically) and `sync-from-granola-v2.cjs` (never shipped — v1 works fine).

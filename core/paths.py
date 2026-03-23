@@ -62,8 +62,10 @@ RESUME_DIR = CAREER_DIR / 'Resume'
 SESSIONS_DIR = RESUME_DIR / 'Sessions'
 
 # --- Derived: Resources ---
+# Legacy folder name; see 06-Resources/Intel/README.md — active market workflow lives under MARKET_INTELLIGENCE_DIR.
 INTEL_DIR = RESOURCES_DIR / 'Intel'
 MEETING_INTEL_DIR = INTEL_DIR / 'Meeting_Intel'
+MARKET_INTELLIGENCE_DIR = RESOURCES_DIR / 'Market_intelligence'
 LEARNINGS_DIR = RESOURCES_DIR / 'Learnings'
 
 # --- System ---

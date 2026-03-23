@@ -11,19 +11,18 @@ enabled:
   google: false
 
 # Integration-specific settings are stored in separate files:
-# - notion.yaml (Notion-specific config)
 # - slack.yaml (Slack-specific config)
 # - google.yaml (Google-specific config)
 
 # Integration hooks - which Dex features use integrations
 hooks:
   meeting_prep:
-    use_notion: true      # Pull relevant Notion docs
+    use_notion: false     # Optional: set true if Notion MCP is configured
     use_slack: true       # Pull recent Slack context with attendees
     use_google: true      # Pull email threads with attendees
   
   person_pages:
-    use_notion: true      # Link Notion pages
+    use_notion: false     # Optional: link Notion pages if MCP is configured
     use_slack: true       # Show Slack mentions
     use_google: true      # Show email history
   

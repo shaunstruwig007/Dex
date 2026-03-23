@@ -223,6 +223,11 @@ Built specifically for personal knowledge management and productivity workflows 
 - `/product-brief` - Generate PRD from ideas
 - `/triage` - Organize inbox and extract tasks *(v1.11: tuned for speed)*
 
+**Market & product intelligence (vault):**
+- `/intelligence-scanning` - New Market_intelligence ingest → daily signal brief
+- `/daily-intelligence-brief` - Synthesize brief from existing ingest (no YouTube fetch)
+- `/weekly-market-discovery` - Weekly source rotation into `Market_and_deal_signals.md`
+
 **AI Configuration:**
 - `/ai-setup` - Configure budget cloud models (80% cheaper) and offline mode
 - `/ai-status` - Check your AI configuration and credits

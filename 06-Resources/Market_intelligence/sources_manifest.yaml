@@ -1,0 +1,13 @@
+version: 1
+youtube_channels:
+  - slug: josh-bersin
+    name: Josh Bersin
+    channel_id: ""
+  - slug: hr-leaders
+    name: HR Leaders
+    channel_id: ""
+newsletters:
+  - slug: open-letter
+    url: https://theopenletter.io
+  - slug: josh-bersin
+    url: https://joshbersin.com

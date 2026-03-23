@@ -20,7 +20,7 @@ Everything below this block is user-facing and ships as-is.
 **What dex-core owns:**
 - `core/` — Python path contracts, CLI runtime
 - `System/` — vault system files (product-context, backlog, etc.)
-- `.agents/skills/` — distributable skills (anything in `personal/` stays local)
+- `.claude/skills/` — canonical slash-command skills; `.agents/skills/` holds thin stubs for the same names where needed (avoid duplicating long `SKILL.md` bodies)
 - `mcp-servers/` — MCP scripts that ship to users
 - `install.sh` — installer
 
@@ -71,12 +71,16 @@ The system automatically suggests `/getting-started` at next session if vault < 
 ## User Profile
 
 <!-- Updated during onboarding -->
-**Name:** Not yet configured
-**Role:** Not yet configured
-**Company Size:** Not yet configured
-**Working Style:** Not yet configured
+**Name:** Shaun
+**Role:** Product Manager / Product Owner
+**Company:** Wyzetalk — frontline employee experience (deskless workforce: comms, safety, digitisation, engagement). [wyzetalk.com](https://www.wyzetalk.com/)
+**Email domain (internal vs external):** `wyzetalk.com` *(only domain)*
+**Company Size:** Startup / small (1–100)
+**Working Style:** Backlog + delivery with stakeholders; **AI adoption and efficiency in the PDLC**. Meetings: **Microsoft Teams + Copilot** — **not Granola** (paste or import notes into the vault).
 **Pillars:**
-- Not yet configured
+- **New product launch** — MVP / skeleton in motion; **roadmap and next steps still to define**
+- **Client migration**
+- **AI in the PDLC** — adoption, improvement, efficiency
 
 ---
 
@@ -487,6 +491,14 @@ Skills extend Dex capabilities and are invoked with `/skill-name`. Common skills
 - `/integrate-mcp` - Connect tools from Smithery.ai marketplace
 - `/scrape` - Web scraping with stealth, anti-bot bypass, CSS selectors (no API key needed)
 - `/identity-snapshot` - Generate a living profile of your working patterns from Dex data
+
+**Market & product intelligence (vault):**
+
+- `/intelligence-scanning` — New ingest → daily signal brief (`06-Resources/Market_intelligence/`)
+- `/daily-intelligence-brief` — Synthesize a brief from existing ingest only (no transcript fetch)
+- `/weekly-market-discovery` — Run the weekly source rotation into `Market_and_deal_signals.md`
+
+See `06-Resources/Market_intelligence/ARCHITECTURE.md` for the full flow and `06-Resources/PRDs/Evidence_register.md` for `EV-*` traceability.
 
 **Complete catalog:** Run `/dex-level-up` or see `.claude/skills/README.md`
 

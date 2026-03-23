@@ -62,7 +62,7 @@
 
 ## System Discovery & Improvement (10 features)
 
-- [ ] Feature discovery (`/dex-level-up`)
+- [x] Feature discovery (`/dex-level-up`)
 - [ ] X-ray transparency (`/xray`)
 - [ ] What's new check (`/dex-whats-new`)
 - [ ] Backlog review (`/dex-backlog`)

@@ -1,0 +1,269 @@
+---
+source: youtube
+video_id: c73njafYTRY
+channel_slug: josh-bersin
+ingested_at: 2026-03-20
+title: 'Workday-Sana announcement overview'
+url: https://www.youtube.com/watch?v=c73njafYTRY
+---
+
+# Workday-Sana announcement overview
+
+**Channel:** `josh-bersin` · **Video ID:** `c73njafYTRY`
+
+## Transcript
+
+- **[00:00]** Hey everyone, I want to spend uh 10 or
+- **[00:03]** 15 minutes talking about the really
+- **[00:05]** massive announcement by workday of the
+- **[00:09]** integration and the go to market
+- **[00:10]** strategy with sauna. Now we know sauna
+- **[00:14]** extremely well. We have been working
+- **[00:16]** with sauna for roughly three years on
+- **[00:19]** the Galileo strategy. So we know the
+- **[00:21]** team, the company, the product extremely
+- **[00:23]** well. And what workday is doing is very
+- **[00:26]** significant for the standpoint of
+- **[00:29]** customers, partners, workday, and the
+- **[00:34]** market. What you're basically going to
+- **[00:37]** learn about from workday is two or three
+- **[00:40]** big announcements. Number one, they are
+- **[00:43]** integrating sauna as the front end to
+- **[00:46]** workday. So, your version of Workday
+- **[00:49]** that you've been using for years will
+- **[00:51]** have a sauna interface that you will be
+- **[00:54]** able to integrate and turn on relatively
+- **[00:56]** quickly. I think it's going to be um
+- **[00:58]** predefined and preconfigured for most
+- **[01:00]** customers and you will have the agentic
+- **[01:03]** easytouse experience of sauna which is
+- **[01:06]** exceptional. We use it we've been using
+- **[01:07]** sauna in our company now for more than
+- **[01:09]** almost two years as a productivity
+- **[01:11]** system. It does amazing things and it'll
+- **[01:14]** make workday easier to use as workday
+- **[01:16]** and it'll make employees more productive
+- **[01:18]** in other areas. Second, there is a
+- **[01:22]** version of sauna that talks to
+- **[01:24]** nonworkday systems. So uh at some point
+- **[01:28]** in time there'll be a an upgrade to
+- **[01:30]** sauna so that your employees or
+- **[01:33]** salespeople or HR people or other people
+- **[01:36]** can talk to other systems in addition to
+- **[01:38]** workday from the sauna experience
+- **[01:40]** because sauna was an open platform
+- **[01:42]** before they acquired by workday and
+- **[01:44]** that's a big market too. Um and there's
+- **[01:47]** many many use cases for that. Number
+- **[01:50]** three, the sauna development environment
+- **[01:53]** to build workflows is going to be
+- **[01:56]** enhanced with flowwise. So there's going
+- **[01:59]** to be a version of sauna or a capability
+- **[02:02]** in sauna that will allow you to build
+- **[02:04]** agents within the sauna experience. Now
+- **[02:08]** there are a million ways to build
+- **[02:09]** agents. You can build agents in the
+- **[02:10]** native LLMs. You can build agents with
+- **[02:13]** the Vibe coding tools. You can build
+- **[02:15]** agents in the tools from Oracle, the
+- **[02:18]** tools from Microsoft, the tools from
+- **[02:20]** Google, etc. But if you're a workday
+- **[02:22]** client and you like the SA experience,
+- **[02:24]** you're going to have a complete agent
+- **[02:26]** builder there, too. Now, we have built
+- **[02:28]** 400 agents or prompts in sauna for HR
+- **[02:33]** already. And so that if you use Galileo,
+- **[02:36]** which by the way also runs in Sauna,
+- **[02:38]** which means that Galileo will be able to
+- **[02:40]** access the workday data too, you can see
+- **[02:43]** what these 400 mini apps look like or
+- **[02:46]** sub agents look like as we move them
+- **[02:48]** over to the SA workflow environment. And
+- **[02:51]** the version of Galileo that we call
+- **[02:53]** Mars, which is the release that we're
+- **[02:55]** introducing next week, is the release
+- **[02:58]** that shows you how all these workflows
+- **[03:00]** work. So that's the third big piece is
+- **[03:03]** workday is introducing sauna as a
+- **[03:05]** development place for not just software
+- **[03:08]** engineers but anybody. Fourth and next
+- **[03:11]** is the underlying infrastructure. One of
+- **[03:13]** the big issues with all of these agentic
+- **[03:17]** systems is the problem of what is called
+- **[03:19]** orchestration. Orchestration means
+- **[03:23]** moving connecting agents to each other.
+- **[03:26]** So as we become more agentified in our
+- **[03:29]** companies and we have more agents from
+- **[03:31]** third parties, how do we connect the
+- **[03:34]** agents to each other, allow them to
+- **[03:36]** communicate with each other, decide who
+- **[03:38]** what levels of data and security each
+- **[03:40]** agent is is allowed to use and keep that
+- **[03:44]** stuff under control. So there are agent
+- **[03:47]** control systems. The one from workday is
+- **[03:50]** called the workday agent system of
+- **[03:52]** record. That is the system that workday
+- **[03:54]** H customers will use to maintain and
+- **[03:57]** manage the agents that are built in the
+- **[03:58]** workday experience and it could be used
+- **[04:00]** for other agents. Galileo by the way is
+- **[04:03]** now a platinum partner of workday so it
+- **[04:05]** will and does integrate into the workday
+- **[04:08]** system of record. There is an agent
+- **[04:10]** management tool from Microsoft that is
+- **[04:12]** now part of the uh E7 release of
+- **[04:15]** Microsoft that was announced this week.
+- **[04:17]** There's one from Service Now called the
+- **[04:19]** agent control tower. There's one from
+- **[04:22]** Google and there'll probably be a lot of
+- **[04:24]** third-party agent management tools as
+- **[04:26]** well. In the case of the workday
+- **[04:28]** experience, what the workday value
+- **[04:30]** proposition is is that all that security
+- **[04:33]** layer is already there. You already have
+- **[04:35]** an org structure, you have a hierarchy,
+- **[04:37]** you have people by role, by level, all
+- **[04:40]** that data is in workday. So using the
+- **[04:43]** sauna experience to build your agents or
+- **[04:45]** manage your agents, uh you have the
+- **[04:48]** benefit of inheriting all that work
+- **[04:50]** you've already done. And I think that's
+- **[04:51]** a big value proposition for Workday and
+- **[04:54]** a value proposition for the software
+- **[04:56]** industry in general because the
+- **[04:57]** financial markets are challenging the
+- **[05:00]** enterprise software vendors to define
+- **[05:03]** what their role is in the world of AI.
+- **[05:06]** And so let me sort of conclude with
+- **[05:07]** that. If you look at the market
+- **[05:10]** capitalization of enterprise software
+- **[05:12]** companies, workdays has been flat to
+- **[05:15]** declining. SAP's been suffering a bit.
+- **[05:18]** Salesforce has been suffering and many
+- **[05:20]** of the other enterprise software
+- **[05:22]** companies have as well and that's
+- **[05:23]** because the investment community is not
+- **[05:26]** sure or has not been yet convinced what
+- **[05:29]** role they will play in the world of
+- **[05:31]** agents. Oracle by the way has been able
+- **[05:34]** to overcome that market cap reduction by
+- **[05:39]** getting into the infrastructure business
+- **[05:40]** and I wrote a big article about what
+- **[05:42]** Oracle is doing. Oracle is basically
+- **[05:44]** going to be a full stack provider
+- **[05:46]** including running data centers. I don't
+- **[05:48]** think at this point Workday or SAP have
+- **[05:50]** quite gone that far, but they could.
+- **[05:52]** Time will tell. But what this agent
+- **[05:55]** strategy for Workday means, and I'm
+- **[05:58]** mostly just going to talk about them on
+- **[05:59]** this video, is that they are now a major
+- **[06:02]** participant in the shift to agentic
+- **[06:05]** applications, agentic workflows, and
+- **[06:08]** orchestration between agents. And what
+- **[06:11]** the workday team would like to do is to
+- **[06:13]** convince you and you know I think it's
+- **[06:16]** really up to each of you and your IT
+- **[06:17]** departments to to assess this that they
+- **[06:20]** are the platform for building AI systems
+- **[06:23]** and tools for managing and coordinating
+- **[06:27]** the relationships between them and
+- **[06:29]** solving human capital problems. Now
+- **[06:32]** talking briefly about the HR space where
+- **[06:34]** I spend all my time. There are massive
+- **[06:36]** opportunities for AI in HR. The entire
+- **[06:40]** recruiting process can be
+- **[06:42]** revolutionized. Right now there's
+- **[06:44]** third-party tools like Maki people,
+- **[06:47]** eight-fold, paradox which is acquired by
+- **[06:50]** workday, smart recruiters which is just
+- **[06:52]** acquired by SAP and many many others
+- **[06:55]** that deal with this issue of recruiting.
+- **[06:57]** But eventually that will all be one big
+- **[06:59]** workflow managed by AI including AI
+- **[07:02]** systems that do interviewing,
+- **[07:03]** pre-screening, candidate communications,
+- **[07:06]** onboarding and more. So that's a massive
+- **[07:08]** area. Second huge area is learning and
+- **[07:10]** development. Now, Workday hasn't
+- **[07:12]** promoted this, but one of Sana's biggest
+- **[07:15]** value propositions to me as an analyst
+- **[07:18]** is their learning platform. They have
+- **[07:20]** one of the most sophisticated, if not
+- **[07:21]** the most sophisticated native AI content
+- **[07:24]** generation system for learning. So that
+- **[07:28]** $400 billion dollars a year that is
+- **[07:30]** spent on learning and development in
+- **[07:32]** traditional LMS's and SCORM courses and
+- **[07:34]** content that you've licensed from third
+- **[07:36]** parties can be revolutionized by SA and
+- **[07:39]** Workday. There is also a major
+- **[07:41]** announcement today from Cornerstone that
+- **[07:43]** they are getting into that market in a
+- **[07:44]** big way and cornerstone is the biggest
+- **[07:46]** player in that space. But that is a
+- **[07:48]** second huge opportunity for AI to
+- **[07:50]** revolutionize your employee experience,
+- **[07:52]** your time to market, your customer
+- **[07:54]** experience, your productivity, and of
+- **[07:56]** course the skills people want to build
+- **[07:57]** as they transform their jobs into the
+- **[07:59]** world of AI. Third big area in HR is
+- **[08:04]** self-service. And we position Galileo as
+- **[08:07]** the digital business partner to create a
+- **[08:10]** an intelligent layer of self-service for
+- **[08:13]** your employees. HR departments are
+- **[08:15]** filled with specialists and experts and
+- **[08:17]** business partners and people in call
+- **[08:19]** centers to help employees and managers
+- **[08:21]** deal with many many human capital
+- **[08:23]** issues. Through tools like sauna and the
+- **[08:26]** intelligence of platforms like Galileo,
+- **[08:29]** you can deliver an exceptional
+- **[08:31]** experience that's personalized for each
+- **[08:33]** employee on how do I improve my career?
+- **[08:36]** How to improve my skills? Why is my
+- **[08:37]** performance below par? What is my
+- **[08:39]** development plan that I need if I want
+- **[08:41]** to go into this new career? What how
+- **[08:43]** does my pay compared to other people in
+- **[08:45]** my industry? What are the technical
+- **[08:46]** skills I'm missing? What are the trends
+- **[08:48]** in my industry? Etc., etc. If I'm a
+- **[08:52]** manager, how big should my team be? Is
+- **[08:54]** my turnover above or be below industry
+- **[08:56]** benchmarks? What is my salary relative
+- **[08:58]** to peers in my industry? All of that
+- **[09:01]** data is available through Galileo also
+- **[09:03]** now through SA and Workday. So that's
+- **[09:05]** the third big use area. And then of
+- **[09:07]** course the fourth big use area use case
+- **[09:10]** area for HR and AI is all of the policy
+- **[09:13]** management, dynamic enablement,
+- **[09:16]** compliance and just recordkeeping that
+- **[09:19]** we have to do to run a global company
+- **[09:22]** because every country and every
+- **[09:24]** jurisdiction has different policies and
+- **[09:26]** we want to make it easy for employees to
+- **[09:28]** get access to that information. So the
+- **[09:30]** workday uh sauna announcement is very
+- **[09:33]** significant of course for workday, very
+- **[09:36]** significant for workday customers and I
+- **[09:38]** think it will force the rest of the
+- **[09:40]** market to move in a swift manner to
+- **[09:43]** address the integrated needs of
+- **[09:46]** employees and managers and of course HR
+- **[09:49]** and IT to build and use and deploy and
+- **[09:53]** orchestrate these amazing new AI
+- **[09:55]** platforms. I am personally very happy to
+- **[09:58]** talk to anybody who's interested in this
+- **[09:59]** and of course we'll explain where
+- **[10:01]** Galileo fits into all this. It's a very
+- **[10:03]** exciting time and I want to congratulate
+- **[10:05]** the workday and the sauna team for a
+- **[10:07]** really strategic acquisition and a very
+- **[10:09]** interesting and important product
+- **[10:11]** strategy going forward. Thank you.
+
+---
+*Auto-generated by `.scripts/market-intelligence/fetch-youtube-transcript.py`*

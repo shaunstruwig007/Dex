@@ -7,6 +7,11 @@ Reference material you consult but aren't actively working on.
 - **Learnings/** — Compound knowledge organized by topic
 - **Dex_System/** — Documentation about how Dex works
 - **Quarterly_Reviews/** — Quarterly reflection and strategic reviews
+- **Market_intelligence/** — Ingest (transcripts, newsletters) and daily signal briefs — see [Market_intelligence/README.md](./Market_intelligence/README.md)
+- **PRDs/** — Product requirements, evidence registers, traceability — see [PRDs/README.md](./PRDs/README.md)
+- **Competitors/** — Competitor index and profiles — see [Competitors/COMPETITOR_INDEX.md](./Competitors/COMPETITOR_INDEX.md)
+
+**Cross-cutting market log:** [Market_and_deal_signals.md](./Market_and_deal_signals.md) · **Source guide (26 sources):** [Market_intelligence_Source_Guide.md](./Market_intelligence_Source_Guide.md)
 
 ## What Goes Here
 

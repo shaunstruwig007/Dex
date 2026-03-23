@@ -1,0 +1,17 @@
+{
+  "user": {
+    "name": "Shaun",
+    "role": "Product Manager / Product Owner",
+    "company": "Wyzetalk",
+    "companySize": "startup",
+    "emailDomain": "wyzetalk.com",
+    "pillars": [
+      "New product launch (MVP/skeleton — roadmap next)",
+      "Client migration",
+      "AI in the PDLC (adoption, efficiency)"
+    ],
+    "meetings": "Microsoft Teams + Copilot (not Granola)"
+  },
+  "createdAt": "2026-03-19",
+  "setupRefreshedAt": "2026-03-19"
+}

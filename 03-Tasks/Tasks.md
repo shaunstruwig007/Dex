@@ -18,6 +18,10 @@ Your task backlog organized by priority.
 
 <!-- Standard priority items -->
 
+- [x] **Wyzetalk Essential** — elevator pitch, GA window (mid-Apr/May), migration kickoff (end May), full Requirements scope — see `04-Projects/Wyzetalk_Essential_Launch.md` ^task-20260319-001 # product_launch_mvp
+- [x] **PRDs in vault** — Requirements tree maintained under `06-Resources/PRDs/` (vault-owned; no external sync) ^task-20260319-002 # product_launch_mvp
+- [s] **AI in PDLC — experiment 01** — run 2-week trial; template: `00-Inbox/Ideas/AI_PDLC_experiment_01.md` ^task-20260319-003 # ai_pdlc
+
 ## P3 - Backlog
 
 <!-- Lower priority items, someday/maybe -->
