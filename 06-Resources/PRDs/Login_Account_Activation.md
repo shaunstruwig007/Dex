@@ -10,7 +10,7 @@
 
 # Problem Statement
 
-Frontline workers — often with limited tech literacy, unstable contact details, and no knowledge of their company's domain — cannot reliably access the Wyzetalk platform. Invites go out via SMS or email, but many workers don't receive them, don't have stable phone numbers, and don't know which company domain to use. This creates high support volumes, failed activations, and low onboarding completion rates. Evidence from stakeholder interviews (Lize, Kino, May 2021 research) confirms 30–70% staff turnover, frequent number changes, and duplicate identifier issues across sub-companies.
+Frontline workers — often with limited tech literacy, unstable contact details, and no knowledge of their company's domain — cannot reliably access the [[Wyzetalk]] platform. Invites go out via SMS or email, but many workers don't receive them, don't have stable phone numbers, and don't know which company domain to use. This creates high support volumes, failed activations, and low onboarding completion rates. Evidence from stakeholder interviews (Lize, Kino, May 2021 research) confirms 30–70% staff turnover, frequent number changes, and duplicate identifier issues across sub-companies.
 
 ---
 
@@ -42,7 +42,7 @@ Frontline workers — often with limited tech literacy, unstable contact details
 - As a **new employee**, I want to create my own password after OTP verification so that I can access my account independently going forward.
 **Account Owners:**
 
-- As an **account owner**, I want to receive a direct invite from Wyzetalk with an activation link so that I can set up my account without needing the QR code.
+- As an **account owner**, I want to receive a direct invite from [[Wyzetalk]] with an activation link so that I can set up my account without needing the QR code.
 **Returning Users:**
 
 - As a **returning employee**, I want to open the app and be automatically logged in if my session is still valid so that I don't have to re-enter credentials.

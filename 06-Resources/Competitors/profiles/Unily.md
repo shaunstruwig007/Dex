@@ -12,10 +12,10 @@ last_reviewed: 2026-03-20
 - **Category:** Employee experience / intranet platform
 - **Focus:** Enterprise digital workplace, Microsoft integrations
 
-## Vs Wyzetalk
+## Vs [[Wyzetalk]]
 
 - **Overlap:** EX platform, comms hub.
-- **Differentiation:** Wyzetalk frontline operational layer (safety, crisis, deskless) vs desk-centric digital workplace.
+- **Differentiation:** [[Wyzetalk]] frontline operational layer (safety, crisis, deskless) vs desk-centric digital workplace.
 
 ## Signal log (pointers)
 

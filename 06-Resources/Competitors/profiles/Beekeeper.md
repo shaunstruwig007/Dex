@@ -12,10 +12,10 @@ last_reviewed: 2026-03-20
 - **Category:** Frontline employee hub
 - **Focus:** Hospitality, retail, manufacturing — “Frontline Success” positioning
 
-## Vs Wyzetalk
+## Vs [[Wyzetalk]]
 
 - **Overlap:** Deskless workforce, mobile-first, operational messaging.
-- **Differentiation:** Wyzetalk mining/energy/safety footprint; enterprise regulated environments.
+- **Differentiation:** [[Wyzetalk]] mining/energy/safety footprint; enterprise regulated environments.
 
 ## Signal log (pointers)
 

@@ -1,6 +1,6 @@
 # Competitor index
 
-**Hub:** [README.md](./README.md) · [WYZETALK_REFERENCE.md](./WYZETALK_REFERENCE.md)
+**Hub:** [[[README]].md](./[[README]].md) · [WYZETALK_REFERENCE.md](./WYZETALK_REFERENCE.md)
 
 **Align your 2024 spreadsheet:** [source/competitors_2024_reference.md](./source/competitors_2024_reference.md) — paste rows or drop a CSV there; no spreadsheet was found in the vault yet.
 

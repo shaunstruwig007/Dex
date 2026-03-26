@@ -10,7 +10,7 @@
 
 # Problem Statement
 
-Emergency Comms and SMS are used as a catch-all messaging tool because they're the fastest and most reliable way to reach employees. But the platform doesn't differentiate between urgent, critical communications and routine operational messages. This causes message fatigue (reducing effectiveness of true emergencies), higher messaging costs, slower response times during real crises, and customer frustration from misusing urgent channels for day-to-day needs. Harmony (95% of messaging via Wyzetalk, 5–15 messages/day) and mining client interviews confirm strong demand for both targeted operational messaging and a protected emergency channel.
+Emergency Comms and SMS are used as a catch-all messaging tool because they're the fastest and most reliable way to reach employees. But the platform doesn't differentiate between urgent, critical communications and routine operational messages. This causes message fatigue (reducing effectiveness of true emergencies), higher messaging costs, slower response times during real crises, and customer frustration from misusing urgent channels for day-to-day needs. Harmony (95% of messaging via [[Wyzetalk]], 5–15 messages/day) and mining client interviews confirm strong demand for both targeted operational messaging and a protected emergency channel.
 
 ---
 

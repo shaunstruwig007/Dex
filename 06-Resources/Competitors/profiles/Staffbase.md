@@ -12,10 +12,10 @@ last_reviewed: 2026-03-20
 - **Category:** Employee communications / intranet / frontline app
 - **Focus:** Strong IC narrative; frontline (~80% messaging in some materials)
 
-## Vs Wyzetalk
+## Vs [[Wyzetalk]]
 
 - **Overlap:** Multi-channel employee comms, mobile-first, AI/intranet storylines.
-- **Differentiation:** Wyzetalk emphasis on regulated industries, mining/energy depth, safety digitisation stack; triangulate USSD / connectivity proof in RFPs.
+- **Differentiation:** [[Wyzetalk]] emphasis on regulated industries, mining/energy depth, safety digitisation stack; triangulate USSD / connectivity proof in RFPs.
 
 ## Signal log (pointers)
 

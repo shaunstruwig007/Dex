@@ -69,7 +69,7 @@ Once users are imported, admins need a centralised place to view, search, and ma
 ### Bulk Import
 
 - [ ] Desktop/tablet only. Download template, populate, upload.
-- [ ] View import results. Re-import failed users. Report failed import to Wyzetalk support.
+- [ ] View import results. Re-import failed users. Report failed import to [[Wyzetalk]] support.
 - [ ] Full import logic covered in User Importer spec.
 ### Manually Add Single User
 

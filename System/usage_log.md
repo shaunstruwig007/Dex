@@ -8,7 +8,7 @@
 
 ## Core Workflows (8 features)
 
-- [ ] Daily planning (`/daily-plan`)
+- [x] Daily planning (`/daily-plan`)
 - [ ] Daily review (`/review` or `/daily-review`)
 - [ ] Weekly planning (`/week-plan`)
 - [ ] Weekly review (`/week-review`)
@@ -78,7 +78,7 @@
 - [ ] Calendar connected (via Calendar MCP)
 - [ ] Calendar synced daily
 - [ ] Granola connected (via Granola MCP)
-- [ ] Obsidian enabled (`/dex-obsidian-setup`)
+- [x] Obsidian enabled (`/dex-obsidian-setup`)
 - [ ] ScreenPipe enabled (`/screenpipe-setup`)
 - [ ] ScreenPipe used (`/screen-recall` or `/screen-summary`)
 - [ ] MCP added (`/dex-add-mcp`)
@@ -102,11 +102,23 @@
 - [ ] Vault reset (`/reset`)
 - [ ] Setup re-run (`/setup`)
 
+## Role-Specific Skills
+
+**Installed:**
+- [x] `/roadmap`
+- [x] `/feature-decision`
+- [x] `/customer-intel`
+
+**Used:**
+- [x] `/roadmap`
+- [x] `/feature-decision`
+- [x] `/customer-intel`
+
 ---
 
 ## Tracking Metadata
 
-- **Last dex-level-up prompt:** (not yet prompted)
+- **Last dex-level-up prompt:** 2026-03-25
 - **First daily plan:** (not yet run)
 - **Setup date:** (set during onboarding)
 

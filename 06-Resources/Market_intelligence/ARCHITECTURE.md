@@ -1,6 +1,6 @@
 # Market intelligence — architecture
 
-**Related:** [README.md](./README.md) · [WORKFLOW.md](./WORKFLOW.md) · [Market_and_deal_signals.md](../Market_and_deal_signals.md)
+**Related:** [[[README]].md](./[[README]].md) · [WORKFLOW.md](./WORKFLOW.md) · [Market_and_deal_signals.md](../Market_and_deal_signals.md)
 
 ---
 
@@ -24,6 +24,7 @@ flowchart TB
 
   subgraph synth["Synthesis"]
     B["synthesis/daily/*_signal_brief.md"]
+    D["synthesis/Deal_Won_Lost_Analysis_Reference.md"]
     L["Market_and_deal_signals.md"]
   end
 
@@ -45,6 +46,7 @@ flowchart TB
   I1 --> B
   I2 --> B
   B --> L
+  D --> L
   L -->|"strong signal"| E
   E --> P
 

@@ -18,7 +18,7 @@
 
 Organisations need a structured way to create and publish targeted business content to employees. Without a proper post creation and management system, content is inconsistent, hard to manage at scale, and lacks basic governance (drafts, archiving, deletion, notifications). Posts are the core content delivery mechanism — if creating and managing them is difficult or error-prone, business communication suffers.
 
-**Extended formats:** Admins also need to share PDFs (policies, safety), video (training, announcements), and Wyzetalk Forms links without workarounds — all through the same post model, groups, feed, and governance.
+**Extended formats:** Admins also need to share PDFs (policies, safety), video (training, announcements), and [[Wyzetalk]] Forms links without workarounds — all through the same post model, groups, feed, and governance.
 
 ---
 
@@ -57,7 +57,7 @@ Organisations need a structured way to create and publish targeted business cont
 
 - As an **admin**, I want to upload a PDF to a post so that employees can access policies and safety documents from the feed.
 - As an **admin**, I want to upload a video to a post so that employees can watch training content inline.
-- As an **admin**, I want to link to an external Wyzetalk Form so that employees can complete surveys or data collection from the feed.
+- As an **admin**, I want to link to an external [[Wyzetalk]] Form so that employees can complete surveys or data collection from the feed.
 - As an **admin**, I want to give the PDF or form link button a custom label so that employees know what to expect when they tap it.
 
 **Edge cases (all templates)**
@@ -136,7 +136,7 @@ Admin dashboard states below; **when content leaves the employee main feed and h
 
 ### External Form Link (extends Link pattern)
 
-- [ ] Wyzetalk Form functionality toggled on per tenant. Admin enters a valid Form ID in the Link Post widget.
+- [ ] [[Wyzetalk]] Form functionality toggled on per tenant. Admin enters a valid Form ID in the Link Post widget.
 - [ ] Custom button label input. Optional helper text: "External Form."
 - [ ] Link opens in device browser. No in-app rendering. Form availability managed externally.
 - [ ] Cannot publish if Form ID is missing. "Test link" button provided.

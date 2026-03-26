@@ -12,10 +12,10 @@ last_reviewed: 2026-03-20
 - **Category:** Employee communications / email + multichannel IC platform (Newsweaver heritage)
 - **Focus:** Email at scale, templates, analytics; extends to broader employee comms
 
-## Vs Wyzetalk
+## Vs [[Wyzetalk]]
 
 - **Overlap:** Corporate and operational messaging to large employee bases; measurement.
-- **Differentiation:** Wyzetalk as **operational** frontline platform (safety, digitisation, engagement app) vs Poppulo’s strength in **comms orchestration** and email-led campaigns — often complementary in enterprise stacks rather than 1:1 substitute.
+- **Differentiation:** [[Wyzetalk]] as **operational** frontline platform (safety, digitisation, engagement app) vs Poppulo’s strength in **comms orchestration** and email-led campaigns — often complementary in enterprise stacks rather than 1:1 substitute.
 
 ## Signal log (pointers)
 

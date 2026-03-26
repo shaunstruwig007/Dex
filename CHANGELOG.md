@@ -7,13 +7,37 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.18.6] — Fork docs + repo hygiene (2026-03-25)
+
+**Fork clarity:** Added **[FORK_MAINTENANCE.md](FORK_MAINTENANCE.md)** (remotes, `upstream/release` merges, what stays local) and a short pointer from **[README.md](README.md)**. **[06-Resources/README.md](06-Resources/README.md)** now links the legacy **Intel/** path; **[00-Inbox/Daily_Plans/README.md](00-Inbox/Daily_Plans/README.md)** points canonical `/daily-plan` output to **`07-Archives/Plans/`**. **`.gitignore`** ignores `.scripts/market-intelligence/.venv/`.
+
+**What you need to do:** Keep using `origin` for your vault pushes; merge **`upstream/release`** (or `/dex-update`) for Dex core. Drop stale `git stash` entries if you no longer need pre-merge snapshots.
+
+---
+
+## [1.18.5] — Deal won/lost analysis reference (2026-03-20)
+
+HubSpot export **`Deal Won vs Lost Analysis 2025.xlsx`** is now summarized in **`06-Resources/Market_intelligence/synthesis/Deal_Won_Lost_Analysis_Reference.md`**: loss reasons (HubSpot + themes), dated deal table, wins snapshot, and links from **`Market_and_deal_signals.md`** and **`Market_intelligence/README.md`** / **`ARCHITECTURE.md`** for decision context.
+
+**What you need to do:** Open that file when shaping product, pricing, or GTM; re-run extraction when the spreadsheet is refreshed.
+
+---
+
+## [1.18.4] — Work board Kanban syncs to Tasks.md (2026-03-23)
+
+The Kanban in `06-Resources/Dex_System/workboard/` could only persist column moves in the browser. **`workboard_server.py`** (run locally) serves the same UI and **`POST /api/save`** writes **`work-items.json`**, regenerates **`03-Tasks/Tasks.md`** from board state (checkboxes: todo / in progress / on hold / done), and runs **`build_index.py`** so the embedded HTML stays aligned.
+
+**What you need to do:** From `workboard/`, run `python3 workboard_server.py` and open http://127.0.0.1:8765/ — drag cards to update the vault without hand-editing `Tasks.md`.
+
+---
+
 ## [1.18.3] — Market intelligence skills + evidence traceability (2026-03-20)
 
 Market workflows lived only under `.agents/skills/`, so `/intelligence-scanning` and related commands were easy to miss. **Canonical skills** now live in `.claude/skills/` (same as other slash commands); `.agents/skills/` keeps **short stubs** that point at those files so nothing drifts. `process-meetings` follows the same pattern.
 
 **Also:**
 
-* `06-Resources/Intel/README.md` explains the legacy `Intel/` path vs the active **`Market_intelligence/`** hub; `core/paths.py` adds `MARKET_INTELLIGENCE_DIR`.
+* `06-Resources/Intel/[[README]].md` explains the legacy `Intel/` path vs the active **`Market_intelligence/`** hub; `core/paths.py` adds `MARKET_INTELLIGENCE_DIR`.
 * Example **`EV-2026-03-001`** row in `PRDs/Evidence_register.md` with a pointer from `Posts.md` — proof of the discovery → PRD link.
 * `06-Resources/Market_intelligence/ARCHITECTURE.md` documents the flow (mermaid) and known gaps.
 

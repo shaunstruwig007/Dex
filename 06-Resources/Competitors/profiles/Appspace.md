@@ -12,10 +12,10 @@ last_reviewed: 2026-03-20
 - **Category:** Workplace experience / digital signage / content
 - **Focus:** Facilities + workplace + “Appspace Intelligence” analytics narrative
 
-## Vs Wyzetalk
+## Vs [[Wyzetalk]]
 
 - **Overlap:** Deskless and corporate comms; screens + content.
-- **Differentiation:** Wyzetalk frontline operational workflows (safety, crisis, compliance) vs facilities bundle.
+- **Differentiation:** [[Wyzetalk]] frontline operational workflows (safety, crisis, compliance) vs facilities bundle.
 
 ## Signal log (pointers)
 

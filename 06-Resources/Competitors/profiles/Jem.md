@@ -12,10 +12,10 @@ last_reviewed: 2026-03-20
 - **Category:** Deskless workforce platform — **communications, digital HR, and financial wellbeing** delivered heavily via **WhatsApp** (employer dashboard → employees through WhatsApp chatbot).
 - **Focus:** South African roots; payslips, leave, EWA-style access, benefits, polls/surveys, announcements; **Jem Mobile** (devices/data) for frontline adoption.
 
-## Vs Wyzetalk
+## Vs [[Wyzetalk]]
 
 - **Overlap:** Frontline employee reach, WhatsApp as a channel, engagement and operational comms, payroll-adjacent workflows.
-- **Differentiation:** Wyzetalk as broader **EX platform** (comms, safety, digitisation, engagement, analytics, AI assistant) vs JEM HR’s bundle around **WhatsApp-native HR + wellbeing** — compare scope in RFPs (pure WhatsApp HR vs full regulated-industry EX).
+- **Differentiation:** [[Wyzetalk]] as broader **EX platform** (comms, safety, digitisation, engagement, analytics, AI assistant) vs JEM HR’s bundle around **WhatsApp-native HR + wellbeing** — compare scope in RFPs (pure WhatsApp HR vs full regulated-industry EX).
 
 ## Signal log (pointers)
 

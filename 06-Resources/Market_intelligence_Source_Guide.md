@@ -1,13 +1,13 @@
 # Market signals source guide
 
 **Origin:** v2 (March 2026) — Product craft sources included.  
-**Use with:** [Market_and_deal_signals.md](./Market_and_deal_signals.md) · [Market_intelligence/README.md](./Market_intelligence/README.md)
+**Use with:** [Market_and_deal_signals.md](./Market_and_deal_signals.md) · [Market_intelligence/[[README]].md](./Market_intelligence/[[README]].md)
 
 ---
 
 ## Company context & selection criteria
 
-Wyzetalk is a frontline/deskless employee experience platform (mining, energy, manufacturing, automotive, retail, facilities). Platform: crisis, safety & compliance, digitisation, engagement, analytics; AI assistant for frontline; rights-managed chat.
+[[Wyzetalk]] is a frontline/deskless employee experience platform (mining, energy, manufacturing, automotive, retail, facilities). Platform: crisis, safety & compliance, digitisation, engagement, analytics; AI assistant for frontline; rights-managed chat.
 
 **Early Signal** = funding, M&A, new categories, macro shifts early. **Tactical** = how-to, playbooks, implementation.
 

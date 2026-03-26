@@ -30,7 +30,7 @@ Workday announced Sana as embedded AI; Bersin frames it as “AI-first” HR pla
 - **Recruiting stack collapse:** M&A (e.g. Paradox/Workday, SmartRecruiters/SAP) plus “one big AI workflow” thesis — **TA point tools** may compress before EX comms tools do.
 - **Deskless blind spot:** The whole arc is **knowledge-worker / HR ops** shaped; **novel upside** for frontline-first platforms where connectivity, safety, and shift reality don’t mirror “Sana as front door to Workday.”
 
-## Wyzetalk relevance
+## [[Wyzetalk]] relevance
 
 - Frontline/deskless positioning stays distinct from desk-centric HR suites; watch how “AI assistant” messaging lands with mining/energy buyers vs generic HRIS stories.
 - Agent-orchestration fragmentation is a **feature** for best-of-breed EX if buyers resist single-vendor AI — but **governance** (who approves agents, audit trails) will still matter for regulated industries.

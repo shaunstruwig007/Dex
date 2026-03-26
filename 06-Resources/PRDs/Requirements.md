@@ -13,7 +13,7 @@ This section contains formal specifications and requirements documentation for f
 ## Vault integration artifacts
 
 - [PRD_Product_Map.md](./PRD_Product_Map.md) — **Groups ↔ Posts ↔ Feed**, messaging vs feed, canonical archive/retention table
-- [README.md](./README.md) — **index of all acceptance criteria** (`*_acceptance_criteria.md`) + cross-cutting open questions
+- [[[README]].md](./[[README]].md) — **index of all acceptance criteria** (`*_acceptance_criteria.md`) + cross-cutting open questions
 - [PRD_Cross_cutting_open_questions.md](./PRD_Cross_cutting_open_questions.md) — multi-PRD integration questions only
 
 ---

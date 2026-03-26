@@ -1,0 +1,341 @@
+{
+  "schemaVersion": "1.1.0",
+  "title": "Shaun — consolidated work",
+  "updated": "2026-03-24",
+  "items": [
+    {
+      "id": "task-20260323-003",
+      "kind": "task",
+      "title": "Essential launch — Dependencies",
+      "summary": "Fill Dependencies section on launch doc with named owners: Eng, Design, Legal, CS, integrations.",
+      "nextAction": "Ping each function for one line + ticket link per dependency.",
+      "priorityBand": "P2",
+      "rankScore": 68,
+      "status": "in_progress",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "Essential",
+        "launch"
+      ],
+      "links": [
+        {
+          "label": "Launch doc",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260323-005",
+      "kind": "task",
+      "title": "Essential — GTM foundation",
+      "summary": "One-pager (problem, buyer, outcome, proof); align marketing + sales on Essential vs future tiers + ICP; outline deck/web narrative before GA.",
+      "nextAction": "Draft one-pager skeleton, then schedule alignment with marketing + sales.",
+      "priorityBand": "P2",
+      "rankScore": 67,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "GTM",
+        "ICP"
+      ],
+      "links": [
+        {
+          "label": "Launch doc — Next actions",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260323-002",
+      "kind": "task",
+      "title": "Essential launch — ICPs",
+      "summary": "Add ideal customer profiles to launch narrative and GTM.",
+      "nextAction": "List 2–3 ICP segments with pains, buying triggers, and anti-ICP.",
+      "priorityBand": "P2",
+      "rankScore": 66,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "ICP",
+        "GTM"
+      ],
+      "links": [
+        {
+          "label": "Launch doc",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260323-006",
+      "kind": "prd",
+      "title": "Essential — PRD/AC catch-up",
+      "summary": "Fold federated remote app (Air) / PDF payslip path and WhatsApp into formal PRD + acceptance criteria where missing.",
+      "nextAction": "Gap-review PRD index vs launch scope; open AC updates per PRD.",
+      "priorityBand": "P2",
+      "rankScore": 65,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "PRD",
+        "WhatsApp",
+        "remote app"
+      ],
+      "links": [
+        {
+          "label": "PRD README",
+          "href": "06-Resources/PRDs/README.md"
+        },
+        {
+          "label": "Product map",
+          "href": "06-Resources/PRDs/PRD_Product_Map.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260323-008",
+      "kind": "task",
+      "title": "Elevated auth — follow-through",
+      "summary": "Workshop core vs remote app split and validation; Tanya docs → Pieter review per elevated auth meeting.",
+      "nextAction": "Schedule workshop; track doc handoff to Pieter.",
+      "priorityBand": "P2",
+      "rankScore": 64,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "auth",
+        "compliance"
+      ],
+      "links": [
+        {
+          "label": "Meeting note",
+          "href": "00-Inbox/Meetings/2026-03-21 - Elevated auth.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260323-001",
+      "kind": "epic",
+      "title": "Essential launch — migration execution",
+      "summary": "Owners per cohort, cutover criteria, steering cadence — aligned to migration roadmap and end-May kickoff.",
+      "nextAction": "Name owner per Q2 pilot account; confirm steering forum.",
+      "priorityBand": "P2",
+      "rankScore": 63,
+      "status": "todo",
+      "pillar": "client_migration",
+      "tags": [
+        "migration",
+        "Steerco"
+      ],
+      "links": [
+        {
+          "label": "Launch doc — migration",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        },
+        {
+          "label": "Roadmap image",
+          "href": "04-Projects/assets/migration-roadmap-2026-2027.png"
+        }
+      ]
+    },
+    {
+      "id": "task-20260323-007",
+      "kind": "task",
+      "title": "Essential — stakeholder RACI",
+      "summary": "Populate stakeholder table on launch doc with wiki links to Internal (and External) people pages.",
+      "nextAction": "Map Steerco + workstream leads into RACI rows.",
+      "priorityBand": "P2",
+      "rankScore": 60,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "RACI",
+        "people"
+      ],
+      "links": [
+        {
+          "label": "Launch doc",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        },
+        {
+          "label": "Internal people",
+          "href": "05-Areas/People/Internal/README.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260323-009",
+      "kind": "task",
+      "title": "Pipeline data — PowerFlow → vault",
+      "summary": "Export/sync so pipeline/deals file lands in repo when it changes; define folder, naming, and how you use it for planning.",
+      "nextAction": "Pick vault folder + filename; verify PowerFlow trigger.",
+      "priorityBand": "P2",
+      "rankScore": 58,
+      "status": "todo",
+      "pillar": "client_migration",
+      "tags": [
+        "PowerFlow",
+        "pipeline"
+      ],
+      "links": []
+    },
+    {
+      "id": "task-20260323-004",
+      "kind": "task",
+      "title": "Calendar — O365 via Apple Calendar (Dex)",
+      "summary": "Confirm work calendar syncs to Calendar.app; run /calendar-setup for fast local daily-plan queries.",
+      "nextAction": "If calendar visible in Calendar.app, run calendar-setup script from dex-obsidian/calendar skill.",
+      "priorityBand": "P2",
+      "rankScore": 48,
+      "status": "in_progress",
+      "pillar": "ai_pdlc",
+      "tags": [
+        "Dex",
+        "calendar"
+      ],
+      "links": [
+        {
+          "label": "Tasks.md",
+          "href": "03-Tasks/Tasks.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260323-012",
+      "kind": "task",
+      "title": "Essential — success metrics + review",
+      "summary": "Define adoption, activation, support-load metrics and a review date.",
+      "priorityBand": "P3",
+      "rankScore": 38,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "metrics"
+      ],
+      "links": [
+        {
+          "label": "Launch doc",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260323-014",
+      "kind": "task",
+      "title": "Pre-GA — internal build readiness",
+      "summary": "Align build complete (internal) with GA window; track blockers vs milestones.",
+      "priorityBand": "P3",
+      "rankScore": 36,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "engineering",
+        "GA"
+      ],
+      "links": [
+        {
+          "label": "Launch milestones",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260323-013",
+      "kind": "task",
+      "title": "GTM assets — web + deck",
+      "summary": "Customer-facing narrative assets for GA milestone (complements one-pager / alignment).",
+      "priorityBand": "P3",
+      "rankScore": 35,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "GTM",
+        "assets"
+      ],
+      "links": [
+        {
+          "label": "Launch doc",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260323-010",
+      "kind": "task",
+      "title": "Migration roadmap — validate € MRR",
+      "summary": "Cross-check est. platform MRR in launch doc with finance and account owners.",
+      "priorityBand": "P3",
+      "rankScore": 34,
+      "status": "todo",
+      "pillar": "client_migration",
+      "tags": [
+        "finance",
+        "migration"
+      ],
+      "links": [
+        {
+          "label": "Launch doc — MRR table",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260323-011",
+      "kind": "task",
+      "title": "Beta accounts — confirm before outreach",
+      "summary": "G4S / Anglo noted as potential only — confirm before GTM or migration touch.",
+      "priorityBand": "P3",
+      "rankScore": 32,
+      "status": "todo",
+      "pillar": "client_migration",
+      "tags": [
+        "beta",
+        "sales"
+      ],
+      "links": [
+        {
+          "label": "Launch doc — beta",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260319-001",
+      "kind": "task",
+      "title": "Wyzetalk Essential — scope narrative",
+      "summary": "Elevator pitch, GA window, migration kickoff, full Requirements scope — captured on launch doc.",
+      "priorityBand": "P2",
+      "rankScore": 20,
+      "status": "done",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "Essential"
+      ],
+      "links": [
+        {
+          "label": "Launch doc",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260319-002",
+      "kind": "task",
+      "title": "PRDs in vault",
+      "summary": "Requirements tree maintained under 06-Resources/PRDs/.",
+      "priorityBand": "P2",
+      "rankScore": 19,
+      "status": "done",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "PRD"
+      ],
+      "links": [
+        {
+          "label": "PRDs",
+          "href": "06-Resources/PRDs/README.md"
+        }
+      ]
+    }
+  ]
+}

@@ -75,7 +75,7 @@ The system automatically suggests `/getting-started` at next session if vault < 
 <!-- Updated during onboarding -->
 **Name:** Shaun
 **Role:** Product Manager / Product Owner
-**Company:** Wyzetalk — frontline employee experience (deskless workforce: comms, safety, digitisation, engagement). [wyzetalk.com](https://www.wyzetalk.com/)
+**Company:** [[Wyzetalk]] — frontline employee experience (deskless workforce: comms, safety, digitisation, engagement). [wyzetalk.com](https://www.wyzetalk.com/)
 **Email domain (internal vs external):** `wyzetalk.com` *(only domain)*
 **Company Size:** Startup / small (1–100)
 **Working Style:** Backlog + delivery with stakeholders; **AI adoption and efficiency in the PDLC**. Meetings: **Microsoft Teams + Copilot** — **not Granola** (paste or import notes into the vault).
@@ -93,7 +93,7 @@ For detailed information, see:
 - **Complete guide:** `06-Resources/Dex_System/Dex_System_Guide.md`
 - **Technical setup:** `06-Resources/Dex_System/Dex_Technical_Guide.md`
 - **Update guide:** `06-Resources/Dex_System/Updating_Dex.md`
-- **Skills catalog:** `.claude/skills/README.md` or run `/dex-level-up`
+- **Skills catalog:** `.claude/skills/[[README]].md` or run `/dex-level-up`
 
 Read these files when users ask about system details, features, or setup.
 
@@ -520,7 +520,7 @@ Skills extend Dex capabilities and are invoked with `/skill-name`. Common skills
 
 See `06-Resources/Market_intelligence/ARCHITECTURE.md` for the full flow and `06-Resources/PRDs/Evidence_register.md` for `EV-*` traceability.
 
-**Complete catalog:** Run `/dex-level-up` or see `.claude/skills/README.md`
+**Complete catalog:** Run `/dex-level-up` or see `.claude/skills/[[README]].md`
 
 ---
 
@@ -568,7 +568,7 @@ Use `capture_idea` MCP tool to capture Dex system improvements anytime. Ideas ar
 - Meeting notes: `YYYY-MM-DD - Meeting Topic.md`
 - Person pages: `Firstname_Lastname.md`
 - Career skill tags: Add `# Career: [skill]` to tasks/goals that develop specific skills
-  - Example: `Ship payments redesign ^task-20260128-001 # Career: System Design`
+  - Example: `Ship payments redesign [[^task-20260128-001]] # Career: System Design`
   - Helps track skill development over time
   - Surfaces in weekly reviews for evidence capture
   - Links daily work to career growth goals

@@ -7,6 +7,7 @@ Documentation about how Dex works and why.
 - **Dex_Jobs_to_Be_Done.md** — Why the system exists, what problems it solves
 - **Dex_System_Guide.md** — Comprehensive guide to using Dex effectively
 - **Integrations/** — Setup guides for external tools (Granola, Pendo, etc.)
+- **workboard/** — Optional Kanban that syncs to `03-Tasks/Tasks.md` via `workboard_server.py` (see [workboard/README.md](./workboard/README.md))
 
 ## Purpose
 

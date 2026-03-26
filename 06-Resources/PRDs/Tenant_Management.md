@@ -10,7 +10,7 @@
 
 # 1. Tenant Creation & Setup
 
-**Problem:** When a new tenant is created, the platform does not automatically generate QR codes, short URLs, or guide the Tenant Manager through login configuration — resulting in slow, inconsistent onboarding that requires manual Wyzetalk involvement.
+**Problem:** When a new tenant is created, the platform does not automatically generate QR codes, short URLs, or guide the Tenant Manager through login configuration — resulting in slow, inconsistent onboarding that requires manual [[Wyzetalk]] involvement.
 
 **User Stories**
 
@@ -32,7 +32,7 @@
 - [ ] Login screen preview during setup so Tenant Manager can verify branding before publishing.
 **Success Metrics**
 
-- % of new tenants completing full setup without Wyzetalk manual intervention (target: >90%)
+- % of new tenants completing full setup without [[Wyzetalk]] manual intervention (target: >90%)
 - Average time from creation to Setup Complete (target: <15 min)
 - Tenant creation rollback rate (target: <2%)
 **Open Questions**
@@ -79,11 +79,11 @@
 
 # 3. QR Code Management
 
-**Problem:** QR codes and company codes are not automatically maintained — when they expire, employees lose access until Wyzetalk staff manually regenerate and redistribute them.
+**Problem:** QR codes and company codes are not automatically maintained — when they expire, employees lose access until [[Wyzetalk]] staff manually regenerate and redistribute them.
 
 **User Stories**
 
-- As an **Account Owner**, I want to download and share my QR code directly from the portal, so that I don't need to involve Wyzetalk.
+- As an **Account Owner**, I want to download and share my QR code directly from the portal, so that I don't need to involve [[Wyzetalk]].
 - As an **Account Owner**, I want advance notice before my QR code expires, so that I can update printed materials in time.
 - As a **system admin**, I want to regenerate a QR code on demand to respond to security incidents.
 **Skeleton**
@@ -138,7 +138,7 @@
 
 # 5. Find My Account & Support Workflows
 
-**Problem:** Employees whose details don't match the system have no self-service recovery path, and Wyzetalk staff have no structured way to review or resolve these cases.
+**Problem:** Employees whose details don't match the system have no self-service recovery path, and [[Wyzetalk]] staff have no structured way to review or resolve these cases.
 
 **User Stories**
 

@@ -8,9 +8,11 @@
 
 ## Themes
 
+
 | Theme | Signal | Implication |
-|-------|--------|-------------|
-| | | |
+| ----- | ------ | ----------- |
+|       |        |             |
+
 
 ## Contrarian & novel angles
 
@@ -24,10 +26,11 @@
 
 - 
 
-## Wyzetalk relevance
+## [[Wyzetalk]] relevance
 
 - 
 
 ## Follow-ups
 
-- [ ] 
+- 
+

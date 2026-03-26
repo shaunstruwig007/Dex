@@ -2,7 +2,7 @@
 
 **Purpose:** Single place for **dependencies**, **shared concepts**, and **canonical rules** when individual PRDs overlap. Use this during refinement, sequencing, and QA. Feature PRDs remain the detailed source; this map is the integration layer.
 
-**Hub:** [Requirements.md](./Requirements.md) · **Index:** [README.md](./README.md)
+**Hub:** [Requirements.md](./Requirements.md) · **Index:** [[[README]].md](./[[README]].md)
 
 ---
 
@@ -44,7 +44,7 @@ flowchart LR
 | Optional publish alerts | [Posts.md](./Posts.md) toggle → [Notifications.md](./Notifications.md) → [Communication.md](./Communication.md) |
 | Extended templates (PDF, video, external form link) | [Posts.md](./Posts.md) Phase 2; rendered on [Feed.md](./Feed.md) |
 
-**Derived QA layer:** [Feed_acceptance_criteria.md](./Feed_acceptance_criteria.md) — feed + urgent pin; keep in sync with [Feed.md](./Feed.md) and [Messaging_Ops_Urgent_Alerts.md](./Messaging_Ops_Urgent_Alerts.md). **All feature AC files:** see [README.md](./README.md) § Acceptance criteria.
+**Derived QA layer:** [Feed_acceptance_criteria.md](./Feed_acceptance_criteria.md) — feed + urgent pin; keep in sync with [Feed.md](./Feed.md) and [Messaging_Ops_Urgent_Alerts.md](./Messaging_Ops_Urgent_Alerts.md). **All feature AC files:** see [[[README]].md](./[[README]].md) § Acceptance criteria.
 
 ---
 
@@ -104,7 +104,7 @@ If legacy drafts used different numbers (**60 days** / **30 days**), **do not im
 
 ## 6. Acceptance criteria index (QA layer)
 
-Each PRD can have a companion `*_acceptance_criteria.md` with testable **Given / When / Then** rows, edge cases, and “outstanding” items. **Index:** [README.md](./README.md) § Acceptance criteria.
+Each PRD can have a companion `*_acceptance_criteria.md` with testable **Given / When / Then** rows, edge cases, and “outstanding” items. **Index:** [[[README]].md](./[[README]].md) § Acceptance criteria.
 
 **Discovery evidence (optional):** Link contentious or discovery-heavy AC rows to `EV-*` IDs via [Evidence_and_traceability.md](./Evidence_and_traceability.md) and [Evidence_register.md](./Evidence_register.md).
 

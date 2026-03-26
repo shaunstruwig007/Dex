@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dex Dashboard — Wyzetalk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0d12;
+      --surface: #121820;
+      --card: #141a24;
+      --border: #2a3441;
+      --text: #e8eaef;
+      --muted: #8b95a5;
+      --accent: #d4a574;
+      --accent-dim: rgba(212,165,116,0.12);
+      --green: #6bcf8e;
+      --amber: #e8b84a;
+      --blue: #7eb8ff;
+      --col-todo: #74c0fc;
+      --col-hold: #e8b84a;
+      --col-doing: #a78bfa;
+      --col-done: #6bcf8e;
+      --pillar-launch: #d4a574;
+      --pillar-migration: #7eb8ff;
+      --pillar-ai: #a78bfa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: "Instrument Sans", system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.4; font-size: 15px;
+    }
+    .layout { max-width: 1600px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+    header { margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    header h1 { font-size: 1.4rem; font-weight: 700; margin: 0 0 0.2rem; letter-spacing: -0.02em; }
+    header .sub { color: var(--muted); font-size: 0.85rem; margin: 0; }
+
+    /* ── Tab nav ── */
+    .tab-nav {
+      display: flex; gap: 0; margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab-btn {
+      background: none; border: none; border-bottom: 2px solid transparent;
+      color: var(--muted); font-family: inherit; font-size: 0.88rem; font-weight: 500;
+      padding: 0.6rem 1.1rem 0.55rem; cursor: pointer; margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s; letter-spacing: 0.01em;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Shared: toolbar / toast / error ── */
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;
+      margin-bottom: 0.75rem; font-size: 0.82rem;
+    }
+    .toolbar button {
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+      font-family: inherit; font-size: 0.82rem; padding: 0.35rem 0.65rem;
+      border-radius: 6px; cursor: pointer;
+    }
+    .toolbar button:hover { color: var(--text); border-color: var(--muted); }
+    .error {
+      background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.35);
+      color: #ffb4b4; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem;
+    }
+    .toast {
+      font-size: 0.85rem; color: var(--green); margin: 0 0 0.75rem;
+      padding: 0.4rem 0.65rem; background: rgba(107,207,142,0.12);
+      border-radius: 6px; border: 1px solid rgba(107,207,142,0.35);
+    }
+
+    /* ── Shared: explainer ── */
+    details.explainer {
+      margin-bottom: 1rem; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.6rem 1rem;
+    }
+    details.explainer summary {
+      cursor: pointer; font-weight: 600; color: var(--accent); font-size: 0.9rem;
+      list-style: none; display: flex; align-items: center; gap: 0.5rem;
+    }
+    details.explainer summary::-webkit-details-marker { display: none; }
+    details.explainer summary::before { content: "▸"; font-size: 0.75rem; transition: transform 0.15s; }
+    details.explainer[open] summary::before { transform: rotate(90deg); }
+    .explainer-body {
+      margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border);
+      font-size: 0.85rem; color: #c5cad3; line-height: 1.55;
+    }
+    .explainer-body p { margin: 0 0 0.5rem; }
+    .explainer-body strong { color: var(--text); }
+
+    /* ── Kanban (Tasks + Daily Plan) ── */
+    .kanban {
+      display: flex; gap: 0.75rem; align-items: stretch;
+      overflow-x: auto; padding-bottom: 0.5rem; min-height: 420px;
+    }
+    .column {
+      flex: 1; min-width: 220px; max-width: 320px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; display: flex; flex-direction: column;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .column.drag-over { background: var(--accent-dim); border-color: var(--accent); }
+    .column-head { padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border); }
+    .column-head h2 { margin: 0; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+    .column-head .hint { font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem; line-height: 1.35; }
+    .column-head .count { float: right; font-size: 0.72rem; color: var(--muted); font-weight: 500; }
+    .column-body { flex: 1; padding: 0.5rem; min-height: 200px; display: flex; flex-direction: column; gap: 0.45rem; }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.45rem 0.5rem 0.5rem; cursor: grab; font-size: 0.8rem;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+    .card:active { cursor: grabbing; }
+    .card:hover { border-color: #3d4a5c; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.35rem; margin-bottom: 0.35rem; }
+    .card-rank { font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 0.95rem; color: var(--accent); line-height: 1; }
+    .card-rank span { font-size: 0.6rem; font-weight: 500; color: var(--muted); display: block; margin-top: 0.15rem; }
+    .card-status-pill { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.15rem 0.35rem; border-radius: 4px; white-space: nowrap; }
+    .card h3 { margin: 0 0 0.25rem; font-size: 0.82rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
+    .card .desc { color: #aeb4bf; font-size: 0.76rem; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-expand { margin-top: 0.35rem; padding: 0; border: none; background: none; color: var(--blue); font-size: 0.7rem; font-family: inherit; cursor: pointer; text-align: left; width: 100%; }
+    .card-expand:hover { text-decoration: underline; }
+    .card-details { display: none; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); font-size: 0.74rem; color: #c5cad3; }
+    .card.open .card-details { display: block; }
+    .card.open .desc { -webkit-line-clamp: unset; }
+    .card-details .next { margin-bottom: 0.45rem; padding-left: 0.5rem; border-left: 2px solid var(--accent); }
+    .card-details .next strong { color: var(--accent); }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.35rem; }
+    .tag { font-size: 0.65rem; background: var(--bg); color: var(--muted); padding: 0.1rem 0.35rem; border-radius: 3px; }
+    .links { margin-top: 0.35rem; font-family: "JetBrains Mono", monospace; font-size: 0.68rem; }
+    .links a { color: var(--blue); text-decoration: none; display: block; word-break: break-all; margin-top: 0.2rem; }
+    .links a:hover { text-decoration: underline; }
+    .card-id { font-family: "JetBrains Mono", monospace; font-size: 0.62rem; color: var(--muted); margin-top: 0.35rem; }
+
+    /* ── Planning Map ── */
+    .planning-map {
+      display: grid;
+      grid-template-columns: 280px 260px 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    .plan-col-header {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); margin-bottom: 0.75rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem;
+    }
+    .level-badge {
+      background: var(--surface); border: 1px solid var(--border);
+      font-size: 0.62rem; padding: 0.1rem 0.4rem; border-radius: 3px; color: var(--muted);
+    }
+    .plan-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.75rem; margin-bottom: 0.65rem; border-left: 3px solid transparent;
+    }
+    .plan-card.q1 { border-left-color: #aeb4bf; }
+    .plan-card.q2 { border-left-color: var(--green); }
+    .plan-card.h2 { border-left-color: var(--blue); }
+    .plan-card.week-launch { border-left-color: var(--pillar-launch); }
+    .plan-card.week-migration { border-left-color: var(--pillar-migration); }
+    .plan-card-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+    .plan-card h3 { margin: 0 0 0.35rem; font-size: 0.88rem; font-weight: 600; line-height: 1.3; }
+    .plan-card p { margin: 0; font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+    .plan-status-row { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.5rem; }
+    .plan-status-chip { font-size: 0.62rem; font-weight: 600; padding: 0.15rem 0.4rem; border-radius: 3px; }
+    .chip-done { background: rgba(107,207,142,0.15); color: var(--green); }
+    .chip-active { background: rgba(212,165,116,0.15); color: var(--accent); }
+    .chip-todo { background: rgba(139,149,165,0.12); color: var(--muted); }
+
+    .task-mini {
+      background: var(--card); border: 1px solid var(--border); border-left: 2px solid var(--border);
+      border-radius: 7px; padding: 0.45rem 0.6rem; margin-bottom: 0.4rem; font-size: 0.78rem;
+    }
+    .task-mini.status-started { border-left-color: var(--amber); }
+    .task-mini.status-todo { border-left-color: var(--border); }
+    .task-mini.status-done { opacity: 0.5; border-left-color: var(--green); }
+    .task-mini-title { font-weight: 600; margin-bottom: 0.2rem; line-height: 1.25; color: var(--text); }
+    .task-mini-meta { font-size: 0.68rem; color: var(--muted); }
+    .tasks-group-label {
+      font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      padding-left: 0.2rem; margin-bottom: 0.4rem; margin-top: 0.75rem;
+    }
+    .tasks-group-label:first-child { margin-top: 0; }
+
+    /* ── Roadmap ── */
+    .roadmap-wrap { display: flex; flex-direction: column; gap: 1.5rem; }
+    .phase-banner {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.85rem 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .phase-block { display: flex; flex-direction: column; }
+    .phase-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+    .phase-value { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-top: 0.1rem; }
+    .phase-sep { color: var(--border); font-size: 1.5rem; padding: 0 0.25rem; }
+    .roadmap-section-title {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .phase-chip { font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700; }
+    .chip-now { background: rgba(107,207,142,0.15); color: var(--green); }
+    .chip-then { background: rgba(126,184,255,0.15); color: var(--blue); }
+    .rm-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem; }
+    .rm-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.85rem; border-top: 3px solid transparent;
+    }
+    .rm-card.now { border-top-color: var(--green); }
+    .rm-card.then { border-top-color: var(--blue); }
+    .rm-card-icon { font-size: 1.15rem; margin-bottom: 0.4rem; }
+    .rm-card h3 { margin: 0 0 0.4rem; font-size: 0.9rem; font-weight: 700; }
+    .rm-card p { margin: 0; font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+    .rm-tag { font-size: 0.63rem; margin-top: 0.5rem; color: var(--accent); font-weight: 600; }
+
+    /* Milestones */
+    .milestones { display: flex; flex-direction: column; }
+    .milestone-row { display: grid; grid-template-columns: 150px 20px 1fr; align-items: start; }
+    .ms-date { font-family: "JetBrains Mono", monospace; font-size: 0.7rem; color: var(--muted); text-align: right; padding: 0.25rem 0.75rem 0.25rem 0; padding-top: 0.28rem; }
+    .ms-dot-col { display: flex; flex-direction: column; align-items: center; }
+    .ms-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--border); background: var(--bg); flex-shrink: 0; margin-top: 0.28rem; }
+    .ms-dot.done { background: var(--green); border-color: var(--green); }
+    .ms-dot.active { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,165,116,0.2); }
+    .ms-dot.planned { background: var(--blue); border-color: var(--blue); }
+    .ms-dot.tbd { background: var(--bg); border-color: #3d4a5c; }
+    .ms-line { flex: 1; width: 2px; background: var(--border); margin: 3px auto 0; min-height: 20px; }
+    .ms-content { padding: 0.12rem 0 0.9rem 0.8rem; }
+    .ms-content strong { font-size: 0.85rem; font-weight: 600; display: block; line-height: 1.3; }
+    .ms-content span { font-size: 0.74rem; color: var(--muted); }
+
+    /* Migration table */
+    .mig-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+    .mig-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .mig-table th {
+      text-align: left; padding: 0.55rem 0.85rem;
+      font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); border-bottom: 1px solid var(--border); background: var(--surface);
+    }
+    .mig-table td { padding: 0.55rem 0.85rem; border-bottom: 1px solid rgba(42,52,65,0.6); vertical-align: top; }
+    .mig-table tr:last-child td { border-bottom: none; }
+    .mig-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .mig-table .mrr { font-family: "JetBrains Mono", monospace; color: var(--accent); white-space: nowrap; font-weight: 600; }
+    .mig-table .q-label { font-weight: 700; white-space: nowrap; }
+    .mig-table .theme-text { color: var(--muted); font-size: 0.75rem; }
+    .mig-table .accounts { font-size: 0.75rem; color: #c5cad3; }
+    .q2-row td { background: rgba(107,207,142,0.05); }
+    .tbd-row td { color: var(--muted); }
+    .total-row td { border-top: 1px solid var(--border); font-weight: 700; background: var(--surface); }
+
+    /* Pillar legend */
+    .pillar-legend { display: flex; gap: 1.25rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .pillar-legend-item { font-size: 0.75rem; display: flex; align-items: center; gap: 0.4rem; color: var(--muted); }
+    .pillar-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+
+    /* MRR progression bar */
+    .mrr-progression { display: flex; flex-direction: column; gap: 0.75rem; }
+    .mrr-bar-row { display: grid; grid-template-columns: 90px 1fr 80px; gap: 0.75rem; align-items: center; }
+    .mrr-bar-label { font-size: 0.75rem; font-weight: 600; text-align: right; white-space: nowrap; }
+    .mrr-bar-track { height: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; position: relative; }
+    .mrr-bar-fill { height: 100%; border-radius: 5px; display: flex; align-items: center; padding-left: 0.5rem; font-size: 0.68rem; font-weight: 600; color: var(--bg); min-width: 24px; transition: width 0.4s ease; }
+    .mrr-bar-fill.q2 { background: var(--green); }
+    .mrr-bar-fill.q3 { background: var(--amber); }
+    .mrr-bar-fill.q4 { background: var(--blue); }
+    .mrr-bar-fill.q1-27 { background: var(--accent); }
+    .mrr-bar-fill.q2-27 { background: #a78bfa; }
+    .mrr-bar-fill.tbd { background: #3d4a5c; }
+    .mrr-bar-value { font-family: "JetBrains Mono", monospace; font-size: 0.78rem; font-weight: 600; color: var(--accent); }
+    .mrr-bar-accounts { font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; line-height: 1.3; }
+    .mrr-summary-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; padding-top: 0.65rem; border-top: 1px solid var(--border); }
+    .mrr-summary-block { display: flex; flex-direction: column; }
+    .mrr-summary-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .mrr-summary-value { font-family: "JetBrains Mono", monospace; font-size: 0.88rem; font-weight: 700; margin-top: 0.1rem; }
+
+    footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--muted); }
+
+    @media (max-width: 1000px) {
+      .planning-map { grid-template-columns: 1fr; }
+      .column { min-width: 200px; }
+    }
+    @media (max-width: 700px) {
+      .rm-cards { grid-template-columns: 1fr; }
+      .phase-banner { gap: 0.6rem; }
+      .phase-sep { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <header>
+    <h1>Dex Dashboard — Wyzetalk</h1>
+    <p class="sub">Wednesday, 25 March 2026 &nbsp;·&nbsp; Essential launch &nbsp;/&nbsp; client migration &nbsp;/&nbsp; AI in PDLC</p>
+  </header>
+
+  <!-- Tab navigation -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="tasks">Tasks</button>
+    <button class="tab-btn" data-tab="daily">Daily Plan</button>
+    <button class="tab-btn" data-tab="planning">Planning Map</button>
+    <button class="tab-btn" data-tab="roadmap">Roadmap</button>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════
+       TAB 1 — TASKS (Kanban)
+  ════════════════════════════════════════════ -->
+  <div id="tab-tasks" class="tab-panel active">
+    <div class="error" id="err" hidden></div>
+    <div class="toolbar">
+      <span id="toolbarHint" style="color:var(--muted);font-size:0.82rem;">Checking sync…</span>
+      <button type="button" id="btnReset">Reload from disk</button>
+    </div>
+    <p id="toast" class="toast" hidden></p>
+    <details class="explainer" open>
+      <summary>How to read priority rank</summary>
+      <div class="explainer-body">
+        <p><strong>Priority rank</strong> is a number 1–100. Higher = worth doing sooner. Cards within a column are sorted by rank — use it to pick what to pull next without overthinking.</p>
+        <p><strong>Priority band</strong> (P0–P3) is the rough bucket: P0 "drop everything" through P3 "backlog." Drag a card to <strong>In progress</strong> when you actually start it.</p>
+      </div>
+    </details>
+    <div class="kanban" id="kanban" aria-label="Task board"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TAB 2 — DAILY PLAN
+  ════════════════════════════════════════════ -->
+  <div id="tab-daily" class="tab-panel">
+    <div class="toolbar">
+      <span style="color:var(--muted);font-size:0.82rem;">Today — Wednesday 25 March 2026 &nbsp;·&nbsp; Week of 23 Mar</span>
+    </div>
+    <details class="explainer" open>
+      <summary>Today's focus — Week 23 Mar commitments</summary>
+      <div class="explainer-body">
+        <p><strong>Must complete:</strong> Elevated auth follow-through &nbsp;·&nbsp; at least two of: Dependencies filled · ICPs drafted · PRD/AC WhatsApp + payslip kick-off.</p>
+        <p><strong>Should complete:</strong> GTM one-pager skeleton (v0) &nbsp;·&nbsp; Calendar / O365 → Apple Calendar for planning loop.</p>
+        <p><strong>If time permits:</strong> Pipeline → vault hygiene &nbsp;·&nbsp; Note Then-phase candidates for Monday.com (no build commit).</p>
+      </div>
+    </details>
+    <div class="kanban" id="daily-kanban" aria-label="Daily plan board"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TAB 3 — PLANNING MAP
+  ════════════════════════════════════════════ -->
+  <div id="tab-planning" class="tab-panel">
+    <div class="toolbar">
+      <span style="color:var(--muted);font-size:0.82rem;">Hierarchy: Quarter Goals → Week Priorities → Tasks</span>
+    </div>
+
+    <div class="pillar-legend">
+      <div class="pillar-legend-item"><span class="pillar-swatch" style="background:var(--pillar-launch);"></span> New product launch</div>
+      <div class="pillar-legend-item"><span class="pillar-swatch" style="background:var(--pillar-migration);"></span> Client migration</div>
+      <div class="pillar-legend-item"><span class="pillar-swatch" style="background:var(--pillar-ai);"></span> AI in PDLC</div>
+    </div>
+
+    <div class="planning-map">
+
+      <!-- Column 1: Quarter Goals -->
+      <div>
+        <div class="plan-col-header">Quarter Goals <span class="level-badge">L1</span></div>
+
+        <div class="plan-card q1">
+          <div class="plan-card-label" style="color:var(--muted);">Q1 2026 — Closing out</div>
+          <h3>Lock MVP scope + execution readiness</h3>
+          <p>Essential named, GA window set, Requirements tree in vault, migration roadmap imported, ICPs + RACI in flight.</p>
+          <div class="plan-status-row">
+            <span class="plan-status-chip chip-done">Essential named ✓</span>
+            <span class="plan-status-chip chip-done">Requirements ✓</span>
+            <span class="plan-status-chip chip-done">Migration roadmap ✓</span>
+            <span class="plan-status-chip chip-active">ICPs →</span>
+            <span class="plan-status-chip chip-active">RACI →</span>
+          </div>
+        </div>
+
+        <div class="plan-card q2">
+          <div class="plan-card-label" style="color:var(--green);">Q2 2026 — Active quarter</div>
+          <h3>Ship Essential (MVP) + migrate 2–3 clients</h3>
+          <p>GA by end April / early Q2. WhatsApp + payslip in scope or explicitly phased. 2–3 clients through substantive migration in Q2.</p>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;font-weight:600;color:var(--green);margin-top:0.4rem;">Est. MRR: €3,441</div>
+          <div class="plan-status-row">
+            <span class="plan-status-chip chip-todo">GA end-April</span>
+            <span class="plan-status-chip chip-todo">2–3 migrations</span>
+            <span class="plan-status-chip chip-todo">PRD debt post-GA</span>
+            <span class="plan-status-chip chip-todo">Migration machine live</span>
+          </div>
+        </div>
+
+        <div class="plan-card h2">
+          <div class="plan-card-label" style="color:var(--blue);">H2 2026 — Planned</div>
+          <h3>Scale migrations + Then-phase delivery</h3>
+          <p>Q3 incentive switchers (4 accounts) + Q4 SSO/integration wave (6 accounts). Scheduler service → scheduling + celebrations, each gated by Discovery → Design.</p>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;font-weight:600;color:var(--blue);margin-top:0.4rem;">Est. MRR: €44,575 <span style="color:var(--muted);font-weight:400;font-size:0.7rem;">(Q3 €11,767 + Q4 €32,808)</span></div>
+          <div class="plan-status-row">
+            <span class="plan-status-chip chip-todo">Q3 — 4 accounts</span>
+            <span class="plan-status-chip chip-todo">Q4 — 6 accounts</span>
+            <span class="plan-status-chip chip-todo">Scheduler service</span>
+            <span class="plan-status-chip chip-todo">Celebrations</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2: Week Priorities -->
+      <div>
+        <div class="plan-col-header">Week Priorities <span class="level-badge">L2</span></div>
+
+        <div class="plan-card week-launch">
+          <div class="plan-card-label" style="color:var(--pillar-launch);">Priority 1 — Product launch</div>
+          <h3>Unblock April GA</h3>
+          <p>Dependencies + RACI on launch doc. ICPs far enough for GTM one-pager and sales alignment.</p>
+          <div class="plan-status-row"><span class="plan-status-chip chip-active">In flight this week</span></div>
+        </div>
+
+        <div class="plan-card week-launch" style="margin-top:0.1rem;">
+          <div class="plan-card-label" style="color:var(--pillar-launch);">Priority 2 — Product launch</div>
+          <h3>Spec clarity for competitive parity</h3>
+          <p>PRD/AC for WhatsApp + federated payslip / remote app so build and comms don't drift.</p>
+          <div class="plan-status-row"><span class="plan-status-chip chip-todo">Not started</span></div>
+        </div>
+
+        <div class="plan-card week-migration" style="margin-top:0.1rem;">
+          <div class="plan-card-label" style="color:var(--pillar-migration);">Priority 3 — Client migration</div>
+          <h3>Migration readiness (Q2)</h3>
+          <p>Owners per account, cutover criteria, steering cadence — aligned to Q2 target (Nu, KFC, Kauai), not just "end May" calendar.</p>
+          <div class="plan-status-row"><span class="plan-status-chip chip-todo">Not started</span></div>
+        </div>
+      </div>
+
+      <!-- Column 3: Tasks by priority -->
+      <div>
+        <div class="plan-col-header">Tasks <span class="level-badge">L3</span></div>
+
+        <div class="tasks-group-label" style="color:var(--pillar-launch);">→ Unblock April GA</div>
+        <div class="task-mini status-started">
+          <div class="task-mini-title">Essential launch — Dependencies</div>
+          <div class="task-mini-meta">In progress · P2 · task-20260323-003</div>
+        </div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Essential — stakeholder RACI</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-007</div>
+        </div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Essential launch — ICPs</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-002</div>
+        </div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Essential — GTM foundation</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-005</div>
+        </div>
+
+        <div class="tasks-group-label" style="color:var(--pillar-launch);">→ Spec clarity</div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Essential — PRD/AC catch-up</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-006</div>
+        </div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Elevated auth — follow-through</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-008</div>
+        </div>
+
+        <div class="tasks-group-label" style="color:var(--pillar-migration);">→ Migration readiness</div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Essential launch — migration execution</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-001</div>
+        </div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Pipeline data — PowerFlow → vault</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-009</div>
+        </div>
+
+        <div class="tasks-group-label" style="color:var(--pillar-ai);">→ AI in PDLC</div>
+        <div class="task-mini status-started">
+          <div class="task-mini-title">Calendar — O365 via Apple Calendar</div>
+          <div class="task-mini-meta">In progress · P2 · task-20260323-004</div>
+        </div>
+
+        <div class="tasks-group-label" style="color:var(--muted);">→ Done this cycle</div>
+        <div class="task-mini status-done">
+          <div class="task-mini-title">Wyzetalk Essential — scope narrative</div>
+          <div class="task-mini-meta">Done · task-20260319-001</div>
+        </div>
+        <div class="task-mini status-done">
+          <div class="task-mini-title">PRDs in vault</div>
+          <div class="task-mini-meta">Done · task-20260319-002</div>
+        </div>
+      </div>
+
+    </div><!-- /planning-map -->
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TAB 4 — ROADMAP
+  ════════════════════════════════════════════ -->
+  <div id="tab-roadmap" class="tab-panel">
+    <div class="roadmap-wrap">
+
+      <!-- Phase banner -->
+      <div class="phase-banner">
+        <div class="phase-block">
+          <div class="phase-label">Program phase</div>
+          <div class="phase-value">Execution / pre-GA</div>
+        </div>
+        <div class="phase-sep">|</div>
+        <div class="phase-block">
+          <div class="phase-label">GA target</div>
+          <div class="phase-value">Mid-April – May 2026</div>
+        </div>
+        <div class="phase-sep">|</div>
+        <div class="phase-block">
+          <div class="phase-label">Migration kickoff</div>
+          <div class="phase-value">End May 2026</div>
+        </div>
+      </div>
+
+      <!-- MRR quarterly targets -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;">
+        <div class="roadmap-section-title" style="margin-bottom:0.85rem;">Est. platform MRR by quarter — migration targets</div>
+        <div class="mrr-progression">
+          <!-- Q2 2026 -->
+          <div class="mrr-bar-row">
+            <div class="mrr-bar-label" style="color:var(--green);">Q2 2026</div>
+            <div>
+              <div class="mrr-bar-track"><div class="mrr-bar-fill q2" style="width:2.4%;">  </div></div>
+              <div class="mrr-bar-accounts">Nu, KFC, Kauai · Low hanging fruit / pilots · 2–3 clients</div>
+            </div>
+            <div class="mrr-bar-value">€3,441</div>
+          </div>
+          <!-- Q3 2026 -->
+          <div class="mrr-bar-row">
+            <div class="mrr-bar-label" style="color:var(--amber);">Q3 2026</div>
+            <div>
+              <div class="mrr-bar-track"><div class="mrr-bar-fill q3" style="width:8.2%;"></div></div>
+              <div class="mrr-bar-accounts">Toyota, Nord, DebMarine &amp; Namdeb, Cobre Panama · Incentive switchers</div>
+            </div>
+            <div class="mrr-bar-value">€11,767</div>
+          </div>
+          <!-- Q4 2026 -->
+          <div class="mrr-bar-row">
+            <div class="mrr-bar-label" style="color:var(--blue);">Q4 2026</div>
+            <div>
+              <div class="mrr-bar-track"><div class="mrr-bar-fill q4" style="width:23%;"></div></div>
+              <div class="mrr-bar-accounts">Ardagh Glass, Khumani, Ekapa, Black Rock, Jonsson's, Sun International · SSO / integrations</div>
+            </div>
+            <div class="mrr-bar-value">€32,808</div>
+          </div>
+          <!-- Q1 2027 -->
+          <div class="mrr-bar-row">
+            <div class="mrr-bar-label" style="color:var(--accent);">Q1 2027</div>
+            <div>
+              <div class="mrr-bar-track"><div class="mrr-bar-fill q1-27" style="width:42.4%;"></div></div>
+              <div class="mrr-bar-accounts">Food Lover's, Ulwazi, Sibanye-Stillwater, Glencore SA, Harmony, Lactalis, Isuzu, Bidvest</div>
+            </div>
+            <div class="mrr-bar-value">€60,540</div>
+          </div>
+          <!-- Q2 2027 -->
+          <div class="mrr-bar-row">
+            <div class="mrr-bar-label" style="color:#a78bfa;">Q2 2027</div>
+            <div>
+              <div class="mrr-bar-track"><div class="mrr-bar-fill q2-27" style="width:24%;"></div></div>
+              <div class="mrr-bar-accounts">Glencore DRC, Exxaro, Arcelor Mittal, Capricorn, Italtile, Overberg Agri</div>
+            </div>
+            <div class="mrr-bar-value">€34,339</div>
+          </div>
+          <!-- TBD -->
+          <div class="mrr-bar-row">
+            <div class="mrr-bar-label" style="color:var(--muted);">TBD 2027+</div>
+            <div>
+              <div class="mrr-bar-track"><div class="mrr-bar-fill tbd" style="width:49.6%;"></div></div>
+              <div class="mrr-bar-accounts">G4S, CFAO, Anglo American, Valterra, Clover, Rainbow, RCL, Natref, Sasol, Impala · Not pinned</div>
+            </div>
+            <div class="mrr-bar-value" style="color:var(--muted);">€70,895</div>
+          </div>
+
+          <!-- Summary totals -->
+          <div class="mrr-summary-row">
+            <div class="mrr-summary-block">
+              <div class="mrr-summary-label">Q2 target (Now)</div>
+              <div class="mrr-summary-value" style="color:var(--green);">€3,441</div>
+            </div>
+            <div class="mrr-summary-block">
+              <div class="mrr-summary-label">H2 2026 (Q3 + Q4)</div>
+              <div class="mrr-summary-value" style="color:var(--blue);">€44,575</div>
+            </div>
+            <div class="mrr-summary-block">
+              <div class="mrr-summary-label">2027 H1 (Q1 + Q2)</div>
+              <div class="mrr-summary-value" style="color:var(--accent);">€94,879</div>
+            </div>
+            <div class="mrr-summary-block">
+              <div class="mrr-summary-label">Total pinned</div>
+              <div class="mrr-summary-value" style="color:var(--text);">€142,895</div>
+            </div>
+            <div class="mrr-summary-block">
+              <div class="mrr-summary-label">TBD + Likely not</div>
+              <div class="mrr-summary-value" style="color:var(--muted);">€80,625</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Now section -->
+      <div>
+        <div class="roadmap-section-title">Now <span class="phase-chip chip-now">Through Essential GA + Q2</span></div>
+        <div class="rm-cards">
+          <div class="rm-card now">
+            <div class="rm-card-icon">🚀</div>
+            <h3>Essential MVP</h3>
+            <p>GA mid–end April / early Q2. Full Requirements scope + committed WhatsApp + federated remote app / payslip path.</p>
+            <div class="rm-tag">product_launch_mvp</div>
+          </div>
+          <div class="rm-card now">
+            <div class="rm-card-icon">📋</div>
+            <h3>PRDs / AC</h3>
+            <p>Formal specs for WhatsApp + payslips written and agreed immediately alongside / after GA checkpoint. No open-ended "later."</p>
+            <div class="rm-tag">product_launch_mvp</div>
+          </div>
+          <div class="rm-card now">
+            <div class="rm-card-icon">🔄</div>
+            <h3>Client migration (2–3)</h3>
+            <p>Nu, KFC, Kauai on new packaging / cutover in Q2. Reconcile with phasing table + steering before end May kickoff.</p>
+            <div class="rm-tag">client_migration · €3,441 est. MRR</div>
+          </div>
+          <div class="rm-card now">
+            <div class="rm-card-icon">⚙️</div>
+            <h3>Migration operating model</h3>
+            <p>Owners per cohort, cutover criteria, steering cadence — live even if kickoff date flexes slightly vs "end May."</p>
+            <div class="rm-tag">client_migration</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Then section -->
+      <div>
+        <div class="roadmap-section-title">Then <span class="phase-chip chip-then">H2 → end of year</span> <span style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;font-weight:600;color:var(--blue);margin-left:0.5rem;">€44,575 migration MRR target</span></div>
+        <div class="rm-cards">
+          <div class="rm-card then">
+            <div class="rm-card-icon">🔄</div>
+            <h3>Q3 migration wave</h3>
+            <p>Incentive switchers: Toyota, Nord, DebMarine &amp; Namdeb, Cobre Panama. 4 accounts dependent on Essential GA stability + onboarding motion.</p>
+            <div class="rm-tag" style="color:var(--amber);">€11,767 est. MRR · client_migration</div>
+          </div>
+          <div class="rm-card then">
+            <div class="rm-card-icon">🔐</div>
+            <h3>Q4 migration wave</h3>
+            <p>SSO / integrations / feature dependent: Ardagh Glass, Khumani, Ekapa, Black Rock, Jonsson's, Sun International. 6 accounts requiring deeper integration work.</p>
+            <div class="rm-tag" style="color:var(--blue);">€32,808 est. MRR · client_migration</div>
+          </div>
+          <div class="rm-card then">
+            <div class="rm-card-icon">🕐</div>
+            <h3>Scheduler (service)</h3>
+            <p>Platform capability — time-based execution, triggers, reliability. Treated as a service layer, not a standalone "scheduler feature."</p>
+            <div class="rm-tag">Discovery → Design gate required first</div>
+          </div>
+          <div class="rm-card then">
+            <div class="rm-card-icon">📅</div>
+            <h3>Scheduling (product)</h3>
+            <p>Scheduled messages and posts using the scheduler service. Customer-facing capability built on top of the service layer.</p>
+            <div class="rm-tag">Depends on Scheduler service</div>
+          </div>
+          <div class="rm-card then">
+            <div class="rm-card-icon">🎉</div>
+            <h3>Celebrations (product)</h3>
+            <p>Birthdays, long service, work anniversaries — personalised employee moments driven by people data + scheduler + comms surfaces.</p>
+            <div class="rm-tag">Depends on Scheduler service + people data</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Milestones timeline -->
+      <div>
+        <div class="roadmap-section-title">Milestones</div>
+        <div class="milestones">
+          <div class="milestone-row">
+            <div class="ms-date">2026-03-19</div>
+            <div class="ms-dot-col"><div class="ms-dot done"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>Scope locked</strong><span>Full Requirements tree in vault. Wyzetalk Essential named.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">2026-03-23</div>
+            <div class="ms-dot-col"><div class="ms-dot done"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>Design / spec sign-off</strong><span>Done per product sync. Migration roadmap imported.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">Before GA window</div>
+            <div class="ms-dot-col"><div class="ms-dot active"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>Build complete (internal)</strong><span>Align with GA window; track blockers vs milestones in launch doc.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">Mid-Apr – May 2026</div>
+            <div class="ms-dot-col"><div class="ms-dot planned"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>GA / public comms</strong><span>Essential live in market. GTM assets + web narrative + deck ready.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">End May 2026</div>
+            <div class="ms-dot-col"><div class="ms-dot planned"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>Migration kickoff (steering)</strong><span>Q2 cohort: Nu, KFC, Kauai. Owners + cutover criteria + steering forum live. May move earlier if GA lands end-April.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">Q3 2026</div>
+            <div class="ms-dot-col"><div class="ms-dot tbd"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>Incentive-switcher wave</strong><span>Toyota, Nord, DebMarine &amp; Namdeb, Cobre Panama. Est. €11,767 MRR.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">Q4 2026</div>
+            <div class="ms-dot-col"><div class="ms-dot tbd"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>SSO / integrations wave</strong><span>Ardagh Glass, Khumani, Ekapa, Black Rock, Jonsson's Workwear, Sun International. Est. €32,808 MRR.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">2027 Q1–Q2</div>
+            <div class="ms-dot-col"><div class="ms-dot tbd"></div></div>
+            <div class="ms-content"><strong>Partner / SSO continued + Then-phase</strong><span>8 accounts Q1 (€60,540) · 6 accounts Q2 (€34,339). Scheduler + celebrations in delivery or controlled rollout.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Migration phasing table -->
+      <div>
+        <div class="roadmap-section-title">Migration phasing — est. platform MRR (€)</div>
+        <div class="mig-table-wrap">
+          <table class="mig-table">
+            <thead>
+              <tr>
+                <th>Quarter</th>
+                <th>Theme</th>
+                <th>Target accounts</th>
+                <th>Est. MRR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="q2-row">
+                <td class="q-label">2026 Q2 ★</td>
+                <td class="theme-text">Low hanging fruit / pilots</td>
+                <td class="accounts">Nu, KFC, Kauai</td>
+                <td class="mrr">€3,441</td>
+              </tr>
+              <tr>
+                <td class="q-label">2026 Q3</td>
+                <td class="theme-text">Incentive switchers</td>
+                <td class="accounts">Toyota, Nord, DebMarine &amp; Namdeb, Cobre Panama</td>
+                <td class="mrr">€11,767</td>
+              </tr>
+              <tr>
+                <td class="q-label">2026 Q4</td>
+                <td class="theme-text">SSO / integrations / feature dependent / Partner</td>
+                <td class="accounts">Ardagh Glass, Khumani, Ekapa, Black Rock, Jonsson's Workwear, Sun International</td>
+                <td class="mrr">€32,808</td>
+              </tr>
+              <tr>
+                <td class="q-label">2027 Q1</td>
+                <td class="theme-text">SSO / integrations / Partner (continued)</td>
+                <td class="accounts">Food Lover's Market, Ulwazi, Sibanye-Stillwater, Glencore SA, Harmony, Lactalis, Isuzu, Bidvest</td>
+                <td class="mrr">€60,540</td>
+              </tr>
+              <tr>
+                <td class="q-label">2027 Q2</td>
+                <td class="theme-text">SSO / integrations / Partner (continued)</td>
+                <td class="accounts">Glencore DRC, Exxaro, Arcelor Mittal, Capricorn, Italtile, Overberg Agri</td>
+                <td class="mrr">€34,339</td>
+              </tr>
+              <tr class="tbd-row">
+                <td class="q-label">TBD 2027+</td>
+                <td class="theme-text">Integrations / features only available later</td>
+                <td class="accounts">G4S, CFAO, Anglo American, Valterra, Clover, Rainbow, RCL, Natref, Sasol, Impala</td>
+                <td class="mrr">€70,895</td>
+              </tr>
+              <tr class="tbd-row">
+                <td class="q-label">Likely not</td>
+                <td class="theme-text">—</td>
+                <td class="accounts">Woolworths, Volkswagen</td>
+                <td class="mrr">€9,730</td>
+              </tr>
+              <tr class="total-row">
+                <td colspan="3" style="font-size:0.82rem;">Total — pinned quarters (Q2 2026 → Q2 2027)</td>
+                <td class="mrr">€142,895</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:0.72rem;color:var(--muted);margin-top:0.6rem;">★ Active cohort. Figures from migration roadmap slide (Mar 2026) — validate with finance + account owners. TBD and Likely-not buckets excluded from total.</p>
+      </div>
+
+    </div><!-- /roadmap-wrap -->
+  </div>
+
+  <footer>
+    <strong>Tasks server:</strong> <code>python3 workboard_server.py</code> — drag updates <code>work-items.json</code> and <code>03-Tasks/Tasks.md</code> automatically.
+    &nbsp; Offline: <code>python3 -m http.server 8765</code> (localStorage fallback active).
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════════
+     EMBEDDED DATA
+════════════════════════════════════════════ -->
+<script type="application/json" id="embedded-board">
+{"schemaVersion":"1.1.0","title":"Shaun — consolidated work","updated":"2026-03-25","items":[{"id":"task-20260323-003","kind":"task","title":"Essential launch — Dependencies","summary":"Fill Dependencies section on launch doc with named owners: Eng, Design, Legal, CS, integrations.","nextAction":"Ping each function for one line + ticket link per dependency.","priorityBand":"P2","rankScore":68,"status":"in_progress","pillar":"product_launch_mvp","tags":["Essential","launch"],"links":[{"label":"Launch doc","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260323-005","kind":"task","title":"Essential — GTM foundation","summary":"One-pager (problem, buyer, outcome, proof); align marketing + sales on Essential vs future tiers + ICP; outline deck/web narrative before GA.","nextAction":"Draft one-pager skeleton, then schedule alignment with marketing + sales.","priorityBand":"P2","rankScore":67,"status":"todo","pillar":"product_launch_mvp","tags":["GTM","ICP"],"links":[{"label":"Launch doc — Next actions","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260323-002","kind":"task","title":"Essential launch — ICPs","summary":"Add ideal customer profiles to launch narrative and GTM.","nextAction":"List 2–3 ICP segments with pains, buying triggers, and anti-ICP.","priorityBand":"P2","rankScore":66,"status":"todo","pillar":"product_launch_mvp","tags":["ICP","GTM"],"links":[{"label":"Launch doc","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260323-006","kind":"prd","title":"Essential — PRD/AC catch-up","summary":"Fold federated remote app (Air) / PDF payslip path and WhatsApp into formal PRD + acceptance criteria where missing.","nextAction":"Gap-review PRD index vs launch scope; open AC updates per PRD.","priorityBand":"P2","rankScore":65,"status":"todo","pillar":"product_launch_mvp","tags":["PRD","WhatsApp","remote app"],"links":[{"label":"PRD README","href":"06-Resources/PRDs/README.md"},{"label":"Product map","href":"06-Resources/PRDs/PRD_Product_Map.md"}]},{"id":"task-20260323-008","kind":"task","title":"Elevated auth — follow-through","summary":"Workshop core vs remote app split and validation; Tanya docs → Pieter review per elevated auth meeting.","nextAction":"Schedule workshop; track doc handoff to Pieter.","priorityBand":"P2","rankScore":64,"status":"todo","pillar":"product_launch_mvp","tags":["auth","compliance"],"links":[{"label":"Meeting note","href":"00-Inbox/Meetings/2026-03-21 - Elevated auth.md"}]},{"id":"task-20260323-001","kind":"epic","title":"Essential launch — migration execution","summary":"Owners per cohort, cutover criteria, steering cadence — aligned to migration roadmap and end-May kickoff.","nextAction":"Name owner per Q2 pilot account; confirm steering forum.","priorityBand":"P2","rankScore":63,"status":"todo","pillar":"client_migration","tags":["migration","Steerco"],"links":[{"label":"Launch doc — migration","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260323-007","kind":"task","title":"Essential — stakeholder RACI","summary":"Populate stakeholder table on launch doc with wiki links to Internal and External people pages.","nextAction":"Map Steerco + workstream leads into RACI rows.","priorityBand":"P2","rankScore":60,"status":"todo","pillar":"product_launch_mvp","tags":["RACI","people"],"links":[{"label":"Launch doc","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260323-009","kind":"task","title":"Pipeline data — PowerFlow → vault","summary":"Export/sync so pipeline/deals file lands in repo when it changes; define folder, naming, and how you use it for planning.","nextAction":"Pick vault folder + filename; verify PowerFlow trigger.","priorityBand":"P2","rankScore":58,"status":"todo","pillar":"client_migration","tags":["PowerFlow","pipeline"],"links":[]},{"id":"task-20260323-004","kind":"task","title":"Calendar — O365 via Apple Calendar (Dex)","summary":"Confirm work calendar syncs to Calendar.app; run /calendar-setup for fast local daily-plan queries.","nextAction":"If calendar visible in Calendar.app, run calendar-setup script from dex-obsidian/calendar skill.","priorityBand":"P2","rankScore":48,"status":"in_progress","pillar":"ai_pdlc","tags":["Dex","calendar"],"links":[{"label":"Tasks.md","href":"03-Tasks/Tasks.md"}]},{"id":"task-20260323-012","kind":"task","title":"Essential — success metrics + review","summary":"Define adoption, activation, support-load metrics and a review date.","priorityBand":"P3","rankScore":38,"status":"todo","pillar":"product_launch_mvp","tags":["metrics"],"links":[{"label":"Launch doc","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260323-014","kind":"task","title":"Pre-GA — internal build readiness","summary":"Align build complete (internal) with GA window; track blockers vs milestones.","priorityBand":"P3","rankScore":36,"status":"todo","pillar":"product_launch_mvp","tags":["engineering","GA"],"links":[{"label":"Launch milestones","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260323-013","kind":"task","title":"GTM assets — web + deck","summary":"Customer-facing narrative assets for GA milestone (complements one-pager / alignment).","priorityBand":"P3","rankScore":35,"status":"todo","pillar":"product_launch_mvp","tags":["GTM","assets"],"links":[{"label":"Launch doc","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260323-010","kind":"task","title":"Migration roadmap — validate € MRR","summary":"Cross-check est. platform MRR in launch doc with finance and account owners.","priorityBand":"P3","rankScore":34,"status":"todo","pillar":"client_migration","tags":["finance","migration"],"links":[{"label":"Launch doc — MRR table","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260323-011","kind":"task","title":"Beta accounts — confirm before outreach","summary":"G4S / Anglo noted as potential only — confirm before GTM or migration touch.","priorityBand":"P3","rankScore":32,"status":"todo","pillar":"client_migration","tags":["beta","sales"],"links":[{"label":"Launch doc — beta","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260324-001","kind":"prd","title":"PRDs — HR self-service suite","summary":"Payslips (PDF + data-structured), leave balances, work schedules/rosters, HR employee details, vacancies/internal job board.","priorityBand":"P3","rankScore":30,"status":"todo","pillar":"product_launch_mvp","tags":["PRD","HR","payslips"],"links":[{"label":"PRD README","href":"06-Resources/PRDs/README.md"}]},{"id":"task-20260324-004","kind":"task","title":"GTM — Safety-led positioning reframe","summary":"Rewrite GTM narrative from employee app to operational compliance backbone for regulated frontline industries.","priorityBand":"P3","rankScore":28,"status":"todo","pillar":"product_launch_mvp","tags":["GTM","positioning","safety"],"links":[]},{"id":"task-20260319-001","kind":"task","title":"Wyzetalk Essential — scope narrative","summary":"Elevator pitch, GA window, migration kickoff, full Requirements scope — captured on launch doc.","priorityBand":"P2","rankScore":20,"status":"done","pillar":"product_launch_mvp","tags":["Essential"],"links":[{"label":"Launch doc","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260319-002","kind":"task","title":"PRDs in vault","summary":"Requirements tree maintained under 06-Resources/PRDs/.","priorityBand":"P2","rankScore":19,"status":"done","pillar":"product_launch_mvp","tags":["PRD"],"links":[{"label":"PRDs","href":"06-Resources/PRDs/README.md"}]}]}
+</script>
+
+<script type="application/json" id="embedded-daily">
+{"items":[
+  {"id":"daily-001","title":"Elevated auth — follow-through","summary":"Workshop core vs remote app split; Tanya docs → Pieter review path per elevated auth meeting.","nextAction":"Schedule workshop; confirm doc handoff to Pieter.","priorityBand":"MUST","rankScore":90,"status":"todo","pillar":"product_launch_mvp","tags":["auth","Must complete"]},
+  {"id":"daily-002","title":"Fill Dependencies on launch doc","summary":"Named owners per function: Eng, Design, Legal, CS, integrations — in progress from yesterday.","nextAction":"Ping each function for one line + ticket link.","priorityBand":"MUST","rankScore":88,"status":"in_progress","pillar":"product_launch_mvp","tags":["launch","Must complete"]},
+  {"id":"daily-003","title":"ICPs — draft 2–3 segments","summary":"Pains, buying triggers, anti-ICP for the GTM narrative.","nextAction":"List segments; circulate to marketing for alignment.","priorityBand":"MUST","rankScore":86,"status":"todo","pillar":"product_launch_mvp","tags":["ICP","Must complete"]},
+  {"id":"daily-004","title":"GTM one-pager — skeleton (v0)","summary":"Problem, buyer, outcome, proof. Skeleton only today — not a finished doc.","nextAction":"Open blank doc; fill four sections with bullet points.","priorityBand":"SHOULD","rankScore":72,"status":"todo","pillar":"product_launch_mvp","tags":["GTM","Should complete"]},
+  {"id":"daily-005","title":"Calendar — O365 → Apple Calendar","summary":"Confirm work calendar visible in Calendar.app; run /calendar-setup if so.","nextAction":"Check Calendar.app for work events; run skill if present.","priorityBand":"SHOULD","rankScore":70,"status":"in_progress","pillar":"ai_pdlc","tags":["Dex","Should complete"]},
+  {"id":"daily-006","title":"Pipeline → vault hygiene","summary":"Pick vault folder + filename; verify PowerFlow trigger.","nextAction":"Confirm folder; set up sync.","priorityBand":"IF TIME","rankScore":45,"status":"todo","pillar":"client_migration","tags":["PowerFlow","If time"]},
+  {"id":"daily-007","title":"Note Then-phase candidates","summary":"Scheduler, celebrations → Monday.com note only. No build commit until discovery scheduled.","nextAction":"Add one-liner to Monday.com backlog.","priorityBand":"IF TIME","rankScore":40,"status":"todo","pillar":"product_launch_mvp","tags":["roadmap","If time"]}
+]}
+</script>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════ -->
+<script>
+(function () {
+  var STORAGE_KEY  = "dex-workboard-kanban-v1";
+  var DAILY_KEY    = "dex-daily-kanban-v1";
+  var serverSync   = false;
+  var boardState   = null;
+
+  // ── Tab switching ──────────────────────────
+  document.querySelectorAll(".tab-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
+      document.querySelectorAll(".tab-panel").forEach(function (p) { p.classList.remove("active"); });
+      btn.classList.add("active");
+      var panel = document.getElementById("tab-" + btn.dataset.tab);
+      if (panel) panel.classList.add("active");
+    });
+  });
+
+  // ── Storage helpers ────────────────────────
+  function loadOverrides(key) {
+    try { var r = localStorage.getItem(key); return r ? JSON.parse(r) : {}; } catch (e) { return {}; }
+  }
+  function saveOverrides(key, o) {
+    try { localStorage.setItem(key, JSON.stringify(o)); } catch (e) {}
+  }
+
+  // ── Status helpers ─────────────────────────
+  function normalizeStatus(s) {
+    var m = { open: "todo", started: "in_progress", blocked: "on_hold", done: "done",
+              todo: "todo", on_hold: "on_hold", in_progress: "in_progress" };
+    return m[s] || "todo";
+  }
+  function statusLabel(id) {
+    var m = { todo: "To do", on_hold: "On hold", in_progress: "In progress", done: "Done" };
+    return m[id] || id;
+  }
+
+  // ── Toast ──────────────────────────────────
+  function showToast(msg) {
+    var t = document.getElementById("toast");
+    if (!t) return;
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(function () { t.hidden = true; }, 5000);
+  }
+
+  // ── Escape HTML ────────────────────────────
+  function esc(s) {
+    if (!s) return "";
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  // ── Render a card ──────────────────────────
+  function renderCard(item) {
+    var card = document.createElement("article");
+    card.className = "card";
+    card.draggable = true;
+    card.dataset.id = item.id;
+    card.addEventListener("dragstart", function (e) {
+      e.dataTransfer.setData("text/plain", item.id);
+      e.dataTransfer.effectAllowed = "move";
+    });
+
+    var top = document.createElement("div");
+    top.className = "card-top";
+
+    var rank = document.createElement("div");
+    rank.className = "card-rank";
+    rank.innerHTML = item.rankScore + "<span>rank</span>";
+
+    var meta = document.createElement("div");
+    meta.style.cssText = "display:flex;flex-direction:column;align-items:flex-end;gap:0.2rem;";
+
+    var band = document.createElement("span");
+    band.className = "card-status-pill";
+    band.style.cssText = "background:rgba(116,192,252,0.15);color:#91d5ff;";
+    band.textContent = item.priorityBand || "—";
+
+    var stEl = document.createElement("span");
+    stEl.className = "card-status-pill";
+    stEl.style.cssText = "background:rgba(167,139,250,0.15);color:#c4b5fd;";
+    stEl.textContent = statusLabel(normalizeStatus(item.status));
+
+    meta.appendChild(band);
+    meta.appendChild(stEl);
+    top.appendChild(rank);
+    top.appendChild(meta);
+
+    var h3 = document.createElement("h3");
+    h3.textContent = item.title;
+
+    var desc = document.createElement("div");
+    desc.className = "desc";
+    desc.textContent = item.summary || "";
+
+    var btn = document.createElement("button");
+    btn.type = "button"; btn.className = "card-expand"; btn.draggable = false;
+    btn.textContent = "▸ More details";
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var open = card.classList.toggle("open");
+      btn.textContent = open ? "▾ Hide details" : "▸ More details";
+    });
+
+    var det = document.createElement("div");
+    det.className = "card-details";
+
+    if (item.nextAction) {
+      var nx = document.createElement("div");
+      nx.className = "next";
+      nx.innerHTML = "<strong>Next</strong> — " + esc(item.nextAction);
+      det.appendChild(nx);
+    }
+    if (item.tags && item.tags.length) {
+      var tags = document.createElement("div");
+      tags.className = "tags";
+      item.tags.forEach(function (t) {
+        var s = document.createElement("span"); s.className = "tag"; s.textContent = t;
+        tags.appendChild(s);
+      });
+      det.appendChild(tags);
+    }
+    if (item.links && item.links.length) {
+      var links = document.createElement("div");
+      links.className = "links";
+      item.links.forEach(function (l) {
+        var a = document.createElement("a");
+        a.href = "#";
+        a.textContent = l.label + " → " + l.href;
+        a.addEventListener("click", function (ev) {
+          ev.preventDefault();
+          navigator.clipboard.writeText(l.href).catch(function () {});
+        });
+        links.appendChild(a);
+      });
+      det.appendChild(links);
+    }
+    var idl = document.createElement("div");
+    idl.className = "card-id";
+    idl.textContent = item.id + (item.pillar ? " · " + item.pillar : "");
+    det.appendChild(idl);
+
+    card.appendChild(top);
+    card.appendChild(h3);
+    card.appendChild(desc);
+    card.appendChild(btn);
+    card.appendChild(det);
+    return card;
+  }
+
+  // ── Build a kanban board in a container ────
+  function buildKanban(containerId, items, storageKey, columns, onDropServer) {
+    var root = document.getElementById(containerId);
+    if (!root) return;
+    root.innerHTML = "";
+
+    var byCol = {};
+    columns.forEach(function (c) { byCol[c.id] = []; });
+    items.forEach(function (item) {
+      var st = normalizeStatus(item.status);
+      if (!byCol[st]) st = columns[0].id;
+      byCol[st].push(item);
+    });
+    Object.keys(byCol).forEach(function (k) {
+      byCol[k].sort(function (a, b) { return b.rankScore - a.rankScore; });
+    });
+
+    // Drag-and-drop (one listener per board)
+    var dndKey = "__dexDnd_" + containerId;
+    if (!window[dndKey]) {
+      window[dndKey] = true;
+      root.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        var col = e.target.closest(".column");
+        root.querySelectorAll(".column").forEach(function (c) {
+          c.classList.toggle("drag-over", c === col);
+        });
+      });
+      root.addEventListener("drop", function (e) {
+        e.preventDefault();
+        root.querySelectorAll(".column").forEach(function (c) { c.classList.remove("drag-over"); });
+        var col = e.target.closest(".column");
+        if (!col) return;
+        var id = e.dataTransfer.getData("text/plain");
+        if (!id) return;
+        var newStatus = col.dataset.status;
+        var ov = loadOverrides(storageKey);
+        ov[id] = newStatus;
+        saveOverrides(storageKey, ov);
+        if (onDropServer) {
+          onDropServer(id, newStatus);
+        } else {
+          buildKanban(containerId, items.map(function (it) {
+            return it.id === id ? Object.assign({}, it, { status: newStatus }) : it;
+          }), storageKey, columns, null);
+        }
+      });
+    }
+
+    columns.forEach(function (col) {
+      var wrap = document.createElement("section");
+      wrap.className = "column";
+      wrap.dataset.status = col.id;
+
+      var head = document.createElement("div");
+      head.className = "column-head";
+      head.innerHTML =
+        '<span class="count">' + byCol[col.id].length + "</span>" +
+        "<h2 style=\"color:" + col.color + "\">" + col.title + "</h2>" +
+        '<div class="hint">' + col.hint + "</div>";
+      wrap.appendChild(head);
+
+      var body = document.createElement("div");
+      body.className = "column-body";
+      byCol[col.id].forEach(function (item) { body.appendChild(renderCard(item)); });
+      wrap.appendChild(body);
+      root.appendChild(wrap);
+    });
+  }
+
+  // ── Tasks board ────────────────────────────
+  var TASK_COLS = [
+    { id: "todo",        title: "To do",       hint: "Queued — not started or waiting.",   color: "var(--col-todo)" },
+    { id: "on_hold",     title: "On hold",      hint: "Blocked or paused.",                 color: "var(--col-hold)" },
+    { id: "in_progress", title: "In progress",  hint: "Actively working on this.",          color: "var(--col-doing)" },
+    { id: "done",        title: "Done",         hint: "Shipped, decided, or closed.",       color: "var(--col-done)" }
+  ];
+
+  function applyOverrides(items, storageKey) {
+    var ov = loadOverrides(storageKey);
+    return items.map(function (item) {
+      return Object.assign({}, item, {
+        status: normalizeStatus(ov[item.id] !== undefined ? ov[item.id] : item.status)
+      });
+    });
+  }
+
+  function loadTasksBoard(cb) {
+    function use(data) {
+      boardState = JSON.parse(JSON.stringify(data));
+      cb(data);
+    }
+    fetch("work-items.json", { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+      .then(function (d) { serverSync = true; use(d); })
+      .catch(function () {
+        serverSync = false;
+        use(JSON.parse(document.getElementById("embedded-board").textContent.trim()));
+      });
+  }
+
+  function renderTasksBoard(data) {
+    var hint = document.getElementById("toolbarHint");
+    if (hint) {
+      hint.textContent = serverSync
+        ? "Connected — each drop saves work-items.json and 03-Tasks/Tasks.md."
+        : "Offline — drag state saved in localStorage. Run: python3 workboard_server.py";
+    }
+
+    var items = applyOverrides(data.items || [], STORAGE_KEY);
+
+    buildKanban("kanban", items, STORAGE_KEY, TASK_COLS, function (id, newStatus) {
+      if (serverSync && boardState) {
+        var it = boardState.items.find(function (x) { return x.id === id; });
+        if (it) it.status = newStatus;
+        fetch("/api/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(boardState)
+        })
+          .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+          .then(function () {
+            showToast("Saved — 03-Tasks/Tasks.md updated.");
+            loadTasksBoard(renderTasksBoard);
+          })
+          .catch(function () {
+            showToast("Server save failed — using offline storage for this move.");
+            loadTasksBoard(renderTasksBoard);
+          });
+      } else {
+        loadTasksBoard(renderTasksBoard);
+      }
+    });
+  }
+
+  document.getElementById("btnReset").addEventListener("click", function () {
+    localStorage.removeItem(STORAGE_KEY);
+    loadTasksBoard(renderTasksBoard);
+  });
+
+  // ── Daily plan board ───────────────────────
+  var DAILY_COLS = [
+    { id: "todo",        title: "To do",       hint: "Today's queued items.",              color: "var(--col-todo)" },
+    { id: "in_progress", title: "In progress",  hint: "Actively working right now.",        color: "var(--col-doing)" },
+    { id: "on_hold",     title: "Blocked",      hint: "Waiting on something to unblock.",   color: "var(--col-hold)" },
+    { id: "done",        title: "Done today",   hint: "Completed in today's session.",      color: "var(--col-done)" }
+  ];
+
+  function loadDailyBoard() {
+    var raw = JSON.parse(document.getElementById("embedded-daily").textContent.trim());
+    var items = applyOverrides(raw.items, DAILY_KEY);
+    buildKanban("daily-kanban", items, DAILY_KEY, DAILY_COLS, function () {
+      loadDailyBoard();
+    });
+  }
+
+  // ── Initialise ─────────────────────────────
+  loadTasksBoard(renderTasksBoard);
+  loadDailyBoard();
+
+}());
+</script>
+</body>
+</html>

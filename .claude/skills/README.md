@@ -223,6 +223,11 @@ Built specifically for personal knowledge management and productivity workflows 
 - `/product-brief` - Generate PRD from ideas
 - `/triage` - Organize inbox and extract tasks *(v1.11: tuned for speed)*
 
+**Product (PM) — installed from `_available/product`:**
+- `/roadmap` - Roadmap review, blockers, alignment with pillars
+- `/feature-decision` - Structured feature prioritisation and documented rationale
+- `/customer-intel` - Synthesise customer feedback themes from the vault
+
 **Market & product intelligence (vault):**
 - `/intelligence-scanning` - New Market_intelligence ingest → daily signal brief
 - `/daily-intelligence-brief` - Synthesize brief from existing ingest (no YouTube fetch)
