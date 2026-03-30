@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.1.0",
   "title": "Shaun — consolidated work",
-  "updated": "2026-03-24",
+  "updated": "2026-03-30",
   "items": [
     {
       "id": "task-20260323-003",
@@ -11,7 +11,7 @@
       "nextAction": "Ping each function for one line + ticket link per dependency.",
       "priorityBand": "P2",
       "rankScore": 68,
-      "status": "in_progress",
+      "status": "done",
       "pillar": "product_launch_mvp",
       "tags": [
         "Essential",
@@ -53,7 +53,7 @@
       "nextAction": "List 2–3 ICP segments with pains, buying triggers, and anti-ICP.",
       "priorityBand": "P2",
       "rankScore": 66,
-      "status": "todo",
+      "status": "done",
       "pillar": "product_launch_mvp",
       "tags": [
         "ICP",
@@ -74,7 +74,7 @@
       "nextAction": "Gap-review PRD index vs launch scope; open AC updates per PRD.",
       "priorityBand": "P2",
       "rankScore": 65,
-      "status": "todo",
+      "status": "done",
       "pillar": "product_launch_mvp",
       "tags": [
         "PRD",
@@ -100,7 +100,7 @@
       "nextAction": "Schedule workshop; track doc handoff to Pieter.",
       "priorityBand": "P2",
       "rankScore": 64,
-      "status": "todo",
+      "status": "done",
       "pillar": "product_launch_mvp",
       "tags": [
         "auth",
@@ -161,7 +161,8 @@
           "label": "Internal people",
           "href": "05-Areas/People/Internal/README.md"
         }
-      ]
+      ],
+      "swimLane": "daily"
     },
     {
       "id": "task-20260323-009",
@@ -188,6 +189,7 @@
       "priorityBand": "P2",
       "rankScore": 48,
       "status": "in_progress",
+      "swimLane": "daily",
       "pillar": "ai_pdlc",
       "tags": [
         "Dex",
@@ -197,105 +199,6 @@
         {
           "label": "Tasks.md",
           "href": "03-Tasks/Tasks.md"
-        }
-      ]
-    },
-    {
-      "id": "task-20260323-012",
-      "kind": "task",
-      "title": "Essential — success metrics + review",
-      "summary": "Define adoption, activation, support-load metrics and a review date.",
-      "priorityBand": "P3",
-      "rankScore": 38,
-      "status": "todo",
-      "pillar": "product_launch_mvp",
-      "tags": [
-        "metrics"
-      ],
-      "links": [
-        {
-          "label": "Launch doc",
-          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
-        }
-      ]
-    },
-    {
-      "id": "task-20260323-014",
-      "kind": "task",
-      "title": "Pre-GA — internal build readiness",
-      "summary": "Align build complete (internal) with GA window; track blockers vs milestones.",
-      "priorityBand": "P3",
-      "rankScore": 36,
-      "status": "todo",
-      "pillar": "product_launch_mvp",
-      "tags": [
-        "engineering",
-        "GA"
-      ],
-      "links": [
-        {
-          "label": "Launch milestones",
-          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
-        }
-      ]
-    },
-    {
-      "id": "task-20260323-013",
-      "kind": "task",
-      "title": "GTM assets — web + deck",
-      "summary": "Customer-facing narrative assets for GA milestone (complements one-pager / alignment).",
-      "priorityBand": "P3",
-      "rankScore": 35,
-      "status": "todo",
-      "pillar": "product_launch_mvp",
-      "tags": [
-        "GTM",
-        "assets"
-      ],
-      "links": [
-        {
-          "label": "Launch doc",
-          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
-        }
-      ]
-    },
-    {
-      "id": "task-20260323-010",
-      "kind": "task",
-      "title": "Migration roadmap — validate € MRR",
-      "summary": "Cross-check est. platform MRR in launch doc with finance and account owners.",
-      "priorityBand": "P3",
-      "rankScore": 34,
-      "status": "todo",
-      "pillar": "client_migration",
-      "tags": [
-        "finance",
-        "migration"
-      ],
-      "links": [
-        {
-          "label": "Launch doc — MRR table",
-          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
-        }
-      ]
-    },
-    {
-      "id": "task-20260323-011",
-      "kind": "task",
-      "title": "Beta accounts — confirm before outreach",
-      "summary": "G4S / Anglo noted as potential only — confirm before GTM or migration touch.",
-      "priorityBand": "P3",
-      "rankScore": 32,
-      "status": "todo",
-      "pillar": "client_migration",
-      "tags": [
-        "beta",
-        "sales"
-      ],
-      "links": [
-        {
-          "label": "Launch doc — beta",
-          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
         }
       ]
     },
@@ -336,6 +239,235 @@
           "href": "06-Resources/PRDs/README.md"
         }
       ]
+    },
+    {
+      "id": "task-20260325-001",
+      "kind": "task",
+      "title": "Bitbucket + MCP for Copilot",
+      "summary": "Connect Bitbucket to the dev workflow; evaluate or stand up an **MCP server** so Copilot (and Dex) can reason over repos, PRs, and code context.",
+      "nextAction": "",
+      "priorityBand": "P3",
+      "rankScore": 39,
+      "status": "todo",
+      "pillar": "ai_pdlc",
+      "tags": [],
+      "links": []
+    },
+    {
+      "id": "task-20260325-002",
+      "kind": "task",
+      "title": "Meeting transcripts pipeline",
+      "summary": "Unified path for **all meeting-note transcripts** (sources, storage, and how Dex/Copilot consume them — e.g. vault ingest, MCP, Teams exports). Define scope and tooling.",
+      "nextAction": "",
+      "priorityBand": "P3",
+      "rankScore": 38,
+      "status": "todo",
+      "pillar": "ai_pdlc",
+      "tags": [],
+      "links": []
+    },
+    {
+      "id": "task-20260323-012",
+      "kind": "task",
+      "title": "Essential — success metrics + review",
+      "summary": "Define adoption, activation, support-load metrics and a review date.",
+      "priorityBand": "P3",
+      "rankScore": 38,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "metrics"
+      ],
+      "links": [
+        {
+          "label": "Launch doc",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260325-003",
+      "kind": "task",
+      "title": "BDD mutation testing",
+      "summary": "Introduce or standardise **BDD / mutation testing** in the PDLC (tooling, where it runs, ownership).",
+      "nextAction": "",
+      "priorityBand": "P3",
+      "rankScore": 37,
+      "status": "todo",
+      "pillar": "ai_pdlc",
+      "tags": [],
+      "links": []
+    },
+    {
+      "id": "task-20260324-001",
+      "kind": "task",
+      "title": "PRDs — HR self-service suite",
+      "summary": "Write PRDs for payslips (PDF + data-structured), leave balances, work schedules/rosters, HR employee details, and vacancies/internal job board. ICP table-stakes with zero current specs.",
+      "nextAction": "",
+      "priorityBand": "P3",
+      "rankScore": 36,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [],
+      "links": []
+    },
+    {
+      "id": "task-20260323-014",
+      "kind": "task",
+      "title": "Pre-GA — internal build readiness",
+      "summary": "Align build complete (internal) with GA window; track blockers vs milestones.",
+      "priorityBand": "P3",
+      "rankScore": 36,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "engineering",
+        "GA"
+      ],
+      "links": [
+        {
+          "label": "Launch milestones",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260324-002",
+      "kind": "task",
+      "title": "PRDs — USSD + WhatsApp channels",
+      "summary": "Formal specs for USSD access path (feature-phone users, mining/energy) and WhatsApp channel integration. Both in ICP; WhatsApp is deal-critical (JEM losses).",
+      "nextAction": "",
+      "priorityBand": "P3",
+      "rankScore": 35,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [],
+      "links": []
+    },
+    {
+      "id": "task-20260323-013",
+      "kind": "task",
+      "title": "GTM assets — web + deck",
+      "summary": "Customer-facing narrative assets for GA milestone (complements one-pager / alignment).",
+      "priorityBand": "P3",
+      "rankScore": 35,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [
+        "GTM",
+        "assets"
+      ],
+      "links": [
+        {
+          "label": "Launch doc",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260324-003",
+      "kind": "task",
+      "title": "PRDs — Operational dashboards + Recognition suite",
+      "summary": "Specs for safety dashboards, production dashboards, leaderboards, badges, birthdays, long service. Core ICP use cases with no current PRDs.",
+      "nextAction": "",
+      "priorityBand": "P3",
+      "rankScore": 34,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [],
+      "links": []
+    },
+    {
+      "id": "task-20260323-010",
+      "kind": "task",
+      "title": "Migration roadmap — validate € MRR",
+      "summary": "Cross-check est. platform MRR in launch doc with finance and account owners.",
+      "priorityBand": "P3",
+      "rankScore": 34,
+      "status": "todo",
+      "pillar": "client_migration",
+      "tags": [
+        "finance",
+        "migration"
+      ],
+      "links": [
+        {
+          "label": "Launch doc — MRR table",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260324-004",
+      "kind": "task",
+      "title": "GTM — Safety-led positioning reframe",
+      "summary": "Rewrite GTM narrative from \"employee app\" to \"operational compliance backbone for regulated frontline industries.\" Update one-pager, deck, and web language.",
+      "nextAction": "",
+      "priorityBand": "P3",
+      "rankScore": 33,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [],
+      "links": []
+    },
+    {
+      "id": "task-20260324-005",
+      "kind": "task",
+      "title": "Sales enablement — coexistence story",
+      "summary": "Document \"Essential + Teams/SharePoint/Workplace\" integration narrative. Position as the layer those platforms can't reach (USSD, offline, safety, ops) — not a replacement.",
+      "nextAction": "",
+      "priorityBand": "P3",
+      "rankScore": 32,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [],
+      "links": []
+    },
+    {
+      "id": "task-20260323-011",
+      "kind": "task",
+      "title": "Beta accounts — confirm before outreach",
+      "summary": "G4S / Anglo noted as potential only — confirm before GTM or migration touch.",
+      "priorityBand": "P3",
+      "rankScore": 32,
+      "status": "todo",
+      "pillar": "client_migration",
+      "tags": [
+        "beta",
+        "sales"
+      ],
+      "links": [
+        {
+          "label": "Launch doc — beta",
+          "href": "04-Projects/Wyzetalk_Essential_Launch.md"
+        }
+      ]
+    },
+    {
+      "id": "task-20260324-006",
+      "kind": "task",
+      "title": "ICP enforcement — disqualification criteria",
+      "summary": "Define hard disqualification rules (<2,000 employees; no deskless majority; no safety/compliance driver; outside primary verticals) and add to sales qualification process.",
+      "nextAction": "",
+      "priorityBand": "P3",
+      "rankScore": 31,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [],
+      "links": []
+    },
+    {
+      "id": "task-20260324-007",
+      "kind": "task",
+      "title": "Competitive battle cards — JEM, Staffbase, Beekeeper",
+      "summary": "One-page \"Why Wyzetalk vs X\" for the three most common competitive situations, anchored on regulated-industry depth, SA proof, and USSD/data-light access.",
+      "nextAction": "",
+      "priorityBand": "P3",
+      "rankScore": 30,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [],
+      "links": []
     }
   ]
 }

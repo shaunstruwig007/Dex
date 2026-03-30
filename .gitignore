@@ -21,6 +21,9 @@ node_modules/
 # Logs
 *.log
 
+# Workboard — local PRD snapshots before edit (rollback)
+06-Resources/Dex_System/workboard/prd-backups/
+
 # ============================================
 # User Customizations - Protected from Updates
 # ============================================
@@ -179,6 +182,9 @@ core/tests/fixtures/vault/System/.dex/*
 
 # Market intelligence — local Python venv (transcript scripts)
 .scripts/market-intelligence/.venv/
+
+# Industry research — PDFs live in SharePoint / local mirror only (markdown summaries are tracked)
+06-Resources/Research/**/*.pdf
 
 # Personal experiments
 playground/

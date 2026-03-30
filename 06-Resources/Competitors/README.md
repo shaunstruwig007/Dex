@@ -1,6 +1,6 @@
 # Competitors
 
-**Index:** [COMPETITOR_INDEX.md](./COMPETITOR_INDEX.md)  
+**Index:** [COMPETITOR_INDEX.md](./COMPETITOR_INDEX.md) — includes **secure messenger** pair [Teamwire](./profiles/Teamwire.md) + [Sentiv](./profiles/Sentiv.md) (SA partnership, 2026).  
 **[[Wyzetalk]] positioning:** [WYZETALK_REFERENCE.md](./WYZETALK_REFERENCE.md)  
 **Agent hints:** [CLAUDE.md](./CLAUDE.md)
 

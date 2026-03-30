@@ -11,6 +11,7 @@ Reference material you consult but aren't actively working on.
 - **Intel/** — Legacy path only; use **Market_intelligence** — see [Intel/README.md](./Intel/README.md)
 - **PRDs/** — Product requirements, evidence registers, traceability — see [PRDs/[[README]].md](./PRDs/[[README]].md)
 - **Competitors/** — Competitor index and profiles — see [Competitors/COMPETITOR_INDEX.md](./Competitors/COMPETITOR_INDEX.md)
+- **Research/Industry_research_reports/** — Frontline / deskless PDFs summarized in Markdown; PDFs stay in SharePoint — see [Research/Industry_research_reports/README.md](./Research/Industry_research_reports/README.md)
 
 **Cross-cutting market log:** [Market_and_deal_signals.md](./Market_and_deal_signals.md) · **Source guide (26 sources):** [Market_intelligence_Source_Guide.md](./Market_intelligence_Source_Guide.md)
 

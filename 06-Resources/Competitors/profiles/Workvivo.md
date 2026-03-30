@@ -12,10 +12,10 @@ last_reviewed: 2026-03-20
 - **Category:** Employee experience / social intranet (Workplace / Meta heritage)
 - **Focus:** Culture, engagement, “Frontline Road Trip” style industrial proof points
 
-## Vs [[Wyzetalk]]
+## Vs **Wyzetalk**
 
 - **Overlap:** EX engagement, mobile, community.
-- **Differentiation:** [[Wyzetalk]] on regulated frontline ops, deep mining/energy, safety-first.
+- **Differentiation:** **Wyzetalk** on regulated frontline ops, deep mining/energy, safety-first.
 
 ## Signal log (pointers)
 

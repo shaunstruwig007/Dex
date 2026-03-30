@@ -12,10 +12,10 @@ last_reviewed: 2026-03-20
 - **Category:** Employee app / internal comms for “non-desk” workers
 - **Focus:** EU roots; retail, hospitality, logistics — shared shifts, peer comms
 
-## Vs [[Wyzetalk]]
+## Vs **Wyzetalk**
 
 - **Overlap:** Frontline-first mobile employee app; group-based messaging.
-- **Differentiation:** [[Wyzetalk]] mining/energy/safety stack and enterprise regulated narratives vs Speakap’s traditional EU retail/hospitality strength.
+- **Differentiation:** **Wyzetalk** mining/energy/safety stack and enterprise regulated narratives vs Speakap’s traditional EU retail/hospitality strength.
 
 ## Signal log (pointers)
 

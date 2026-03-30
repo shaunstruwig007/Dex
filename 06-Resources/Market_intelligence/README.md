@@ -15,6 +15,7 @@
 | [ingest/newsletters/](./ingest/newsletters/) | One `.md` per issue |
 | [synthesis/daily/](./synthesis/daily/) | **Signal brief** |
 | [synthesis/Deal_Won_Lost_Analysis_Reference.md](./synthesis/Deal_Won_Lost_Analysis_Reference.md) | **Won/lost reasons** (HubSpot export) — pricing, ghosting, stack, deskless |
+| [../Research/Industry_research_reports/](../Research/Industry_research_reports/) | **Static industry PDFs** → Markdown summaries (SharePoint‑canonical); frontline / deskless |
 | [WORKFLOW.md](./WORKFLOW.md) | Transcript queue, newsletter safety |
 
 **Skills (canonical):** `/intelligence-scanning` · `/daily-intelligence-brief` · `/weekly-market-discovery` — [.claude/skills/intelligence-scanning/SKILL.md](../../.claude/skills/intelligence-scanning/SKILL.md) · [daily-intelligence-brief](../../.claude/skills/daily-intelligence-brief/SKILL.md) · [weekly-market-discovery](../../.claude/skills/weekly-market-discovery/SKILL.md) · [ARCHITECTURE.md](./ARCHITECTURE.md)

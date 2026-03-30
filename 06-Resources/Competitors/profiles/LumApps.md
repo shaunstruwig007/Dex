@@ -12,10 +12,10 @@ last_reviewed: 2026-03-20
 - **Category:** Employee experience / intranet / “employee social intranet”
 - **Focus:** Microsoft 365 / Google Workspace integrations; desk + distributed workforce
 
-## Vs [[Wyzetalk]]
+## Vs **Wyzetalk**
 
 - **Overlap:** Internal comms hub, campaigns, employee journeys, mobile.
-- **Differentiation:** [[Wyzetalk]] frontline/regulated industries (mining, energy), safety digitisation, and emerging-market connectivity patterns vs LumApps’ digital workplace / MS stack strength.
+- **Differentiation:** **Wyzetalk** frontline/regulated industries (mining, energy), safety digitisation, and emerging-market connectivity patterns vs LumApps’ digital workplace / MS stack strength.
 
 ## Signal log (pointers)
 

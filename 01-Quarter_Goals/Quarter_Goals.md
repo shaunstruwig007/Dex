@@ -52,6 +52,11 @@
 - **Tasks:** [03-Tasks/Tasks.md](../03-Tasks/Tasks.md)
 - **Week:** [02-Week_Priorities/Week_Priorities.md](../02-Week_Priorities/Week_Priorities.md)
 
+## Evidence & execution (vault tools)
+
+- **Industry research (ICP / GTM / vertical depth):** [Industry research reports — README](../06-Resources/Research/Industry_research_reports/README.md) · [_INDEX](../06-Resources/Research/Industry_research_reports/_INDEX.md) — deskless/frontline summaries aligned with **mining, energy, manufacturing, logistics, retail**, and **global frontline** reports; use when closing **Q1 ICP/GTM gaps** and when framing **Q2 migrations** (Nu, KFC, Kauai and later cohorts). PDFs stay in SharePoint — vault text is the searchable layer.
+- **Workboard:** [workboard README](../06-Resources/Dex_System/workboard/README.md) execution rhythm — Kanban ↔ **`03-Tasks/Tasks.md`** and **`/daily-plan`** so quarter outcomes don’t drift from daily task state.
+
 ---
 
-*Updated: 2026-03-24 — Q2 migration target (2–3 clients), GA timing, PRD follow-through, Then-phase framing.*
+*Updated: 2026-03-26 — Research hub + workboard cross-links; Q2 migration target (2–3 clients), GA timing, PRD follow-through, Then-phase framing.*

@@ -1,7 +1,7 @@
 # Cross-cutting open questions (multi-PRD)
 
 **Purpose:** Questions that **only appear** when connecting specs — not duplicates of single-PRD “Open Questions” sections.  
-**Companion:** [PRD_Product_Map.md](./PRD_Product_Map.md) · per-feature AC files in this folder.
+**Companion:** [PRD_Product_Map.md](./PRD_Product_Map.md) · per-feature AC files in **[Current/](Current/)**.
 
 **Use:** Backlog / steerco / architecture — **human-owned**.
 

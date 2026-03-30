@@ -8,8 +8,8 @@
 
 ## 🎯 Top 3 This Week
 
-1. **Unblock April GA** — Dependencies + RACI on launch doc; ICPs far enough for GTM one-pager / sales alignment ([[^task-20260323-003]], [[^task-20260323-007]], [[^task-20260323-002]], [[^task-20260323-005]]).
-2. **Spec clarity for competitive parity** — PRD/AC path for **WhatsApp** + **federated payslip / remote app** so build and comms don’t drift ([[^task-20260323-006]]).
+1. **Unblock April GA** — Dependencies + ICPs **done** 2026-03-27; **still open:** RACI ([[^task-20260323-007]]), GTM one-pager ([[^task-20260323-005]]).
+2. **Spec clarity for competitive parity** — PRD/AC for **WhatsApp** + **federated payslip / remote app** **done** ([[^task-20260323-006]]); fold any remaining IA details from 26 Mar payslip session as needed.
 3. **Migration readiness (Q2)** — Migration execution framing: owners, cutover criteria, which **2–3** accounts first — aligned to Q2 target, not only “end May” calendar ([[^task-20260323-001]]).
 
 ---
@@ -18,8 +18,8 @@
 
 ### Must Complete
 
-- [ ] Elevated auth follow-through — workshop / docs / Pieter review path ([[^task-20260323-008]])
-- [ ] At least **two** of: Dependencies filled · ICPs drafted · PRD/AC WhatsApp+payslip kickoff
+- [x] Elevated auth follow-through — workshop / docs / Pieter review path ([[^task-20260323-008]]) — **closed 2026-03-27** (follow-through forum; no recording in vault)
+- [x] At least **two** of: Dependencies filled · ICPs drafted · PRD/AC WhatsApp+payslip kickoff — **all three satisfied 2026-03-27**
 
 ### Should Complete
 

@@ -12,7 +12,7 @@ last_reviewed: YYYY-MM-DD
 - **Category:** e.g. employee app / EX platform / intranet
 - **Focus:** desk vs deskless
 
-## Vs [[Wyzetalk]]
+## Vs **Wyzetalk**
 
 - **Overlap:**
 - **Differentiation:**

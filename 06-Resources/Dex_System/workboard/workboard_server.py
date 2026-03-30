@@ -12,19 +12,23 @@ Requires: no extra deps (stdlib only).
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
-from datetime import date
+from datetime import date, datetime
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 HERE = Path(__file__).resolve().parent
 # workboard -> Dex_System -> 06-Resources -> vault root (Dex)
-VAULT_ROOT = HERE.parent.parent.parent
+VAULT_ROOT = HERE.parent.parent.parent.resolve()
 TASKS_MD = VAULT_ROOT / "03-Tasks" / "Tasks.md"
 WORK_ITEMS = HERE / "work-items.json"
 BUILD_INDEX = HERE / "build_index.py"
+PRD_BACKUP_DIR = HERE / "prd-backups"
+FUTURE_PRD_DIR = VAULT_ROOT / "06-Resources" / "PRDs" / "Future"
+FUTURE_CREATED_MANIFEST = HERE / "future-roadmap-created.json"
 
 TASKS_MD_FOOTER = """---
 
@@ -64,6 +68,131 @@ def status_to_checkbox(st: str) -> str:
         "on_hold": "[b]",
         "done": "[x]",
     }.get(st, "[ ]")
+
+
+def safe_vault_md_path(rel: str) -> Path | None:
+    """Resolve vault-relative path; only `.md` under VAULT_ROOT."""
+    if not rel or not isinstance(rel, str):
+        return None
+    rel = unquote(rel.strip()).lstrip("/").replace("\\", "/")
+    if not rel or ".." in rel.split("/"):
+        return None
+    candidate = (VAULT_ROOT / rel).resolve()
+    try:
+        candidate.relative_to(VAULT_ROOT)
+    except ValueError:
+        return None
+    if not candidate.suffix.lower() == ".md":
+        return None
+    return candidate
+
+
+def backup_prd_file(target: Path) -> Path | None:
+    """Copy current file into prd-backups/ before overwrite. Returns backup path or None."""
+    if not target.is_file():
+        return None
+    PRD_BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    rel = target.relative_to(VAULT_ROOT)
+    safe = str(rel).replace("/", "__")
+    ts = datetime.now().strftime("%Y%m%dT%H%M%S")
+    bak = PRD_BACKUP_DIR / f"{safe}.{ts}.bak"
+    bak.write_bytes(target.read_bytes())
+    return bak
+
+
+def future_md_filename_stem(heading: str) -> str:
+    """Pascal_Snake.md stem from a human title (matches existing Future/*.md style)."""
+    words = re.findall(r"[A-Za-z0-9]+", heading.strip())
+    if not words:
+        return "Future_theme"
+    parts: list[str] = []
+    for w in words[:12]:
+        parts.append(w[0].upper() + w[1:].lower() if len(w) > 1 else w.upper())
+    return "_".join(parts)
+
+
+def unique_future_prd_path(heading: str) -> Path:
+    stem = future_md_filename_stem(heading)
+    candidate = FUTURE_PRD_DIR / f"{stem}.md"
+    if not candidate.is_file():
+        return candidate
+    for i in range(2, 200):
+        alt = FUTURE_PRD_DIR / f"{stem}_{i}.md"
+        if not alt.is_file():
+            return alt
+    return FUTURE_PRD_DIR / f"{stem}_{datetime.now().strftime('%H%M%S')}.md"
+
+
+def build_future_discovery_stub_md(heading: str, description: str, target: Path) -> str:
+    """Match Future discovery PRD shape (hypothesis, scope bullets, related specs, deps, questions)."""
+    rel = str(target.relative_to(VAULT_ROOT)).replace("\\", "/")
+    fname = target.name
+    desc = (description or "").strip()
+    if not desc:
+        desc = "_Working hypothesis to be refined._"
+    return f"""# Discovery — {heading}
+
+> **Status:** Pre-PRD discovery stub · **Phase:** Future (post–Essential GA)  
+> **Doc path:** `{rel}`
+
+## Hypothesis
+
+{desc}
+
+## Scope indicators (to validate)
+
+- _TBD_
+
+## Related specs
+
+- _Add links to [Next/](../Next/) or [Current/](../Current/) PRDs when this theme connects to shipped or stub specs._
+- This theme file: [{fname}](./{fname})
+
+## Dependencies
+
+- _TBD_
+
+## Open questions
+
+- _TBD_
+
+---
+
+*Created via workboard · See [README.md](./README.md) for promote path.*
+"""
+
+
+def load_future_created_manifest() -> dict:
+    if not FUTURE_CREATED_MANIFEST.is_file():
+        return {"schemaVersion": "1.0.0", "items": []}
+    try:
+        data = json.loads(FUTURE_CREATED_MANIFEST.read_text(encoding="utf-8"))
+        if not isinstance(data.get("items"), list):
+            data["items"] = []
+        return data
+    except (json.JSONDecodeError, OSError):
+        return {"schemaVersion": "1.0.0", "items": []}
+
+
+def save_future_created_manifest(data: dict) -> None:
+    FUTURE_CREATED_MANIFEST.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def latest_prd_backup(target: Path) -> Path | None:
+    """Newest backup file for this vault path, or None."""
+    if not PRD_BACKUP_DIR.is_dir():
+        return None
+    rel = target.relative_to(VAULT_ROOT)
+    safe = str(rel).replace("/", "__") + "."
+    candidates = sorted(
+        [p for p in PRD_BACKUP_DIR.iterdir() if p.is_file() and p.name.startswith(safe) and p.suffix == ".bak"],
+        key=lambda p: p.name,
+        reverse=True,
+    )
+    return candidates[0] if candidates else None
 
 
 def render_tasks_md(board: dict) -> str:
@@ -166,10 +295,190 @@ class Handler(SimpleHTTPRequestHandler):
                 ).encode()
             )
             return
+        if parsed.path == "/api/prd":
+            qs = parse_qs(parsed.query or "")
+            rel_raw = (qs.get("path") or [""])[0]
+            vp = safe_vault_md_path(rel_raw)
+            if not vp:
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json")
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(json.dumps({"ok": False, "error": "invalid path"}).encode())
+                return
+            content = ""
+            exists = vp.is_file()
+            if exists:
+                content = vp.read_text(encoding="utf-8", errors="replace")
+            rel_out = str(vp.relative_to(VAULT_ROOT)).replace("\\", "/")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_cors()
+            self.end_headers()
+            self.wfile.write(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "path": rel_out,
+                        "exists": exists,
+                        "content": content,
+                    },
+                    ensure_ascii=False,
+                ).encode("utf-8")
+            )
+            return
+        if parsed.path == "/api/prd/future-created":
+            man = load_future_created_manifest()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_cors()
+            self.end_headers()
+            self.wfile.write(
+                json.dumps({"ok": True, "items": man.get("items") or []}, ensure_ascii=False).encode("utf-8")
+            )
+            return
         return super().do_GET()
 
     def do_POST(self):
-        if urlparse(self.path).path != "/api/save":
+        parsed = urlparse(self.path)
+        if parsed.path == "/api/prd/create":
+            length = int(self.headers.get("Content-Length") or 0)
+            raw = self.rfile.read(length)
+            try:
+                body = json.loads(raw.decode("utf-8"))
+            except json.JSONDecodeError:
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json")
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(json.dumps({"ok": False, "error": "invalid json"}).encode())
+                return
+            heading = (body.get("heading") or "").strip()
+            if not heading:
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json")
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(json.dumps({"ok": False, "error": "heading required"}).encode())
+                return
+            description = (body.get("description") or "").strip()
+            try:
+                FUTURE_PRD_DIR.mkdir(parents=True, exist_ok=True)
+                target = unique_future_prd_path(heading)
+                md = build_future_discovery_stub_md(heading, description, target)
+                target.write_text(md, encoding="utf-8", newline="\n")
+                rel_path = str(target.relative_to(VAULT_ROOT)).replace("\\", "/")
+                roadmap_id = "rm-fut-created-" + str(int(datetime.now().timestamp() * 1000))
+                item = {
+                    "roadmapId": roadmap_id,
+                    "prdPath": rel_path,
+                    "title": heading,
+                    "summary": description,
+                    "createdAt": datetime.now().isoformat(timespec="seconds"),
+                }
+                man = load_future_created_manifest()
+                man.setdefault("items", []).append(item)
+                save_future_created_manifest(man)
+            except (OSError, ValueError) as ex:
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json")
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(json.dumps({"ok": False, "error": str(ex)}).encode())
+                return
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_cors()
+            self.end_headers()
+            self.wfile.write(json.dumps({"ok": True, "path": rel_path, "item": item}, ensure_ascii=False).encode("utf-8"))
+            return
+
+        if parsed.path == "/api/prd/rollback":
+            length = int(self.headers.get("Content-Length") or 0)
+            raw = self.rfile.read(length)
+            try:
+                body = json.loads(raw.decode("utf-8"))
+            except json.JSONDecodeError:
+                body = {}
+            rel = (body.get("path") or "").strip()
+            vp = safe_vault_md_path(rel)
+            if not vp:
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json")
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(json.dumps({"ok": False, "error": "invalid path"}).encode())
+                return
+            bak = latest_prd_backup(vp)
+            if not bak or not bak.is_file():
+                self.send_response(404)
+                self.send_header("Content-Type", "application/json")
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(json.dumps({"ok": False, "error": "no backup"}).encode())
+                return
+            vp.write_bytes(bak.read_bytes())
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_cors()
+            self.end_headers()
+            self.wfile.write(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "path": str(vp.relative_to(VAULT_ROOT)).replace("\\", "/"),
+                        "restoredFrom": bak.name,
+                    },
+                    ensure_ascii=False,
+                ).encode("utf-8")
+            )
+            return
+
+        if parsed.path == "/api/prd":
+            length = int(self.headers.get("Content-Length") or 0)
+            raw = self.rfile.read(length)
+            try:
+                body = json.loads(raw.decode("utf-8"))
+            except json.JSONDecodeError:
+                self.send_response(400)
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(b'{"ok":false,"error":"invalid json"}')
+                return
+            rel = (body.get("path") or "").strip()
+            content = body.get("content")
+            if content is None or not isinstance(content, str):
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json")
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(json.dumps({"ok": False, "error": "missing content"}).encode())
+                return
+            vp = safe_vault_md_path(rel)
+            if not vp:
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json")
+                self.send_cors()
+                self.end_headers()
+                self.wfile.write(json.dumps({"ok": False, "error": "invalid path"}).encode())
+                return
+            vp.parent.mkdir(parents=True, exist_ok=True)
+            if vp.is_file():
+                backup_prd_file(vp)
+            vp.write_text(content, encoding="utf-8", newline="\n")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_cors()
+            self.end_headers()
+            self.wfile.write(
+                json.dumps(
+                    {"ok": True, "path": str(vp.relative_to(VAULT_ROOT)).replace("\\", "/")},
+                    ensure_ascii=False,
+                ).encode("utf-8")
+            )
+            return
+
+        if parsed.path != "/api/save":
             self.send_error(404)
             return
         length = int(self.headers.get("Content-Length") or 0)
@@ -195,6 +504,8 @@ class Handler(SimpleHTTPRequestHandler):
 
         for it in board["items"]:
             it["status"] = normalize_status(it.get("status", "todo"))
+            sl = it.get("swimLane")
+            it["swimLane"] = "daily" if sl == "daily" else "main"
 
         WORK_ITEMS.write_text(
             json.dumps(board, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
@@ -230,6 +541,8 @@ def main():
     print("Kanban + sync: http://%s:%s/" % (host, port))
     print("Writes:", WORK_ITEMS)
     print("Writes:", TASKS_MD)
+    print("PRD API: GET/POST /api/prd, POST /api/prd/rollback, POST /api/prd/create, GET /api/prd/future-created")
+    print("PRD backups:", PRD_BACKUP_DIR, "| Created Future manifest:", FUTURE_CREATED_MANIFEST)
     HTTPServer((host, port), Handler).serve_forever()
 
 

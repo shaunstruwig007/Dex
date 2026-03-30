@@ -21,5 +21,7 @@ These names often appear alongside Staffbase, Beekeeper, etc. on category maps. 
 | Poppulo | `poppulo` |
 | PayMeNow | `paymenow` |
 | JEM HR | `jem` |
+| Sentiv | `sentiv` |
+| Teamwire | `teamwire` |
 
 If your spreadsheet uses different spellings or extra rows, add profiles from [`profiles/_template.md`](../profiles/_template.md) and update [`COMPETITOR_INDEX.md`](../COMPETITOR_INDEX.md).

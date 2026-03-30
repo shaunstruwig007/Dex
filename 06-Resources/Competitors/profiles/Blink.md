@@ -12,10 +12,10 @@ last_reviewed: 2026-03-20
 - **Category:** Internal communications / employee app (often UK-centric positioning)
 - **Focus:** “All-in-one” employee app for frontline and desk workers — feeds, chat, docs, recognition
 
-## Vs [[Wyzetalk]]
+## Vs **Wyzetalk**
 
 - **Overlap:** Mobile IC, frontline inclusion, quick deployment narratives.
-- **Differentiation:** [[Wyzetalk]] regulated / heavy industry (mining, energy), safety & compliance modules, and regional African market depth.
+- **Differentiation:** **Wyzetalk** regulated / heavy industry (mining, energy), safety & compliance modules, and regional African market depth.
 
 ## Signal log (pointers)
 

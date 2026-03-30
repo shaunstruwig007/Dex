@@ -11,6 +11,8 @@ hooks:
   Stop:
     - type: command
       command: "node .claude/hooks/daily-plan-quick-ref.cjs"
+    - type: command
+      command: "node .claude/hooks/daily-plan-workboard.cjs"
 ---
 
 ## Purpose
@@ -513,6 +515,29 @@ Call `track_event` with event_name `daily_plan_completed` and properties:
 - `priorities_count`: number of priorities
 
 This only fires if the user has opted into analytics. No action needed if it returns "analytics_disabled".
+
+---
+
+## Step 9: Workboard — refresh only (no auto-launch)
+
+After the plan is written and usage is tracked, sync **`03-Tasks/Tasks.md` → `work-items.json`** and run **`build_index.py`** so embedded `index.html` stays aligned. The board lives at `06-Resources/Dex_System/workboard/` (see `workboard/README.md`). On the workboard, **Today's focus** is the top swim lane under **Tasks** (not a separate tab); drag tasks between that lane and **All tasks** as needed.
+
+**Does not** start `workboard_server.py` or open the browser.
+
+```bash
+node .claude/hooks/daily-plan-workboard.cjs
+```
+
+Run it from the **vault root** (same directory as `.claude/`).
+
+**When to run it:**
+
+| Environment | Action |
+|-------------|--------|
+| **Claude Code** with Stop hooks enabled (default) | **Do not** run the command in-chat — the **Stop** hook runs it when the turn ends. Tell the user in one line: workboard **data** was refreshed; open **http://127.0.0.1:8765/** manually if they use the server. |
+| **No Stop hooks** (e.g. some Cursor sessions) | Run the command **once** after Step 8. |
+
+**Graceful degradation:** If the script exits with an error or `workboard/` is missing, skip without blocking the plan.
 
 ---
 

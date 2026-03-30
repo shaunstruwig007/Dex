@@ -12,10 +12,10 @@ last_reviewed: 2026-03-20
 - **Category:** Frontline employee app
 - **Focus:** Often compared with Staffbase in EU / RFP triangulation
 
-## Vs [[Wyzetalk]]
+## Vs **Wyzetalk**
 
 - **Overlap:** Frontline-first mobile comms.
-- **Differentiation:** [[Wyzetalk]] sector depth (mining/energy), compliance/safety modules, enterprise scale patterns.
+- **Differentiation:** **Wyzetalk** sector depth (mining/energy), compliance/safety modules, enterprise scale patterns.
 
 ## Signal log (pointers)
 

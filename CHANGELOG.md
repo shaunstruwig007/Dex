@@ -7,6 +7,126 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.18.19] — Workboard: Page Builder copy + Future roadmap + Then↔Future drag (2026-03-30)
+
+**Roadmap:** **Future phase** is a **collapsible** block **below Then** (above Milestones). **Then** and **Future** share **draggable** cards — move items between phases for prioritisation (**Now** stays fixed). Order persisted in **`localStorage`** (`dex-roadmap-then-future-v2`). **Future** lists **every `PRDs/Future/*.md` theme** (index + `Discovery_backlog` + one card per theme file). **Page Builder** copy + **`Page_Builder.md`** + **`pdlc-doc-items.json`** as before.
+
+**What you need to do:** **`python3 sync_tasks_to_workboard.py`** then **`python3 build_index.py`** in **`06-Resources/Dex_System/workboard/`** when **`Tasks.md`** changes without the server.
+
+---
+
+## [1.18.18] — Workboard: swim lanes, roadmap MRR placement, PDLC doc tab (2026-03-26)
+
+**Tasks:** Merged **Daily plan** into **Tasks** — **Today's focus** swim lane on top and **All tasks** below; same four columns in each lane; cards drag **between lanes** and **across columns**. Persisted as `swimLane` (`daily` / `main`) in **`work-items.json`** when using **`workboard_server.py`**.
+
+**Roadmap:** **Est. platform MRR** bar chart moved **below Milestones** and **above** the migration phasing **table**. Bars use **Now** (green) vs **Then** (blue). Milestones **Q3+Q4 2026** condensed to **H2 2026 (Then)**; **2027 Q1+Q2** labelled **H2 2027 (Then)**.
+
+**PDLC doc process:** Replaced **Pipeline** tab with **PDLC doc process** — four stages **Discovery · Design · Develop · Deploy**; draggable cards; **`pdlc-doc-items.json`** + embedded JSON; **`localStorage`** (`dex-pdlc-doc-v1`) for stage moves. Footer note: future **orchestration** on stage change is optional.
+
+**What you need to do:** Run **`python3 build_index.py`** in **`06-Resources/Dex_System/workboard/`** after editing **`pdlc-doc-items.json`** or the template. Re-run after **`/daily-plan`** sync as usual.
+
+**Docs:** **`workboard/README.md`** tabs table matches the new layout; **`/daily-plan`** skill Step 9 notes **Today's focus** lives in the **Tasks** swim lane.
+
+---
+
+## [1.18.17] — PRDs: Current / Next / Then / Future layout (2026-03-26)
+
+**Changed:** **`06-Resources/PRDs/`** now uses four feature folders — **`Current/`** (Wyzetalk Essential PRDs + acceptance criteria), **`Next/`** (specified post-GA stubs: SSO, Elevated Auth, scheduled content & messaging, Smart HR, analytics, Explorer, Page Builder, templates), **`Then/`** (README for discovery → design → dev pipeline before a spec joins **Current**), **`Future/`** (pre-PRD theme stubs; renamed from **`discoveries/`**). Cross-cutting files (**product map**, **evidence**, **cross-cutting questions**) stay at **`PRDs/`** root. **`PRDs/README.md`**, **`PRD_Product_Map.md`**, **`Evidence_register.md`**, and internal links were updated for **`Current/`** paths.
+
+**What you need to do:** Link Essential specs from **`Current/`**; use **`Then/`** when a theme leaves exploration; move shipped Next work into **`Current/`** and refresh **`README.md`**.
+
+---
+
+## [1.18.16] — PRDs: Next discovery stubs folder (2026-03-26)
+
+**Added:** **`06-Resources/PRDs/Next/discoveries/`** — one markdown stub per pre-PRD theme (AI assistant, employee chat, notification prefs, IT self-service, onboarding, file manager, localization, polls, forms, billing self-serve, security deep dive, moderation/mentions/celebrations, in-app feedback, rewards, org calendar, shift/roster, feed stance, Page Builder streams). Index: **`discoveries/README.md`**.
+
+**Changed:** **`Next/Discovery_backlog.md`** is now a **short hub** pointing at **`discoveries/`** instead of inline prose for every theme. **`Next/README.md`**, **`PRDs/README.md`**, and **`WhatsApp_Smart_HR.md`** links updated accordingly.
+
+**What you need to do:** Edit the theme file under **`discoveries/`**; when a theme becomes a formal Next PRD, follow the promote steps in **`discoveries/README.md`**.
+
+---
+
+## [1.18.15] — PRDs: Next-phase discovery backlog (2026-03-28)
+
+**Added:** **`06-Resources/PRDs/Next/Discovery_backlog.md`** — pre-PRD themes (AI assistant + chat, notification preferences, IT self-service, onboarding, file manager, dynamic i18n, polls, forms, billing, security deep dive, moderation + mentions + celebrations, in-app feedback, rewards & recognition, org calendar, roster integrations, social feed evolution, Page Builder streams TBD). Linked from **`PRDs/README.md`** and **`Next/README.md`**. **`WhatsApp_Smart_HR.md`** nudged toward policy-grounded answers and the backlog.
+
+**What you need to do:** When discovery starts, promote items from the backlog into **`Next/*.md`** stubs per **Next/README** merge guidance.
+
+---
+
+## [1.18.14] — Daily plan: workboard refresh without auto-opening browser (2026-03-26)
+
+**Before:** The **`daily-plan-workboard.cjs`** Stop hook synced the workboard, could start **`workboard_server.py`**, and **`open`**’d **http://127.0.0.1:8765/** after **`/daily-plan`**.
+
+**Now:** The hook only runs **`sync_tasks_to_workboard.py`** + **`build_index.py`**. **No** server spawn and **no** browser launch — open the board manually when you want it.
+
+**What you need to do:** If you rely on the UI, run **`python3 workboard_server.py`** (or your LaunchAgent) and open **http://127.0.0.1:8765/** yourself.
+
+---
+
+## [1.18.13] — Work dashboard: tabs (Kanban, daily, cascade, Exco) + pillar colours (2026-03-26)
+
+**Before:** Planning panels and the Kanban board were on one long page, and there was no dedicated **Exco-ready** program view.
+
+**Now:** The workboard uses **four tabs**: **Tasks · Kanban** (all cards); **Daily plan** (latest `07-Archives/Plans` brief, **Today’s focus** checkboxes tied to task ids, and the **same** Kanban); **Plan cascade** (quarter outcomes → week Top 3 → task chips, **pillar-coloured** from `System/pillars.yaml`); **Roadmap · Exco** (Essential elevator pitch, **milestone timeline**, migration program, Now/Then). **`index.template.html`** is the editable UI; **`build_index.py`** merges **`work-items.json`** + **`build_dashboard_context`** into **`index.html`**. Any drag or focus checkbox uses the same **`POST /api/save`** path as before.
+
+**What you need to do:** After UI edits, run **`python3 build_index.py`** from `workboard/`. Keep **`workboard_server.py`** running for vault writes.
+
+---
+
+## [1.18.12] — Work dashboard: quarter, week, roadmap, daily plan + Kanban (2026-03-26)
+
+**Before:** The workboard UI was **Kanban-only**, so the quarter → week → task ladder was easy to lose while dragging cards.
+
+**Now:** The same URL embeds **planning context** above the board: **Q1 outcomes** from `01-Quarter_Goals/Quarter_Goals.md`, **this week’s Top 3** from `02-Week_Priorities/Week_Priorities.md` with **`[[^task-…]]` chips** that jump to the matching card, **Q2 roadmap** goals plus Essential launch / Now–Then links, and the latest **`07-Archives/Plans/*.md` TL;DR**. Regenerates whenever **`build_index.py`** runs (after **`sync_tasks_to_workboard.py`** or saving from **`workboard_server.py`**).
+
+**What you need to do:** Refresh **http://127.0.0.1:8765/**. Run **`/daily-plan`** so **`07-Archives/Plans/`** stays current for the daily panel. Optional: **`python3 build_dashboard_context.py`** in `workboard/` writes **`dashboard-context.json`** for inspection.
+
+---
+
+## [1.18.11] — Competitor profiles: **Wyzetalk** prose + Sentiv frontmatter (2026-03-27)
+
+**Vs** sections in **`06-Resources/Competitors/profiles/`** now use bold **Wyzetalk** instead of vault **`[[Wyzetalk]]`** links for readable exports and PDFs. **`Sentiv.md`** frontmatter restored to valid YAML (was corrupted).
+
+**What you need to do:** Nothing — Obsidian wiki-links to **Wyzetalk** elsewhere in the vault are unchanged.
+
+---
+
+## [1.18.10] — Competitors: Sentiv + Teamwire (2026-03-27)
+
+**New profiles:** **[Sentiv](06-Resources/Competitors/profiles/Sentiv.md)** (mission-critical comms, ex–**Altron Nexus** MBO May 2025) and **[Teamwire](06-Resources/Competitors/profiles/Teamwire.md)** (EU **secure business messenger**) with **SA partnership** surfaced on **[LinkedIn](https://www.linkedin.com/feed/update/urn:li:activity:7440477679377817601)**. Indexed in **[COMPETITOR_INDEX.md](06-Resources/Competitors/COMPETITOR_INDEX.md)**; **`EV-2026-03-006`** in **[Evidence_register.md](06-Resources/PRDs/Evidence_register.md)**; signal row in **[Market_and_deal_signals.md](06-Resources/Market_and_deal_signals.md)**.
+
+**What you need to do:** Use profiles for **government / EMS / municipal / critical-infra** RFPs where **governed messaging** is bundled separately from **employee EX**.
+
+---
+
+## [1.18.9] — Industry research vault summaries (2026-03-26)
+
+**Frontline / deskless PDFs** from your **`Industry research reports`** tree are now **partially extracted into Markdown** under **`06-Resources/Research/Industry_research_reports/summaries/`**, with **`_INDEX.md`**, **`README.md`**, and **`source_pdf`** paths that **keep the same filenames and folders** for a future SharePoint MCP. **PDFs are not in git** (`.gitignore`); canonical files stay in SharePoint. Ingest script: **`.scripts/research-ingest/extract_industry_reports.py`** (`pypdf`).
+
+**What you need to do:** Re-run the script when you add PDFs. Link summaries from **`03-Tasks/Tasks.md`** or planning notes when a task depends on that evidence.
+
+---
+
+## [1.18.8] — Workboard two-way sync + optional always-on server (2026-03-26)
+
+**Vault → board:** New script **`06-Resources/Dex_System/workboard/sync_tasks_to_workboard.py`** merges **`03-Tasks/Tasks.md`** (lines with `[[^task-…]]`) into **`work-items.json`**, preserves rich fields on existing cards, then runs **`build_index.py`**. **`daily-plan-workboard.cjs`** runs this before embedding HTML so **`/daily-plan`** picks up assistant/task changes without opening the board first.
+
+**macOS:** **`com.dex.workboard.plist.example`** documents a LaunchAgent so **`workboard_server.py`** can run at login (bookmark **http://127.0.0.1:8765/** — no daily terminal step).
+
+**What you need to do:** After editing tasks only in chat, run `python3 sync_tasks_to_workboard.py` from `workboard/` (or run **`/daily-plan`**). For “always on,” install the LaunchAgent once per README.
+
+---
+
+## [1.18.7] — Daily plan opens workboard (2026-03-24)
+
+**`/daily-plan`** now ends with the **Kanban workboard**: `build_index.py` refreshes embedded `index.html`, `daily-plan-workboard.cjs` (Stop hook) starts `workboard_server.py` if port 8765 is free, and opens **http://127.0.0.1:8765/**. The skill also documents **Step 9** so the assistant runs the same refresh when hooks are not used.
+
+**What you need to do:** Nothing extra — finish `/daily-plan` as usual; the board opens after the plan. If you already keep the server running, only the URL opens again.
+
+---
+
 ## [1.18.6] — Fork docs + repo hygiene (2026-03-25)
 
 **Fork clarity:** Added **[FORK_MAINTENANCE.md](FORK_MAINTENANCE.md)** (remotes, `upstream/release` merges, what stays local) and a short pointer from **[README.md](README.md)**. **[06-Resources/README.md](06-Resources/README.md)** now links the legacy **Intel/** path; **[00-Inbox/Daily_Plans/README.md](00-Inbox/Daily_Plans/README.md)** points canonical `/daily-plan` output to **`07-Archives/Plans/`**. **`.gitignore`** ignores `.scripts/market-intelligence/.venv/`.
