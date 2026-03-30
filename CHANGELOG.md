@@ -7,6 +7,25 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.19.0] — Semantic Search Now Covers Your Entire Vault (2026-03-23)
+
+### 🔍 Semantic Search Now Covers Your Entire Vault
+
+**Before:** Smart search only covered 6 folders — meetings, people, projects,
+accounts, tasks, and goals. Finding anything in your PRDs, plans, or session
+learnings required remembering exact keywords.
+
+**Now:** Semantic search covers 14 collections across your whole vault.
+PRDs, implementation plans, session learnings, and resource docs are all
+searchable by meaning.
+
+**Result:** Ask "what did we decide about notifications?" or "find past work
+on MCP integration" — Dex finds the right content wherever it lives.
+
+**To pick up new collections:** Run `/enable-semantic-search`.
+
+---
+
 ## [1.18.19] — Workboard: Page Builder copy + Future roadmap + Then↔Future drag (2026-03-30)
 
 **Roadmap:** **Future phase** is a **collapsible** block **below Then** (above Milestones). **Then** and **Future** share **draggable** cards — move items between phases for prioritisation (**Now** stays fixed). Order persisted in **`localStorage`** (`dex-roadmap-then-future-v2`). **Future** lists **every `PRDs/Future/*.md` theme** (index + `Discovery_backlog` + one card per theme file). **Page Builder** copy + **`Page_Builder.md`** + **`pdlc-doc-items.json`** as before.
@@ -162,6 +181,33 @@ Market workflows lived only under `.agents/skills/`, so `/intelligence-scanning`
 * `06-Resources/Market_intelligence/ARCHITECTURE.md` documents the flow (mermaid) and known gaps.
 
 **What you need to do:** Use `/intelligence-scanning`, `/daily-intelligence-brief`, and `/weekly-market-discovery` like any other skill; optional: read `06-Resources/Market_intelligence/ARCHITECTURE.md`.
+
+---
+
+## Dex core (merged with this update) — Fix Python install + Atlassian MCP (2026-03-21)
+
+**Python/pip fix (affects most macOS users with Homebrew):**
+
+`install.sh` and `/dex-update` used `pip3` to install Python helpers, which fails on modern Macs with Homebrew Python (and recent Linux) due to a Python safety rule called PEP 668 — the system refuses direct pip installs. The `--user` fallback also fails in many setups.
+
+Dex now creates a private sandboxed Python environment (`.venv/`) inside your vault folder and installs all dependencies there. This works on all platforms and never touches your system Python.
+
+**What changed:**
+* `install.sh` creates `.venv/` and installs deps via the venv pip — no more PEP 668 errors
+* `.mcp.json` now points MCP servers to the venv Python instead of system `python3`
+* `/dex-update` uses the venv pip when updating dependencies, creating the venv first if upgrading from an older Dex install
+* Windows path handled automatically (`.venv/Scripts/python.exe`)
+
+**Atlassian MCP fix:**
+
+`/atlassian-setup` and `.mcp.json.example` referenced `@anthropic/atlassian-mcp` — a package that doesn't exist on npm. Atlassian's official MCP is a remote server, not an npm package.
+
+**What changed:**
+* Atlassian MCP config now uses `mcp-remote@latest` pointing to `https://mcp.atlassian.com/v1/sse`
+* No credentials needed in the config — authentication is handled via the OAuth browser flow
+
+**What you need to do:** Run `/dex-update` to get these fixes. If your install previously failed on the Python step, run `./install.sh` again.
+
 
 ---
 
@@ -467,7 +513,7 @@ This is powered by [QMD](https://github.com/tobi/qmd), an open-source local sear
 
 > "I think QMD is one of my finest tools. I use it every day because it's the foundation of all the other tools I build for myself. A local search engine that lives and executes entirely on your computer. Both for you and agents." — [Tobi Lütke](https://x.com/tobi/status/2013217570912919575)
 
-**This is optional.** It requires downloading AI models (~2GB) that run locally on your machine. No API keys, no cloud services. Run `/enable-semantic-search` when you're ready — or skip it entirely.
+**Setup required.** Semantic search is available but requires running `/enable-semantic-search` to set it up (5 min, 2.5GB download). New users are offered this during onboarding. Once enabled, all vault searches automatically use semantic matching instead of keyword-only — skills don't change, the AI routing layer gets smarter and uses QMD when available.
 
 **What gets better when you enable it:**
 
