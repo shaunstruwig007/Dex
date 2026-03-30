@@ -6,6 +6,28 @@
 
 **Phase:** Next (post-Essential GA) — not in scope for Essential launch.
 
+*Updated: 2026-03-30 — [[00-Inbox/Meetings/2026-03-30 - Post Launch Priorities Essential|Post-launch priorities 2026-03-30]]*
+
+---
+
+## Strategic reframe (2026-03-30)
+
+> **Important clarification from Leon (CTO), 2026-03-30:**
+
+SSO has been repositioned. The two use cases are now treated with different urgency:
+
+| Use case | Priority | Notes |
+|----------|----------|-------|
+| **Blue ↔ remote app authenticated handoff** | **Higher** — required for Remote App Extensions (#4 priority) | Core requirement: securely pass an authenticated user record from Blue to a client-owned remote app (payslips, leave, roster). This is NOT necessarily external IdP/SAML. |
+| **External IdP federation (Azure AD, Okta, Google)** | **Lower** — migration enabler for Q4 2026+ cohorts | Still needed for the €93K MRR migration cohort, but not a primary new-sales procurement blocker as previously positioned. |
+
+**What this means for the PRD:**
+- The core near-term requirement is the authenticated session handoff between Blue and remote apps — closer to elevated auth / token-passing than full SAML federation.
+- Full external IdP/SAML is still in scope but is primarily a **migration enabler** (Q4 2026 cohorts), not a new-deal unlock.
+- Discovery workshops (week 2–3 April) should clarify the exact technical boundary between elevated auth (remote app) and SSO (external IdP).
+
+**Relationship to Elevated Auth PRD:** See [Elevated_Auth_Remote_App.md](./Elevated_Auth_Remote_App.md) — elevated auth handles step-up for remote apps and may satisfy the near-term Blue↔remote app handoff requirement without full SAML/OIDC.
+
 **Related PRDs (Essential / Current):** [Login_Account_Activation.md](../Current/Login_Account_Activation.md) (extends — SSO replaces OTP for configured users), [Tenant_Management.md](../Current/Tenant_Management.md) (IdP config added here), [User_Importer.md](../Current/User_Importer.md) (JIT provisioning vs pre-import), [Profile_Users.md](../Current/Profile_Users.md) (attribute mapping to user record). **Integration map:** [PRD_Product_Map.md](../PRD_Product_Map.md).
 
 ---
@@ -14,9 +36,11 @@
 
 | ID | Relevance |
 |----|-----------|
-| [EV-2026-03-001](../Evidence_register.md) | Deal loss analysis: 18 deals lost citing technical requirements / integrations / SSO as blocker. IT/security procurement gates not met. |
+| [EV-2026-03-001](../Evidence_register.md) | Deal loss analysis: **18 deals tagged with technical / integration fit as a loss theme** (keyword-derived from HubSpot free-text fields). 3 explicitly cite "not complying to technical requirements" in the structured HubSpot field. Full named list pending extraction from source spreadsheet. IT/security procurement gates not met. ⚠️ **Under validation** — see note below. |
 | [EV-2026-03-003](../Evidence_register.md) | Humand $66M Series A — enterprise-tier competitors investing in identity and integration depth signals that SSO is becoming table stakes in this category. |
 | Migration roadmap Q4 2026 – Q1 2027 cohort | €93,348 MRR (Ardagh Glass, Khumani, Ekapa, Black Rock, Jonsson's, Sun International, Food Lover's, Ulwazi, Sibanye-Stillwater, Glencore SA, Harmony, Lactalis, Isuzu, Bidvest) explicitly tagged as SSO/integrations dependent. Slipping these cohorts delays cost recovery on legacy infra. |
+
+> ⚠️ **18-deal figure — under validation (2026-03-30):** Merel challenged the accuracy of this figure in the 2026-03-30 leadership session — inconsistencies noted with her board summaries and sales knowledge. The figure is **keyword-derived from HubSpot free-text fields** and may not accurately reflect SSO as a true procurement blocker. **Do not use this figure in any external narrative or sales deck until validated.** Shaun to interview Tafadzwa, Isma'eel, and Michelle to confirm whether SSO was an explicit procurement blocker in specific named lost deals. Also: review full lost deal Excel for named list.
 
 ---
 
@@ -26,7 +50,7 @@ Enterprise and mid-market accounts in regulated industries (mining, manufacturin
 
 The current [[Wyzetalk]] OTP model (SMS to phone number) fails this bar in two ways:
 
-1. **Procurement blocker** — IT / security teams reject apps that don't support SAML or OIDC during RFP evaluation, before product value is assessed. Eighteen recorded deal losses cite this explicitly.
+1. **Procurement blocker** — IT / security teams reject apps that don't support SAML or OIDC during RFP evaluation, before product value is assessed. 18 deals are tagged with technical / integration fit as a loss theme (keyword-derived); 3 explicitly cite non-compliance with technical requirements in HubSpot's structured field — GoGlobal, Mukuru (functionality gap), and Pepsico USA. Full named list pending extraction from source spreadsheet. ⚠️ *The 18-deal figure is under validation — see Evidence section. Do not use externally until validated.*
 2. **Migration blocker** — The Q4 2026 and Q1 2027 migration cohorts (€93K MRR) are explicitly flagged as SSO/integrations dependent in the Essential migration roadmap. Without SSO, these accounts cannot be migrated on schedule, extending legacy platform costs and delaying revenue.
 
 The OTP model is not wrong — it serves the deskless, low-literacy, unstable-phone-number user well. SSO is an additive layer for the white-collar and management population at the same enterprises who are already on corporate devices with Azure AD accounts.
@@ -35,11 +59,14 @@ The OTP model is not wrong — it serves the deskless, low-literacy, unstable-ph
 
 ## Goals
 
-1. **Unblock €93K MRR migration cohorts** — Q4 2026 and Q1 2027 accounts migrate on schedule without IT/security blockers.
-2. **Pass enterprise IT procurement gates** — SSO on the spec sheet ends the pattern of deals dying before product evaluation.
-3. **Zero disruption to OTP users** — Non-SSO employees in the same tenant continue unchanged on OTP login.
-4. **Self-service IdP setup for tenant admins** — IT admins can configure and test their IdP connection without Wyzetalk engineering involvement.
-5. **Attribute-driven user matching** — SSO assertions map to existing user records via employee ID, reducing duplicate account risk.
+> *Revised priority order per 2026-03-30 reframe. Blue↔remote app handoff is now the primary near-term goal; external IdP federation is secondary (migration-focused).*
+
+1. **Enable Blue ↔ remote app authenticated handoff** — Securely pass authenticated user records from Blue to client-owned remote apps (payslips, leave, roster) without requiring users to re-authenticate. Primary near-term requirement.
+2. **Unblock €93K MRR migration cohorts** — Q4 2026 and Q1 2027 accounts migrate on schedule without IT/security blockers.
+3. **Pass enterprise IT procurement gates** — SSO on the spec sheet ends the pattern of deals dying before product evaluation. *(Impact on new deals to be confirmed via stakeholder interviews — see Evidence.)*
+4. **Zero disruption to OTP users** — Non-SSO employees in the same tenant continue unchanged on OTP login.
+5. **Self-service IdP setup for tenant admins** — IT admins can configure and test their IdP connection without Wyzetalk engineering involvement.
+6. **Attribute-driven user matching** — SSO assertions map to existing user records via employee ID, reducing duplicate account risk.
 
 ---
 

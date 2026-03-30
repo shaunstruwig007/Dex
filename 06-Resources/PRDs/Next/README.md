@@ -24,15 +24,19 @@
 
 ## Next phase scope
 
-| PRD | File | Status | Depends on (Essential) |
-|-----|------|--------|-------------------------|
-| SSO — Enterprise Identity Federation | [SSO.md](./SSO.md) | Draft | Login & Account Activation · Tenant Management |
-| Content — Scheduled & Recurring Publishing | [Scheduled_Content_Extended.md](./Scheduled_Content_Extended.md) | Stub | Posts · Messaging Ops · Communication · Feed |
-| WhatsApp — Smart HR (Conversational) | [WhatsApp_Smart_HR.md](./WhatsApp_Smart_HR.md) | Stub | WhatsApp Channel · Payslip PDF |
-| Elevated Auth — Remote App Integration | [Elevated_Auth_Remote_App.md](./Elevated_Auth_Remote_App.md) | Stub | Login · Tenant Management · Payslip PDF |
-| Product Analytics | [Product_Analytics.md](./Product_Analytics.md) | Stub | Instrumentation across Essential surfaces |
-| Explorer — Category-Based Navigation | [Explorer.md](./Explorer.md) | Stub | Posts · Feed · Page Builder (Next) |
-| Page Builder — Widget-Driven Content | [Page_Builder.md](./Page_Builder.md) | Stub | Posts · Explorer |
+> **Priority order confirmed 2026-03-30** (Leon + Merel). See [Wyzetalk_Essential_Launch.md](../../../04-Projects/Wyzetalk_Essential_Launch.md) and meeting note [[00-Inbox/Meetings/2026-03-30 - Post Launch Priorities Essential|Post-launch priorities 2026-03-30]].
+
+| Priority | PRD | File | Status | Depends on (Essential) |
+|----------|-----|------|--------|-------------------------|
+| **#1** | WhatsApp — Smart HR (Conversational) | [WhatsApp_Smart_HR.md](./WhatsApp_Smart_HR.md) | Active stub | WhatsApp Channel · Payslip PDF |
+| **#2** | AI Assistant — FAQ & HR (tawk.to) | [Future/AI_Assistant_FAQ.md](../Future/AI_Assistant_FAQ.md) | Active stub | WhatsApp Channel |
+| **#3** | Employee Chat | [Future/Employee_Chat_and_Groups.md](../Future/Employee_Chat_and_Groups.md) | Discovery stub | Notifications |
+| **#4** | Remote App Extensions / Elevated Auth | [Elevated_Auth_Remote_App.md](./Elevated_Auth_Remote_App.md) | Stub | Login · Tenant Management · Payslip PDF |
+| **#5** | Product Analytics | [Product_Analytics.md](./Product_Analytics.md) | Stub | Instrumentation across Essential surfaces |
+| **#6** | Content — Scheduled & Recurring Publishing | [Scheduled_Content_Extended.md](./Scheduled_Content_Extended.md) | Stub | Posts · Messaging Ops · Communication · Feed |
+| TBC | SSO — Enterprise Identity Federation | [SSO.md](./SSO.md) | Draft — reframed | Login & Account Activation · Tenant Management |
+| TBC | Explorer — Category-Based Navigation | [Explorer.md](./Explorer.md) | Stub — scope under review | Posts · Feed · Page Builder (Next) |
+| TBC | Page Builder — Widget-Driven Content | [Page_Builder.md](./Page_Builder.md) | Stub | Posts · Explorer |
 
 **Discovery templates**
 
@@ -53,4 +57,4 @@
 
 ---
 
-*Last updated: 2026-03-26*
+*Last updated: 2026-03-30 — Priority order updated from 2026-03-30 leadership session; SSO reframed; Explorer flagged under review*

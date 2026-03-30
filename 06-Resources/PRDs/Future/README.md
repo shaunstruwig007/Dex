@@ -10,8 +10,10 @@
 
 | Theme | File | Notes |
 |-------|------|--------|
-| AI assistant & conversational Q&A | [AI_Assistant_Conversational.md](./AI_Assistant_Conversational.md) | Align with [WhatsApp_Smart_HR.md](../Next/WhatsApp_Smart_HR.md) |
-| Employee chat (1:1 & groups) | [Employee_Chat_and_Groups.md](./Employee_Chat_and_Groups.md) | Same product lane as AI; vs Ops messaging |
+| **AI Assistant — FAQ & HR (rapid, tawk.to)** | [AI_Assistant_FAQ.md](./AI_Assistant_FAQ.md) | **#2 post-GA priority** (2026-03-30). tawk.to, fast ship, WhatsApp + Blue. See [WhatsApp_Smart_HR.md](../Next/WhatsApp_Smart_HR.md) |
+| AI assistant & conversational Q&A (full vision) | [AI_Assistant_Conversational.md](./AI_Assistant_Conversational.md) | Longer-arc vision. Align with [WhatsApp_Smart_HR.md](../Next/WhatsApp_Smart_HR.md) |
+| Employee chat (1:1 & groups) | [Employee_Chat_and_Groups.md](./Employee_Chat_and_Groups.md) | **#3 post-GA priority** (2026-03-30). Same product lane as AI; vs Ops messaging |
+| **Floatpays integration (EWA)** | [Floatpays_Integration.md](./Floatpays_Integration.md) | Discovery workshops needed. 50% revenue share. Leon to lead. Added 2026-03-30. |
 | Product analytics | — | Formal stub: [../Next/Product_Analytics.md](../Next/Product_Analytics.md) |
 | Notification preferences (granular) | [Notification_Preferences_Granular.md](./Notification_Preferences_Granular.md) | |
 | Internal support / IT self-service | [Internal_Support_Self_Service.md](./Internal_Support_Self_Service.md) | |
@@ -41,4 +43,4 @@
 
 ---
 
-*Last updated: 2026-03-26*
+*Last updated: 2026-03-30 — AI_Assistant_FAQ and Floatpays_Integration stubs added; priority annotations from 2026-03-30 leadership session*

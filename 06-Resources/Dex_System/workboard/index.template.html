@@ -525,6 +525,15 @@
     }
     .doc-create-banner[hidden] { display: none !important; }
     .doc-create-banner-label { font-weight: 700; color: var(--accent); }
+    .workboard-restart-banner {
+      margin: 0 0 1rem; padding: 0.85rem 1rem; border-radius: 8px;
+      background: linear-gradient(135deg, rgba(180, 83, 9, 0.2), rgba(220, 38, 38, 0.12));
+      border: 1px solid rgba(251, 191, 36, 0.45); color: var(--fg, #e7e5e4);
+      font-size: 0.92rem; line-height: 1.45;
+    }
+    .workboard-restart-banner[hidden] { display: none !important; }
+    .workboard-restart-banner strong { color: #fcd34d; }
+    .workboard-restart-banner code { font-size: 0.78rem; background: rgba(0,0,0,.2); padding: 0.1rem 0.35rem; border-radius: 4px; }
     .btn-create-doc {
       background: var(--accent-dim); border: 1px solid var(--accent); color: var(--accent);
       font-family: inherit; font-size: 0.78rem; font-weight: 600;
@@ -569,6 +578,14 @@
     <h1>Dex Dashboard — Wyzetalk</h1>
     <p class="sub">Wednesday, 25 March 2026 &nbsp;·&nbsp; Essential launch &nbsp;/&nbsp; client migration &nbsp;/&nbsp; AI in PDLC</p>
   </header>
+
+  <div class="workboard-restart-banner" id="workboard-restart-banner" hidden>
+    <strong>Workboard needs a fresh start.</strong>
+    The app in your browser is running, but the background program is an <em>older version</em> (common after a Dex update).
+    In the Terminal window where the workboard is running, press <strong>Ctrl+C</strong> to stop it.
+    Then double-click <code>Start_Dex_Workboard.command</code> in this folder (or run <code>start_workboard.sh</code>), and refresh this page.
+    <span style="display:block;margin-top:0.5rem;color:var(--muted);font-size:0.8rem;">Folder: <code>06-Resources/Dex_System/workboard/</code></span>
+  </div>
 
   <!-- Tab navigation -->
   <nav class="tab-nav">
@@ -814,6 +831,33 @@
             <p>Owners per cohort, cutover criteria, steering cadence — live even if kickoff date flexes slightly vs "end May."</p>
             <div class="rm-tag">client_migration</div>
           </div>
+          <div class="rm-card now" data-roadmap-id="rm-now-build-test" data-prd-path="04-Projects/Wyzetalk_Essential_Launch.md">
+            <div class="pdlc-badge pdlc-develop">● Build → Test</div>
+            <div class="rm-card-icon">🏗️</div>
+            <h3>Build &amp; Test</h3>
+            <p>Scope locked · designs signed off. <strong>Internal QA + UAT</strong> all of April. GTM assets mid-Apr → May. ⚠️ Testing phase = high capacity pull.</p>
+            <details style="margin:0.45rem 0 0.35rem;">
+              <summary style="font-size:0.7rem;font-weight:600;color:var(--muted);cursor:pointer;user-select:none;list-style:none;">▸ View 15 PRD specs in build</summary>
+              <ul style="margin:0.35rem 0 0 0;padding-left:1.1rem;font-size:0.68rem;color:var(--muted);line-height:1.7;">
+                <li>Requirements</li>
+                <li>Login &amp; Account Activation</li>
+                <li>Tenant Management</li>
+                <li>User Management</li>
+                <li>User Importer</li>
+                <li>Communication</li>
+                <li>Messaging: Ops &amp; Urgent Alerts</li>
+                <li>Notifications</li>
+                <li>Feed</li>
+                <li>Groups</li>
+                <li>Posts</li>
+                <li>Profile: Users</li>
+                <li>Theming</li>
+                <li>Payslip PDF</li>
+                <li>WhatsApp Channel</li>
+              </ul>
+            </details>
+            <div class="rm-tag">product_launch_mvp</div>
+          </div>
         </div>
       </div>
 
@@ -826,7 +870,7 @@
             <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
             <div class="rm-card-icon">🔐</div>
             <h3>SSO — Enterprise Identity</h3>
-            <p>SAML 2.0 + OIDC federation (Azure AD, Okta, Google). Unblocks H2 2026 + H2 2027 migration cohorts. 18 deal losses cite SSO as procurement blocker.</p>
+            <p>SAML 2.0 + OIDC federation (Azure AD, Okta, Google). Unblocks H2 2026 + H2 2027 migration cohorts. 18 deals tagged with technical/integration fit as loss theme (keyword-derived); 3 explicitly cite technical non-compliance in HubSpot.</p>
             <div class="rm-tag" style="color:var(--blue);">€93,348 MRR gated · PRDs/Next/SSO.md</div>
           </div>
           <div class="rm-card then rm-card-roadmap" draggable="true" data-roadmap-id="rm-elevated" data-prd-path="06-Resources/PRDs/Next/Elevated_Auth_Remote_App.md">
@@ -1628,7 +1672,30 @@
     }
     fetch("work-items.json", { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
-      .then(function (d) { serverSync = true; use(d); })
+      .then(function (d) {
+        // work-items.json is served by plain http.server too — APIs need workboard_server.py
+        fetch("/api/health", { cache: "no-store" })
+          .then(function (hr) {
+            if (!hr.ok) throw new Error();
+            return hr.json();
+          })
+          .then(function (h) {
+            serverSync = !!(h && h.ok);
+            var prdReady = !!(h && h.features && h.features.prdCreate === true);
+            var rb = document.getElementById("workboard-restart-banner");
+            if (rb) {
+              rb.hidden = !(serverSync && !prdReady);
+            }
+          })
+          .catch(function () {
+            serverSync = false;
+            var rb = document.getElementById("workboard-restart-banner");
+            if (rb) rb.hidden = true;
+          })
+          .then(function () {
+            use(d);
+          });
+      })
       .catch(function () {
         serverSync = false;
         use(JSON.parse(document.getElementById("embedded-board").textContent.trim()));
@@ -1640,7 +1707,7 @@
     if (hint) {
       hint.textContent = serverSync
         ? "Connected — lane + column drops save work-items.json and Tasks.md."
-        : "Offline — lane/column state in localStorage. Run: python3 workboard_server.py";
+        : "Offline — use workboard_server.py (not python -m http.server). Future PRD create needs the API.";
     }
     buildSwimBoard(data);
   }
@@ -1852,11 +1919,34 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ heading: heading, description: desc })
       })
-        .then(function (r) { return r.json(); })
+        .then(function (r) {
+          return r.text().then(function (t) {
+            var data = null;
+            try {
+              data = t ? JSON.parse(t) : null;
+            } catch (e) {
+              data = null;
+            }
+            if (!r.ok || !data) {
+              var hint =
+                r.status === 404
+                  ? "Wrong server — open http://127.0.0.1:8765/ via workboard_server.py (not python -m http.server)."
+                  : "Server offline? From workboard/: python3 workboard_server.py then reload.";
+              if (msg) {
+                msg.textContent = (data && data.error) ? data.error : hint;
+                msg.style.color = "#ffb4b4";
+              }
+              showToast("Create failed");
+              return null;
+            }
+            return data;
+          });
+        })
         .then(function (data) {
-          if (!data || !data.ok) {
+          if (!data) return;
+          if (!data.ok) {
             if (msg) {
-              msg.textContent = (data && data.error) ? data.error : "Create failed";
+              msg.textContent = data.error ? data.error : "Create failed";
               msg.style.color = "#ffb4b4";
             }
             showToast("Create failed");
@@ -1879,7 +1969,8 @@
         })
         .catch(function () {
           if (msg) {
-            msg.textContent = "Server offline? Run workboard_server.py";
+            msg.textContent =
+              "Cannot reach API — run python3 workboard_server.py from 06-Resources/Dex_System/workboard/ and use http://127.0.0.1:8765/";
             msg.style.color = "#ffb4b4";
           }
           showToast("Create failed");

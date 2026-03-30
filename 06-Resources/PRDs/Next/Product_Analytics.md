@@ -4,7 +4,11 @@
 
 > **Status: Stub** — not yet sized or designed. Placeholder for Next phase scope.
 
-**Phase:** Next (post-Essential GA).
+**Phase:** Next (post-Essential GA). **Priority: #5** in post-GA sequence (confirmed 2026-03-30).
+
+*Updated: 2026-03-30 — [[00-Inbox/Meetings/2026-03-30 - Post Launch Priorities Essential|Post-launch priorities 2026-03-30]]*
+
+> **Key decision (2026-03-30):** Instrument events **at GA**, reporting UI phase 2. The event schema must be designed now — do not wait for the analytics UI to be prioritised. Retrofitting instrumentation after GA is significantly more expensive than building it in from the start.
 
 **Related PRDs (Phase 1):**
 - [Tenant_Management.md](../Current/Tenant_Management.md) — tenant context for analytics segmentation
@@ -75,4 +79,4 @@
 
 ---
 
-*Promote to full PRD when discovery is scheduled. Instrument Phase 1 events early — analytics UI can wait, but the event schema cannot. See [Next/README.md](./README.md) for merge instructions.*
+*Promote to full PRD when discovery is scheduled. **Instrument Phase 1 events at GA — analytics UI can wait, but the event schema cannot.** See [Next/README.md](./README.md) for merge instructions.*

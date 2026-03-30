@@ -1,6 +1,8 @@
 # Work dashboard (tabs · Kanban · vault sync)
 
-Open **`http://127.0.0.1:8765/`** after **`python3 workboard_server.py`**.
+Open **`http://127.0.0.1:8765/`** after starting the server (see below).
+
+**Non-technical / after a Dex update:** If **Create Future PRD** or **Save to vault** fails, the background program is often an **old copy** still running. **Double-click `Start_Dex_Workboard.command`** in this folder (Mac), or run `./start_workboard.sh` — it stops whatever is on port **8765** and starts the **latest** `workboard_server.py`. Then refresh the browser.
 
 ## Tabs
 
@@ -28,7 +30,9 @@ Your **last selected tab** is remembered in `localStorage`.
 | **`work-items.json`** | Kanban data (+ optional `swimLane` per item) |
 | **`pdlc-doc-items.json`** | Seed list for PDLC doc board (embedded into `index.html`) |
 | **`sync_tasks_to_workboard.py`** | `Tasks.md` → JSON |
-| **`workboard_server.py`** | Serves UI + **`/api/save`** |
+| **`workboard_server.py`** | Serves UI + **`/api/save`** + PRD APIs |
+| **`start_workboard.sh`** | Kills port **8765**, then starts **`workboard_server.py`** (use after Dex updates) |
+| **`Start_Dex_Workboard.command`** | macOS: double-click to run **`start_workboard.sh`** |
 
 Optional: **`python3 build_dashboard_context.py`** writes **`dashboard-context.json`** for debugging.
 
@@ -49,6 +53,17 @@ python3 sync_tasks_to_workboard.py
 ---
 
 ## Run the server
+
+**Recommended (restarts cleanly every time):**
+
+```bash
+cd "/path/to/vault/06-Resources/Dex_System/workboard"
+./start_workboard.sh
+```
+
+**Or** double-click **`Start_Dex_Workboard.command`** (macOS).
+
+**Manual:**
 
 ```bash
 cd "/path/to/vault/06-Resources/Dex_System/workboard"

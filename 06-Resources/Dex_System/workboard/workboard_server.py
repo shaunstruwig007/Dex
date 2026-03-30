@@ -291,7 +291,17 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(
                 json.dumps(
-                    {"ok": True, "sync": True, "tasks_md": str(TASKS_MD)}
+                    {
+                        "ok": True,
+                        "sync": True,
+                        "tasks_md": str(TASKS_MD),
+                        # Bump when new POST/GET API routes ship — UI warns if missing (stale long-running process).
+                        "features": {
+                            "prdCreate": True,
+                            "prdSave": True,
+                            "apiRevision": 2,
+                        },
+                    }
                 ).encode()
             )
             return
@@ -543,6 +553,11 @@ def main():
     print("Writes:", TASKS_MD)
     print("PRD API: GET/POST /api/prd, POST /api/prd/rollback, POST /api/prd/create, GET /api/prd/future-created")
     print("PRD backups:", PRD_BACKUP_DIR, "| Created Future manifest:", FUTURE_CREATED_MANIFEST)
+    print(
+        "\n  Tip: After a Dex update, if Future PRDs or Save stop working, Ctrl+C here and\n"
+        "       run ./start_workboard.sh (or double-click Start_Dex_Workboard.command).\n",
+        file=sys.stderr,
+    )
     HTTPServer((host, port), Handler).serve_forever()
 
 

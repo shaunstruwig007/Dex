@@ -3,9 +3,13 @@
 ---
 
 > **Status: Stub** — not yet sized or designed. Placeholder for Next phase scope.
+>
+> ⚠️ **Scope under review (2026-03-30):** Explorer was listed for April discovery workshops but its relative priority vs WhatsApp, AI Assistant, and Remote App Extensions has not been confirmed. Scope and timing to be validated in discovery week 2–3 April. Explorer is NOT in the top-6 confirmed priority order from the 2026-03-30 leadership session.
 
 **Phase:** Next (post-Essential GA).
 **Build path:** Core feature within Essential (use [Template_Feature_Essential.md](./Template_Feature_Essential.md) when promoting to full PRD).
+
+*Updated: 2026-03-30 — [[00-Inbox/Meetings/2026-03-30 - Post Launch Priorities Essential|Post-launch priorities 2026-03-30]]*
 
 **Related PRDs (Phase 1):**
 - [Posts.md](../Current/Posts.md) — Explorer uses the same business category taxonomy as post creation; content displayed in Explorer is authored via Posts
@@ -97,4 +101,21 @@ A tenant can build an "Onboarding Guide" page in Page Builder → categorise it 
 
 ---
 
-*Promote to full PRD using [Template_Feature_Essential.md](./Template_Feature_Essential.md). See [Next/README.md](./README.md) for merge instructions.*
+---
+
+## Priority context (2026-03-30)
+
+The confirmed post-GA priority order from the 2026-03-30 leadership session is:
+
+1. WhatsApp Smart HR — #1
+2. AI Assistant (FAQ/HR) — #2
+3. Employee Chat — #3
+4. Remote App Extensions — #4
+5. Product Analytics — #5
+6. Scheduled Content — #6
+
+Explorer was mentioned for April discovery workshops but was **not placed in the confirmed priority order**. Its scope and priority relative to the above features is to be confirmed during discovery week 2–3 April.
+
+---
+
+*Promote to full PRD using [Template_Feature_Essential.md](./Template_Feature_Essential.md). Confirm scope/priority at April discovery workshop. See [Next/README.md](./README.md) for merge instructions.*
