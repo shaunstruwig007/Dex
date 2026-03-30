@@ -68,7 +68,7 @@
 - [ ] Backlog review (`/dex-backlog`)
 - [ ] Improvement workshop (`/dex-improve`)
 - [ ] Idea captured (via MCP)
-- [ ] Dex updated (`/dex-update`)
+- [x] Dex updated (`/dex-update`)
 - [ ] Dex rolled back (`/dex-rollback`)
 - [ ] Learnings reviewed (`/learnings`)
 - [ ] Beta feature activated (`/beta-activate`)
