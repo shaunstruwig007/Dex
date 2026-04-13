@@ -35,6 +35,11 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
+try:
+    from dateutil import parser as date_parser
+except ImportError:
+    date_parser = None  # AppleScript event fallback needs python-dateutil
+
 import mcp.server.stdio
 import mcp.types as types
 from mcp.server import NotificationOptions, Server
@@ -207,6 +212,119 @@ def run_shell_script(script_name: str, *args) -> tuple[bool, str]:
                     
     except Exception as e:
         return False, str(e)
+
+
+def _eventkit_calendar_output_failed(success: bool, output: str) -> bool:
+    """True if EventKit script failed or returned an error JSON object."""
+    if not success:
+        return True
+    try:
+        data = json.loads(output)
+        if isinstance(data, dict) and data.get("error"):
+            return True
+    except json.JSONDecodeError:
+        return True
+    return False
+
+
+def _applescript_list_calendar_details() -> tuple[bool, list]:
+    """List calendars via AppleScript (Automation → Calendar), when EventKit is unavailable."""
+    script = """
+    tell application "Calendar"
+        set out to ""
+        repeat with c in calendars
+            if length of out > 0 then set out to out & "|||"
+            set out to out & (name of c)
+        end repeat
+        return out
+    end tell
+    """
+    ok, out = run_applescript(script.strip())
+    if not ok or not (out or "").strip():
+        return False, []
+    names = [x.strip() for x in out.split("|||") if x.strip()]
+    details = [{"title": n, "type": "local", "color": None, "identifier": ""} for n in names]
+    return True, details
+
+
+def _parse_applescript_event_lines(raw: str) -> list[dict]:
+    """Turn calendar_get_events.sh output into EventKit-shaped event dicts."""
+    if not date_parser:
+        return []
+    events: list[dict] = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        parts = line.split("|")
+        kv: dict[str, str] = {}
+        for p in parts:
+            if ":" not in p:
+                continue
+            k, v = p.split(":", 1)
+            kv[k.strip().upper()] = v.strip()
+        title = kv.get("TITLE", "")
+        start_s = kv.get("START", "")
+        end_s = kv.get("END", "")
+        if not start_s:
+            continue
+        try:
+            start_dt = date_parser.parse(start_s)
+            end_dt = date_parser.parse(end_s) if end_s else start_dt
+        except (ValueError, TypeError, OverflowError):
+            continue
+        loc = kv.get("LOC", "")
+        events.append(
+            {
+                "provider": "applescript",
+                "provider_event_id": "",
+                "provider_series_id": "",
+                "title": title,
+                "start": start_dt.isoformat(),
+                "end": end_dt.isoformat(),
+                "location": loc,
+                "url": "",
+                "notes": "",
+                "all_day": False,
+                "calendar_identifier": "",
+                "state": "scheduled",
+                "current_user_status": None,
+            }
+        )
+    return events
+
+
+def _get_events_via_applescript(
+    calendar_name: str, start_offset: int, end_offset: int
+) -> tuple[bool, list[dict]]:
+    """Fetch events using calendar_get_events.sh (osascript → Calendar.app)."""
+    if str(calendar_name).lower() == "all":
+        ok, details = _applescript_list_calendar_details()
+        if not ok:
+            return False, []
+        merged: list[dict] = []
+        for d in details:
+            name = d["title"]
+            success, output = run_shell_script(
+                "calendar_get_events.sh", name, str(start_offset), str(end_offset)
+            )
+            if not success:
+                continue
+            for ev in _parse_applescript_event_lines(output):
+                ev["calendar_name"] = name
+                merged.append(ev)
+        merged.sort(key=lambda x: x.get("start") or "")
+        return True, merged
+
+    success, output = run_shell_script(
+        "calendar_get_events.sh", calendar_name, str(start_offset), str(end_offset)
+    )
+    if not success:
+        return False, []
+    events = _parse_applescript_event_lines(output)
+    for ev in events:
+        ev["calendar_name"] = calendar_name
+    return True, events
 
 
 def parse_applescript_list(output: str) -> list[str]:
@@ -621,25 +739,36 @@ async def _handle_call_tool_inner(
     arguments = arguments or {}
 
     if name == "calendar_list_calendars":
-        # Use fast EventKit
+        # Prefer fast EventKit; fall back to AppleScript (Automation → Calendar) when EventKit/TCC blocks Cursor
         success, output = run_shell_script("calendar_eventkit.py", "list")
-        
-        if success:
+        calendars = None
+        transport = "eventkit"
+        if not _eventkit_calendar_output_failed(success, output):
             try:
                 calendars = json.loads(output)
-                # Extract just the titles for backward compatibility
-                calendar_names = [cal["title"] for cal in calendars]
-                result = {
-                    "success": True,
-                    "calendars": calendar_names,
-                    "count": len(calendar_names),
-                    "details": calendars  # Full details for advanced use
-                }
-            except json.JSONDecodeError as e:
-                result = {"success": False, "error": f"JSON parse error: {e}"}
-        else:
-            result = {"success": False, "error": output}
-        
+                if not isinstance(calendars, list):
+                    calendars = None
+            except json.JSONDecodeError:
+                calendars = None
+        if calendars is None:
+            ok, details = _applescript_list_calendar_details()
+            if ok and details:
+                calendars = details
+                transport = "applescript"
+                logger.info("calendar_list_calendars: using AppleScript fallback (EventKit unavailable)")
+            else:
+                err = output if not success else "EventKit returned invalid data"
+                result = {"success": False, "error": err or "AppleScript fallback failed"}
+                return [types.TextContent(type="text", text=json.dumps(result, indent=2))]
+
+        calendar_names = [cal["title"] for cal in calendars]
+        result = {
+            "success": True,
+            "calendars": calendar_names,
+            "count": len(calendar_names),
+            "details": calendars,
+            "transport": transport,
+        }
         return [types.TextContent(type="text", text=json.dumps(result, indent=2))]
     
     elif name == "calendar_get_events":
@@ -668,37 +797,50 @@ async def _handle_call_tool_inner(
             str(start_offset),
             str(end_offset)
         )
-        
-        if success:
-            # EventKit returns clean JSON
+
+        events = None
+        transport = "eventkit"
+        if not _eventkit_calendar_output_failed(success, output):
             try:
                 events = json.loads(output)
-                
-                # Filter out all-day events that span beyond the target date
-                # (they can pollute results when querying single days)
-                filtered_events = []
-                for event in events:
-                    if event.get('all_day'):
-                        # Only include all-day events that start within our range
-                        event_start = datetime.fromisoformat(event['start'].replace(' +0000', ''))
-                        if start_dt <= event_start < end_dt:
-                            filtered_events.append(event)
-                    else:
-                        # Include all non-all-day events
+                if not isinstance(events, list):
+                    events = None
+            except json.JSONDecodeError:
+                events = None
+
+        if events is None:
+            ok, events = _get_events_via_applescript(calendar_name, start_offset, end_offset)
+            if ok and events is not None:
+                transport = "applescript"
+                logger.info("calendar_get_events: using AppleScript fallback (EventKit unavailable)")
+            else:
+                err = output if not success else "EventKit returned invalid data"
+                result = {"success": False, "error": err or "AppleScript fallback failed"}
+                return [types.TextContent(type="text", text=json.dumps(result, indent=2, cls=DateTimeEncoder))]
+
+        # Filter out all-day events that span beyond the target date
+        filtered_events = []
+        for event in events:
+            if event.get("all_day"):
+                try:
+                    event_start = datetime.fromisoformat(
+                        event["start"].replace(" +0000", "").replace("Z", "+00:00")
+                    )
+                    if start_dt <= event_start < end_dt:
                         filtered_events.append(event)
-                
-                result = {
-                    "success": True,
-                    "calendar": calendar_name,
-                    "date_range": f"{start_date} to {end_dt.strftime('%Y-%m-%d')}",
-                    "events": filtered_events,
-                    "count": len(filtered_events)
-                }
-            except json.JSONDecodeError as e:
-                result = {"success": False, "error": f"JSON parse error: {e}"}
-        else:
-            result = {"success": False, "error": output}
-        
+                except (ValueError, KeyError, TypeError):
+                    filtered_events.append(event)
+            else:
+                filtered_events.append(event)
+
+        result = {
+            "success": True,
+            "calendar": calendar_name,
+            "date_range": f"{start_date} to {end_dt.strftime('%Y-%m-%d')}",
+            "events": filtered_events,
+            "count": len(filtered_events),
+            "transport": transport,
+        }
         return [types.TextContent(type="text", text=json.dumps(result, indent=2, cls=DateTimeEncoder))]
     
     elif name == "calendar_get_today":
