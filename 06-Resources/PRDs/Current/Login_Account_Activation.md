@@ -26,7 +26,7 @@ Frontline workers — often with limited tech literacy, unstable contact details
 # Non-Goals
 
 - **Passkeys / biometric login** — Desirable but requires user education and device support. Separate initiative.
-- **SSO (SAML/OIDC) integration** — Only relevant for clients with existing identity providers. Specified in [Next/SSO.md](./Next/SSO.md) — post-Essential GA.
+- **SSO (SAML/OIDC) integration** — Only relevant for clients with existing identity providers. Specified in [Future/SSO.md](../Future/SSO.md) — future-phase (post–Essential; promote to Next when sequenced).
 - **WhatsApp OTP delivery** — SMS is the primary channel for Phase 1. WhatsApp as an alternative delivery method is future scope.
 - **In-app onboarding tour** — Welcome experience after first login is a separate feature (Feed/UX).
 - **Automated pre-launch data collection** — QR-linked forms for collecting employee data before go-live are a separate initiative.

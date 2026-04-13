@@ -10,6 +10,7 @@
 
 | Theme | File | Notes |
 |-------|------|--------|
+| **SSO — Enterprise Identity Federation** | [SSO.md](./SSO.md) | **Formal PRD + AC** (future-phase). Moved from **Next/** 2026-04-13; promote to Next when sequenced. |
 | **AI Assistant — FAQ & HR (rapid, tawk.to)** | [AI_Assistant_FAQ.md](./AI_Assistant_FAQ.md) | **#2 post-GA priority** (2026-03-30). tawk.to, fast ship, WhatsApp + Blue. See [WhatsApp_Smart_HR.md](../Next/WhatsApp_Smart_HR.md) |
 | AI assistant & conversational Q&A (full vision) | [AI_Assistant_Conversational.md](./AI_Assistant_Conversational.md) | Longer-arc vision. Align with [WhatsApp_Smart_HR.md](../Next/WhatsApp_Smart_HR.md) |
 | Employee chat (1:1 & groups) | [Employee_Chat_and_Groups.md](./Employee_Chat_and_Groups.md) | **#3 post-GA priority** (2026-03-30). Same product lane as AI; vs Ops messaging |
@@ -43,4 +44,4 @@
 
 ---
 
-*Last updated: 2026-03-30 — AI_Assistant_FAQ and Floatpays_Integration stubs added; priority annotations from 2026-03-30 leadership session*
+*Last updated: 2026-04-13 — [SSO.md](./SSO.md) + AC added from Next (future-phase parking). Prior: 2026-03-30 — AI_Assistant_FAQ and Floatpays_Integration stubs.*

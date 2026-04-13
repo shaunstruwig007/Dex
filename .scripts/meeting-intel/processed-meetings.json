@@ -1,0 +1,16 @@
+{
+  "last_full_process": "2026-04-13T12:00:00.000Z",
+  "source": "dex-process-meetings-manual",
+  "meetings": [
+    "00-Inbox/Meetings/2026-03-21 - Elevated auth.md",
+    "00-Inbox/Meetings/2026-03-25 - Stand-up Blue team Essential.md",
+    "00-Inbox/Meetings/2026-03-26 - Remote app and PDF payslip.md",
+    "00-Inbox/Meetings/2026-03-26 - Stand-up Blue team Essential.md",
+    "00-Inbox/Meetings/2026-03-30 - Post Launch Priorities Essential.md",
+    "00-Inbox/Meetings/2026-03-30 - Stand-up Blue team Essential.md",
+    "00-Inbox/Meetings/2026-03-30 - UX Product check-in.md",
+    "00-Inbox/Meetings/2026-04-09 - Steerco.md",
+    "00-Inbox/Meetings/2026-04-09 - Tawk.to AI Chatbot + WhatsApp Flow.md"
+  ],
+  "notes": "Granola background automation not required for vault-local processing. Re-run /process-meetings after new notes land in 00-Inbox/Meetings/."
+}

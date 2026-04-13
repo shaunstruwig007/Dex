@@ -22,5 +22,6 @@
 | teamwire | [profiles/Teamwire.md](./profiles/Teamwire.md) | EU secure business messenger (mission-critical); **Sentiv** delivers in SA |
 | unily | [profiles/Unily.md](./profiles/Unily.md) | Intranet / EX |
 | workvivo | [profiles/Workvivo.md](./profiles/Workvivo.md) | Employee experience / Meta |
+| yoobic | [profiles/Yoobic.md](./profiles/Yoobic.md) | Retail store ops — tasks + comms + learning; **displaced us** (~150k+ users on one account) |
 
 **Last market pass rows:** see Phase 1 signal log in [Market_and_deal_signals.md](../Market_and_deal_signals.md) (Staffbase, Beekeeper, Appspace, Workvivo, Staffbase-vs-Flip).

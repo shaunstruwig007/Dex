@@ -7,11 +7,13 @@ Feature specs live here as markdown. **Requirements ownership** is this vault �
 | Folder | Meaning | Tagging / status (your convention) |
 |--------|---------|-------------------------------------|
 | **[Current/](Current/)** | **Wyzetalk Essential** — shipped or in-flight for the current release. | PRD + acceptance criteria; extend with tags such as **done**, **BDD done**, **AC done** per requirement as you refine tracking. |
-| **[Next/](Next/)** | **Specified** post–Essential GA capabilities (formal stubs / drafts): SSO, Elevated Auth, scheduled content & messaging, Smart HR, Product Analytics, Explorer, Page Builder, templates. | Ready for sequencing after Essential; add design/dev tags as you adopt them. |
+| **[Next/](Next/)** | **Specified** post–Essential GA capabilities (formal stubs / drafts): Elevated Auth, scheduled content & messaging, Smart HR, Product Analytics, Explorer, Page Builder, templates. | Ready for sequencing after Essential; add design/dev tags as you adopt them. |
 | **[Then/](Then/)** | **Pipeline** — items moving from discovery/design into build; when **development is complete**, the spec + AC move to **Current**. | Use for: **discovery**, **design**, **done (spec)** / in dev, until release lands in Current. |
 | **[Future/](Future/)** | **Pre-PRD themes** — exploration only until promoted to **Next** or **Then**. | No committed delivery until promoted. |
 
 **Cross-cutting (stay at this level):** [PRD_Product_Map.md](./PRD_Product_Map.md) · [PRD_Cross_cutting_open_questions.md](./PRD_Cross_cutting_open_questions.md) · [Evidence_and_traceability.md](./Evidence_and_traceability.md) · [Evidence_register.md](./Evidence_register.md)
+
+**Product brief roll-up (Current + Next):** [Product_Briefs_Current_and_Next.md](./Product_Briefs_Current_and_Next.md) — one-page summaries per PRD. **`Future/`** briefs run after workshops promote themes (see file footer).
 
 **Discovery → spec traceability:** [Evidence_and_traceability.md](./Evidence_and_traceability.md) · **Register:** [Evidence_register.md](./Evidence_register.md)
 
@@ -49,7 +51,6 @@ Full index: [Next/README.md](./Next/README.md)
 
 | PRD | File | Status |
 |-----|------|--------|
-| SSO — Enterprise Identity Federation | [Next/SSO.md](./Next/SSO.md) | Draft |
 | Content — Scheduled & Recurring Publishing | [Next/Scheduled_Content_Extended.md](./Next/Scheduled_Content_Extended.md) | Stub |
 | WhatsApp — Smart HR (Conversational) | [Next/WhatsApp_Smart_HR.md](./Next/WhatsApp_Smart_HR.md) | Stub |
 | Elevated Auth — Remote App Integration | [Next/Elevated_Auth_Remote_App.md](./Next/Elevated_Auth_Remote_App.md) | Stub |
@@ -76,6 +77,10 @@ See [Then/README.md](./Then/README.md). Add specs here when they graduate from *
 
 Index: [Future/README.md](./Future/README.md) · Hub: [Future/Discovery_backlog.md](./Future/Discovery_backlog.md)
 
+| Spec (future-phase) | File | Notes |
+|---------------------|------|--------|
+| SSO — Enterprise Identity Federation | [Future/SSO.md](./Future/SSO.md) | Formal PRD + AC; parked here until promoted to **Next** (moved from Next 2026-04-13). |
+
 ---
 
 ## Acceptance criteria & QA layer
@@ -96,7 +101,7 @@ Index: [Future/README.md](./Future/README.md) · Hub: [Future/Discovery_backlog.
 | User Importer | [Current/User_Importer_acceptance_criteria.md](./Current/User_Importer_acceptance_criteria.md) |
 | User Management | [Current/User_Management_acceptance_criteria.md](./Current/User_Management_acceptance_criteria.md) |
 | WhatsApp Channel | [Current/WhatsApp_Channel_acceptance_criteria.md](./Current/WhatsApp_Channel_acceptance_criteria.md) |
-| SSO (Next) | [Next/SSO_acceptance_criteria.md](./Next/SSO_acceptance_criteria.md) |
+| SSO (Future-phase) | [Future/SSO_acceptance_criteria.md](./Future/SSO_acceptance_criteria.md) |
 
 | Cross-cutting | File |
 |---------------|------|

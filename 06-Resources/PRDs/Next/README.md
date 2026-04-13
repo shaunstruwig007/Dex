@@ -8,7 +8,7 @@
 
 ## What belongs here
 
-- Capabilities that **extend** Essential (e.g. SSO, scheduled **Posts** + operational **Messaging**, two-way WhatsApp HR, analytics, navigation, page builder)
+- Capabilities that **extend** Essential (e.g. scheduled **Posts** + operational **Messaging**, two-way WhatsApp HR, analytics, navigation, page builder)
 - Dependencies on Essential being live or stable
 - Items you have already **named and stubbed** — not loose Future themes
 
@@ -34,9 +34,10 @@
 | **#4** | Remote App Extensions / Elevated Auth | [Elevated_Auth_Remote_App.md](./Elevated_Auth_Remote_App.md) | Stub | Login · Tenant Management · Payslip PDF |
 | **#5** | Product Analytics | [Product_Analytics.md](./Product_Analytics.md) | Stub | Instrumentation across Essential surfaces |
 | **#6** | Content — Scheduled & Recurring Publishing | [Scheduled_Content_Extended.md](./Scheduled_Content_Extended.md) | Stub | Posts · Messaging Ops · Communication · Feed |
-| TBC | SSO — Enterprise Identity Federation | [SSO.md](./SSO.md) | Draft — reframed | Login & Account Activation · Tenant Management |
 | TBC | Explorer — Category-Based Navigation | [Explorer.md](./Explorer.md) | Stub — scope under review | Posts · Feed · Page Builder (Next) |
 | TBC | Page Builder — Widget-Driven Content | [Page_Builder.md](./Page_Builder.md) | Stub | Posts · Explorer |
+
+**SSO (Enterprise Identity Federation):** formal PRD + AC live under **[../Future/SSO.md](../Future/SSO.md)** (future-phase) until promoted back to **Next** for sequencing.
 
 **Discovery templates**
 
@@ -57,4 +58,4 @@
 
 ---
 
-*Last updated: 2026-03-30 — Priority order updated from 2026-03-30 leadership session; SSO reframed; Explorer flagged under review*
+*Last updated: 2026-04-13 — SSO spec moved to [../Future/SSO.md](../Future/SSO.md) (future-phase). Priority order from 2026-03-30 leadership session; Explorer flagged under review.*

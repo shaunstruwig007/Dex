@@ -13,7 +13,7 @@
 
 ## Related specs
 
-- [SSO.md](../Next/SSO.md) · [Tenant_Management.md](../Current/Tenant_Management.md)
+- [SSO.md](./SSO.md) · [Tenant_Management.md](../Current/Tenant_Management.md)
 
 ## Dependencies
 

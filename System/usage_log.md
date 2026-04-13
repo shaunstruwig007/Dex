@@ -10,7 +10,7 @@
 
 - [x] Daily planning (`/daily-plan`)
 - [x] Daily review (`/review` or `/daily-review`)
-- [ ] Weekly planning (`/week-plan`)
+- [x] Weekly planning (`/week-plan`)
 - [ ] Weekly review (`/week-review`)
 - [ ] Quarterly planning (`/quarter-plan`)
 - [ ] Quarterly review (`/quarter-review`)
@@ -20,7 +20,7 @@
 ## Meeting Workflows (7 features)
 
 - [ ] Meeting prep (`/meeting-prep`)
-- [ ] Meeting processing (`/process-meetings`)
+- [x] Meeting processing (`/process-meetings`)
 - [ ] Commitment scan (`/commitment-scan`)
 - [ ] Person page created
 - [ ] Person page updated
@@ -40,8 +40,8 @@
 
 - [ ] Inbox triage (`/triage` or `/process-inbox`)
 - [ ] Learning capture (`/save-insight`)
-- [ ] Project tracking (`/project-health`)
-- [ ] Product brief (`/product-brief`)
+- [x] Project tracking (`/project-health`)
+- [x] Product brief (`/product-brief`)
 - [ ] Project page created
 
 ## Journaling (4 features)

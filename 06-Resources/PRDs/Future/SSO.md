@@ -4,7 +4,7 @@
 
 > Spec for SAML 2.0 and OIDC enterprise single sign-on, enabling employees at tenants with existing identity providers (Azure AD, Google Workspace, Okta) to access [[Wyzetalk]] using their corporate credentials. Phase 1 OTP login remains the default for non-SSO tenants and non-SSO users within a mixed tenant.
 
-**Phase:** Next (post-Essential GA) — not in scope for Essential launch.
+**Phase:** **Future-phase** — parked in **Future/** until promoted to **Next/** for delivery sequencing. Not in scope for Essential launch.
 
 *Updated: 2026-03-30 — [[00-Inbox/Meetings/2026-03-30 - Post Launch Priorities Essential|Post-launch priorities 2026-03-30]]*
 
@@ -26,7 +26,7 @@ SSO has been repositioned. The two use cases are now treated with different urge
 - Full external IdP/SAML is still in scope but is primarily a **migration enabler** (Q4 2026 cohorts), not a new-deal unlock.
 - Discovery workshops (week 2–3 April) should clarify the exact technical boundary between elevated auth (remote app) and SSO (external IdP).
 
-**Relationship to Elevated Auth PRD:** See [Elevated_Auth_Remote_App.md](./Elevated_Auth_Remote_App.md) — elevated auth handles step-up for remote apps and may satisfy the near-term Blue↔remote app handoff requirement without full SAML/OIDC.
+**Relationship to Elevated Auth PRD:** See [Elevated_Auth_Remote_App.md](../Next/Elevated_Auth_Remote_App.md) — elevated auth handles step-up for remote apps and may satisfy the near-term Blue↔remote app handoff requirement without full SAML/OIDC.
 
 **Related PRDs (Essential / Current):** [Login_Account_Activation.md](../Current/Login_Account_Activation.md) (extends — SSO replaces OTP for configured users), [Tenant_Management.md](../Current/Tenant_Management.md) (IdP config added here), [User_Importer.md](../Current/User_Importer.md) (JIT provisioning vs pre-import), [Profile_Users.md](../Current/Profile_Users.md) (attribute mapping to user record). **Integration map:** [PRD_Product_Map.md](../PRD_Product_Map.md).
 

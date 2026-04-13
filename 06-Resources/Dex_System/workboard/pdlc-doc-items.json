@@ -6,7 +6,7 @@
       "id": "doc-sso",
       "stage": "discovery",
       "title": "SSO — Enterprise Identity",
-      "meta": "SAML 2.0 + OIDC · PRDs/Next/SSO.md",
+      "meta": "SAML 2.0 + OIDC · PRDs/Future/SSO.md",
       "badge": "Then · H2 2026"
     },
     {

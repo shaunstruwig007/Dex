@@ -69,7 +69,7 @@ Without this, either (a) sensitive remote app data is accessible to anyone with 
 | Decision | Options | Impact |
 |----------|---------|--------|
 | Token passing mechanism | Redirect with token param vs postMessage vs shared secure store | Security model, cross-origin trust |
-| Elevated auth vs SSO interaction | Does an SSO session satisfy elevated auth? Or always require step-up? | See OQ-01 in [SSO.md](./SSO.md) |
+| Elevated auth vs SSO interaction | Does an SSO session satisfy elevated auth? Or always require step-up? | See OQ-01 in [SSO.md](../Future/SSO.md) |
 | Scope granularity | Per-app token vs per-action token | Complexity vs security |
 | Core vs remote app boundary | Where does the elevated auth UI live — core shell or remote app? | UX consistency, maintenance |
 | Hidden field compliance (Jan's model) | Permission + hidden field prevents impersonation; how does this bind to the elevated auth factor? | POPIA / auditor requirements |

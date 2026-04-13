@@ -1,41 +1,14 @@
-# Projects
+# Projects (`04-Projects`)
 
-Time-bound initiatives with clear goals and deliverables.
+Time-bound initiatives: a **clear outcome**, **dates**, and **stakeholders**. When the work finishes, move the page to `07-Archives/` (or archive in place with status).
 
-## What Makes Something a Project?
+## Product vs programme (how this vault uses the words)
 
-A project has:
-- **Clear outcome** — Specific deliverable or result
-- **End date** — Defined completion point
-- **Active work** — You're currently working on it
+| Term | Meaning here | Typical location |
+|------|----------------|------------------|
+| **Product** | The shipped capability and its specs — what customers get, documented in PRDs (requirements, acceptance criteria, roadmap intent). | `06-Resources/PRDs/` (`Current/`, `Next/`, `Future/`), product briefs, evidence register. |
+| **Project / programme** | The delivery wrapper: milestones, migration cohorts, steering, resourcing, and **launch** sequencing for a product slice. | This folder — e.g. [[04-Projects/Wyzetalk_Essential_Launch|Wyzetalk Essential launch]] ties **Wyzetalk Essential** (product) to GA and migration kickoff (programme). |
 
-When a project is done, move it to `07-Archives/Projects/`.
+**Rule of thumb:** PRDs answer *what* we build; project pages answer *when*, *who*, and *how we run* the push to ship. Link both directions so specs and execution stay aligned.
 
-## Examples
-
-- Product launches
-- Feature development
-- Migrations or technical upgrades
-- Campaign execution
-- Time-bound research
-
-## Template
-
-Each project should track:
-- **Status** — Current state and progress
-- **Next actions** — What needs to happen next
-- **Key stakeholders** — Who's involved
-- **Timeline** — Important dates and milestones
-- **Related meetings** — Links to meeting notes
-- **Decisions** — Key choices made along the way
-
-## Naming Convention
-
-`Project_Name.md` or `YYYY-MM-DD - Project_Name.md` for dated projects
-
-## vs. Areas
-
-**Project** = has an end ("Ship payments redesign")  
-**Area** = ongoing responsibility ("Customer success management")
-
-If it never "finishes," it belongs in `05-Areas/`, not here.
+See also: `06-Resources/PRDs/README.md` for PRD folder layout.
