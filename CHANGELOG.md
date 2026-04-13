@@ -7,6 +7,24 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.19.2] — Calendar MCP AppleScript fallback (2026-04-13)
+
+**Before:** Calendar tools used EventKit only. On some Mac setups (e.g. Python.org `python3` not tied to **Calendars** TCC the same way as **Terminal**), Cursor never appeared under **Privacy & Security → Calendars**, so listing events from Dex inside Cursor failed.
+
+**Now:** The calendar MCP **falls back to AppleScript** (Calendar.app) when EventKit fails, using the same shell helpers as before. Responses may include **`transport": "eventkit"`** or **`"applescript"`**. Grant **Automation → Calendar** for Cursor if macOS prompts.
+
+---
+
+## [1.19.1] — Auto-link people script (2026-04-09)
+
+**Before:** `CLAUDE.md` documented `node .scripts/auto-link-people.cjs` but the script was not shipped in the vault.
+
+**Now:** **`.scripts/auto-link-people.cjs`** loads people from **`05-Areas/People/{Internal,External}`** (skips `README.md`), matches **display names** (from each file’s `#` title) with longest-first priority, links **unambiguous first names**, and skips **frontmatter**, **fenced code**, **existing `[[wiki links]]`**, and **inline `` `code` ``**. **`--today`** processes **`Tasks.md`**, **`Week_Priorities.md`**, and today’s **`00-Inbox/Meetings`** / **`07-Archives/Plans`** files.
+
+**Usage:** `node .scripts/auto-link-people.cjs <path/to/file.md>` or `--today`.
+
+---
+
 ## [1.19.0] — Semantic Search Now Covers Your Entire Vault (2026-03-23)
 
 ### 🔍 Semantic Search Now Covers Your Entire Vault
