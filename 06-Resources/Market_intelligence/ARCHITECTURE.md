@@ -1,6 +1,6 @@
 # Market intelligence — architecture
 
-**Related:** [[[README]].md](./[[README]].md) · [WORKFLOW.md](./WORKFLOW.md) · [Market_and_deal_signals.md](../Market_and_deal_signals.md)
+**Related:** [README.md](./README.md) · [ingest/README.md](./ingest/README.md) · [WORKFLOW.md](./WORKFLOW.md) · [Market_and_deal_signals.md](../Market_and_deal_signals.md)
 
 ---
 
@@ -24,6 +24,7 @@ flowchart TB
 
   subgraph synth["Synthesis"]
     B["synthesis/daily/*_signal_brief.md"]
+    W["synthesis/weekly/*_weekly_exec_brief.md"]
     D["synthesis/Deal_Won_Lost_Analysis_Reference.md"]
     L["Market_and_deal_signals.md"]
   end
@@ -45,7 +46,11 @@ flowchart TB
   S4 --> I3
   I1 --> B
   I2 --> B
+  I1 --> W
+  I2 --> W
+  B --> W
   B --> L
+  L --> W
   D --> L
   L -->|"strong signal"| E
   E --> P
@@ -54,7 +59,7 @@ flowchart TB
   T -.->|"themes"| L
 ```
 
-**Slash commands:** `/intelligence-scanning`, `/daily-intelligence-brief`, `/weekly-market-discovery` (see `.claude/skills/`).
+**Slash commands:** `/intelligence-scanning`, `/daily-intelligence-brief`, `/weekly-market-discovery`, `/weekly-exec-intel` (see `.claude/skills/`).
 
 ---
 
@@ -62,6 +67,7 @@ flowchart TB
 
 | Gap | Mitigation |
 |-----|------------|
-| Newsletters are manual paste | Use RSS → reader → export, or “view in browser” + paste (see [WORKFLOW.md](./WORKFLOW.md)). |
+| Slugs not discoverable | Use [ingest/README.md](./ingest/README.md) + [sources_manifest.yaml](./sources_manifest.yaml) — folder name = slug. |
+| Newsletters often manual paste | Optional: **`fetch_intel_rss.py`** + **`intel_feeds.json`** (see [WORKFLOW.md](./WORKFLOW.md)); else RSS reader → export, or “view in browser” + paste. |
 | Phase 2 deal log empty | Add process when CRM buy-in exists. |
 | `EV-*` optional | Add rows when a signal informs a spec; cite from PRDs. |

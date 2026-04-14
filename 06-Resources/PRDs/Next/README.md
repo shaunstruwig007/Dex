@@ -24,16 +24,20 @@
 
 ## Next phase scope
 
-> **Priority order confirmed 2026-03-30** (Leon + Merel). See [Wyzetalk_Essential_Launch.md](../../../04-Projects/Wyzetalk_Essential_Launch.md) and meeting note [[00-Inbox/Meetings/2026-03-30 - Post Launch Priorities Essential|Post-launch priorities 2026-03-30]].
+> **Current steering — board & sales (2026-04-13, Leon):** the **next development phase** is **#1 WhatsApp integration** → **#2 AI Assistant** (Blue + WhatsApp; **Tawk.to** and similar) → **#3 peer-to-peer chat** (group + DM) → **#4 Remote App extensions** → **#5 FloatPays (EWA)** → **#6 Forms**. **Lower:** migration-specific use cases; **higher:** new sales. **Not** in this board stack: **product analytics**, **notification preferences**, **troublesome tech debt**. Full narrative: **[Wyzetalk_Essential_Launch.md](../../../04-Projects/Wyzetalk_Essential_Launch.md)** (section *Then — board & sales (2026-04-13)*).
+>
+> **Last steerco-style alignment (2026-03-30, Leon + Merel)** had the **same #1–#4**, but **#5 Product Analytics** and **#6 Scheduled Content** — those two slots are **replaced** in April board messaging by **FloatPays** and **Forms** until steering revisits.
 
 | Priority | PRD | File | Status | Depends on (Essential) |
 |----------|-----|------|--------|-------------------------|
-| **#1** | WhatsApp — Smart HR (Conversational) | [WhatsApp_Smart_HR.md](./WhatsApp_Smart_HR.md) | Active stub | WhatsApp Channel · Payslip PDF |
+| **#1** | WhatsApp — integration (Smart HR + channel / remote-app comms) | [WhatsApp_Smart_HR.md](./WhatsApp_Smart_HR.md) (+ [Current/WhatsApp_Channel.md](../Current/WhatsApp_Channel.md)) | Active stub | WhatsApp Channel · Payslip PDF |
 | **#2** | AI Assistant — FAQ & HR (tawk.to) | [Future/AI_Assistant_FAQ.md](../Future/AI_Assistant_FAQ.md) | Active stub | WhatsApp Channel |
-| **#3** | Employee Chat | [Future/Employee_Chat_and_Groups.md](../Future/Employee_Chat_and_Groups.md) | Discovery stub | Notifications |
+| **#3** | Employee Chat (P2P + group) | [Future/Employee_Chat_and_Groups.md](../Future/Employee_Chat_and_Groups.md) | Discovery stub | Notifications |
 | **#4** | Remote App Extensions / Elevated Auth | [Elevated_Auth_Remote_App.md](./Elevated_Auth_Remote_App.md) | Stub | Login · Tenant Management · Payslip PDF |
-| **#5** | Product Analytics | [Product_Analytics.md](./Product_Analytics.md) | Stub | Instrumentation across Essential surfaces |
-| **#6** | Content — Scheduled & Recurring Publishing | [Scheduled_Content_Extended.md](./Scheduled_Content_Extended.md) | Stub | Posts · Messaging Ops · Communication · Feed |
+| **#5** | FloatPays — EWA | [Future/Floatpays_Integration.md](../Future/Floatpays_Integration.md) | Stub | Remote app / payslip narrative |
+| **#6** | Forms | [Future/Forms_Authoring.md](../Future/Forms_Authoring.md) | Pre-PRD stub | TBC |
+| *Backlog* | Product Analytics | [Product_Analytics.md](./Product_Analytics.md) | Stub | **Not** board #5 for this dev phase (2026-04-13) |
+| *Backlog* | Scheduled & recurring publishing | [Scheduled_Content_Extended.md](./Scheduled_Content_Extended.md) | Stub | **Superseded** in April board #6 by Forms until steering revisits |
 | TBC | Explorer — Category-Based Navigation | [Explorer.md](./Explorer.md) | Stub — scope under review | Posts · Feed · Page Builder (Next) |
 | TBC | Page Builder — Widget-Driven Content | [Page_Builder.md](./Page_Builder.md) | Stub | Posts · Explorer |
 
@@ -58,4 +62,4 @@
 
 ---
 
-*Last updated: 2026-04-13 — SSO spec moved to [../Future/SSO.md](../Future/SSO.md) (future-phase). Priority order from 2026-03-30 leadership session; Explorer flagged under review.*
+*Last updated: 2026-04-13 — **Board + sales priority stack (Leon)** supersedes #5–#6 from 2026-03-30; Product Analytics + Scheduled Content → backlog for this phase. SSO spec: [../Future/SSO.md](../Future/SSO.md).*

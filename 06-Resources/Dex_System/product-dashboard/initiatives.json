@@ -1,0 +1,1437 @@
+{
+  "schemaVersion": "2.3.0",
+  "title": "Product dashboard — ideas (PRD-backed)",
+  "updated": "2026-04-14",
+  "lanes": [
+    "idea",
+    "discovery",
+    "design",
+    "spec_ready",
+    "in_build",
+    "test_uat",
+    "shipped_live"
+  ],
+  "orchestrationNote": "Ideas only — not operational tasks. See ORCHESTRATION.md.",
+  "executiveContext": "",
+  "initiatives": [
+    {
+      "id": "prd-ai_assistant_conversational",
+      "kind": "feature_idea",
+      "title": "AI Assistant Conversational",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/AI_Assistant_Conversational.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-ai_assistant_conversational.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-ai_assistant_faq",
+      "kind": "feature_idea",
+      "title": "AI Assistant FAQ",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/AI_Assistant_FAQ.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-ai_assistant_faq.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-billing_self_service",
+      "kind": "feature_idea",
+      "title": "Billing Self Service",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Billing_Self_Service.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-billing_self_service.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-content_moderation_mentions_celebrations",
+      "kind": "feature_idea",
+      "title": "Content Moderation Mentions Celebrations",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Content_Moderation_Mentions_Celebrations.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-content_moderation_mentions_celebrations.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-discovery_backlog",
+      "kind": "feature_idea",
+      "title": "Discovery backlog",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Discovery_backlog.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-discovery_backlog.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-employee_chat_and_groups",
+      "kind": "feature_idea",
+      "title": "Employee Chat and Groups",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Employee_Chat_and_Groups.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-employee_chat_and_groups.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-feed_social_layer",
+      "kind": "feature_idea",
+      "title": "Feed Social Layer",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Feed_Social_Layer.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-feed_social_layer.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-file_manager_governed_attachments",
+      "kind": "feature_idea",
+      "title": "File Manager Governed Attachments",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/File_Manager_Governed_Attachments.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-file_manager_governed_attachments.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-floatpays_integration",
+      "kind": "feature_idea",
+      "title": "Floatpays Integration",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Floatpays_Integration.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-floatpays_integration.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-forms_authoring",
+      "kind": "feature_idea",
+      "title": "Forms Authoring",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Forms_Authoring.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-forms_authoring.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-in_app_feedback",
+      "kind": "feature_idea",
+      "title": "In App Feedback",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/In_App_Feedback.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-in_app_feedback.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-internal_support_self_service",
+      "kind": "feature_idea",
+      "title": "Internal Support Self Service",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Internal_Support_Self_Service.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-internal_support_self_service.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-localization_dynamic_content",
+      "kind": "feature_idea",
+      "title": "Localization Dynamic Content",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Localization_Dynamic_Content.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-localization_dynamic_content.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-notification_preferences_granular",
+      "kind": "feature_idea",
+      "title": "Notification Preferences Granular",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Notification_Preferences_Granular.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-notification_preferences_granular.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-onboarding_users_and_admins",
+      "kind": "feature_idea",
+      "title": "Onboarding Users and Admins",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Onboarding_Users_and_Admins.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-onboarding_users_and_admins.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-org_calendar_important_dates",
+      "kind": "feature_idea",
+      "title": "Org Calendar Important Dates",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Org_Calendar_Important_Dates.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-org_calendar_important_dates.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-page_builder_streams",
+      "kind": "feature_idea",
+      "title": "Page Builder Streams",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Page_Builder_Streams.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-page_builder_streams.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-polls_on_posts",
+      "kind": "feature_idea",
+      "title": "Polls on Posts",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Polls_on_Posts.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-polls_on_posts.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-rewards_and_recognition",
+      "kind": "feature_idea",
+      "title": "Rewards and Recognition",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Rewards_and_Recognition.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-rewards_and_recognition.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-security_deep_dive",
+      "kind": "feature_idea",
+      "title": "Security Deep Dive",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Security_Deep_Dive.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-security_deep_dive.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-shift_roster_integrations",
+      "kind": "feature_idea",
+      "title": "Shift Roster Integrations",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/Shift_Roster_Integrations.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-shift_roster_integrations.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-sso",
+      "kind": "feature_idea",
+      "title": "SSO",
+      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Future",
+      "priority": "P3",
+      "owner": "",
+      "horizon": "Exploration",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Future/SSO.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-sso.md",
+      "source": "PRDs/Future",
+      "tags": [
+        "Future",
+        "PRDs/Future"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-elevated_auth_remote_app",
+      "kind": "feature_idea",
+      "title": "Elevated Auth Remote App",
+      "summary": "PRD in Next/ — prioritise with Next (P2).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Next",
+      "priority": "P2",
+      "owner": "",
+      "horizon": "Post-GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Next/Elevated_Auth_Remote_App.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-elevated_auth_remote_app.md",
+      "source": "PRDs/Next",
+      "tags": [
+        "Next",
+        "PRDs/Next"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-explorer",
+      "kind": "feature_idea",
+      "title": "Explorer",
+      "summary": "PRD in Next/ — prioritise with Next (P2).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Next",
+      "priority": "P2",
+      "owner": "",
+      "horizon": "Post-GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Next/Explorer.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-explorer.md",
+      "source": "PRDs/Next",
+      "tags": [
+        "Next",
+        "PRDs/Next"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-page_builder",
+      "kind": "feature_idea",
+      "title": "Page Builder",
+      "summary": "PRD in Next/ — prioritise with Next (P2).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Next",
+      "priority": "P2",
+      "owner": "",
+      "horizon": "Post-GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Next/Page_Builder.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-page_builder.md",
+      "source": "PRDs/Next",
+      "tags": [
+        "Next",
+        "PRDs/Next"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-product_analytics",
+      "kind": "feature_idea",
+      "title": "Product Analytics",
+      "summary": "PRD in Next/ — prioritise with Next (P2).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Next",
+      "priority": "P2",
+      "owner": "",
+      "horizon": "Post-GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Next/Product_Analytics.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-product_analytics.md",
+      "source": "PRDs/Next",
+      "tags": [
+        "Next",
+        "PRDs/Next"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-scheduled_content_extended",
+      "kind": "feature_idea",
+      "title": "Scheduled Content Extended",
+      "summary": "PRD in Next/ — prioritise with Next (P2).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Next",
+      "priority": "P2",
+      "owner": "",
+      "horizon": "Post-GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Next/Scheduled_Content_Extended.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-scheduled_content_extended.md",
+      "source": "PRDs/Next",
+      "tags": [
+        "Next",
+        "PRDs/Next"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-whatsapp_smart_hr",
+      "kind": "feature_idea",
+      "title": "WhatsApp Smart HR",
+      "summary": "PRD in Next/ — prioritise with Next (P2).",
+      "lane": "idea",
+      "prdStage": "none",
+      "prdTier": "Next",
+      "priority": "P2",
+      "owner": "",
+      "horizon": "Post-GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Next/WhatsApp_Smart_HR.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-whatsapp_smart_hr.md",
+      "source": "PRDs/Next",
+      "tags": [
+        "Next",
+        "PRDs/Next"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-payslip_pdf",
+      "kind": "feature_idea",
+      "title": "Payslip PDF",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "in_build",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/Payslip_PDF.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-payslip_pdf.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-whatsapp_channel",
+      "kind": "feature_idea",
+      "title": "WhatsApp Channel",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "in_build",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/WhatsApp_Channel.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-whatsapp_channel.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-communication",
+      "kind": "feature_idea",
+      "title": "Communication",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/Communication.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-communication.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-feed",
+      "kind": "feature_idea",
+      "title": "Feed",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/Feed.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-feed.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-groups",
+      "kind": "feature_idea",
+      "title": "Groups",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/Groups.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-groups.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-login_account_activation",
+      "kind": "feature_idea",
+      "title": "Login Account Activation",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/Login_Account_Activation.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-login_account_activation.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-messaging_ops_urgent_alerts",
+      "kind": "feature_idea",
+      "title": "Messaging Ops Urgent Alerts",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/Messaging_Ops_Urgent_Alerts.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-messaging_ops_urgent_alerts.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-notifications",
+      "kind": "feature_idea",
+      "title": "Notifications",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/Notifications.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-notifications.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-posts",
+      "kind": "feature_idea",
+      "title": "Posts",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/Posts.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-posts.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-profile_users",
+      "kind": "feature_idea",
+      "title": "Profile Users",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/Profile_Users.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-profile_users.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-requirements",
+      "kind": "feature_idea",
+      "title": "Requirements",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/Requirements.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-requirements.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-tenant_management",
+      "kind": "feature_idea",
+      "title": "Tenant Management",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/Tenant_Management.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-tenant_management.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-theming",
+      "kind": "feature_idea",
+      "title": "Theming",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/Theming.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-theming.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-user_importer",
+      "kind": "feature_idea",
+      "title": "User Importer",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/User_Importer.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-user_importer.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    },
+    {
+      "id": "prd-user_management",
+      "kind": "feature_idea",
+      "title": "User Management",
+      "summary": "PRD in Current/ — prioritise with Current (P1).",
+      "lane": "test_uat",
+      "prdStage": "spec_ready",
+      "prdTier": "Current",
+      "priority": "P1",
+      "owner": "",
+      "horizon": "Essential GA",
+      "rag": "amber",
+      "whatsNext": "",
+      "figmaUrl": "",
+      "links": [
+        {
+          "label": "PRD",
+          "href": "06-Resources/PRDs/Current/User_Management.md"
+        }
+      ],
+      "contextFile": "06-Resources/Product_ideas/prd-user_management.md",
+      "source": "PRDs/Current",
+      "tags": [
+        "Current",
+        "PRDs/Current"
+      ],
+      "intakeSource": "",
+      "progress": null,
+      "progressLabel": "",
+      "milestones": [],
+      "steeringFocus": false,
+      "workflowStatus": ""
+    }
+  ]
+}

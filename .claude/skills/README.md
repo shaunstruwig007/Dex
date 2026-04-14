@@ -233,6 +233,7 @@ Built specifically for personal knowledge management and productivity workflows 
 - `/intelligence-scanning` - New Market_intelligence ingest → daily signal brief
 - `/daily-intelligence-brief` - Synthesize brief from existing ingest (no YouTube fetch)
 - `/weekly-market-discovery` - Weekly source rotation into `Market_and_deal_signals.md`
+- `/weekly-exec-intel` - Weekly Product & Executive pack (`synthesis/weekly/`; after `run-weekly-intel-fetch.sh` or ingest)
 
 **AI Configuration:**
 - `/ai-setup` - Configure budget cloud models (80% cheaper) and offline mode

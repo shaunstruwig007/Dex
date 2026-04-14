@@ -1,0 +1,2191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Product dashboard — Dex</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --border: #2d3a4d;
+      --text: #e6edf3;
+      --muted: #8b9cb3;
+      --accent: #3b82f6;
+      --lane-w: 200px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    h1 { font-size: 1.1rem; font-weight: 600; margin: 0; }
+    .tabs { display: flex; gap: 0.25rem; }
+    .tabs button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .tabs button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .toolbar {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .toolbar button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .toolbar button:hover { color: var(--text); border-color: var(--muted); }
+    main { padding: 1rem; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .hint {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      max-width: 88ch;
+    }
+    .hint code { color: #93c5fd; }
+
+    #exec-focus {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+    }
+    #exec-focus h2 {
+      margin: 0 0 0.4rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    #exec-focus ul { margin: 0; padding-left: 1.1rem; color: var(--text); }
+    #exec-focus.empty { color: var(--muted); font-style: italic; }
+    .progress-mini {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      max-width: 120px;
+    }
+    .progress-mini .bar {
+      flex: 1;
+      height: 6px;
+      background: #243044;
+      border-radius: 3px;
+      overflow: hidden;
+      min-width: 48px;
+    }
+    .progress-mini .bar > i {
+      display: block;
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+    }
+    .ticket-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      padding: 0 1rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8rem;
+    }
+    .ticket-meta-row label { color: var(--muted); display: flex; flex-direction: column; gap: 0.25rem; }
+    .ticket-meta-row select {
+      background: #0f1419;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.35rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      min-width: 11rem;
+    }
+    .chip {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      background: #1e293b;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      margin-right: 0.2rem;
+    }
+
+    .exec-table-wrap { overflow-x: auto; }
+    table.exec {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    table.exec th, table.exec td {
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.6rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    table.exec th { background: var(--surface); color: var(--muted); font-weight: 600; }
+    table.exec tr:hover td { background: rgba(59, 130, 246, 0.06); }
+    .rag { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+    .rag.green { color: #4ade80; }
+    .rag.amber { color: #fbbf24; }
+    .rag.red { color: #f87171; }
+    table.exec a { color: var(--accent); }
+    .badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 0.12rem 0.35rem;
+      border-radius: 4px;
+      background: #243044;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      margin-right: 0.25rem;
+    }
+    .badge.current { border-color: #4ade80; color: #bbf7d0; }
+    .badge.next { border-color: #60a5fa; color: #bfdbfe; }
+    .badge.future { border-color: #a78bfa; color: #ddd6fe; }
+    .badge.backlog { border-color: #64748b; color: #cbd5e1; }
+
+    .lane-scroll {
+      display: flex;
+      gap: 0.65rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      min-height: 420px;
+      align-items: flex-start;
+    }
+    .lane {
+      flex: 0 0 var(--lane-w);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+    }
+    .lane h3 {
+      margin: 0;
+      padding: 0.5rem 0.6rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+    }
+    .lane-body {
+      flex: 1;
+      padding: 0.45rem;
+      min-height: 240px;
+    }
+    .lane-body.drag-over { outline: 2px dashed var(--accent); outline-offset: 2px; }
+    .add-idea-btn {
+      width: 100%;
+      margin-bottom: 0.45rem;
+      padding: 0.35rem;
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .add-idea-btn:hover { color: var(--text); border-color: var(--muted); }
+    .card {
+      background: #243044;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.45rem 0.5rem;
+      margin-bottom: 0.45rem;
+      cursor: grab;
+      font-size: 0.8rem;
+      line-height: 1.35;
+    }
+    .card.drag-target { border-color: var(--accent); }
+    .card:active { cursor: grabbing; }
+    .card strong { display: block; color: var(--text); margin-bottom: 0.2rem; font-size: 0.82rem; font-weight: 600; }
+    .card .sum { color: var(--muted); font-size: 0.72rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap; }
+    .card .meta { margin-top: 0.25rem; }
+
+    dialog {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      max-width: min(560px, 96vw);
+      width: 100%;
+      padding: 0;
+    }
+    dialog.narrow { max-width: min(440px, 96vw); }
+    dialog::backdrop { background: rgba(0,0,0,0.65); }
+    .dlg-head {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .dlg-head h2 { margin: 0; font-size: 1rem; font-weight: 600; }
+    .dlg-body { padding: 1rem; max-height: 70vh; overflow-y: auto; }
+    .dlg-field { margin-bottom: 1rem; }
+    .dlg-field:last-of-type { margin-bottom: 0; }
+    .dlg-field label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .dlg-field input[type="text"], .dlg-field textarea {
+      width: 100%;
+      background: #0f1419;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    .dlg-field textarea { min-height: 8rem; resize: vertical; line-height: 1.45; }
+    .dlg-prd-paths {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+      word-break: break-all;
+    }
+    .dlg-actions { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    .dlg-actions button.primary {
+      background: rgba(59, 130, 246, 0.35);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    dialog button.close {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 1.25rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    dialog.wide { max-width: min(640px, 96vw); }
+    .doc-path-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      word-break: break-all;
+    }
+    .doc-path-row button {
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .doc-viewer {
+      margin-top: 0.75rem;
+      max-height: 45vh;
+      overflow: auto;
+      background: #0f1419;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.8rem;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      font-family: ui-monospace, monospace;
+      color: var(--text);
+    }
+    .doc-viewer.muted { color: var(--muted); font-family: inherit; }
+
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: #0f1419;
+    }
+    .status-bar button {
+      flex: 1;
+      min-width: 4.5rem;
+      padding: 0.45rem 0.5rem;
+      border: none;
+      border-right: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .status-bar button:last-child { border-right: none; }
+    .status-bar button:hover { color: var(--text); background: rgba(59, 130, 246, 0.08); }
+    .status-bar button.active {
+      background: rgba(59, 130, 246, 0.25);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Ticket dialog: only visible when open. */
+    dialog#detail-dlg:not([open]) {
+      display: none !important;
+      pointer-events: none;
+    }
+    dialog#detail-dlg[open].ticket-panel {
+      display: flex !important;
+    }
+
+    /* Ticket editor: vertical position is per .ticket-size-* (lg = full height, 10px top/bottom inset; md/sm shorter). Opens at lg every time. */
+    #detail-dlg.ticket-panel {
+      --ticket-inset: 10px;
+      position: fixed;
+      z-index: 1000;
+      margin: 0;
+      padding: var(--ticket-inset) 0;
+      box-sizing: border-box;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      flex-direction: column;
+      background: var(--surface);
+      box-shadow: 0 -8px 48px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      max-width: none;
+      width: auto;
+      min-height: 200px;
+    }
+    /* Expanded (+): full height between 10px top/bottom viewport insets (width unchanged — dock rules). */
+    #detail-dlg.ticket-panel.ticket-size-lg {
+      top: var(--ticket-inset);
+      bottom: var(--ticket-inset);
+      max-height: none;
+      height: auto;
+      padding: 0;
+    }
+    /* Middle height — bottom-anchored; use + to reach lg. */
+    #detail-dlg.ticket-panel.ticket-size-md {
+      top: auto;
+      bottom: var(--ticket-inset);
+      max-height: min(58vh, calc(100vh - 2 * var(--ticket-inset)));
+    }
+    /* Shortest — − from md. */
+    #detail-dlg.ticket-panel.ticket-size-sm {
+      top: auto;
+      bottom: var(--ticket-inset);
+      max-height: min(38vh, calc(100vh - 2 * var(--ticket-inset)));
+    }
+    #detail-dlg.ticket-panel.dock-center {
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1040px, 88vw);
+      max-width: 88vw;
+    }
+    #detail-dlg.ticket-panel.dock-left {
+      left: max(10px, 1.2vw);
+      right: auto;
+      transform: none;
+      width: min(980px, 76vw);
+      max-width: 76vw;
+    }
+    #detail-dlg.ticket-panel.dock-right {
+      right: max(10px, 1.2vw);
+      left: auto;
+      transform: none;
+      width: min(980px, 76vw);
+      max-width: 76vw;
+    }
+    dialog#detail-dlg.ticket-panel::backdrop {
+      background: rgba(15, 20, 25, 0.38);
+      backdrop-filter: blur(1px);
+    }
+    #detail-dlg.ticket-panel .ticket-dock-controls {
+      display: flex;
+      gap: 2px;
+      margin-right: 0.25rem;
+    }
+    #detail-dlg.ticket-panel .ticket-dock-controls button {
+      min-width: 2rem;
+      padding: 0.25rem 0.4rem;
+      font-size: 0.85rem;
+      line-height: 1;
+      background: #0f1419;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #detail-dlg.ticket-panel .ticket-dock-controls button:hover { color: var(--text); border-color: var(--muted); }
+    #detail-dlg.ticket-panel .ticket-dock-controls button.active {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(59, 130, 246, 0.12);
+    }
+    #detail-dlg.ticket-panel .ticket-size-controls {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+    }
+    #detail-dlg.ticket-panel .ticket-size-controls button {
+      min-width: 2rem;
+      padding: 0.25rem 0.45rem;
+      font-size: 1rem;
+      line-height: 1;
+      background: #0f1419;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #detail-dlg.ticket-panel .ticket-size-controls button:hover {
+      color: var(--text);
+      border-color: var(--muted);
+    }
+    #detail-dlg.ticket-panel .ticket-toolbar {
+      flex-shrink: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 0.75rem;
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    #detail-dlg.ticket-panel .ticket-title-input {
+      flex: 1 1 200px;
+      min-width: 160px;
+      background: #0f1419;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 0.55rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    #detail-dlg.ticket-panel #dlg-status-bar {
+      flex: 2 1 280px;
+      max-width: 420px;
+    }
+    #detail-dlg.ticket-panel .ticket-figma-input {
+      flex: 1 1 140px;
+      min-width: 120px;
+      background: #0f1419;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+    #detail-dlg.ticket-panel .ticket-toolbar-actions {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      margin-left: auto;
+      align-items: center;
+    }
+    #detail-dlg.ticket-panel .ticket-toolbar-actions button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    #detail-dlg.ticket-panel .ticket-toolbar-actions button.primary {
+      background: rgba(59, 130, 246, 0.35);
+      border-color: var(--accent);
+    }
+    #detail-dlg.ticket-panel .ticket-summary-row {
+      flex: 0 0 auto;
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(26, 35, 50, 0.6);
+    }
+    #detail-dlg.ticket-panel .ticket-summary-row label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    /* ~3 sentences: fixed line budget; document editor + tabs take the rest of the modal. */
+    #detail-dlg.ticket-panel #dlg-desc {
+      width: 100%;
+      box-sizing: border-box;
+      display: block;
+      min-height: 4.5rem;
+      max-height: 6rem;
+      height: 5.5rem;
+      background: #0f1419;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      resize: none;
+      overflow-y: auto;
+      font-family: inherit;
+    }
+    #detail-dlg.ticket-panel .ticket-doc-bar {
+      flex-shrink: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    #detail-dlg.ticket-panel .ticket-doc-tabs {
+      display: flex;
+      gap: 0.25rem;
+    }
+    #detail-dlg.ticket-panel .ticket-doc-tabs button {
+      background: #0f1419;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    #detail-dlg.ticket-panel .ticket-doc-tabs button.active {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(59, 130, 246, 0.15);
+    }
+    #detail-dlg.ticket-panel .ticket-doc-tabs button[hidden] { display: none !important; }
+    #detail-dlg.ticket-panel .ticket-workspace-hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin: 0 0 0.5rem 0;
+      max-width: 52rem;
+      line-height: 1.35;
+    }
+    #detail-dlg.ticket-panel #ticket-doc-path {
+      font-size: 0.75rem;
+      color: var(--muted);
+      word-break: break-all;
+      flex: 1 1 200px;
+    }
+    #detail-dlg.ticket-panel .ticket-format-bar {
+      flex-shrink: 0;
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.35rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: #0f1419;
+    }
+    #detail-dlg.ticket-panel .ticket-format-bar button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.3rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    #detail-dlg.ticket-panel #md-wysiwyg {
+      flex: 1 1 0;
+      min-height: 0;
+      overflow: auto;
+      padding: 1rem 1.25rem 1.25rem;
+      background: #0f1419;
+      outline: none;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    #detail-dlg.ticket-panel #md-wysiwyg:focus { box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.25); }
+    #detail-dlg.ticket-panel #md-wysiwyg h1,
+    #detail-dlg.ticket-panel #md-wysiwyg h2,
+    #detail-dlg.ticket-panel #md-wysiwyg h3 { margin: 0.85em 0 0.4em; font-weight: 600; line-height: 1.25; }
+    #detail-dlg.ticket-panel #md-wysiwyg h1 { font-size: 1.35rem; }
+    #detail-dlg.ticket-panel #md-wysiwyg h2 { font-size: 1.15rem; }
+    #detail-dlg.ticket-panel #md-wysiwyg h3 { font-size: 1.02rem; }
+    #detail-dlg.ticket-panel #md-wysiwyg p { margin: 0.55em 0; }
+    #detail-dlg.ticket-panel #md-wysiwyg ul,
+    #detail-dlg.ticket-panel #md-wysiwyg ol { margin: 0.5em 0; padding-left: 1.5rem; }
+    #detail-dlg.ticket-panel #md-wysiwyg li { margin: 0.2em 0; }
+    #detail-dlg.ticket-panel #md-wysiwyg code { background: #1a2332; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.88em; }
+    #detail-dlg.ticket-panel #md-wysiwyg pre { background: #1a2332; padding: 0.75rem; border-radius: 6px; overflow-x: auto; }
+    #detail-dlg.ticket-panel #md-wysiwyg blockquote {
+      margin: 0.6em 0;
+      padding-left: 0.85rem;
+      border-left: 3px solid var(--border);
+      color: var(--muted);
+    }
+    #detail-dlg.ticket-panel .ticket-footer {
+      flex-shrink: 0;
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+    #detail-dlg.ticket-panel .ticket-footer a { color: var(--accent); cursor: pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Product dashboard</h1>
+    <div class="tabs" role="tablist">
+      <button type="button" class="active" data-tab="exec" role="tab" aria-selected="true">Executive</button>
+      <button type="button" data-tab="orch" role="tab" aria-selected="false">Orchestration</button>
+    </div>
+    <div class="toolbar">
+      <button type="button" id="btn-export" title="Download merged JSON">Export JSON</button>
+      <button type="button" id="btn-reset" title="Clear lane moves and card order">Reset moves &amp; order</button>
+      <button type="button" id="btn-clear-custom" title="Remove custom ideas from this browser">Clear custom ideas</button>
+      <span id="status" style="font-size:0.75rem;color:var(--muted)"></span>
+    </div>
+  </header>
+  <main>
+    <p class="hint">
+      Local server required (e.g. <code>python3 -m http.server 8766</code>). Edits and order are stored in the browser until you export JSON.
+    </p>
+
+    <section id="panel-exec" class="panel active" role="tabpanel">
+      <div id="exec-focus" class="exec-focus empty" aria-live="polite"></div>
+      <div class="exec-table-wrap">
+        <table class="exec" id="exec-table">
+          <thead>
+            <tr>
+              <th>Initiative</th>
+              <th>Tier</th>
+              <th>Prio</th>
+              <th>PDLC</th>
+              <th>Horizon</th>
+              <th>Progress</th>
+              <th>Next milestone</th>
+              <th>RAG</th>
+              <th>Owner</th>
+              <th>What’s next</th>
+              <th>Links</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="panel-orch" class="panel" role="tabpanel" hidden>
+      <div class="lane-scroll" id="orchestration-root" aria-label="Initiative swim lanes"></div>
+    </section>
+  </main>
+
+  <dialog id="detail-dlg" class="ticket-panel dock-center ticket-size-lg">
+    <div class="ticket-toolbar">
+      <input type="text" id="dlg-title-input" class="ticket-title-input" placeholder="Heading" autocomplete="off" />
+      <div class="status-bar" id="dlg-status-bar" role="group" aria-label="Stack status">
+        <button type="button" data-tier="Current" title="Now / current focus">Now</button>
+        <button type="button" data-tier="Next" title="Next up">Next</button>
+        <button type="button" data-tier="Future" title="Future exploration">Future</button>
+        <button type="button" data-tier="Backlog" title="Backlog">Backlog</button>
+      </div>
+      <input type="text" id="dlg-figma" class="ticket-figma-input" placeholder="Figma URL" autocomplete="off" />
+      <div class="ticket-dock-controls" title="Panel position — see the board behind">
+        <button type="button" id="ticket-dock-left" aria-pressed="false" aria-label="Dock panel left">◀</button>
+        <button type="button" id="ticket-dock-center" aria-pressed="true" aria-label="Centre panel">⊙</button>
+        <button type="button" id="ticket-dock-right" aria-pressed="false" aria-label="Dock panel right">▶</button>
+      </div>
+      <div class="ticket-size-controls" title="Opens tall (10px inset). − Shorter · + Taller">
+        <button type="button" id="ticket-shrink" aria-label="Shorter panel">−</button>
+        <button type="button" id="ticket-expand" aria-label="Taller panel">+</button>
+      </div>
+      <div class="ticket-toolbar-actions">
+        <button type="button" class="primary" id="btn-save-card">Save</button>
+        <button type="button" id="btn-download-ticket-md" title="Download current document as .md">Download .md</button>
+        <button type="button" class="close" aria-label="Close ticket">&times;</button>
+      </div>
+    </div>
+    <div class="ticket-summary-row">
+      <label for="dlg-desc">Card summary (idea)</label>
+      <textarea id="dlg-desc" rows="4" placeholder="Digest for the card — outcome and intent (not the full PRD)."></textarea>
+    </div>
+    <div class="ticket-meta-row">
+      <label>Workflow status
+        <select id="dlg-workflow" aria-label="Workflow status">
+          <option value="">—</option>
+          <option value="blocked">Blocked</option>
+          <option value="ready_for_spec">Ready for spec</option>
+          <option value="in_review">In review</option>
+          <option value="at_risk">At risk</option>
+        </select>
+      </label>
+      <label>Intake source
+        <select id="dlg-intake" aria-label="Intake source">
+          <option value="">—</option>
+          <option value="customer">Customer</option>
+          <option value="market">Market</option>
+          <option value="internal">Internal</option>
+          <option value="board">Board</option>
+        </select>
+      </label>
+    </div>
+    <div class="ticket-doc-bar">
+      <div class="ticket-doc-tabs" role="tablist">
+        <button type="button" id="tab-prd" data-doc-tab="prd" role="tab">Product PRD</button>
+        <button type="button" id="tab-workspace" data-doc-tab="workspace" role="tab" class="active">Workspace notes</button>
+      </div>
+      <span id="ticket-doc-path"></span>
+    </div>
+    <p id="ticket-workspace-hint" class="ticket-workspace-hint" hidden>
+      Full <strong>Workspace notes</strong> (discovery and idea context) load below. Edit here or use <strong>Download .md</strong> to sync files in the vault.
+    </p>
+    <div class="ticket-format-bar" title="Formatting (optional)">
+      <button type="button" data-fmt="bold">Bold</button>
+      <button type="button" data-fmt="italic">Italic</button>
+      <button type="button" data-fmt="insertUnorderedList">Bullets</button>
+    </div>
+    <div id="md-wysiwyg" contenteditable="true" tabindex="0" aria-label="Document editor"></div>
+    <div class="ticket-footer">
+      <span id="dlg-prd-paths"></span>
+      <span id="dlg-discovery-row" hidden> · <span id="dlg-discovery-path-short"></span>
+        <button type="button" id="btn-open-discovery-doc" style="background:transparent;border:none;color:var(--accent);cursor:pointer;padding:0;font-size:inherit">Open discovery viewer</button>
+      </span>
+    </div>
+  </dialog>
+
+  <dialog id="discovery-review-dlg" class="wide">
+    <div class="dlg-head">
+      <h2>Discovery</h2>
+      <button type="button" class="close" id="discovery-review-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="dlg-body">
+      <p style="margin:0 0 1rem;font-size:0.85rem;color:var(--muted)">Check the heading and description, add anything useful, then continue.</p>
+      <div class="dlg-field">
+        <label for="disc-title">Heading</label>
+        <input type="text" id="disc-title" autocomplete="off" />
+      </div>
+      <div class="dlg-field">
+        <label for="disc-desc">Description</label>
+        <textarea id="disc-desc" placeholder="Context, constraints, links to remember…"></textarea>
+      </div>
+      <div class="dlg-field dlg-prd-paths" id="disc-prd-paths" hidden></div>
+      <div class="dlg-actions" style="display:flex;gap:0.5rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:1rem;margin-top:1rem">
+        <button type="button" id="discovery-review-cancel">Cancel</button>
+        <button type="button" class="primary" id="discovery-review-accept">Move to Discovery and start</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="discovery-run-dlg" class="wide">
+    <div class="dlg-head">
+      <h2>Discovery file</h2>
+      <button type="button" class="close" id="discovery-run-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="dlg-body">
+      <p style="margin:0 0 0.75rem;font-size:0.85rem;color:var(--muted)">After you start from the board, the research prompt is copied once — use Copy prompt again if needed. Paste into Cursor so the agent can search the vault and update the file below. Refresh after you edit the file on disk.</p>
+      <div class="doc-path-row">
+        <span id="discovery-vault-path"></span>
+        <button type="button" id="discovery-copy-path">Copy path</button>
+        <button type="button" id="discovery-copy-prompt">Copy prompt again</button>
+        <button type="button" id="discovery-refresh-doc">Refresh</button>
+      </div>
+      <div class="doc-viewer muted" id="discovery-doc-view">Loading…</div>
+    </div>
+  </dialog>
+
+  <dialog id="add-idea-dlg" class="narrow">
+    <div class="dlg-head">
+      <h2>New idea</h2>
+      <button type="button" class="close" id="add-idea-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="dlg-body">
+      <div class="dlg-field">
+        <label for="add-title">Heading</label>
+        <input type="text" id="add-title" autocomplete="off" />
+      </div>
+      <div class="dlg-field">
+        <label for="add-summary">Description</label>
+        <textarea id="add-summary"></textarea>
+      </div>
+      <div class="dlg-field">
+        <label for="add-tier">Stack</label>
+        <select id="add-tier" style="width:100%;background:#0f1419;border:1px solid var(--border);color:var(--text);padding:0.45rem;border-radius:6px;font-size:0.85rem;">
+          <option value="Backlog">Backlog</option>
+          <option value="Current">Current</option>
+          <option value="Next">Next</option>
+          <option value="Future">Future</option>
+        </select>
+      </div>
+      <div class="dlg-field">
+        <label for="add-prio">Priority</label>
+        <select id="add-prio" style="width:100%;background:#0f1419;border:1px solid var(--border);color:var(--text);padding:0.45rem;border-radius:6px;font-size:0.85rem;">
+          <option value="P0">P0</option>
+          <option value="P1">P1</option>
+          <option value="P2" selected>P2</option>
+          <option value="P3">P3</option>
+        </select>
+      </div>
+      <div class="dlg-actions">
+        <button type="button" class="primary" id="add-idea-save">Save</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/turndown/dist/turndown.js"></script>
+  <script>
+(function () {
+  var STORE_KEY = "dex-product-dashboard-v2";
+  var LEGACY_LANES = "dex-product-dashboard-lanes-v1";
+  var state = {
+    data: null,
+    store: null,
+    currentDetailId: null,
+    dragId: null,
+    pendingDiscovery: null,
+    discoveryRunInitId: null,
+    lastDiscoveryPrompt: "",
+    ticketPrdVaultPath: null,
+    ticketWsVaultPath: null,
+    ticketDocTab: "workspace",
+    ticketCurrentVaultPath: null,
+    ticketDock: "center",
+    ticketSize: "lg",
+    ticketPrdStage: "none"
+  };
+
+  var TICKET_DOCK_KEY = "dex-pd-ticket-dock";
+
+  function loadTicketDock() {
+    try {
+      var s = localStorage.getItem(TICKET_DOCK_KEY);
+      if (s === "left" || s === "center" || s === "right") return s;
+    } catch (e) {}
+    return "center";
+  }
+
+  function applyTicketDock(dock) {
+    if (dock !== "left" && dock !== "center" && dock !== "right") dock = "center";
+    state.ticketDock = dock;
+    try {
+      localStorage.setItem(TICKET_DOCK_KEY, dock);
+    } catch (e) {}
+    var dlg = document.getElementById("detail-dlg");
+    if (!dlg) return;
+    dlg.classList.remove("dock-left", "dock-center", "dock-right");
+    dlg.classList.add("dock-" + dock);
+    [["ticket-dock-left", "left"], ["ticket-dock-center", "center"], ["ticket-dock-right", "right"]].forEach(function (pair) {
+      var btn = document.getElementById(pair[0]);
+      if (btn) {
+        var on = pair[1] === dock;
+        btn.classList.toggle("active", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      }
+    });
+  }
+
+  function applyTicketSize(sz) {
+    if (sz !== "sm" && sz !== "md" && sz !== "lg") sz = "lg";
+    state.ticketSize = sz;
+    var dlg = document.getElementById("detail-dlg");
+    if (!dlg) return;
+    dlg.classList.remove("ticket-size-sm", "ticket-size-md", "ticket-size-lg");
+    dlg.classList.add("ticket-size-" + sz);
+  }
+
+  function loadStore() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    var o = {
+      laneOverride: {},
+      customInitiatives: [],
+      figmaById: {},
+      titleById: {},
+      descriptionById: {},
+      cardOrder: {},
+      prdTierById: {},
+      workflowStatusById: {},
+      intakeSourceById: {},
+      mdOverrideByVaultPath: {}
+    };
+    try {
+      var leg = localStorage.getItem(LEGACY_LANES);
+      if (leg) o.laneOverride = JSON.parse(leg) || {};
+    } catch (e2) {}
+    return o;
+  }
+
+  function saveStore() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state.store));
+    try { localStorage.removeItem(LEGACY_LANES); } catch (e) {}
+    var el = document.getElementById("status");
+    el.textContent = "Saved.";
+    setTimeout(function () { el.textContent = ""; }, 2000);
+  }
+
+  state.store = loadStore();
+  if (!state.store.laneOverride) state.store.laneOverride = {};
+  if (!state.store.customInitiatives) state.store.customInitiatives = [];
+  if (!state.store.figmaById) state.store.figmaById = {};
+  if (!state.store.titleById) state.store.titleById = {};
+  if (!state.store.descriptionById) state.store.descriptionById = {};
+  if (!state.store.cardOrder) state.store.cardOrder = {};
+  if (!state.store.prdTierById) state.store.prdTierById = {};
+  if (!state.store.workflowStatusById) state.store.workflowStatusById = {};
+  if (!state.store.intakeSourceById) state.store.intakeSourceById = {};
+  if (!state.store.mdOverrideByVaultPath) state.store.mdOverrideByVaultPath = {};
+
+  state.ticketDock = loadTicketDock();
+  applyTicketDock(state.ticketDock);
+  state.ticketSize = "lg";
+  applyTicketSize("lg");
+
+  function stripFrontmatter(md) {
+    if (!md || md.indexOf("---") !== 0) return md;
+    var end = md.indexOf("\n---\n", 3);
+    if (end === -1) return md;
+    return md.slice(end + 5);
+  }
+
+  function getPrdVaultHrefFromInit(init) {
+    var links = init.links || [];
+    for (var i = 0; i < links.length; i++) {
+      var h = (links[i].href || "").trim();
+      if (/\.md$/i.test(h) && h.indexOf("PRDs/") !== -1) return h;
+    }
+    return null;
+  }
+
+  function vaultPathToFetchUrl(vaultPath) {
+    if (!vaultPath) return null;
+    var pd = "06-Resources/Dex_System/product-dashboard/";
+    if (vaultPath.indexOf(pd) === 0) return vaultPath.slice(pd.length);
+    if (vaultPath.indexOf("06-Resources/") === 0) return "../../" + vaultPath.slice("06-Resources/".length);
+    return vaultPath;
+  }
+
+  function getTurndown() {
+    var TD = typeof TurndownService !== "undefined" ? TurndownService : window.TurndownService;
+    if (!TD) return null;
+    return new TD({ headingStyle: "atx", bulletListMarker: "-" });
+  }
+
+  function persistTicketEditorMarkdown() {
+    var vp = state.ticketCurrentVaultPath;
+    var el = document.getElementById("md-wysiwyg");
+    if (!vp || !el) return;
+    var td = getTurndown();
+    if (!td) return;
+    if (!state.store.mdOverrideByVaultPath) state.store.mdOverrideByVaultPath = {};
+    state.store.mdOverrideByVaultPath[vp] = td.turndown(el.innerHTML);
+  }
+
+  function applyMarkdownToWysiwyg(md) {
+    var w = document.getElementById("md-wysiwyg");
+    if (!w) return;
+    var text = md || "";
+    if (typeof marked !== "undefined" && marked.parse) {
+      w.innerHTML = marked.parse(text, { breaks: true });
+    } else {
+      w.innerHTML = "<p>" + escapeHtml(text).replace(/\n/g, "<br/>") + "</p>";
+    }
+  }
+
+  function updateTicketTabUi() {
+    var prdTab = document.getElementById("tab-prd");
+    var wsTab = document.getElementById("tab-workspace");
+    var hasPrd = !!state.ticketPrdVaultPath;
+    prdTab.hidden = !hasPrd;
+    prdTab.textContent = state.ticketPrdStage === "draft" ? "Product PRD (draft)" : "Product PRD";
+    prdTab.classList.toggle("active", hasPrd && state.ticketDocTab === "prd");
+    wsTab.classList.toggle("active", !hasPrd || state.ticketDocTab === "workspace");
+  }
+
+  function loadActiveTicketDocument() {
+    var vaultPath =
+      state.ticketDocTab === "prd" && state.ticketPrdVaultPath
+        ? state.ticketPrdVaultPath
+        : state.ticketWsVaultPath;
+    state.ticketCurrentVaultPath = vaultPath;
+    var pathEl = document.getElementById("ticket-doc-path");
+    if (pathEl) pathEl.textContent = vaultPath || "";
+    var w = document.getElementById("md-wysiwyg");
+    if (!w) return;
+    w.innerHTML = "<p style=\"color:var(--muted)\">Loading…</p>";
+    updateTicketTabUi();
+    if (!vaultPath) {
+      w.innerHTML = "<p style=\"color:var(--muted)\">No document path for this card.</p>";
+      return;
+    }
+    var ovr = state.store.mdOverrideByVaultPath && state.store.mdOverrideByVaultPath[vaultPath];
+    if (ovr != null && String(ovr).length) {
+      applyMarkdownToWysiwyg(String(ovr));
+      return;
+    }
+    var url = vaultPathToFetchUrl(vaultPath);
+    if (!url) {
+      applyMarkdownToWysiwyg("# Document\n\n(No fetch path.)");
+      return;
+    }
+    fetch(url, { cache: "no-store" })
+      .then(function (r) {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.text();
+      })
+      .then(function (txt) {
+        applyMarkdownToWysiwyg(stripFrontmatter(txt));
+      })
+      .catch(function () {
+        var isPrd = state.ticketDocTab === "prd";
+        var stage = state.ticketPrdStage || "none";
+        var base =
+          "# Document\n\n" +
+          (isPrd && stage === "spec_ready"
+            ? "**Could not load the PRD file.** Serve the **vault root** (not only `product-dashboard/`) and open the URL from **`start_product_dashboard.sh`**. See **README → Run locally**.\n\n"
+            : isPrd && stage === "draft"
+              ? "**Could not load this draft PRD.** Check the server URL and vault layout as in the README.\n\n"
+              : "**Could not load this document.** If this is a PRD path, serve the vault root. See **README → Run locally**.\n\n") +
+          "You can still type here — **Save** stores a copy in the browser; use **Download .md** to replace the file in your vault.";
+        applyMarkdownToWysiwyg(base);
+      });
+  }
+
+  function normalizePrdTierKey(t) {
+    var x = String(t || "").trim();
+    if (!x) return "Backlog";
+    var lower = x.toLowerCase();
+    if (lower === "now") return "Current";
+    var cap = x.charAt(0).toUpperCase() + x.slice(1).toLowerCase();
+    if (cap === "Current" || cap === "Next" || cap === "Future" || cap === "Backlog") return cap;
+    return "Backlog";
+  }
+
+  function effectivePrdTier(init) {
+    var o = state.store.prdTierById[init.id];
+    if (o != null && String(o).trim() !== "") return normalizePrdTierKey(o);
+    return normalizePrdTierKey(init.prdTier);
+  }
+
+  function tierBadgeLabel(prdTier) {
+    var t = normalizePrdTierKey(prdTier);
+    if (t === "Current") return "Now";
+    return t;
+  }
+
+  function syncStatusBarForInit(init) {
+    var t = effectivePrdTier(init);
+    document.querySelectorAll("#dlg-status-bar [data-tier]").forEach(function (btn) {
+      btn.classList.toggle("active", btn.getAttribute("data-tier") === t);
+    });
+  }
+
+  function getSelectedStatusTierFromBar() {
+    var el = document.querySelector("#dlg-status-bar button.active");
+    if (!el) return "Backlog";
+    return el.getAttribute("data-tier") || "Backlog";
+  }
+
+  function laneLabel(id) {
+    var labels = {
+      idea: "Idea",
+      discovery: "Discovery",
+      design: "Design",
+      spec_ready: "Spec ready",
+      in_build: "In build",
+      test_uat: "Test / UAT",
+      shipped_live: "Shipped / Live"
+    };
+    return labels[id] || id;
+  }
+
+  function tierClass(t) {
+    var x = (t || "").toLowerCase();
+    if (x === "current") return "current";
+    if (x === "next") return "next";
+    if (x === "future") return "future";
+    return "backlog";
+  }
+
+  function tierRank(prdTier) {
+    var x = String(prdTier || "").toLowerCase();
+    if (x === "next") return 0;
+    if (x === "current") return 1;
+    if (x === "backlog") return 2;
+    if (x === "future") return 3;
+    return 2;
+  }
+
+  function mergedInitiatives() {
+    var base = (state.data && state.data.initiatives) ? state.data.initiatives.slice() : [];
+    return base.concat(state.store.customInitiatives || []);
+  }
+
+  function getInit(id) {
+    var list = mergedInitiatives();
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === id) return list[i];
+    }
+    return null;
+  }
+
+  function effectiveLane(init) {
+    return state.store.laneOverride[init.id] || init.lane;
+  }
+
+  /** Idea vs PRD: full vault PRD loads in the modal only at draft (Design) or spec_ready lanes — not Idea/Discovery. */
+  function effectivePrdStage(init) {
+    if (!init) return "none";
+    var explicit = init.prdStage;
+    if (explicit === "none" || explicit === "draft" || explicit === "spec_ready") return explicit;
+    var lane = effectiveLane(init);
+    if (lane === "idea" || lane === "discovery") return "none";
+    if (lane === "design") return "draft";
+    if (
+      lane === "spec_ready" ||
+      lane === "in_build" ||
+      lane === "test_uat" ||
+      lane === "shipped_live"
+    ) {
+      return "spec_ready";
+    }
+    return "none";
+  }
+
+  function getPrdVaultHrefForModal(init) {
+    if (effectivePrdStage(init) === "none") return null;
+    return getPrdVaultHrefFromInit(init);
+  }
+
+  function effectiveTitle(init) {
+    var o = state.store.titleById[init.id];
+    return (o != null && String(o).trim() !== "") ? String(o) : init.title;
+  }
+
+  function effectiveDescription(init) {
+    var o = state.store.descriptionById[init.id];
+    if (o != null && String(o).trim() !== "") return String(o);
+    return init.summary || "";
+  }
+
+  function effectiveFigma(init) {
+    var u = init.figmaUrl || "";
+    var loc = state.store.figmaById[init.id] || "";
+    return (loc || u).trim();
+  }
+
+  function effectiveWorkflowStatus(init) {
+    var o = state.store.workflowStatusById && state.store.workflowStatusById[init.id];
+    if (o != null && String(o).trim() !== "") return String(o).trim();
+    return (init.workflowStatus && String(init.workflowStatus).trim()) || "";
+  }
+
+  function effectiveIntakeSource(init) {
+    var o = state.store.intakeSourceById && state.store.intakeSourceById[init.id];
+    if (o != null && String(o).trim() !== "") return String(o).trim();
+    return (init.intakeSource && String(init.intakeSource).trim()) || "";
+  }
+
+  function nextMilestoneLabel(init) {
+    var ms = init.milestones;
+    if (!ms || !ms.length) return "—";
+    var pending = ms.filter(function (m) {
+      return !m.done;
+    });
+    var list = pending.length ? pending : ms.slice();
+    var best = list[0];
+    for (var i = 0; i < list.length; i++) {
+      var m = list[i];
+      if (!best) best = m;
+      else if (m.date && (!best.date || m.date < best.date)) best = m;
+    }
+    if (!best) return "—";
+    return (best.label || "Milestone") + (best.date ? " · " + best.date : "");
+  }
+
+  function progressCellHtml(init) {
+    var pl = init.progressLabel && String(init.progressLabel).trim();
+    if (init.progress != null && init.progress !== "" && !isNaN(Number(init.progress))) {
+      var p = Math.max(0, Math.min(100, Number(init.progress)));
+      return (
+        '<span class="progress-mini"><span class="bar"><i style="width:' +
+        p +
+        '%"></i></span>' +
+        p +
+        "%</span>"
+      );
+    }
+    if (pl) return escapeHtml(pl);
+    return "—";
+  }
+
+  function discoveryDocRelativePath(init) {
+    if (init.contextFile && String(init.contextFile).trim()) return String(init.contextFile).trim();
+    return "06-Resources/Product_ideas/" + init.id + ".md";
+  }
+
+  /** Full vault path for workspace / discovery markdown. */
+  function workspaceVaultPath(init) {
+    var rel = discoveryDocRelativePath(init);
+    if (rel.indexOf("06-Resources/") === 0) return rel;
+    return "06-Resources/Dex_System/product-dashboard/" + rel.replace(/^\/+/, "");
+  }
+
+  function vaultPathFromRelative(rel) {
+    return "06-Resources/Dex_System/product-dashboard/" + rel.replace(/^\/+/, "");
+  }
+
+  function workspaceFetchUrl(init) {
+    return vaultPathToFetchUrl(workspaceVaultPath(init));
+  }
+
+  function slugifyTitle(title) {
+    var s = String(title || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    return s.slice(0, 80) || "untitled";
+  }
+
+  function allocateIdeaId(title) {
+    var base = "idea-" + slugifyTitle(title);
+    var ids = {};
+    mergedInitiatives().forEach(function (x) {
+      ids[x.id] = true;
+    });
+    if (!ids[base]) return base;
+    var n = 2;
+    while (ids[base + "-" + n]) n++;
+    return base + "-" + n;
+  }
+
+  function buildDiscoveryAgentPrompt(init) {
+    var title = effectiveTitle(init);
+    var desc = effectiveDescription(init);
+    var vaultPath = workspaceVaultPath(init);
+    var linkLines = (init.links || []).map(function (L) {
+      return "- " + L.label + ": " + L.href;
+    });
+    return (
+      "You are running a structured discovery pass for a product idea in Dex. Use semantic search (QMD: prds, meetings, accounts, resources) and grep where needed. Be concrete and cite vault paths.\n\n" +
+      "=== Idea ===\n" +
+      "Title: " + title + "\n" +
+      "Description:\n" + (desc || "(none)") + "\n\n" +
+      (linkLines.length ? "=== Linked PRDs / files ===\n" + linkLines.join("\n") + "\n\n" : "") +
+      "=== Deliverables (write into the discovery file) ===\n" +
+      "Update or create this markdown file (relative to vault root):\n" +
+      vaultPath + "\n\n" +
+      "Use this structure (replace or fill each section):\n\n" +
+      "## Problem formulation\n" +
+      "- Who has the problem, when, and what is broken today\n" +
+      "- Success looks like…\n\n" +
+      "## Evidence from the vault\n" +
+      "- Bullet points with file references\n\n" +
+      "## Solution directions\n" +
+      "- Options, trade-offs, recommendation\n\n" +
+      "## Novel ideas\n" +
+      "- Non-obvious angles, combinations, or bets\n\n" +
+      "## Risks and assumptions\n\n" +
+      "## Open questions\n\n" +
+      "If the file already exists, merge new findings; keep prior notes where still valid. Id: " + init.id + "\n"
+    );
+  }
+
+  function copyTextToClipboard(text, thenFn) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(thenFn).catch(function () {
+        window.prompt("Copy:", text);
+        if (thenFn) thenFn();
+      });
+    } else {
+      window.prompt("Copy:", text);
+      if (thenFn) thenFn();
+    }
+  }
+
+  function openDiscoveryReviewModal() {
+    var p = state.pendingDiscovery;
+    if (!p) return;
+    var init = getInit(p.id);
+    if (!init) return;
+    document.getElementById("disc-title").value = effectiveTitle(init);
+    document.getElementById("disc-desc").value = effectiveDescription(init);
+    var prdEl = document.getElementById("disc-prd-paths");
+    var links = init.links || [];
+    if (links.length) {
+      prdEl.hidden = false;
+      prdEl.textContent = links.map(function (L) { return L.label + ": " + L.href; }).join("\n");
+    } else {
+      prdEl.hidden = true;
+      prdEl.textContent = "";
+    }
+    document.getElementById("discovery-review-dlg").showModal();
+  }
+
+  function clearPendingDiscovery() {
+    state.pendingDiscovery = null;
+  }
+
+  function commitDiscoveryFromReview() {
+    var p = state.pendingDiscovery;
+    if (!p) return;
+    var id = p.id;
+    var init = getInit(id);
+    if (!init) {
+      clearPendingDiscovery();
+      return;
+    }
+    var t = document.getElementById("disc-title").value.trim();
+    var d = document.getElementById("disc-desc").value;
+    if (t) state.store.titleById[id] = t;
+    else delete state.store.titleById[id];
+    state.store.descriptionById[id] = d;
+    var custom = state.store.customInitiatives || [];
+    for (var i = 0; i < custom.length; i++) {
+      if (custom[i].id === id) {
+        custom[i].title = t || custom[i].title;
+        custom[i].summary = d;
+        break;
+      }
+    }
+    state.store.laneOverride[id] = "discovery";
+    insertIdInLane(id, "discovery", p.beforeId);
+    saveStore();
+    document.getElementById("discovery-review-dlg").close();
+    clearPendingDiscovery();
+    renderExecutive();
+    renderOrchestration();
+    runDiscoveryAutomation(getInit(id));
+  }
+
+  function loadDiscoveryDocPreview(init) {
+    var el = document.getElementById("discovery-doc-view");
+    var url = workspaceFetchUrl(init);
+    el.textContent = "Loading…";
+    el.className = "doc-viewer muted";
+    if (!url) {
+      el.textContent = "No fetch path for this workspace file.";
+      return;
+    }
+    fetch(url, { cache: "no-store" })
+      .then(function (r) {
+        if (!r.ok) throw new Error(r.status === 404 ? "File not found yet — the agent can create it." : r.statusText);
+        return r.text();
+      })
+      .then(function (txt) {
+        var body = stripFrontmatter(txt || "");
+        el.textContent = body || "(empty file)";
+        el.className = "doc-viewer";
+      })
+      .catch(function (err) {
+        el.textContent = String(err.message || err);
+        el.className = "doc-viewer muted";
+      });
+  }
+
+  function openDiscoveryDocViewer(init, copyPrompt) {
+    if (!init) return;
+    state.discoveryRunInitId = init.id;
+    var prompt = buildDiscoveryAgentPrompt(init);
+    state.lastDiscoveryPrompt = prompt;
+    var vaultPath = workspaceVaultPath(init);
+    document.getElementById("discovery-vault-path").textContent = vaultPath;
+    document.getElementById("discovery-doc-view").textContent = "Loading…";
+    document.getElementById("discovery-run-dlg").showModal();
+    loadDiscoveryDocPreview(init);
+    if (copyPrompt) {
+      copyTextToClipboard(prompt, function () {
+        var st = document.getElementById("status");
+        st.textContent = "Discovery prompt copied — paste into Cursor.";
+        setTimeout(function () { st.textContent = ""; }, 6000);
+      });
+    }
+  }
+
+  function runDiscoveryAutomation(init) {
+    openDiscoveryDocViewer(init, true);
+  }
+
+  function tryBeginDiscoveryMove(o, laneId, beforeId) {
+    var dragInit = getInit(o.id);
+    if (!dragInit) return false;
+    var prevLane = effectiveLane(dragInit);
+    if (laneId !== "discovery" || prevLane === "discovery") return false;
+    state.pendingDiscovery = { id: o.id, prevLane: prevLane, beforeId: beforeId };
+    openDiscoveryReviewModal();
+    return true;
+  }
+
+  function applyCrossLaneDrop(o, laneId, beforeId) {
+    var dragInit = getInit(o.id);
+    if (!dragInit) return;
+    state.store.laneOverride[o.id] = laneId;
+    insertIdInLane(o.id, laneId, beforeId);
+    saveStore();
+    renderExecutive();
+    renderOrchestration();
+  }
+
+  function applySameLaneReorder(laneId, o, beforeId) {
+    reorderWithinLane(laneId, o.id, beforeId);
+    saveStore();
+    renderExecutive();
+    renderOrchestration();
+  }
+
+  function compareInitDefault(a, b) {
+    var tr = tierRank(effectivePrdTier(a)) - tierRank(effectivePrdTier(b));
+    if (tr !== 0) return tr;
+    var pa = (a.priority || "").replace(/\D/g, "") || "99";
+    var pb = (b.priority || "").replace(/\D/g, "") || "99";
+    var pi = parseInt(pa, 10) - parseInt(pb, 10);
+    if (pi !== 0) return pi;
+    return effectiveTitle(a).localeCompare(effectiveTitle(b));
+  }
+
+  function initsForLane(laneId) {
+    return mergedInitiatives().filter(function (init) {
+      return effectiveLane(init) === laneId;
+    });
+  }
+
+  function orderedIdsForLane(laneId, inits) {
+    var ids = inits.map(function (i) { return i.id; });
+    var saved = state.store.cardOrder[laneId];
+    if (!saved || !saved.length) {
+      return ids.slice().sort(function (ida, idb) {
+        return compareInitDefault(getInit(ida), getInit(idb));
+      });
+    }
+    var seen = {};
+    var out = [];
+    ids.forEach(function (id) { seen[id] = true; });
+    saved.forEach(function (id) {
+      if (seen[id]) {
+        out.push(id);
+        delete seen[id];
+      }
+    });
+    var rest = Object.keys(seen);
+    rest.sort(function (ida, idb) {
+      return compareInitDefault(getInit(ida), getInit(idb));
+    });
+    return out.concat(rest);
+  }
+
+  function setLaneOrder(laneId, orderedIds) {
+    state.store.cardOrder[laneId] = orderedIds;
+  }
+
+  function removeIdFromAllOrders(id) {
+    Object.keys(state.store.cardOrder).forEach(function (lane) {
+      var arr = state.store.cardOrder[lane];
+      if (!arr) return;
+      state.store.cardOrder[lane] = arr.filter(function (x) { return x !== id; });
+    });
+  }
+
+  function insertIdInLane(id, laneId, beforeId) {
+    removeIdFromAllOrders(id);
+    var inits = initsForLane(laneId);
+    var base = orderedIdsForLane(laneId, inits.filter(function (x) { return x.id !== id; }));
+    if (beforeId == null || beforeId === "") {
+      base.push(id);
+    } else {
+      var idx = base.indexOf(beforeId);
+      if (idx < 0) base.push(id);
+      else base.splice(idx, 0, id);
+    }
+    setLaneOrder(laneId, base);
+  }
+
+  function reorderWithinLane(laneId, dragId, beforeId) {
+    var inits = initsForLane(laneId);
+    var order = orderedIdsForLane(laneId, inits);
+    order = order.filter(function (x) { return x !== dragId; });
+    if (beforeId == null || beforeId === "") {
+      order.push(dragId);
+    } else {
+      var idx = order.indexOf(beforeId);
+      if (idx < 0) order.push(dragId);
+      else order.splice(idx, 0, dragId);
+    }
+    setLaneOrder(laneId, order);
+  }
+
+  function setTab(name) {
+    document.querySelectorAll(".tabs button").forEach(function (b) {
+      var on = b.getAttribute("data-tab") === name;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    document.getElementById("panel-exec").classList.toggle("active", name === "exec");
+    document.getElementById("panel-exec").hidden = name !== "exec";
+    document.getElementById("panel-orch").classList.toggle("active", name === "orch");
+    document.getElementById("panel-orch").hidden = name !== "orch";
+  }
+
+  document.querySelectorAll(".tabs button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setTab(btn.getAttribute("data-tab"));
+    });
+  });
+
+  function renderExecFocus() {
+    var el = document.getElementById("exec-focus");
+    if (!el) return;
+    var ctx = state.data && state.data.executiveContext ? String(state.data.executiveContext).trim() : "";
+    var focus = mergedInitiatives().filter(function (i) {
+      return i.steeringFocus === true;
+    });
+    var parts = [];
+    if (ctx) {
+      parts.push("<p style='margin:0 0 0.5rem;color:var(--text)'>" + escapeHtml(ctx).replace(/\n/g, "<br/>") + "</p>");
+    }
+    if (focus.length) {
+      var lis = focus
+        .map(function (i) {
+          return (
+            "<li><strong>" +
+            escapeHtml(effectiveTitle(i)) +
+            "</strong> — " +
+            escapeHtml(laneLabel(effectiveLane(i))) +
+            "</li>"
+          );
+        })
+        .join("");
+      parts.push("<h2>Current focus</h2><ul>" + lis + "</ul>");
+    }
+    if (!parts.length) {
+      el.innerHTML =
+        "<span>Set <code>executiveContext</code> in initiatives.json or mark initiatives with <code>steeringFocus: true</code>.</span>";
+      el.classList.add("empty");
+    } else {
+      el.innerHTML = parts.join("");
+      el.classList.remove("empty");
+    }
+  }
+
+  function renderExecutive() {
+    renderExecFocus();
+    var tb = document.querySelector("#exec-table tbody");
+    tb.innerHTML = "";
+    var lanes = (state.data && state.data.lanes) ? state.data.lanes : [];
+    lanes.forEach(function (laneId) {
+      var inits = initsForLane(laneId);
+      var ids = orderedIdsForLane(laneId, inits);
+      ids.forEach(function (id) {
+        var init = getInit(id);
+        if (!init) return;
+        var lane = effectiveLane(init);
+        var tr = document.createElement("tr");
+        tr.style.cursor = "pointer";
+        tr.addEventListener("click", function () {
+          openDetail(init);
+        });
+        var rag = (init.rag || "").toLowerCase();
+        var links = (init.links || []).map(function (L) {
+          return '<a href="#" data-href="' + encodeURIComponent(L.href) + '">' + escapeHtml(L.label) + "</a>";
+        }).join(" ");
+        var tier = effectivePrdTier(init);
+        var pr = init.priority || "—";
+        var tierOnly =
+          '<span class="badge ' + tierClass(tier) + '">' + escapeHtml(tierBadgeLabel(tier)) + "</span>";
+        var et = effectiveTitle(init);
+        var ed = effectiveDescription(init);
+        tr.innerHTML =
+          "<td><strong>" +
+          escapeHtml(et) +
+          "</strong><br/><span style='color:var(--muted);font-size:0.75rem'>" +
+          escapeHtml(ed.slice(0, 100)) +
+          (ed.length > 100 ? "…" : "") +
+          "</span></td>" +
+          "<td>" +
+          tierOnly +
+          "</td>" +
+          "<td>" +
+          escapeHtml(String(pr)) +
+          "</td>" +
+          "<td>" +
+          escapeHtml(laneLabel(lane)) +
+          "</td>" +
+          "<td>" +
+          escapeHtml(init.horizon || "—") +
+          "</td>" +
+          "<td>" +
+          progressCellHtml(init) +
+          "</td>" +
+          "<td>" +
+          escapeHtml(nextMilestoneLabel(init)) +
+          "</td>" +
+          "<td><span class='rag " +
+          rag +
+          "'>" +
+          escapeHtml(init.rag || "—") +
+          "</span></td>" +
+          "<td>" +
+          escapeHtml(init.owner || "—") +
+          "</td>" +
+          "<td>" +
+          escapeHtml(init.whatsNext || "—") +
+          "</td>" +
+          "<td>" +
+          links +
+          "</td>";
+        tr.querySelectorAll("a[data-href]").forEach(function (a) {
+          a.addEventListener("click", function (e) {
+            e.stopPropagation();
+            var href = decodeURIComponent(a.getAttribute("data-href"));
+            copyTextToClipboard(href, function () {
+              var st = document.getElementById("status");
+              st.textContent = "Copied path.";
+              setTimeout(function () {
+                st.textContent = "";
+              }, 2000);
+            });
+          });
+        });
+        tb.appendChild(tr);
+      });
+    });
+  }
+
+  function escapeHtml(s) {
+    if (!s) return "";
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function renderOrchestration() {
+    var root = document.getElementById("orchestration-root");
+    root.innerHTML = "";
+    var lanes = (state.data && state.data.lanes) ? state.data.lanes : [];
+
+    lanes.forEach(function (laneId) {
+      var col = document.createElement("div");
+      col.className = "lane";
+      col.dataset.lane = laneId;
+      col.innerHTML = "<h3>" + escapeHtml(laneLabel(laneId)) + "</h3><div class='lane-body'></div>";
+      var body = col.querySelector(".lane-body");
+
+      if (laneId === "idea") {
+        var addBtn = document.createElement("button");
+        addBtn.type = "button";
+        addBtn.className = "add-idea-btn";
+        addBtn.setAttribute("aria-label", "Add idea");
+        addBtn.textContent = "+";
+        addBtn.addEventListener("click", function () {
+          document.getElementById("add-title").value = "";
+          document.getElementById("add-summary").value = "";
+          document.getElementById("add-tier").value = "Backlog";
+          document.getElementById("add-prio").value = "P2";
+          document.getElementById("add-idea-dlg").showModal();
+        });
+        body.appendChild(addBtn);
+      }
+
+      var inits = initsForLane(laneId);
+      var ids = orderedIdsForLane(laneId, inits);
+
+      ids.forEach(function (id) {
+        var init = getInit(id);
+        if (!init) return;
+        var card = document.createElement("div");
+        card.className = "card";
+        card.draggable = true;
+        card.dataset.id = init.id;
+        var tier = effectivePrdTier(init);
+        var pr = init.priority || "";
+        var wf = effectiveWorkflowStatus(init);
+        var intake = effectiveIntakeSource(init);
+        var meta =
+          '<div class="meta">' +
+          (tier ? '<span class="badge ' + tierClass(tier) + '">' + escapeHtml(tierBadgeLabel(tier)) + "</span>" : "") +
+          (pr ? '<span class="badge">' + escapeHtml(String(pr)) + "</span>" : "") +
+          (wf ? '<span class="chip" title="Workflow">' + escapeHtml(wf) + "</span>" : "") +
+          (intake ? '<span class="chip" title="Intake">' + escapeHtml(intake) + "</span>" : "") +
+          "</div>";
+        var et = effectiveTitle(init);
+        var ed = effectiveDescription(init);
+        card.innerHTML = "<strong>" + escapeHtml(et) + "</strong>" +
+          (ed ? "<div class='sum'>" + escapeHtml(ed) + "</div>" : "") +
+          meta;
+
+        card.addEventListener("click", function (e) {
+          e.stopPropagation();
+          openDetail(init);
+        });
+
+        card.addEventListener("dragstart", function (e) {
+          state.dragId = init.id;
+          e.dataTransfer.setData("application/json", JSON.stringify({ id: init.id }));
+          e.dataTransfer.effectAllowed = "move";
+        });
+
+        card.addEventListener("dragend", function () {
+          state.dragId = null;
+          root.querySelectorAll(".card.drag-target").forEach(function (c) {
+            c.classList.remove("drag-target");
+          });
+        });
+
+        card.addEventListener("dragover", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.dataTransfer.dropEffect = "move";
+          card.classList.add("drag-target");
+        });
+
+        card.addEventListener("dragleave", function () {
+          card.classList.remove("drag-target");
+        });
+
+        card.addEventListener("drop", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          card.classList.remove("drag-target");
+          var raw = e.dataTransfer.getData("application/json");
+          var o = {};
+          try { o = JSON.parse(raw || "{}"); } catch (err) {}
+          if (!o.id) return;
+          var dragInit = getInit(o.id);
+          if (!dragInit) return;
+          var prevLane = effectiveLane(dragInit);
+          var beforeId = init.id;
+          if (prevLane === laneId) {
+            applySameLaneReorder(laneId, o, beforeId);
+            return;
+          }
+          if (tryBeginDiscoveryMove(o, laneId, beforeId)) return;
+          applyCrossLaneDrop(o, laneId, beforeId);
+        });
+
+        body.appendChild(card);
+      });
+
+      body.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        body.classList.add("drag-over");
+        e.dataTransfer.dropEffect = "move";
+      });
+
+      body.addEventListener("dragleave", function (e) {
+        if (!body.contains(e.relatedTarget)) body.classList.remove("drag-over");
+      });
+
+      body.addEventListener("drop", function (e) {
+        if (e.target.closest && e.target.closest(".card")) return;
+        e.preventDefault();
+        body.classList.remove("drag-over");
+        var raw = e.dataTransfer.getData("application/json");
+        var o = {};
+        try { o = JSON.parse(raw || "{}"); } catch (err) {}
+        if (!o.id) return;
+        var dragInit = getInit(o.id);
+        if (!dragInit) return;
+        var prevLane = effectiveLane(dragInit);
+        if (prevLane === laneId) {
+          applySameLaneReorder(laneId, o, null);
+          return;
+        }
+        if (tryBeginDiscoveryMove(o, laneId, null)) return;
+        applyCrossLaneDrop(o, laneId, null);
+      });
+
+      root.appendChild(col);
+    });
+  }
+
+  function openDetail(init) {
+    state.currentDetailId = init.id;
+    state.ticketPrdStage = effectivePrdStage(init);
+    state.ticketPrdVaultPath = getPrdVaultHrefForModal(init);
+    state.ticketWsVaultPath = workspaceVaultPath(init);
+    var laneOpen = effectiveLane(init);
+    var prdStOpen = effectivePrdStage(init);
+    if (laneOpen === "discovery" || (laneOpen === "idea" && prdStOpen === "none")) {
+      state.ticketDocTab = "workspace";
+    } else {
+      state.ticketDocTab = state.ticketPrdVaultPath ? "prd" : "workspace";
+    }
+    var wsHint = document.getElementById("ticket-workspace-hint");
+    if (wsHint) {
+      wsHint.hidden = !(laneOpen === "discovery" || (laneOpen === "idea" && prdStOpen === "none"));
+    }
+    document.getElementById("dlg-title-input").value = effectiveTitle(init);
+    document.getElementById("dlg-desc").value = effectiveDescription(init);
+    document.getElementById("dlg-figma").value = effectiveFigma(init);
+    var prdEl = document.getElementById("dlg-prd-paths");
+    var links = init.links || [];
+    var prdHref = getPrdVaultHrefFromInit(init);
+    if (state.ticketPrdStage === "none" && prdHref) {
+      prdEl.textContent =
+        "Idea / Discovery — use **Workspace notes** for research; the full vault PRD opens here after **Spec ready**. Not loaded yet: " +
+        prdHref;
+    } else if (links.length) {
+      prdEl.textContent = "Links: " + links.map(function (L) { return L.label + ": " + L.href; }).join(" · ");
+    } else {
+      prdEl.textContent = "";
+    }
+    var dr = document.getElementById("dlg-discovery-row");
+    if (effectiveLane(init) === "discovery") {
+      dr.hidden = false;
+      document.getElementById("dlg-discovery-path-short").textContent = workspaceVaultPath(init);
+    } else {
+      dr.hidden = true;
+    }
+    var wf = effectiveWorkflowStatus(init);
+    document.getElementById("dlg-workflow").value = wf || "";
+    var intake = effectiveIntakeSource(init);
+    document.getElementById("dlg-intake").value = intake || "";
+    syncStatusBarForInit(init);
+    applyTicketDock(state.ticketDock);
+    applyTicketSize("lg");
+    document.getElementById("detail-dlg").showModal();
+    loadActiveTicketDocument();
+  }
+
+  document.querySelector("#detail-dlg .close").addEventListener("click", function () {
+    persistTicketEditorMarkdown();
+    saveStore();
+    document.getElementById("detail-dlg").close();
+  });
+
+  document.getElementById("ticket-dock-left").addEventListener("click", function () {
+    applyTicketDock("left");
+  });
+  document.getElementById("ticket-dock-center").addEventListener("click", function () {
+    applyTicketDock("center");
+  });
+  document.getElementById("ticket-dock-right").addEventListener("click", function () {
+    applyTicketDock("right");
+  });
+
+  document.getElementById("ticket-shrink").addEventListener("click", function () {
+    var order = ["sm", "md", "lg"];
+    var i = order.indexOf(state.ticketSize || "lg");
+    applyTicketSize(order[Math.max(0, i - 1)]);
+  });
+  document.getElementById("ticket-expand").addEventListener("click", function () {
+    var order = ["sm", "md", "lg"];
+    var i = order.indexOf(state.ticketSize || "lg");
+    applyTicketSize(order[Math.min(2, i + 1)]);
+  });
+
+  document.getElementById("dlg-status-bar").addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-tier]");
+    if (!btn || !document.getElementById("dlg-status-bar").contains(btn)) return;
+    e.preventDefault();
+    var tier = btn.getAttribute("data-tier");
+    document.querySelectorAll("#dlg-status-bar [data-tier]").forEach(function (b) {
+      b.classList.toggle("active", b.getAttribute("data-tier") === tier);
+    });
+  });
+
+  document.getElementById("btn-open-discovery-doc").addEventListener("click", function () {
+    var id = state.currentDetailId;
+    if (!id) return;
+    var init = getInit(id);
+    if (!init) return;
+    persistTicketEditorMarkdown();
+    saveStore();
+    document.getElementById("detail-dlg").close();
+    openDiscoveryDocViewer(init, false);
+  });
+
+  document.getElementById("detail-dlg").addEventListener("cancel", function () {
+    persistTicketEditorMarkdown();
+    saveStore();
+  });
+
+  document.getElementById("tab-prd").addEventListener("click", function () {
+    if (!state.ticketPrdVaultPath) return;
+    persistTicketEditorMarkdown();
+    saveStore();
+    state.ticketDocTab = "prd";
+    loadActiveTicketDocument();
+  });
+  document.getElementById("tab-workspace").addEventListener("click", function () {
+    persistTicketEditorMarkdown();
+    saveStore();
+    state.ticketDocTab = "workspace";
+    loadActiveTicketDocument();
+  });
+
+  document.querySelector("#detail-dlg .ticket-format-bar").addEventListener("mousedown", function (e) {
+    var b = e.target.closest("[data-fmt]");
+    if (!b || !document.getElementById("detail-dlg").contains(b)) return;
+    e.preventDefault();
+    var fmt = b.getAttribute("data-fmt");
+    var w = document.getElementById("md-wysiwyg");
+    w.focus();
+    document.execCommand(fmt, false, null);
+  });
+
+  document.getElementById("btn-download-ticket-md").addEventListener("click", function () {
+    persistTicketEditorMarkdown();
+    saveStore();
+    var vp = state.ticketCurrentVaultPath;
+    var md = (vp && state.store.mdOverrideByVaultPath[vp]) || "";
+    var td = getTurndown();
+    var el = document.getElementById("md-wysiwyg");
+    if (td && el && !md) md = td.turndown(el.innerHTML);
+    var base = (vp || "document.md").replace(/^.*\//, "").replace(/\.md$/i, "") || "document";
+    var blob = new Blob([md || ""], { type: "text/markdown;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = base + ".md";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById("btn-save-card").addEventListener("click", function () {
+    var id = state.currentDetailId;
+    if (!id) return;
+    persistTicketEditorMarkdown();
+    var t = document.getElementById("dlg-title-input").value.trim();
+    var d = document.getElementById("dlg-desc").value;
+    var f = document.getElementById("dlg-figma").value.trim();
+    if (t) state.store.titleById[id] = t;
+    else delete state.store.titleById[id];
+    state.store.descriptionById[id] = d;
+    state.store.figmaById[id] = f;
+    var stTier = getSelectedStatusTierFromBar();
+    var initRef = getInit(id);
+    var baseTier = initRef ? normalizePrdTierKey(initRef.prdTier) : "Backlog";
+    if (stTier === baseTier) delete state.store.prdTierById[id];
+    else state.store.prdTierById[id] = stTier;
+    var wfSel = document.getElementById("dlg-workflow").value.trim();
+    var intakeSel = document.getElementById("dlg-intake").value.trim();
+    if (wfSel) state.store.workflowStatusById[id] = wfSel;
+    else delete state.store.workflowStatusById[id];
+    if (intakeSel) state.store.intakeSourceById[id] = intakeSel;
+    else delete state.store.intakeSourceById[id];
+    var custom = state.store.customInitiatives || [];
+    for (var i = 0; i < custom.length; i++) {
+      if (custom[i].id === id) {
+        custom[i].title = t || custom[i].title;
+        custom[i].summary = d;
+        custom[i].prdTier = stTier;
+        if (f) custom[i].figmaUrl = f;
+        if (wfSel) custom[i].workflowStatus = wfSel;
+        else delete custom[i].workflowStatus;
+        if (intakeSel) custom[i].intakeSource = intakeSel;
+        else delete custom[i].intakeSource;
+        break;
+      }
+    }
+    saveStore();
+    document.getElementById("detail-dlg").close();
+    renderExecutive();
+    renderOrchestration();
+  });
+
+  document.getElementById("btn-reset").addEventListener("click", function () {
+    if (confirm("Clear lane moves and per-lane card order? Browser text overrides for titles/descriptions stay.")) {
+      state.store.laneOverride = {};
+      state.store.cardOrder = {};
+      saveStore();
+      renderExecutive();
+      renderOrchestration();
+    }
+  });
+
+  document.getElementById("btn-clear-custom").addEventListener("click", function () {
+    if (confirm("Remove all ideas you added from this browser?")) {
+      state.store.customInitiatives = [];
+      saveStore();
+      renderExecutive();
+      renderOrchestration();
+    }
+  });
+
+  document.getElementById("btn-export").addEventListener("click", function () {
+    var out = JSON.parse(JSON.stringify(state.data));
+    out.initiatives = mergedInitiatives().map(function (init) {
+      var copy = JSON.parse(JSON.stringify(init));
+      var id = copy.id;
+      if (state.store.laneOverride[id]) copy.lane = state.store.laneOverride[id];
+      var tit = state.store.titleById[id];
+      if (tit != null && String(tit).trim() !== "") copy.title = tit;
+      var desc = state.store.descriptionById[id];
+      if (desc != null) copy.summary = desc;
+      var fig = state.store.figmaById[id];
+      if (fig) copy.figmaUrl = fig;
+      var pt = state.store.prdTierById[id];
+      if (pt != null && String(pt).trim() !== "") copy.prdTier = normalizePrdTierKey(pt);
+      copy.prdStage = effectivePrdStage(copy);
+      var wf = effectiveWorkflowStatus(copy);
+      if (wf) copy.workflowStatus = wf;
+      else delete copy.workflowStatus;
+      var ins = effectiveIntakeSource(copy);
+      if (ins) copy.intakeSource = ins;
+      else delete copy.intakeSource;
+      return copy;
+    });
+    out.updated = new Date().toISOString().slice(0, 10);
+    out.schemaVersion = "2.3.0";
+    if (out.executiveContext == null) out.executiveContext = "";
+    out.exportNote =
+      "Includes lane overrides, prdStage, workflowStatus, intakeSource, order, titles, summaries, Figma, markdown overrides from browser.";
+    out.cardOrder = state.store.cardOrder;
+    out.mdOverrideByVaultPath = state.store.mdOverrideByVaultPath || {};
+    var blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "initiatives.export.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById("discovery-review-close").addEventListener("click", function () {
+    document.getElementById("discovery-review-dlg").close();
+    clearPendingDiscovery();
+  });
+  document.getElementById("discovery-review-cancel").addEventListener("click", function () {
+    document.getElementById("discovery-review-dlg").close();
+    clearPendingDiscovery();
+  });
+  document.getElementById("discovery-review-dlg").addEventListener("cancel", function () {
+    clearPendingDiscovery();
+  });
+  document.getElementById("discovery-review-accept").addEventListener("click", function () {
+    commitDiscoveryFromReview();
+  });
+
+  document.getElementById("discovery-run-close").addEventListener("click", function () {
+    document.getElementById("discovery-run-dlg").close();
+    state.discoveryRunInitId = null;
+  });
+  document.getElementById("discovery-run-dlg").addEventListener("cancel", function () {
+    state.discoveryRunInitId = null;
+  });
+  document.getElementById("discovery-copy-path").addEventListener("click", function () {
+    var t = document.getElementById("discovery-vault-path").textContent;
+    copyTextToClipboard(t, function () {
+      document.getElementById("status").textContent = "Path copied.";
+      setTimeout(function () { document.getElementById("status").textContent = ""; }, 2000);
+    });
+  });
+  document.getElementById("discovery-copy-prompt").addEventListener("click", function () {
+    copyTextToClipboard(state.lastDiscoveryPrompt || "", null);
+  });
+  document.getElementById("discovery-refresh-doc").addEventListener("click", function () {
+    var id = state.discoveryRunInitId;
+    if (!id) return;
+    var init = getInit(id);
+    if (init) loadDiscoveryDocPreview(init);
+  });
+
+  document.getElementById("add-idea-close").addEventListener("click", function () {
+    document.getElementById("add-idea-dlg").close();
+  });
+  document.getElementById("add-idea-save").addEventListener("click", function () {
+    var title = document.getElementById("add-title").value.trim();
+    if (!title) {
+      alert("Add a heading.");
+      return;
+    }
+    var summary = document.getElementById("add-summary").value;
+    var tier = document.getElementById("add-tier").value;
+    var prio = document.getElementById("add-prio").value;
+    var nid = allocateIdeaId(title);
+    var cf = "06-Resources/Product_ideas/" + nid + ".md";
+    var newI = {
+      id: nid,
+      kind: "feature_idea",
+      title: title,
+      summary: summary,
+      lane: "idea",
+      prdStage: "none",
+      prdTier: tier,
+      priority: prio,
+      owner: "",
+      horizon: "",
+      rag: "amber",
+      whatsNext: "",
+      figmaUrl: "",
+      links: [],
+      contextFile: cf,
+      source: "dashboard",
+      intakeSource: "",
+      progress: null,
+      progressLabel: "",
+      milestones: [],
+      steeringFocus: false,
+      workflowStatus: ""
+    };
+    state.store.customInitiatives.push(newI);
+    state.store.descriptionById[newI.id] = summary;
+    insertIdInLane(newI.id, "idea", null);
+    saveStore();
+    document.getElementById("add-idea-dlg").close();
+    renderExecutive();
+    renderOrchestration();
+  });
+
+  fetch("initiatives.json", { cache: "no-store" })
+    .then(function (r) {
+      if (!r.ok) throw new Error("initiatives.json: " + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      state.data = data;
+      renderExecutive();
+      renderOrchestration();
+    })
+    .catch(function (e) {
+      document.querySelector(".hint").innerHTML =
+        "<strong style='color:#f87171'>Could not load initiatives.json.</strong> " +
+        "Start a server in this folder (e.g. <code>python3 -m http.server 8766</code>). (" + e.message + ")";
+    });
+})();
+  </script>
+</body>
+</html>

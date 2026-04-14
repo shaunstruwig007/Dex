@@ -6,7 +6,7 @@ Your task backlog organized by priority.
 
 ## This Week
 
-- [ ] **Return week (from 9 Apr):** Run P1 in order — SSO interviews → workshop plan with [[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]] → unblock GTM + RACI for mid-April discovery cadence.
+- [ ] **Return week (from 9 Apr):** P1 order — **discovery workshops** (Tanya, Mark, Aracey) → GTM + RACI → scheduling input. **SSO validation paused** per Exco/Board (new-sales focus).
 - [ ] **Post-return:** Workboard expansion review — competitor + market insights tab, Bitbucket connection, automation plan ([[^task-20260330-009]]).
 
 ## P0 - Urgent (max 3)
@@ -18,8 +18,7 @@ Your task backlog organized by priority.
 
 <!-- Reprioritised 2026-03-30: Essential launch + March 30 strategy meeting commitments; mid-April demo/workshop path -->
 
-- [ ] **SSO deal-loss validation** — Interview [[05-Areas/People/Internal/Tafadzwa_Chasakara|Tafadzwa Chasakara]], [[05-Areas/People/Internal/Ismaeel_Essa|Isma'eel Essa]], [[05-Areas/People/Internal/Michelle_de_Villiers|Michelle de Villiers]]; confirm whether SSO was a real loss driver; review full lost-deal Excel. **Complete before April discovery workshops (wk 2–3).** Source: 2026-03-30 Post-Launch Priorities. [[^task-20260330-001]] # product_launch_mvp
-- [ ] **April discovery workshops** — Organise with [[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]] for **wk 2–3 April** (SSO, elevated auth, WhatsApp, AI, Explorer, page builder). Align invites, agenda, pre-reads. [[^task-20260330-002]] # product_launch_mvp
+- [ ] **April discovery workshops** — In progress: organise with [[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]], **Mark**, and **Aracey** for **wk 2–3 April**. Agenda: elevated auth, WhatsApp, AI, Explorer, page builder (**SSO de-prioritised** per Exco/Board 2026-04-14). Align invites, agenda, pre-reads. [[^task-20260330-002]] # product_launch_mvp
 - [ ] **Essential — GTM foundation** — One-pager (problem, buyer, outcome, proof); align marketing + sales on Essential vs future tiers + ICP; outline deck/web narrative before GA. [[^task-20260323-005]] # product_launch_mvp
 - [ ] **Essential — stakeholder RACI** — Populate stakeholder table on launch doc with wiki links to Internal (and External) people pages. [[^task-20260323-007]] # product_launch_mvp
 - [ ] **Essential launch — migration execution** — Owners per cohort, cutover criteria, steering cadence — aligned to migration roadmap and end-May kickoff. [[^task-20260323-001]] # client_migration
@@ -69,6 +68,7 @@ Your task backlog organized by priority.
 
 ## P3 - Backlog
 
+- [ ] **SSO deal-loss validation** — *(deferred 2026-04-14)* Interview [[05-Areas/People/Internal/Tafadzwa_Chasakara|Tafadzwa Chasakara]], [[05-Areas/People/Internal/Ismaeel_Essa|Isma'eel Essa]], [[05-Areas/People/Internal/Michelle_de_Villiers|Michelle de Villiers]]; lost-deal Excel; confirm SSO as loss driver. **Exco/Board:** not focusing on SSO or migration-led work near-term — **new sales** priority. Resume only if steering changes. Source: 2026-03-30 priorities; pause 2026-04-14. [[^task-20260330-001]] # product_launch_mvp
 - [ ] **Tawk.to — AI chatbot ecosystem investigation** — Quick win flagged by [[05-Areas/People/Internal/Leon_Jansen_van_Rensburg|Leon Jansen van Rensburg]] + MC; policy Q&A chatbot using uploaded HR docs. Assess ecosystem fit: how does Tawk.to coexist with Wyzetalk chat? Any consolidation path? Scope: policy Q&A only, no smart HR integration in v1. [[^task-20260409-009]] # product_launch_mvp
 - [ ] **([[05-Areas/People/Internal/Leon_Jansen_van_Rensburg|Leon Jansen van Rensburg]]) Floatpays discovery workshops** — Organise/run discovery with Floatpays team (EWA integration, revenue share); post–April leave per roadmap. [[^task-20260330-007]] # product_launch_mvp
 - [ ] **([[05-Areas/People/Internal/Michelle_de_Villiers|Michelle de Villiers]]) Remote app extensions — next slice** — Define + prioritise payslips, leave, roster (remote apps + Blue handoff). [[^task-20260330-008]] # product_launch_mvp

@@ -19,7 +19,7 @@
 
 ## Meeting Workflows (7 features)
 
-- [ ] Meeting prep (`/meeting-prep`)
+- [x] Meeting prep (`/meeting-prep`)
 - [x] Meeting processing (`/process-meetings`)
 - [ ] Commitment scan (`/commitment-scan`)
 - [ ] Person page created

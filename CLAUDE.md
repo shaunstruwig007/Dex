@@ -517,6 +517,7 @@ Skills extend Dex capabilities and are invoked with `/skill-name`. Common skills
 - `/intelligence-scanning` — New ingest → daily signal brief (`06-Resources/Market_intelligence/`)
 - `/daily-intelligence-brief` — Synthesize a brief from existing ingest only (no transcript fetch)
 - `/weekly-market-discovery` — Run the weekly source rotation into `Market_and_deal_signals.md`
+- `/weekly-exec-intel` — Weekly stakeholder brief for Product & Executive (after `run-weekly-intel-fetch.sh` or ingest); output in `Market_intelligence/synthesis/weekly/`
 
 See `06-Resources/Market_intelligence/ARCHITECTURE.md` for the full flow and `06-Resources/PRDs/Evidence_register.md` for `EV-*` traceability.
 

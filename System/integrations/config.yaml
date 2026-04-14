@@ -9,6 +9,7 @@ enabled:
   notion: false
   slack: true
   google: false
+  atlassian: true
 
 # Integration-specific settings are stored in separate files:
 # - slack.yaml (Slack-specific config)
@@ -20,6 +21,7 @@ hooks:
     use_notion: false     # Optional: set true if Notion MCP is configured
     use_slack: true       # Pull recent Slack context with attendees
     use_google: true      # Pull email threads with attendees
+    use_confluence: true  # Search Confluence when Atlassian MCP is connected
   
   person_pages:
     use_notion: false     # Optional: link Notion pages if MCP is configured
@@ -39,3 +41,19 @@ detected:
   notion: null
   slack: null
   google: null
+
+# Atlassian Cloud (official Remote MCP: Jira + Confluence). OAuth via MCP — see .cursor/mcp.json atlassian-mcp.
+atlassian:
+  enabled: true
+  configured_at: '2026-04-13'
+  cloud_id: ''
+  site_url: ''
+  jira:
+    enabled: false
+    project_key: ''
+    issue_type: Task
+    task_sync: false
+    trust_level: readonly
+  confluence:
+    enabled: true
+    space_key: ''

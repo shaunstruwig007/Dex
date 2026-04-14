@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.1.0",
   "title": "Shaun — consolidated work",
-  "updated": "2026-04-13",
+  "updated": "2026-04-14",
   "items": [
     {
       "id": "task-20260409-001",
@@ -30,23 +30,10 @@
       "links": []
     },
     {
-      "id": "task-20260330-001",
-      "kind": "task",
-      "title": "SSO deal-loss validation",
-      "summary": "Interview Tafadzwa, Isma'eel, Michelle; confirm whether SSO was a real loss driver; review full lost-deal Excel. **Complete before April discovery workshops (wk 2–3).** Source: 2026-03-30 Post-Launch Priorities.",
-      "nextAction": "",
-      "priorityBand": "P1",
-      "rankScore": 84,
-      "status": "todo",
-      "pillar": "product_launch_mvp",
-      "tags": [],
-      "links": []
-    },
-    {
       "id": "task-20260330-002",
       "kind": "task",
       "title": "April discovery workshops",
-      "summary": "Organise with Tanya for **wk 2–3 April** (SSO, elevated auth, WhatsApp, AI, Explorer, page builder). Align invites, agenda, pre-reads.",
+      "summary": "In progress: organise with [[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]], **Mark**, and **Aracey** for **wk 2–3 April**. Agenda: elevated auth, WhatsApp, AI, Explorer, page builder (**SSO de-prioritised** per Exco/Board 2026-04-14). Align invites, agenda, pre-reads.",
       "nextAction": "",
       "priorityBand": "P1",
       "rankScore": 83,
@@ -128,6 +115,19 @@
       ]
     },
     {
+      "id": "task-20260413-001",
+      "kind": "task",
+      "title": "Steerco — GTM “in the game” bar (login + feed)",
+      "summary": "Prioritise minimal **login flow + feed** so GTM can engage meaningfully in Steerco before full polish; aligns with 2026-04-09 Steerco and existing GTM one-pager work.",
+      "nextAction": "",
+      "priorityBand": "P2",
+      "rankScore": 69,
+      "status": "todo",
+      "pillar": "product_launch_mvp",
+      "tags": [],
+      "links": []
+    },
+    {
       "id": "task-20260330-003",
       "kind": "task",
       "title": "Scheduling — simplest implementation",
@@ -156,8 +156,8 @@
     {
       "id": "task-20260330-004",
       "kind": "task",
-      "title": "(Anneke) WhatsApp one-way pricing",
-      "summary": "Applicability for message module; cross-check with Merel briefing / Meta 2026 model. *Coordination / PM follow-up.*",
+      "title": "([[05-Areas/People/Internal/Anneke_Vermeulen|Anneke Vermeulen]]) WhatsApp one-way pricing",
+      "summary": "Applicability for message module; cross-check with [[05-Areas/People/Internal/Merel_van_der_Lei|Merel van der Lei]] briefing / Meta 2026 model. *Coordination / PM follow-up.*",
       "nextAction": "",
       "priorityBand": "P2",
       "rankScore": 67,
@@ -169,7 +169,7 @@
     {
       "id": "task-20260330-005",
       "kind": "task",
-      "title": "(Tanya) Importer + demo users",
+      "title": "([[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]]) Importer + demo users",
       "summary": "Confirm importer works; demo users importable for grouping (demo environment).",
       "nextAction": "",
       "priorityBand": "P2",
@@ -182,7 +182,7 @@
     {
       "id": "task-20260330-006",
       "kind": "task",
-      "title": "Dependency: Jan — WhatsApp Flow + Flow Gear",
+      "title": "Dependency: [[05-Areas/People/Internal/Jan_Vosloo|Jan Vosloo]] — WhatsApp Flow + Flow Gear",
       "summary": "Feasibility + technical requirements; mid-April demo target. *Track / unblock.*",
       "nextAction": "",
       "priorityBand": "P2",
@@ -302,7 +302,7 @@
       "id": "task-20260323-008",
       "kind": "task",
       "title": "Elevated auth — follow-through",
-      "summary": "Workshop core vs remote app split and validation; Tanya docs → Pieter review per elevated auth meeting.",
+      "summary": "Workshop core vs remote app split and validation; [[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]] docs → [[05-Areas/People/Internal/Pieter_Roodt|Pieter Roodt]] review per elevated auth meeting.",
       "nextAction": "Schedule workshop; track doc handoff to Pieter.",
       "priorityBand": "P2",
       "rankScore": 64,

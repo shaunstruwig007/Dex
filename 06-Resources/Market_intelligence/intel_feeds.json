@@ -1,0 +1,71 @@
+{
+  "comment": "RSS feeds aligned to sources_manifest / Market Signals guide v2. Remove or fix any feed that fails locally (403/bot block). FlexOS has no stable public RSS at last check — use manual paste or discover via flexos.work page source.",
+  "feeds": [
+    {
+      "slug": "josh-bersin",
+      "rss_url": "https://joshbersin.com/feed/",
+      "max_items": 15,
+      "tags": ["Market", "EX-HR", "AI-work", "Early signal"]
+    },
+    {
+      "slug": "hr-tech-feed",
+      "rss_url": "https://hrtechfeed.com/feed/",
+      "max_items": 25,
+      "tags": ["Market", "funding", "M&A", "Early signal"]
+    },
+    {
+      "slug": "unleash",
+      "rss_url": "https://www.unleash.ai/feed/",
+      "max_items": 20,
+      "tags": ["Market", "EX-HR", "EMEA", "Early signal"]
+    },
+    {
+      "slug": "staffbase-comms",
+      "rss_url": "https://staffbase.com/blog/feed/",
+      "max_items": 15,
+      "tags": ["Product", "competitor", "EX-HR", "Tactical"]
+    },
+    {
+      "slug": "aihr",
+      "rss_url": "https://www.aihr.com/blog/feed/",
+      "max_items": 15,
+      "tags": ["EX-HR", "Product", "Tactical"]
+    },
+    {
+      "slug": "hse-network",
+      "rss_url": "https://hse-network.com/feed/",
+      "max_items": 15,
+      "tags": ["Frontline-safety", "Tactical"]
+    },
+    {
+      "slug": "lennys-newsletter",
+      "rss_url": "https://www.lennysnewsletter.com/feed",
+      "max_items": 15,
+      "tags": ["Product", "AI-work", "Tactical"]
+    },
+    {
+      "slug": "product-growth-aakash",
+      "rss_url": "https://news.aakashg.com/feed",
+      "max_items": 15,
+      "tags": ["Product", "PLG", "AI PM", "Tactical"]
+    },
+    {
+      "slug": "worktrends-talentculture",
+      "rss_url": "https://www.talentculture.com/feed/",
+      "max_items": 15,
+      "tags": ["EX-HR", "AI-work", "Tactical"]
+    },
+    {
+      "slug": "open-letter",
+      "rss_url": "https://theopenletter.io/feed",
+      "max_items": 20,
+      "tags": ["Market", "Region-SA", "Early signal"]
+    },
+    {
+      "slug": "mining-technology",
+      "rss_url": "https://www.mining-technology.com/feed/",
+      "max_items": 15,
+      "tags": ["Frontline-safety", "mining", "Region", "Tactical"]
+    }
+  ]
+}

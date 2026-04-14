@@ -114,6 +114,8 @@ The confirmed post-GA priority order from the 2026-03-30 leadership session is:
 5. Product Analytics — #5
 6. Scheduled Content — #6
 
+**Update 2026-04-13 (Leon — sales + board):** the **numbered board stack** is now **#1 WhatsApp** → **#2 AI** → **#3 P2P chat** → **#4 Remote App extensions** → **#5 FloatPays** → **#6 Forms**; **Product Analytics** and **Scheduled Content** are **not** in that six for the **current development phase**. See [Next/README.md](./README.md) and [Wyzetalk_Essential_Launch.md](../../../04-Projects/Wyzetalk_Essential_Launch.md).
+
 Explorer was mentioned for April discovery workshops but was **not placed in the confirmed priority order**. Its scope and priority relative to the above features is to be confirmed during discovery week 2–3 April.
 
 ---

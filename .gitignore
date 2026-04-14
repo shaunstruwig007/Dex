@@ -183,6 +183,9 @@ core/tests/fixtures/vault/System/.dex/*
 # Market intelligence — local Python venv (transcript scripts)
 .scripts/market-intelligence/.venv/
 
+# Optional private RSS feed list (merged by fetch_intel_rss.py); may contain signed URLs / tokens
+06-Resources/Market_intelligence/intel_feeds.local.json
+
 # Industry research — PDFs live in SharePoint / local mirror only (markdown summaries are tracked)
 06-Resources/Research/**/*.pdf
 

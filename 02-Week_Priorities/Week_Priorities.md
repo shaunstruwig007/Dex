@@ -4,7 +4,9 @@
 
 **Context:** Back from leave **2026-04-09+** · Same ladder as [Quarter goals](../01-Quarter_Goals/Quarter_Goals.md) and [Essential launch](../04-Projects/Wyzetalk_Essential_Launch.md). Prior week archived: [2026-W15](../07-Archives/Plans/2026-W15.md).
 
-**Ladder:** Q2 **GA Essential** + **2–3 substantive migrations** + **PRD debt post-GA** (payslip/WhatsApp) + **migration machine** cadence — see Q2 table in quarter goals.
+**Steering (2026-04-14):** Exco and Board confirmed **near-term focus on new sales**, not migration-led or **SSO** work. **SSO deal-loss validation** is **paused** (back burner). Discovery workshops continue; agenda **de-emphasises SSO** — see Top 3 below.
+
+**Ladder:** Q2 **GA Essential** + **PRD debt post-GA** (payslip/WhatsApp) + **net-new GTM**; **migration machine** and cohort execution stay on the roadmap but are **not** the current steering beat — see [Essential launch](../04-Projects/Wyzetalk_Essential_Launch.md) update.
 
 ---
 
@@ -32,29 +34,29 @@
 | **PRD debt post-GA** | Payslip / WhatsApp AC | Tracked post-GA; workshops inform scope |
 | **Migration machine** | Owners + cadence | P1 execution task on launch/migration doc |
 
-**This week advances:** GA narrative (workshops + GTM), migration **readiness** (steering/criteria), validation (SSO) so workshops are credible.
+**This week advances:** GA narrative (**discovery workshops in progress** + GTM), stakeholder RACI, and **sales-led** discovery themes (WhatsApp, AI, Explorer, page builder, elevated auth) — **not** SSO validation.
 
 ---
 
 ## 🎯 Top 3 This Week
 
-1. **SSO deal-loss validation closed** — **New product launch** · `^week-2026-W16-p1`
-   - Success criteria: Interviews done ([[05-Areas/People/Internal/Tafadzwa_Chasakara|Tafadzwa Chasakara]], [[05-Areas/People/Internal/Ismaeel_Essa|Isma'eel Essa]], [[05-Areas/People/Internal/Michelle_de_Villiers|Michelle de Villiers]]), lost-deal Excel reviewed, narrative ready for workshop facilitation.
-   - Quarterly goal: Q2 GA / credible discovery (informs scope + comms).
-   - Linked task: [[^task-20260330-001]]
-   - Effort: **medium** (interviews + synthesis)
-
-2. **April discovery workshops executed or firmly scheduled** — **New product launch** · `^week-2026-W16-p2`
-   - Success criteria: Dates locked with [[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]], invites/pre-reads out (or sessions held if calendar lands this week), agenda covers SSO, elevated auth, WhatsApp, AI, Explorer, page builder as planned.
-   - Quarterly goal: GA Essential + PRD follow-through.
+1. **April discovery workshops — in progress** — **New product launch** · `^week-2026-W16-p1`
+   - Success criteria: Workshops **moving** with [[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]], **Mark**, and **Aracey** (invites, pre-reads, facilitation); agenda covers **elevated auth, WhatsApp, AI, Explorer, page builder** as planned. **SSO removed** from active workshop narrative per Exco/Board steering.
+   - Quarterly goal: GA Essential + PRD follow-through (sales-led discovery).
    - Linked task: [[^task-20260330-002]]
    - Effort: **medium** (coordination + facilitation prep)
 
-3. **GTM + RACI visible for mid-April cadence** — **New product launch** · `^week-2026-W16-p3`
+2. **GTM + RACI visible for mid-April cadence** — **New product launch** · `^week-2026-W16-p2`
    - Success criteria: One-pager materially advanced; stakeholder RACI table populated on launch doc with wiki links where people exist.
    - Quarterly goal: GA + ICP/GTM alignment.
    - Linked tasks: [[^task-20260323-005]], [[^task-20260323-007]]
    - Effort: **medium** (writing + stakeholder chase)
+
+3. **Scheduling / cron framing for workshops** — **New product launch** · `^week-2026-W16-p3`
+   - Success criteria: Simplest implementation story captured as input to discovery; aligns with [[^task-20260330-003]].
+   - Quarterly goal: GA + “Then” clarity without over-scoping GA.
+   - Linked task: [[^task-20260330-003]]
+   - Effort: **light–medium**
 
 ---
 
@@ -62,8 +64,8 @@
 
 **Work (from task backlog)**
 
-- [ ] SSO validation **complete before / during** discovery workshop window — [[^task-20260330-001]]
-- [ ] Workshop logistics with **Tanya** — [[^task-20260330-002]]
+- [ ] Discovery workshops — coordination with **Tanya**, **Mark**, **Aracey** — [[^task-20260330-002]]
+- [ ] ~~SSO deal-loss validation~~ — **paused** (see [[^task-20260330-001]] backlog note)
 
 **Personal (P0 — calendar yourself)**
 
@@ -76,15 +78,14 @@
 
 ### Must Complete (P0 / week-critical)
 
-- [ ] SSO deal-loss interviews + Excel — [[^task-20260330-001]] — supports Priority **1**
-- [ ] Workshop plan / facilitation pack with [[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]] — [[^task-20260330-002]] — supports Priority **2**
+- [ ] Workshop plan / facilitation with [[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]], **Mark**, **Aracey** — [[^task-20260330-002]] — Priority **1**
 
 ### Should Complete (P1)
 
-- [ ] GTM one-pager — [[^task-20260323-005]] — Priority **3**
-- [ ] RACI on launch doc — [[^task-20260323-007]] — Priority **3**
-- [ ] Essential launch — migration execution (owners, cutover, steering) — [[^task-20260323-001]] — **Client migration**
-- [ ] Scheduling / cron framing for workshops — [[^task-20260330-003]]
+- [ ] GTM one-pager — [[^task-20260323-005]] — Priority **2**
+- [ ] RACI on launch doc — [[^task-20260323-007]] — Priority **2**
+- [ ] Scheduling / cron framing for workshops — [[^task-20260330-003]] — Priority **3**
+- [ ] Essential launch — migration execution (owners, cutover, steering) — [[^task-20260323-001]] — **Client migration** *(lower steering emphasis vs new sales — keep doc honest, don’t force depth this week)*
 
 ### If Time Permits (P2)
 
@@ -97,8 +98,8 @@
 
 | Day | Time | Meeting | Prep Needed | Related priority |
 |-----|------|---------|-------------|------------------|
-| *TBD* | *TBD* | Discovery workshop sessions / prep | SSO narrative, agenda, pre-reads | 1–2 |
-| *TBD* | *TBD* | [[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]] sync (workshop logistics) | Dates, invites, owners | 2 |
+| *TBD* | *TBD* | Discovery workshop sessions / prep | Agenda, pre-reads (elevated auth, WhatsApp, AI, Explorer, page builder — **not** SSO) | 1 |
+| *TBD* | *TBD* | Tanya / Mark / Aracey — workshop logistics | Dates, invites, owners | 1 |
 
 *Pull from Calendar.app after `/calendar-setup` and replace TBD rows.*
 
@@ -108,8 +109,8 @@
 
 | Pillar | This week | Balance |
 |--------|-----------|---------|
-| **New product launch** | SSO validation, workshops, GTM, RACI, scheduling input | 🟩 Primary |
-| **Client migration** | Migration execution task; steering tone for Q2 cohort | 🟨 Touch |
+| **New product launch** | Discovery workshops (Tanya, Mark, Aracey), GTM, RACI, scheduling input | 🟩 Primary |
+| **Client migration** | Light touch — board focus is **new sales**, not migration depth this week | 🟨 Light |
 | **AI in the PDLC** | Workboard / pipeline hygiene only if P1 breathing room | 🟥 Light |
 
 ---
@@ -118,8 +119,7 @@
 
 From [2026-W15](../07-Archives/Plans/2026-W15.md) / `03-Tasks/Tasks.md`:
 
-- [ ] Same three themes if not done: SSO interviews + Excel; workshop logistics; GTM + RACI.
-- [ ] **Return week** line in Tasks.md still applies: run P1 order SSO → workshop plan → unblock GTM + RACI.
+- [ ] Workshop logistics with Tanya, Mark, Aracey; GTM + RACI; scheduling input — **SSO validation removed** from weekly critical path.
 
 ---
 
@@ -152,4 +152,5 @@ From [2026-W15](../07-Archives/Plans/2026-W15.md) / `03-Tasks/Tasks.md`:
 ---
 
 *Generated: 2026-04-13*  
+*Updated: 2026-04-14 — SSO paused; discovery stakeholders expanded; steering = new sales*  
 *Command: /week-plan*

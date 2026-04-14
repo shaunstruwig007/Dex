@@ -12,6 +12,8 @@
 
 **Weekly discovery:** `/weekly-market-discovery` — [.claude/skills/weekly-market-discovery/SKILL.md](../.claude/skills/weekly-market-discovery/SKILL.md)
 
+**Weekly Product & Executive pack:** `/weekly-exec-intel` (after `run-weekly-intel-fetch.sh` or your ingest) — [.claude/skills/weekly-exec-intel/SKILL.md](../.claude/skills/weekly-exec-intel/SKILL.md)
+
 **Daily intelligence (ingest + brief):** [Market_intelligence/[[README]].md](./Market_intelligence/[[README]].md) — transcripts + newsletters → **`synthesis/daily/YYYY-MM-DD_signal_brief.md`** · `/intelligence-scanning` · `/daily-intelligence-brief` (synthesis-only) — [.claude/skills/intelligence-scanning/SKILL.md](../.claude/skills/intelligence-scanning/SKILL.md)
 
 ---
@@ -44,6 +46,7 @@
 
 | Week of | Source type | Source name / URL | Competitor or theme | What changed or was claimed | Implication for us | EV-ID |
 |---------|-------------|-------------------|---------------------|------------------------------|---------------------|-------|
+| 2026-04-14 | Automation + RSS ingest | [intel_feeds.json](./Market_intelligence/intel_feeds.json) · [fetch_intel_rss.py](../.scripts/market-intelligence/fetch_intel_rss.py) | Pipeline | **RSS fetch (`--since-days 14`):** **66** new `ingest/newsletters/**/*.md` (e.g. HR Tech Feed, UNLEASH, Josh Bersin, Lenny’s, mining-technology, worktrends-talentculture, AIHR). Prior daily brief (pre-ingest) had noted empty pipeline — **superseded** by this run. | Re-run **`/intelligence-scanning`** to refresh daily briefs; **weekly exec pack:** [2026-04-14_weekly_exec_brief.md](./Market_intelligence/synthesis/weekly/2026-04-14_weekly_exec_brief.md) | |
 | 2026-04-09 | Internal deal intel | [YOOBIC](https://yoobic.com/) · [profile](./Competitors/profiles/Yoobic.md) | [YOOBIC](./Competitors/profiles/Yoobic.md) | **Win-loss:** competitor displaced **Wyzetalk** on an account **150k+ users** (retail store ops / execution positioning) | Sharpen **retail execution vs deskless EX** story; update battle card; capture structured win-loss reason (no client name in vault) | EV-2026-04-001 |
 | 2026-03-27 | Social — LinkedIn | [Louis Du Toit — Sentiv × Teamwire partnership](https://www.linkedin.com/feed/update/urn:li:activity:7440477679377817601) | [Sentiv](./Competitors/profiles/Sentiv.md) / [Teamwire](./Competitors/profiles/Teamwire.md) | **Teamwire** (DE **secure messenger**) + **Sentiv** (ZA mission-critical integrator, ex–**Altron Nexus**) — **SA** routes for **public safety, EMS, municipalities, frontline ops**; governance / sovereignty vs **consumer WhatsApp** | **Government & critical-infra** RFPs may bundle **sovereign ops messenger**; disambiguate vs **EX platform**; **coexistence** story where **Teamwire** = governed ops, **Wyzetalk** = employee EX | EV-2026-03-006 |
 | 2026-03-26 | Social — LinkedIn | [Jem — Deel Local Payroll (PaySpace) partner post](https://www.linkedin.com/posts/jemhr_weve-done-a-deal-with-deel-very-happy-activity-7439938882831388696-yDmu/) | [JEM HR](./Competitors/profiles/Jem.md) | **Official integration partner** of **Deel Local Payroll, powered by PaySpace**; PaySpace payroll customers can reach frontline via **WhatsApp** through Jem | Strengthens Jem **payroll + WA** bundle; update market brief + battle cards: **coexistence** with payroll vendors, **Essential** payslip / integration story | EV-2026-03-005 |

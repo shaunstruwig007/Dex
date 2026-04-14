@@ -1,0 +1,82 @@
+{
+  "mcpServers": {
+    "work-mcp": {
+      "type": "stdio",
+      "command": "/Users/shaunstruwig/Documents/Blueprint/Dex/.venv/bin/python",
+      "args": ["/Users/shaunstruwig/Documents/Blueprint/Dex/core/mcp/work_server.py"],
+      "env": { "VAULT_PATH": "/Users/shaunstruwig/Documents/Blueprint/Dex" }
+    },
+    "calendar-mcp": {
+      "type": "stdio",
+      "command": "/Users/shaunstruwig/Documents/Blueprint/Dex/.venv/bin/python",
+      "args": ["/Users/shaunstruwig/Documents/Blueprint/Dex/core/mcp/calendar_server.py"],
+      "env": { "VAULT_PATH": "/Users/shaunstruwig/Documents/Blueprint/Dex" }
+    },
+    "granola-mcp": {
+      "type": "stdio",
+      "command": "/Users/shaunstruwig/Documents/Blueprint/Dex/.venv/bin/python",
+      "args": ["/Users/shaunstruwig/Documents/Blueprint/Dex/core/mcp/granola_server.py"],
+      "env": { "VAULT_PATH": "/Users/shaunstruwig/Documents/Blueprint/Dex" }
+    },
+    "career-mcp": {
+      "type": "stdio",
+      "command": "/Users/shaunstruwig/Documents/Blueprint/Dex/.venv/bin/python",
+      "args": ["/Users/shaunstruwig/Documents/Blueprint/Dex/core/mcp/career_server.py"],
+      "env": { "VAULT_PATH": "/Users/shaunstruwig/Documents/Blueprint/Dex" }
+    },
+    "dex-improvements-mcp": {
+      "type": "stdio",
+      "command": "/Users/shaunstruwig/Documents/Blueprint/Dex/.venv/bin/python",
+      "args": ["/Users/shaunstruwig/Documents/Blueprint/Dex/core/mcp/dex_improvements_server.py"],
+      "env": { "VAULT_PATH": "/Users/shaunstruwig/Documents/Blueprint/Dex" }
+    },
+    "resume-mcp": {
+      "type": "stdio",
+      "command": "/Users/shaunstruwig/Documents/Blueprint/Dex/.venv/bin/python",
+      "args": ["/Users/shaunstruwig/Documents/Blueprint/Dex/core/mcp/resume_server.py"],
+      "env": { "VAULT_PATH": "/Users/shaunstruwig/Documents/Blueprint/Dex" }
+    },
+    "update-checker": {
+      "type": "stdio",
+      "command": "/Users/shaunstruwig/Documents/Blueprint/Dex/.venv/bin/python",
+      "args": ["/Users/shaunstruwig/Documents/Blueprint/Dex/core/mcp/update_checker.py"],
+      "env": { "VAULT_PATH": "/Users/shaunstruwig/Documents/Blueprint/Dex" }
+    },
+    "onboarding-mcp": {
+      "type": "stdio",
+      "command": "/Users/shaunstruwig/Documents/Blueprint/Dex/.venv/bin/python",
+      "args": ["/Users/shaunstruwig/Documents/Blueprint/Dex/core/mcp/onboarding_server.py"],
+      "env": { "VAULT_PATH": "/Users/shaunstruwig/Documents/Blueprint/Dex" }
+    },
+    "dex-analytics": {
+      "type": "stdio",
+      "command": "/Users/shaunstruwig/Documents/Blueprint/Dex/.venv/bin/python",
+      "args": ["/Users/shaunstruwig/Documents/Blueprint/Dex/core/mcp/analytics_server.py"],
+      "env": {
+        "VAULT_PATH": "/Users/shaunstruwig/Documents/Blueprint/Dex",
+        "DEX_ANALYTICS_MODE": "proxy",
+        "DEX_ANALYTICS_ENDPOINT": "",
+        "DEX_ANALYTICS_PROXY_TOKEN": ""
+      }
+    },
+    "session-memory": {
+      "type": "stdio",
+      "command": "/Users/shaunstruwig/Documents/Blueprint/Dex/.venv/bin/python",
+      "args": ["/Users/shaunstruwig/Documents/Blueprint/Dex/core/mcp/session_memory_server.py"],
+      "env": { "VAULT_PATH": "/Users/shaunstruwig/Documents/Blueprint/Dex" }
+    },
+    "slack-mcp": {
+      "command": "npx",
+      "args": ["-y", "slack-mcp"],
+      "env": {}
+    },
+    "qmd": {
+      "command": "qmd",
+      "args": ["mcp"]
+    },
+    "atlassian-mcp": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote@latest", "https://mcp.atlassian.com/v1/sse"]
+    }
+  }
+}

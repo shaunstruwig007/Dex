@@ -7,6 +7,182 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.19.24] — Product dashboard: stable `prd-{slug}` ids, rebuild-safe notes, tier UX (2026-04-14)
+
+**Before:** Initiative ids and `Product_ideas` filenames embedded **Current/Next/Future**, so “Now” in the UI did not match paths; re-running **`build_initiatives_from_prds.py`** could overwrite discovery markdown; card copy did not surface workspace excerpts; discovery viewer showed raw frontmatter.
+
+**Now:** **`prd-{slug}`** ids (slug from PRD filename) with optional collision suffix; **`prdTier`** / optional **YAML frontmatter** carry stack intent; builder **skips overwriting** touched workspace files and merges **frontmatter**; **`migrate_stable_ids.py`** + **`migration_id_map.json`** migrate old ids and rename files; **`index.html`** uses schema **2.3.0**, a **Workspace notes** hint on Idea/Discovery, and **stripFrontmatter** in the discovery viewer. Docs: **README**, **ORCHESTRATION**, **Product_ideas/README**, **initiatives.schema.json**.
+
+---
+
+## [1.19.23] — Product dashboard: `start_product_dashboard.sh --open` + Run Task (2026-04-14)
+
+**Before:** You had to copy the printed URL into the browser after starting the static server.
+
+**Now:** **`./start_product_dashboard.sh --open`** starts **`python3 -m http.server`** from the vault root and opens the dashboard URL (**`open`** on macOS, **`xdg-open`** on Linux when present). **`.vscode/tasks.json`** adds **Product dashboard: serve + open browser** (and a no-browser variant) for Cursor/VS Code.
+
+---
+
+## [1.19.22] — Product ideas folder + product dashboard Executive/orchestration + workboard pairing (2026-04-14)
+
+**Before:** Discovery markdown lived under `product-dashboard/initiatives/` with fragile path logic; the Executive table mixed “Status” with PDLC; **Add idea** used timestamp ids; the Tasks **workboard** README said “deprecated only” with no clear link to the product surface.
+
+**Now:** **`06-Resources/Product_ideas/`** holds pre-PRD workspace files with a README; **`build_initiatives_from_prds.py`** writes stubs there and sets vault-relative **`contextFile`** paths. **`index.html`** resolves `06-Resources/…` for fetch and agent prompts, adds **Current focus** / **`executiveContext`**, **Tier / PDLC / Progress / Next milestone**, link **copy-to-clipboard**, **Workflow status** and **Intake** chips, and **title-derived** ids for new ideas (`idea-{slug}`). **`initiatives.schema.json`** v2.2 documents the new fields. **Workboard** README positions Tasks vs Product dashboard and adds a header link. **`ORCHESTRATION.md`** and **product-dashboard README** updated. Search routing notes **`06-Resources/Product_ideas`** under the resources fallback.
+
+---
+
+## [1.19.21] — RSS fetch: TLS via `certifi` + env CA bundle; `intel_feeds.local.json` / `INTEL_FEEDS_FILE` (2026-04-14)
+
+**Before:** HTTPS RSS could fail with **`CERTIFICATE_VERIFY_FAILED`** on some Python installs; there was no documented, secure pattern for **corporate CAs** or **private feed URLs**.
+
+**Now:** **`fetch_intel_rss.py`** calls **`configure_tls_trust()`** — uses **`SSL_CERT_FILE`** / **`REQUESTS_CA_BUNDLE`** when set, otherwise **`certifi`** (added to **`requirements.txt`**). Verification is never disabled. **`--feeds`** and **`INTEL_FEEDS_FILE`** select the JSON path; **`intel_feeds.local.json`** (gitignored) is merged into **`feeds`**. **README**, **WEEKLY_AUTOMATION**, and **`.gitignore`** document the flow.
+
+---
+
+## [1.19.20] — `/weekly-exec-intel` skill + weekly synthesis folder + scheduled fetch wrapper (2026-04-14)
+
+**Before:** Marketing-led weekly narrative for **Product** and **Executive** had no dedicated skill, no **`synthesis/weekly/`** template, and no documented **one-shot + cron/launchd** path tied to RSS fetch.
+
+**Now:** **`/weekly-exec-intel`** (`.claude/skills/weekly-exec-intel/SKILL.md`, `.agents` stub) runs after **`run-weekly-intel-fetch.sh`** and produces **`YYYY-MM-DD_weekly_exec_brief.md`** from **`synthesis/weekly/_template_weekly_exec_brief.md`**. **`WEEKLY_AUTOMATION.md`** documents scheduling. **`Market_intelligence/README.md`**, **`Market_and_deal_signals.md`**, and **`CLAUDE.md`** link the skill.
+
+---
+
+## [1.19.19] — Market intelligence: RSS fetch pipeline (`fetch_intel_rss.py`) (2026-04-14)
+
+**Before:** Newsletter ingest relied on **manual** paste into `ingest/newsletters/<slug>/`; there was no standard way to pull **RSS** into the vault before `/intelligence-scanning`.
+
+**Now:** **`fetch_intel_rss.py`** reads **`06-Resources/Market_intelligence/intel_feeds.json`**, fetches each feed since the last run (or **`--since-days`**), dedupes by URL, and writes **`YYYY-MM-DD__title-slug__hash.md`** under the right slug folder with YAML frontmatter. **`feedparser`** is listed in **`.scripts/market-intelligence/requirements.txt`**. **`intel_feeds.example.json`** documents the shape; **`WORKFLOW.md`**, **`.scripts/market-intelligence/README.md`**, **`ingest/README.md`**, and **`intelligence-scanning`** include an optional **step 0** to run the script first.
+
+---
+
+## [1.19.18] — Market intelligence: ingest folders documented + `ingest/README.md` (2026-04-13)
+
+**Before:** Slugs existed under `ingest/youtube/` and `ingest/newsletters/` and in **`sources_manifest.yaml`**, but nothing in-vault explained **which folder is for what** (HR, engagement, AI, deskless) or how that ties to scanning.
+
+**Now:** **`06-Resources/Market_intelligence/ingest/README.md`** is the index (tables + “quick pick” by theme). **Newsletter** and **YouTube** ingest READMEs point to it and the manifest. Missing manifest slugs **`hr-leaders`**, **`open-letter`**, **`newsletters/josh-bersin`** now have folders. **`intelligence-scanning`** skill step 1 references the ingest index.
+
+---
+
+## [1.19.17] — Product dashboard: idea vs PRD model (`prdStage`, modal gating) (2026-04-13)
+
+**Before:** Any initiative with a **PRD** link tried to load **`06-Resources/PRDs/...`** in the ticket, even in **Idea** / **Discovery**, conflating a short **card line** with a full spec.
+
+**Now:** **`prdStage`** in schema / export: **`none`** | **`draft`** | **`spec_ready`** (inferred from **lane** if missing: Idea & Discovery → **none**, Design → **draft**, Spec ready+ → **spec_ready**). **Product PRD** tab and **fetch** only when **draft** or **spec_ready**. **Idea / Discovery** use **Workspace notes** + **Card summary (idea)**; footer explains vault PRD path is for **after Spec ready**. **`build_initiatives_from_prds.py`** emits **`prdStage`**. **ORCHESTRATION.md** / **README** updated.
+
+---
+
+## [1.19.16] — Product dashboard: ticket always opens at lg; full height with 10px top/bottom (2026-04-13)
+
+**Before:** **lg** used **`top: 0; bottom: 0`**; ticket **height tier** was **persisted** in **`localStorage`**, so a saved **md**/**sm** could reopen short.
+
+**Now:** **lg** uses **`top: 10px; bottom: 10px`** (`--ticket-inset`). **Every card open** calls **`applyTicketSize("lg")`**. **Ticket size is no longer stored** in the browser — **− / +** only affect the current session until you close or open another card.
+
+---
+
+## [1.19.15] — Product dashboard: full-height ticket (lg), compact card summary (2026-04-13)
+
+**Before:** Expanded ticket used **10px** viewport insets; **Card summary** could grow with resize; the document area did not clearly own “the rest” of the panel.
+
+**Now:** **lg** is **`top: 0; bottom: 0`** (full window height; **width** unchanged). **Card summary** is a **fixed short textarea** (~3–4 lines, **resize off**, scroll if needed); **Product PRD / format / document** + footer use flex with **`#md-wysiwyg`** **`flex: 1`** filling remaining height.
+
+---
+
+## [1.19.14] — Product dashboard: ticket tiers — lg = 10px top/bottom, + / − expand & shrink (2026-04-13)
+
+**Before:** Base styles pinned **all** sizes to full viewport height, so **md** and **lg** were the same and **+** did nothing useful; **default** was **md** (~58% height), not the “10px from top and bottom” layout.
+
+**Now:** **lg** = **`top: 10px; bottom: 10px`** (full usable height). **md** and **sm** = bottom-anchored with **max-height** (~58% / ~38% caps). **Default** size is **lg** (stored preference still respected). **− / +** steps **sm → md → lg**.
+
+---
+
+## [1.19.13] — Product dashboard: `start_product_dashboard.sh` serves vault root (PRD fetch works) (2026-04-13)
+
+**Before:** The helper script **`cd`’d into `product-dashboard/`** and ran `http.server` there. **`initiatives.json`** loaded, but **PRD** `fetch` to `../../PRDs/...` failed (path above the server root), so the ticket showed “could not be loaded from the local server.”
+
+**Now:** The script **`cd`’s to the vault root** (three levels up), validates **`06-Resources/.../index.html`**, prints the **full open URL**, then serves. **README → Run locally** documents **Preferred: `./start_product_dashboard.sh`**.
+
+---
+
+## [1.19.12] — Product dashboard: ticket modal full viewport height (10px top + bottom) (2026-04-13)
+
+**Before:** **Medium / large** ticket sizes used **vh** caps (e.g. ~58%), leaving a large empty band above the panel.
+
+**Now:** **Medium** and **large** use **`top: 10px` and `bottom: 10px`** so the modal fills the viewport between the two gutters. **Small** (−) stays a shorter bottom sheet.
+
+---
+
+## [1.19.11] — Product dashboard: ticket top inset + why PRD fetch needs vault-root server (2026-04-13)
+
+**Before:** The ticket panel had bottom viewport inset but no matching top clearance / inner top padding; README implied any `http.server` folder was fine.
+
+**Now:** **10px** inner padding at the **top** of the ticket panel (matches bottom), and **max-height** caps use **`calc(100vh - 20px)`** so expanded sheets stay **10px** below the viewport top. **README → Run locally** explains serving the **vault root** so `../../PRDs/...` resolves; the ticket editor’s load error text points to **`file://`** and wrong server root.
+
+---
+
+## [1.19.10] — Product dashboard: ticket dialog bottom-anchored, hidden until open, resize (2026-04-13)
+
+**Before:** The ticket panel read as a “top” overlay; some layouts looked always-on; height was fixed.
+
+**Now:** The ticket `<dialog>` is **`display: none` until `[open]`** (only after clicking a card). The panel is **anchored to the bottom** of the viewport (**10px** from the bottom edge), with **10px inner padding** at the bottom of the panel. **Width** and toolbar button styling are unchanged. **− / +** shrink or grow height (**small / medium / large**, remembered in the browser). Dock **◀ ⊙ ▶** unchanged.
+
+---
+
+## [1.19.9] — Product dashboard: ticket panel no longer covers the whole screen (2026-04-13)
+
+**Before:** The ticket editor used the full viewport, hiding the Executive/Orchestration context.
+
+**Now:** Opening a card shows a **large semi-modal** (~76–88% width, shorter than full height) with a **lighter backdrop** so the board stays visible. **◀ ⊙ ▶** dock the panel **left**, **centre**, or **right** (preference saved in the browser). **×** closes the panel and returns to the board.
+
+---
+
+## [1.19.8] — Product dashboard: fullscreen ticket + friendly document editor (2026-04-13)
+
+**Before:** The card editor was a small dialog with a short description only; PRD content lived elsewhere.
+
+**Now:** Opening a card fills the screen. The **Product PRD** tab loads the first linked `06-Resources/PRDs/.../*.md` (e.g. AI Assistant FAQ); **Workspace notes** loads `initiatives/<id>.md`. Content is shown as an editable **rich** area (Markdown in/out via **marked** + **Turndown**), with simple formatting controls. Edits are stored in the browser under **`mdOverrideByVaultPath`** until **Save** or **Export JSON**; **Download .md** saves the current tab for pasting back into the vault.
+
+---
+
+## [1.19.7] — Product dashboard: status bar on card edit (2026-04-13)
+
+**Before:** Stack / tier was only visible as a badge, not editable when opening a card.
+
+**Now:** The **Edit** dialog includes a **Status** bar: **Now** (maps to `Current`), **Next**, **Future**, **Backlog**. Choice is stored in the browser (`prdTierById`) and merged into **`prdTier`** on export; the Executive table column is labelled **Status** and badges show **Now** for current focus.
+
+---
+
+## [1.19.6] — Product dashboard: gated Discovery + agent prompt + file viewer (2026-04-13)
+
+**Before:** Dropping a card on **Discovery** moved it immediately and only copied a short prompt.
+
+**Now:** Dropping **into Discovery** opens a **review** modal (validate heading and description). **Move to Discovery and start** moves the card, copies a **long Cursor-ready agent prompt** (problem formulation, evidence, solution directions, novel ideas, risks, structured `##` sections for the markdown file), and opens a **Discovery file** dialog with the vault path, **Copy path**, **Copy prompt again**, **Refresh** (loads `initiatives/<id>.md` via the local server). Custom ideas get a stable `contextFile` path. Cards already in Discovery show **View file** in the card editor.
+
+---
+
+## [1.19.5] — Product dashboard UI: Idea column +, clean editor, order, discovery kick (2026-04-13)
+
+**Before:** Add-idea lived in a top toolbar; the detail panel mixed markdown preview and extra orchestration copy; entering **Discovery** did not start a workflow automatically.
+
+**Now:** **+** sits in the **Idea** column only. The card editor is plain **heading**, **description**, **Figma**, and **Save**. Cards can be **reordered vertically** within a lane (order + lane moves export together). Default stack in **Idea** is **Next** toward the top and **Future** toward the bottom; manual order wins once you drag. Moving a card **into Discovery** from another lane **copies a discovery prompt** to the clipboard and shows a short status line.
+
+---
+
+## [1.19.4] — Product dashboard: idea-first PDLC orchestration (2026-04-13)
+
+**Before:** The product dashboard could read like a mixed task/doc board; the first lane was **Intake**, and regeneration leaned on legacy workboard JSON.
+
+**Now:** Orchestration is **ideas-only** (feature concepts with PRD homes, not operational tasks). The first lane is **Idea**; **`build_initiatives_from_prds.py`** rebuilds **`initiatives.json`** from **`06-Resources/PRDs/{Current,Next,Future}/`** (Current → mostly **Test/UAT**, WhatsApp + Payslip → **In build**, Next/Future → **Idea**). **`index.html`** adds **Add idea**, tier/priority badges, **Figma** storage, **Copy discovery prompt**, and **`ORCHESTRATION.md`** documents stage expectations. **`migrate_from_workboard.py`** is legacy-only.
+
+---
+
+## [1.19.3] — Product dashboard replaces workboard as primary (2026-04-13)
+
+**Before:** The Dex **workboard** (`work-items.json` + Kanban + optional `workboard_server.py`) mixed tasks, roadmap, and PDLC doc stages in one heavy UI.
+
+**Now:** **`06-Resources/Dex_System/product-dashboard/`** — **`initiatives.json`** (schema: `initiatives.schema.json`), per-initiative **`initiatives/*.md`** context stubs, **`index.html`** with **Executive** and **Orchestration** (seven swim lanes). Legacy workboard JSON archived under **`product-dashboard/archive/`**; **`migrate_from_workboard.py`** can regenerate from `../workboard/*.json`. **`workboard/README.md`** points here; `.claude/launch.json` adds **`product-dashboard`** (port **8766**).
+
+---
+
 ## [1.19.2] — Calendar MCP AppleScript fallback (2026-04-13)
 
 **Before:** Calendar tools used EventKit only. On some Mac setups (e.g. Python.org `python3` not tied to **Calendars** TCC the same way as **Terminal**), Cursor never appeared under **Privacy & Security → Calendars**, so listing events from Dex inside Cursor failed.
