@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "2.3.0",
+  "schemaVersion": "2.4.0",
   "title": "Product dashboard — ideas (PRD-backed)",
-  "updated": "2026-04-14",
+  "updated": "2026-04-15",
   "lanes": [
     "idea",
     "discovery",
@@ -12,19 +12,19 @@
     "shipped_live"
   ],
   "orchestrationNote": "Ideas only — not operational tasks. See ORCHESTRATION.md.",
-  "executiveContext": "",
+  "executiveContext": "Next stack (priority): (1) WhatsApp integration → (2) AI Assistant → (3) Peer-to-peer chat → (4) Remote App extensions → (5) EWA FloatPays → (6) Forms.",
   "initiatives": [
     {
       "id": "prd-ai_assistant_conversational",
       "kind": "feature_idea",
-      "title": "AI Assistant Conversational",
-      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "title": "AI Assistant",
+      "summary": "AI chatbot overlay for Blue and the WhatsApp experience; evaluate tools such as Tawk.to as a starting point.",
       "lane": "idea",
       "prdStage": "none",
-      "prdTier": "Future",
-      "priority": "P3",
+      "prdTier": "Next",
+      "priority": "P2",
       "owner": "",
-      "horizon": "Exploration",
+      "horizon": "Post-GA",
       "rag": "amber",
       "whatsNext": "",
       "figmaUrl": "",
@@ -37,7 +37,7 @@
       "contextFile": "06-Resources/Product_ideas/prd-ai_assistant_conversational.md",
       "source": "PRDs/Future",
       "tags": [
-        "Future",
+        "Next",
         "PRDs/Future"
       ],
       "intakeSource": "",
@@ -45,7 +45,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "AI chatbot overlay for Blue and the WhatsApp experience; evaluate tools such as Tawk.to as a starting point.",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-ai_assistant_faq",
@@ -78,7 +87,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-billing_self_service",
@@ -111,7 +129,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-content_moderation_mentions_celebrations",
@@ -144,7 +171,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-discovery_backlog",
@@ -177,19 +213,28 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-employee_chat_and_groups",
       "kind": "feature_idea",
-      "title": "Employee Chat and Groups",
-      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "title": "Peer-to-Peer Chat",
+      "summary": "Group chat and direct peer-to-peer (DM) messaging.",
       "lane": "idea",
       "prdStage": "none",
-      "prdTier": "Future",
+      "prdTier": "Next",
       "priority": "P3",
       "owner": "",
-      "horizon": "Exploration",
+      "horizon": "Post-GA",
       "rag": "amber",
       "whatsNext": "",
       "figmaUrl": "",
@@ -202,7 +247,7 @@
       "contextFile": "06-Resources/Product_ideas/prd-employee_chat_and_groups.md",
       "source": "PRDs/Future",
       "tags": [
-        "Future",
+        "Next",
         "PRDs/Future"
       ],
       "intakeSource": "",
@@ -210,7 +255,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "Group chat and direct peer-to-peer (DM) messaging.",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-feed_social_layer",
@@ -243,7 +297,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-file_manager_governed_attachments",
@@ -276,19 +339,28 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-floatpays_integration",
       "kind": "feature_idea",
-      "title": "Floatpays Integration",
-      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "title": "EWA: FloatPays integration",
+      "summary": "Earned wage access (EWA) via FloatPays — integration narrative with Blue / WhatsApp surfaces.",
       "lane": "idea",
       "prdStage": "none",
-      "prdTier": "Future",
-      "priority": "P3",
+      "prdTier": "Next",
+      "priority": "P5",
       "owner": "",
-      "horizon": "Exploration",
+      "horizon": "Post-GA",
       "rag": "amber",
       "whatsNext": "",
       "figmaUrl": "",
@@ -301,7 +373,7 @@
       "contextFile": "06-Resources/Product_ideas/prd-floatpays_integration.md",
       "source": "PRDs/Future",
       "tags": [
-        "Future",
+        "Next",
         "PRDs/Future"
       ],
       "intakeSource": "",
@@ -309,19 +381,28 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "Earned wage access (EWA) via FloatPays — integration narrative with Blue / WhatsApp surfaces.",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-forms_authoring",
       "kind": "feature_idea",
-      "title": "Forms Authoring",
-      "summary": "PRD in Future/ — prioritise with Future (P3).",
+      "title": "Forms",
+      "summary": "Forms authoring and delivery in the product experience.",
       "lane": "idea",
       "prdStage": "none",
-      "prdTier": "Future",
-      "priority": "P3",
+      "prdTier": "Next",
+      "priority": "P6",
       "owner": "",
-      "horizon": "Exploration",
+      "horizon": "Post-GA",
       "rag": "amber",
       "whatsNext": "",
       "figmaUrl": "",
@@ -334,7 +415,7 @@
       "contextFile": "06-Resources/Product_ideas/prd-forms_authoring.md",
       "source": "PRDs/Future",
       "tags": [
-        "Future",
+        "Next",
         "PRDs/Future"
       ],
       "intakeSource": "",
@@ -342,7 +423,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "Forms authoring and delivery in the product experience.",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-in_app_feedback",
@@ -375,7 +465,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-internal_support_self_service",
@@ -408,7 +507,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-localization_dynamic_content",
@@ -441,7 +549,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-notification_preferences_granular",
@@ -474,7 +591,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-onboarding_users_and_admins",
@@ -507,7 +633,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-org_calendar_important_dates",
@@ -540,7 +675,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-page_builder_streams",
@@ -573,7 +717,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-polls_on_posts",
@@ -606,7 +759,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-rewards_and_recognition",
@@ -639,7 +801,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-security_deep_dive",
@@ -672,7 +843,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-shift_roster_integrations",
@@ -705,7 +885,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-sso",
@@ -738,17 +927,26 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Future/ — prioritise with Future (P3).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-elevated_auth_remote_app",
       "kind": "feature_idea",
-      "title": "Elevated Auth Remote App",
-      "summary": "PRD in Next/ — prioritise with Next (P2).",
+      "title": "Remote App: Extensions",
+      "summary": "Extensions to the remote app experience (elevated auth and related capabilities).",
       "lane": "idea",
       "prdStage": "none",
       "prdTier": "Next",
-      "priority": "P2",
+      "priority": "P4",
       "owner": "",
       "horizon": "Post-GA",
       "rag": "amber",
@@ -771,7 +969,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "Extensions to the remote app experience (elevated auth and related capabilities).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-explorer",
@@ -781,7 +988,7 @@
       "lane": "idea",
       "prdStage": "none",
       "prdTier": "Next",
-      "priority": "P2",
+      "priority": "P7",
       "owner": "",
       "horizon": "Post-GA",
       "rag": "amber",
@@ -804,7 +1011,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Next/ — prioritise with Next (P2).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-page_builder",
@@ -814,7 +1030,7 @@
       "lane": "idea",
       "prdStage": "none",
       "prdTier": "Next",
-      "priority": "P2",
+      "priority": "P8",
       "owner": "",
       "horizon": "Post-GA",
       "rag": "amber",
@@ -837,40 +1053,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
-    },
-    {
-      "id": "prd-product_analytics",
-      "kind": "feature_idea",
-      "title": "Product Analytics",
-      "summary": "PRD in Next/ — prioritise with Next (P2).",
-      "lane": "idea",
-      "prdStage": "none",
-      "prdTier": "Next",
-      "priority": "P2",
-      "owner": "",
-      "horizon": "Post-GA",
-      "rag": "amber",
-      "whatsNext": "",
-      "figmaUrl": "",
-      "links": [
-        {
-          "label": "PRD",
-          "href": "06-Resources/PRDs/Next/Product_Analytics.md"
-        }
-      ],
-      "contextFile": "06-Resources/Product_ideas/prd-product_analytics.md",
-      "source": "PRDs/Next",
-      "tags": [
-        "Next",
-        "PRDs/Next"
-      ],
-      "intakeSource": "",
-      "progress": null,
-      "progressLabel": "",
-      "milestones": [],
-      "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Next/ — prioritise with Next (P2).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-scheduled_content_extended",
@@ -880,7 +1072,7 @@
       "lane": "idea",
       "prdStage": "none",
       "prdTier": "Next",
-      "priority": "P2",
+      "priority": "P9",
       "owner": "",
       "horizon": "Post-GA",
       "rag": "amber",
@@ -903,17 +1095,26 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "PRD in Next/ — prioritise with Next (P2).",
+        "targetUsers": "Frontline employees and people managers using Wyzetalk; platform admins as described in linked PRDs.",
+        "success": "",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-whatsapp_smart_hr",
       "kind": "feature_idea",
-      "title": "WhatsApp Smart HR",
-      "summary": "PRD in Next/ — prioritise with Next (P2).",
+      "title": "WhatsApp Integration",
+      "summary": "Functional integration for remote app features and communication through WhatsApp (incl. Smart HR / two-way flows).",
       "lane": "idea",
       "prdStage": "none",
       "prdTier": "Next",
-      "priority": "P2",
+      "priority": "P1",
       "owner": "",
       "horizon": "Post-GA",
       "rag": "amber",
@@ -936,7 +1137,16 @@
       "progressLabel": "",
       "milestones": [],
       "steeringFocus": false,
-      "workflowStatus": ""
+      "workflowStatus": "",
+      "productBrief": {
+        "problem": "Phase 1 WhatsApp is one-way outbound (alerts/messages). The market expects conversational HR on WhatsApp—payslips, leave, attendance, two-way flows. Competitors (e.g. JEM, Paymenow) already deliver this; matching or beating them is a stated commercial priority and removes a top sales objection.",
+        "targetUsers": "Deskless employees and people managers; platform admins configuring Blue, WhatsApp Business API, and WhatsApp Flow experiences.",
+        "success": "Demo-ready conversational HR flows on WhatsApp Flow; POPIA/GDPR-safe 1:1 messaging; credible parity with competitor WhatsApp HR; path to a clear hybrid utility pricing narrative.",
+        "constraints": "",
+        "uxDiscovery": "",
+        "validation": "",
+        "dependencies": ""
+      }
     },
     {
       "id": "prd-payslip_pdf",

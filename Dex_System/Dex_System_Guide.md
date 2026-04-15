@@ -350,8 +350,9 @@ Dex/
 │   ├── Content/              # Content strategy (Marketing roles only)
 │   └── Career/               # Career development (optional, via /career-setup)
 │
+├── Dex_System/                  # How Dex works (this documentation, product-dashboard, workboard)
+│
 ├── 06-Resources/                # Reference material
-│   ├── Dex_System/           # This documentation
 │   ├── Learnings/            # Compound knowledge
 │   └── Quarterly_Reviews/    # Quarterly reflection and strategic reviews
 │
@@ -617,7 +618,7 @@ You don't interact with agents directly. You see their output as smarter, more c
 
 Without memory, every planning session starts from zero. The same blind spots persist because nothing tracks them across sessions. With agent memory, Dex builds a picture over time and catches what you'd otherwise miss.
 
-**Reference:** See `06-Resources/Dex_System/Memory_Ownership.md` for details on how agent memory works.
+**Reference:** See `Dex_System/Memory_Ownership.md` for details on how agent memory works.
 
 ---
 
@@ -649,7 +650,7 @@ These skills run in their own context, separate from your main conversation:
 
 Before context isolation, running three or four skills in one session could noticeably slow things down. Now each heavy skill gets a clean workspace, does its work, and returns the result without cluttering your main thread.
 
-**Reference:** See `06-Resources/Dex_System/Named_Sessions_Guide.md` for details on how named sessions work.
+**Reference:** See `Dex_System/Named_Sessions_Guide.md` for details on how named sessions work.
 
 ---
 
@@ -684,7 +685,7 @@ After creating your daily plan, Dex generates a condensed quickref — a one-gla
 - Contains just your top priorities, key meetings, and focus areas
 - Easy to keep visible while you work
 
-**Reference:** See `06-Resources/Dex_System/Background_Processing_Guide.md` for details on how automated follow-ups work.
+**Reference:** See `Dex_System/Background_Processing_Guide.md` for details on how automated follow-ups work.
 
 ---
 
@@ -1249,10 +1250,10 @@ This guide stays current through the Documentation Sync behavior in CLAUDE.md. W
 ## Related Documentation
 
 - `CLAUDE.md` — Core system configuration and behaviors
-- `06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md` — Why the system exists (conceptual)
-- `06-Resources/Dex_System/Memory_Ownership.md` — How agent memory works across sessions
-- `06-Resources/Dex_System/Named_Sessions_Guide.md` — Context isolation and named sessions
-- `06-Resources/Dex_System/Background_Processing_Guide.md` — Automated follow-ups and background tasks
+- `Dex_System/Dex_Jobs_to_Be_Done.md` — Why the system exists (conceptual)
+- `Dex_System/Memory_Ownership.md` — How agent memory works across sessions
+- `Dex_System/Named_Sessions_Guide.md` — Context isolation and named sessions
+- `Dex_System/Background_Processing_Guide.md` — Automated follow-ups and background tasks
 - `System/pillars.yaml` — Your strategic pillars configuration
 - `.claude/skills/` — Skill definitions following [Agent Skills standard](https://agentskills.io)
 

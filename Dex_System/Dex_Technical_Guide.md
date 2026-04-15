@@ -895,7 +895,7 @@ Focus on architecture questions, not syntax nitpicks. I trust the team on detail
    - New capabilities to leverage?
 6. **Skill updates:**
    - `CLAUDE.md` (if behavior changes)
-   - `06-Resources/Dex_System/Dex_System_Guide.md` (if features added)
+   - `Dex_System/Dex_System_Guide.md` (if features added)
    - `System/claude-code-state.json` (tracks last reviewed version)
 
 **User experience:** Dex tells you "New Claude features available!" and explains what changed.
@@ -1184,7 +1184,7 @@ Want to adapt Dex for your use case? Key customization points:
 
 Building custom TUI components, widgets, or interactive UIs in Pi?
 
-**Read this FIRST:** `06-Resources/Dex_System/Pi_TUI_Reference.md`
+**Read this FIRST:** `Dex_System/Pi_TUI_Reference.md`
 
 This reference contains:
 - Critical rules (line width truncation, component interface, theme usage)
@@ -1216,8 +1216,8 @@ This guide assumes you're comfortable with:
 - MCP protocol concepts
 
 If you get stuck, check:
-- `06-Resources/Dex_System/Dex_System_Guide.md` (user-facing guide)
-- `06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md` (why each piece exists)
+- `Dex_System/Dex_System_Guide.md` (user-facing guide)
+- `Dex_System/Dex_Jobs_to_Be_Done.md` (why each piece exists)
 - `.claude/reference/mcp-servers.md` (MCP setup details)
 
 ---

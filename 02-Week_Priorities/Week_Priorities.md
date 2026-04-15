@@ -6,6 +6,8 @@
 
 **Steering (2026-04-14):** Exco and Board confirmed **near-term focus on new sales**, not migration-led or **SSO** work. **SSO deal-loss validation** is **paused** (back burner). Discovery workshops continue; agenda **de-emphasises SSO** — see Top 3 below.
 
+**AI in the PDLC (internal programme):** Registered as a **separate project** from client roadmap work — [`04-Projects/AI_in_the_PDLC_Internal.md`](../04-Projects/AI_in_the_PDLC_Internal.md). **UAT is surfacing bugs**; process + AI discipline belongs here and in tasks — **not** on the [product dashboard](../Dex_System/product-dashboard/README.md) as customer cards. Keep **client board = paid offering**; internal orchestration / timeline / tooling experiments stay **out of** `initiatives.json` unless promoting a real product initiative.
+
 **Ladder:** Q2 **GA Essential** + **PRD debt post-GA** (payslip/WhatsApp) + **net-new GTM**; **migration machine** and cohort execution stay on the roadmap but are **not** the current steering beat — see [Essential launch](../04-Projects/Wyzetalk_Essential_Launch.md) update.
 
 ---
@@ -34,7 +36,7 @@
 | **PRD debt post-GA** | Payslip / WhatsApp AC | Tracked post-GA; workshops inform scope |
 | **Migration machine** | Owners + cadence | P1 execution task on launch/migration doc |
 
-**This week advances:** GA narrative (**discovery workshops in progress** + GTM), stakeholder RACI, and **sales-led** discovery themes (WhatsApp, AI, Explorer, page builder, elevated auth) — **not** SSO validation.
+**This week advances:** GA narrative (**discovery workshops in progress** + GTM), stakeholder RACI, and **sales-led** discovery themes (WhatsApp, AI, Explorer, page builder, elevated auth) — **not** SSO validation. **AI in the PDLC** pillar: keep **internal** process/orchestration aligned with [`AI_in_the_PDLC_Internal.md`](../04-Projects/AI_in_the_PDLC_Internal.md) (separate from product-board client roadmap).
 
 ---
 
@@ -66,6 +68,7 @@
 
 - [ ] Discovery workshops — coordination with **Tanya**, **Mark**, **Aracey** — [[^task-20260330-002]]
 - [ ] ~~SSO deal-loss validation~~ — **paused** (see [[^task-20260330-001]] backlog note)
+- [ ] **AI in the PDLC (internal)** — Hold the line: [product dashboard](../Dex_System/product-dashboard/README.md) = **client** initiatives only; AI/process/orchestration lives in [`AI_in_the_PDLC_Internal.md`](../04-Projects/AI_in_the_PDLC_Internal.md) + tasks (especially while **UAT** is noisy).
 
 **Personal (P0 — calendar yourself)**
 
@@ -111,7 +114,7 @@
 |--------|-----------|---------|
 | **New product launch** | Discovery workshops (Tanya, Mark, Aracey), GTM, RACI, scheduling input | 🟩 Primary |
 | **Client migration** | Light touch — board focus is **new sales**, not migration depth this week | 🟨 Light |
-| **AI in the PDLC** | Workboard / pipeline hygiene only if P1 breathing room | 🟥 Light |
+| **AI in the PDLC** | **Active as internal programme** — [`AI_in_the_PDLC_Internal.md`](../04-Projects/AI_in_the_PDLC_Internal.md): separation from client **product board**; UAT feedback loop → tighten PDLC + AI in process (Dex/Index), not new customer cards. Workboard / pipeline hygiene when P1 allows | 🟨 Medium |
 
 ---
 
@@ -152,5 +155,5 @@ From [2026-W15](../07-Archives/Plans/2026-W15.md) / `03-Tasks/Tasks.md`:
 ---
 
 *Generated: 2026-04-13*  
-*Updated: 2026-04-14 — SSO paused; discovery stakeholders expanded; steering = new sales*  
+*Updated: 2026-04-14 — SSO paused; discovery stakeholders expanded; steering = new sales; AI in PDLC internal project + week priorities guardrail*  
 *Command: /week-plan*

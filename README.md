@@ -164,7 +164,7 @@ Open **System Settings** → **Privacy & Security** → **Calendars**. Turn **Cu
 
 That's it. The installer already set up the rest on Mac. Your meetings—including recurring ones like weekly 1:1s—will show on the correct days in Dex.
 
-**More detail and troubleshooting:** [Calendar_Setup.md](06-Resources/Dex_System/Calendar_Setup.md) (in your vault after setup).  
+**More detail and troubleshooting:** [Calendar_Setup.md](Dex_System/Calendar_Setup.md) (in your vault after setup).  
 **On Windows?** Calendar connection is supported on Mac via Apple Calendar. We don't have Windows instructions in this repo yet.
 
 </details>
@@ -298,7 +298,7 @@ If `/daily-plan` doesn't show your meetings, or your recurring meetings (e.g. we
 2. **Let Cursor see your calendar** — **System Settings** → **Privacy & Security** → **Calendars** → turn **Cursor** on, then click **Cursor** and set access to **Full** (not "Add Only"). Restart Cursor after changing it.
 3. **If you skipped the installer or fixed Python yourself** — The installer normally sets up calendar support on Mac. If you didn't run it or installed packages by hand, in Terminal run: `pip3 install --user pyobjc-framework-EventKit`, then restart Cursor.
 
-See **[Calendar_Setup.md](06-Resources/Dex_System/Calendar_Setup.md)** for the full guide.
+See **[Calendar_Setup.md](Dex_System/Calendar_Setup.md)** for the full guide.
 
 </details>
 
@@ -504,7 +504,7 @@ Eight jobs that happen reliably every day:
 | **Keep Projects Moving** | Auto-detects stalls (12+ days no update). Surfaces blockers. You know what needs attention. |
 | **Evolve Itself** | System suggests improvements based on usage patterns. Monitors Claude Code releases daily - when new capabilities drop, explains what they mean for YOUR system and suggests implementations. Captures your improvement ideas too. AI ranks all by impact. `/dex-improve` plans implementation. System adapts to you. |
 
-**Want deeper context?** See [Dex_Jobs_to_Be_Done.md](06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md) for the full framework.
+**Want deeper context?** See [Dex_Jobs_to_Be_Done.md](Dex_System/Dex_Jobs_to_Be_Done.md) for the full framework.
 
 ---
 
@@ -642,7 +642,7 @@ flowchart TD
 
 Work backwards from career impact: *What would make you incredibly happy you accomplished three months from now?* Quarterly goals become the north star connecting daily work to career-defining outcomes.
 
-See [Dex_System_Guide.md](06-Resources/Dex_System/Dex_System_Guide.md) for details.
+See [Dex_System_Guide.md](Dex_System/Dex_System_Guide.md) for details.
 
 ---
 
@@ -751,12 +751,12 @@ Each session makes the next one better.
 
 Comprehensive guides included in the repo:
 
-- [Dex_System_Guide.md](06-Resources/Dex_System/Dex_System_Guide.md) - Complete feature reference and workflows
-- [Dex_Jobs_to_Be_Done.md](06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md) - Why each piece exists and how they connect
-- [Dex_Technical_Guide.md](06-Resources/Dex_System/Dex_Technical_Guide.md) - Technical deep dive for those who want it
-- [Calendar_Setup.md](06-Resources/Dex_System/Calendar_Setup.md) - Connect Google Calendar to Dex (Mac)
-- [Folder_Structure.md](06-Resources/Dex_System/Folder_Structure.md) - PARA organization explained
-- [Updating_Dex.md](06-Resources/Dex_System/Updating_Dex.md) - How to safely update while preserving customizations
+- [Dex_System_Guide.md](Dex_System/Dex_System_Guide.md) - Complete feature reference and workflows
+- [Dex_Jobs_to_Be_Done.md](Dex_System/Dex_Jobs_to_Be_Done.md) - Why each piece exists and how they connect
+- [Dex_Technical_Guide.md](Dex_System/Dex_Technical_Guide.md) - Technical deep dive for those who want it
+- [Calendar_Setup.md](Dex_System/Calendar_Setup.md) - Connect Google Calendar to Dex (Mac)
+- [Folder_Structure.md](Dex_System/Folder_Structure.md) - PARA organization explained
+- [Updating_Dex.md](Dex_System/Updating_Dex.md) - How to safely update while preserving customizations
 
 Start with what you need. Go deeper if you're curious. No forced learning paths.
 
@@ -809,7 +809,7 @@ Updates never touch:
 - Your customizations
 - Your API keys
 
-**For detailed instructions:** See [Updating_Dex.md](06-Resources/Dex_System/Updating_Dex.md)
+**For detailed instructions:** See [Updating_Dex.md](Dex_System/Updating_Dex.md)
 
 ---
 
@@ -839,7 +839,7 @@ Dex works with Claude by default, but you can also use cheaper cloud models or o
 /ai-status
 ```
 
-**For detailed guide:** See [AI_Model_Options.md](06-Resources/Dex_System/AI_Model_Options.md)
+**For detailed guide:** See [AI_Model_Options.md](Dex_System/AI_Model_Options.md)
 
 ---
 
@@ -870,7 +870,7 @@ Dex works great with [Obsidian](https://obsidian.md) for visual graph navigation
 
 Obsidian is completely optional - Dex works perfectly in Cursor/terminal alone. Some users love the graph visualization for navigating their knowledge, others prefer the speed of terminal/Cursor. Both are first-class experiences.
 
-**Learn more:** See [Obsidian_Guide.md](06-Resources/Dex_System/Obsidian_Guide.md)
+**Learn more:** See [Obsidian_Guide.md](Dex_System/Obsidian_Guide.md)
 
 ---
 

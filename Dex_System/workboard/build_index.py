@@ -6,7 +6,7 @@ from pathlib import Path
 from build_dashboard_context import build_dashboard_context
 
 HERE = Path(__file__).resolve().parent
-VAULT_ROOT = HERE.parent.parent.parent
+VAULT_ROOT = HERE.parent.parent
 TEMPLATE = HERE / "index.template.html"
 
 if not TEMPLATE.is_file():

@@ -89,7 +89,7 @@ Looks like you downloaded Dex as a ZIP file instead of cloning it.
 [Cancel] — I'll do this later
 ```
 
-If detailed guide selected, open `06-Resources/Dex_System/Updating_Dex.md` (Manual Update section).
+If detailed guide selected, open `Dex_System/Updating_Dex.md` (Manual Update section).
 
 ---
 

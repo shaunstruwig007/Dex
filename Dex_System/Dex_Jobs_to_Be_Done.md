@@ -340,7 +340,7 @@ The Documentation Sync behavior in CLAUDE.md ensures this stays current.
 ## Related Documents
 
 - `CLAUDE.md` - Core system configuration
-- `06-Resources/Dex_System/Dex_System_Guide.md` - How to use every feature
+- `Dex_System/Dex_System_Guide.md` - How to use every feature
 - `System/pillars.yaml` - Your strategic priorities
 
 ---

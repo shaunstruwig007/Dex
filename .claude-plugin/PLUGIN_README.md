@@ -214,7 +214,7 @@ If onboarding gets stuck:
 
 ## Support
 
-- **Documentation**: See `06-Resources/Dex_System/Dex_System_Guide.md` in your vault
+- **Documentation**: See `Dex_System/Dex_System_Guide.md` in your vault
 - **Issues**: Report on [GitHub Issues](https://github.com/davekilleen/dex/issues)
 - **Discussions**: Join [GitHub Discussions](https://github.com/davekilleen/dex/discussions)
 

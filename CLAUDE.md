@@ -89,10 +89,10 @@ The system automatically suggests `/getting-started` at next session if vault < 
 ## Reference Documentation
 
 For detailed information, see:
-- **Folder structure:** `06-Resources/Dex_System/Folder_Structure.md`
-- **Complete guide:** `06-Resources/Dex_System/Dex_System_Guide.md`
-- **Technical setup:** `06-Resources/Dex_System/Dex_Technical_Guide.md`
-- **Update guide:** `06-Resources/Dex_System/Updating_Dex.md`
+- **Folder structure:** `Dex_System/Folder_Structure.md`
+- **Complete guide:** `Dex_System/Dex_System_Guide.md`
+- **Technical setup:** `Dex_System/Dex_Technical_Guide.md`
+- **Update guide:** `Dex_System/Updating_Dex.md`
 - **Skills catalog:** `.claude/skills/[[README]].md` or run `/dex-level-up`
 
 Read these files when users ask about system details, features, or setup.
@@ -335,8 +335,8 @@ When asked about something:
 
 ### Documentation Sync
 When making significant system changes:
-1. Check if `06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md` needs updating
-2. Check if `06-Resources/Dex_System/Dex_System_Guide.md` needs updating
+1. Check if `Dex_System/Dex_Jobs_to_Be_Done.md` needs updating
+2. Check if `Dex_System/Dex_System_Guide.md` needs updating
 
 ### Learning Capture
 After significant work (new features, complex integrations), ask: "Worth capturing any learnings from this?" Don't prompt after routine tasks.
@@ -377,7 +377,7 @@ Dex continuously learns from usage and external sources through automatic checks
 - Surfaces alerts during session start and `/daily-plan`
 - Pattern recognition during weekly reviews
 
-**Setup details:** See `06-Resources/Dex_System/Dex_Technical_Guide.md` for installation and configuration.
+**Setup details:** See `Dex_System/Dex_Technical_Guide.md` for installation and configuration.
 
 ### Changelog Discipline
 After making significant system changes (new commands, CLAUDE.md edits, structural changes), update `CHANGELOG.md` before finishing the task.
@@ -499,7 +499,7 @@ Skills extend Dex capabilities and are invoked with `/skill-name`. Common skills
 - `/week-plan`, `/week-review` - Weekly workflow
 - `/quarter-plan`, `/quarter-review` - Quarterly planning
 - `/triage`, `/meeting-prep`, `/process-meetings` - Meetings and inbox
-- `/project-health`, `/product-brief` - Projects
+- `/project-health`, `/product-brief`, `/agent-prd` - Projects (discovery PRD vs agent-oriented spec)
 - `/career-coach`, `/resume-builder` - Career development
 - `/ai-setup`, `/ai-status` - Configure budget cloud models (80% cheaper) and offline mode
 - `/enable-semantic-search` - Enable local AI-powered semantic search with smart collection discovery
@@ -544,13 +544,13 @@ Dex uses the PARA method: Projects (time-bound), Areas (ongoing), Resources (ref
 
 **Planning hierarchy:** Pillars → Quarter Goals → Week Priorities → Daily Plans → Tasks
 
-**Complete details:** See `06-Resources/Dex_System/Folder_Structure.md`
+**Complete details:** See `Dex_System/Folder_Structure.md`
 
 ### Dex System Improvement Backlog
 
 Use `capture_idea` MCP tool to capture Dex system improvements anytime. Ideas are AI-ranked and reviewed via `/dex-backlog`. Workshop ideas with `/dex-improve`.
 
-**Details:** See `06-Resources/Dex_System/Dex_Technical_Guide.md`
+**Details:** See `Dex_System/Dex_Technical_Guide.md`
 
 ---
 
@@ -611,17 +611,17 @@ Full skill: `/scrape`
 ## Reference Documents
 
 **System docs:**
-- `06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md` — Why the system exists
-- `06-Resources/Dex_System/Dex_System_Guide.md` — How to use everything
+- `Dex_System/Dex_Jobs_to_Be_Done.md` — Why the system exists
+- `Dex_System/Dex_System_Guide.md` — How to use everything
 - `System/pillars.yaml` — Strategic pillars config
 
 **Technical reference (read when needed):**
 - `.claude/reference/mcp-servers.md` — MCP server setup and integration
 - `.claude/reference/meeting-intel.md` — Meeting processing details
 - `.claude/reference/demo-mode.md` — Demo mode usage
-- `06-Resources/Dex_System/Memory_Ownership.md` — How memory layers work together
-- `06-Resources/Dex_System/Named_Sessions_Guide.md` — Named session conventions
-- `06-Resources/Dex_System/Background_Processing_Guide.md` — Background execution patterns
+- `Dex_System/Memory_Ownership.md` — How memory layers work together
+- `Dex_System/Named_Sessions_Guide.md` — Named session conventions
+- `Dex_System/Background_Processing_Guide.md` — Background execution patterns
 
 **Setup:**
 - `.claude/flows/onboarding.md` — New user onboarding flow

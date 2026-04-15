@@ -275,4 +275,4 @@ git status --ignored | grep -E '(\.env$|\.mcp\.json$|00-Inbox|04-Projects|System
 3. Announce to audience
 4. Monitor for issues
 
-**Questions?** See `06-Resources/Dex_System/Dex_Technical_Guide.md` for implementation details.
+**Questions?** See `Dex_System/Dex_Technical_Guide.md` for implementation details.

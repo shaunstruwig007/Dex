@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dex.local/schemas/product-dashboard-initiatives.json",
   "title": "Product dashboard initiatives (ideas / PRD-backed)",
-  "description": "schemaVersion 2.3.0: stable initiative ids prd-{slug} (slug from PRD filename); prdTier / lane are lifecycle — not encoded in id. Optional Product_ideas frontmatter: prdTier, summary.",
+  "description": "schemaVersion 2.4.0: stable initiative ids prd-{slug}; optional designArtifactUrl / designRevision; prdTier / lane are lifecycle — not encoded in id. Optional Product_ideas frontmatter: prdTier, summary.",
   "type": "object",
   "required": ["schemaVersion", "title", "lanes", "initiatives"],
   "properties": {
@@ -62,6 +62,14 @@
             "description": "e.g. P0–P3"
           },
           "figmaUrl": { "type": "string" },
+          "designArtifactUrl": {
+            "type": "string",
+            "description": "External design file URL (e.g. Paper); may be merged from browser export."
+          },
+          "designRevision": {
+            "type": "string",
+            "description": "Design artifact revision or version label."
+          },
           "owner": { "type": "string" },
           "horizon": { "type": "string", "description": "Quarter or free-text window" },
           "rag": {
@@ -124,6 +132,11 @@
           "workflowStatus": {
             "type": "string",
             "description": "Optional chip: blocked, ready_for_spec, etc. (PDLC lane remains canonical)"
+          },
+          "productBrief": {
+            "type": "object",
+            "description": "Optional structured intake (problem, users, success, …). Browser-only ideas store this in localStorage export as productBriefById[id]; not required in repo initiatives.json.",
+            "additionalProperties": { "type": "string" }
           }
         }
       }

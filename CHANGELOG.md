@@ -7,6 +7,102 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.19.40] — Product dashboard: stack tier as pill dropdown (2026-04-15)
+
+**Before:** The ticket toolbar had a full **Now / Next / Future / Backlog** segmented control plus a duplicate **tier pill** in the subhead.
+
+**Now:** The segmented control is removed; **stack status** is a single **`#dlg-tier-select`** in the subhead, styled like the former pill (uppercase, tier colours, chevron) with the same tier tokens (**Now** = Current, etc.). **Save** still maps selection to **`prdTier`** / overrides.
+
+---
+
+## [1.19.39] — Product dashboard: Idea lane = New initiative intake (2026-04-15)
+
+**Before:** Opening an initiative in the **Idea** lane used a mixed Brief tab (read-only brief, extra workflow chrome) that did not match **+ New idea** / **New initiative**, and structured `productBrief` was not saved from the ticket.
+
+**Now:** **Idea** lane tickets mirror the **New initiative** fields (card summary, problem, users, success, optional “more”, priority, intake); dock/size/download chrome is hidden for Idea; **`effectiveProductBrief`** merges vault **`initiatives.json`** `productBrief` with browser overrides; **`initiatives.json`** backfills **`productBrief`** for all Idea-lane cards (WhatsApp Integration exemplar + heuristic defaults). Discovery and later lanes keep the full tabbed ticket.
+
+---
+
+## [1.19.38] — Product dashboard: Paper v1 UI shell + agent PRD (2026-04-15)
+
+**Before:** The orchestration UI did not fully match the **Product UI v1** Paper frames (wordmark row, lane chrome, primary **Create idea**, modal **Create draft** / intake, **Re-run discovery**).
+
+**Now:** **[`06-Resources/PRDs/Current/Product_Dashboard_Paper_v1_UI.md`](06-Resources/PRDs/Current/Product_Dashboard_Paper_v1_UI.md)** is the agent-oriented build spec (OB/WP/VAL, DOM ID inventory, Paper MCP checklist). **`Dex_System/product-dashboard/product-dashboard.css`** / **`index.html`** implement teal-forward tokens, **Wyzetalk** + **Product orchestration** header, open swimlane columns with white cards, **+ New idea** primary button, ticket **Save** and format bar **H2**, discovery **Re-run discovery**, new initiative **Create draft** / **Cancel** / **Intake source** / title hint — behaviour and vault **`fetch()`** unchanged.
+
+---
+
+## [1.19.37] — Paper plan: Markdown editing + Requirements = `/agent-prd` (2026-04-15)
+
+**Before:** **`Paper_fresh_orchestration_UI.md`** framed artboard **04** with a thin **Requirements** sample; no explicit **documentation** formatting requirement or tie-in to **`/agent-prd`**.
+
+**Now:** The plan documents **Markdown round-trip** editing (headings, paragraphs, bullet lists, **bold**, *italic*) for long-form ticket content; **Requirements** is defined as the **agent-oriented PRD** screen (Dex **`/agent-prd`**, `06-Resources/PRDs/`). **`ORCHESTRATION.md`** and **`CONCEPTS.md`** updated to match; **README** table line for **`Paper_fresh_orchestration_UI.md`**.
+
+---
+
+## [1.19.36] — Paper plan: Product Orch 01–05 only; Executive & Roadmap separate (2026-04-15)
+
+**Before:** **`Paper_fresh_orchestration_UI.md`** listed six artboards including **06 Executive portfolio** in the same sequence as the board.
+
+**Now:** The plan scopes **Product Orch** to **five** frames: **01** adds explicit **Create idea** (paired with **05** modal), **03** adds **Re-run discovery** when the brief changes, **02** / **04** unchanged in intent. **Executive** and **Roadmap** are documented as **separate full-page designs** (not in this artboard order); **Orchestration** is the landing. **`CONCEPTS.md`** / **`README.md`** updated to match.
+
+---
+
+## [1.19.35] — Product dashboard: Paper frames 06 + 02–04 UI alignment (2026-04-15)
+
+**Before:** **Executive** was a table plus a list-style **Current focus** block with context mixed into the same box; the **ticket** showed lane only as a text row and **Design** was plain fields.
+
+**Now:** **Executive** (`data-paper-ref="06 Executive portfolio"`) has an **Executive** title, optional **`executiveContext`** subtitle, **Current focus** as horizontal **chips** (click opens the ticket), and table headers aligned with the Paper brief (**Lane**, **Priority**). The **initiative dialog** (`02–04`) adds **tier** and **lane** pills, **Last updated** (after **Save**), a **Move lane** control (same rules as drag — **Discovery** still opens the review step), SVG **lock** affordance on gated tabs, and a **Design** **artifact** card with **Open**. Styling is in **`product-dashboard.css`**; vault behaviour unchanged.
+
+---
+
+## [1.19.34] — Product dashboard: Paper frame 01 design-to-code sync (2026-04-15)
+
+**Before:** After reverting the custom Paper skills, the dashboard header was a single compact bar and **steering focus** cards had no **Focus** label.
+
+**Now:** **MCP** `plugin-paper-desktop-paper` **`get_jsx`** / **`get_computed_styles`** on artboard **01 Orchestration board** drove the **app shell** (Newsreader title, subtitle, user row, tab row spacing) and **`main`** canvas padding. Cards with **`steeringFocus: true`** get class **`steering-focus`** plus a **Focus** line per the Paper plan. **`Paper_fresh_orchestration_UI.md`** remains the ordered prompt spec; behaviour (editing, lane gating, four-tab ticket) unchanged.
+
+---
+
+## [1.19.33] — Paper: revert custom workflow; design-to-code only (2026-04-15)
+
+**Before:** Custom **`/paper-orchestration-sync`** skill, **`Paper_code_to_design.md`**, **`design-tokens.md`**, token sync script, and Paper-specific header/exec UI chrome added complexity beyond the Paper plugin’s **design-to-code** flow.
+
+**Now:** Removed those artifacts. **README** / **`CONCEPTS.md`** / **`Paper_fresh_orchestration_UI.md`** document syncing **Paper → vault UI** via the plugin **design-to-code** skill and MCP **`plugin-paper-desktop-paper`**, while **preserving** four-tab ticket, lane gating, and vault behaviour. **Product dashboard** header restored to a single **Orchestration** bar (tabs + toolbar); **Current focus** back to a list.
+
+---
+
+## [1.19.28] — Product dashboard: fresh orchestration UI + four-tab ticket (2026-04-15)
+
+**Before:** The dashboard used a **dark** theme, **Executive** was the default top tab, and the ticket used **Product PRD** vs **Workspace notes** only.
+
+**Now:** **Light** theme (**Inter** + **Newsreader**, teal accent) via **`product-dashboard.css`**; **Orchestration** is the default view; the ticket has **Brief** \| **Discovery** \| **Requirements** \| **Design** with **lane gating**; **Design** adds **Figma**, **Design file URL**, and **Revision** (stored + export). Schema **`2.4.0`** (`designArtifactUrl`, `designRevision`); **`build_initiatives_from_prds.py`** emits **`2.4.0`**. **README** updated.
+
+---
+
+## [1.19.27] — Paper: fresh orchestration UI artboard prompts (2026-04-15)
+
+**Before:** Artboard order and copy-paste prompts for a **fresh** (non–vault-clone) orchestration UI lived only in chat.
+
+**Now:** **`Dex_System/product-dashboard/Paper_fresh_orchestration_UI.md`** lists the sequence (board → ticket Idea/Discovery/Design → new initiative modal → executive), prerequisites for Paper Desktop + MCP, and full prompts for Cursor/Paper. Doc updated with **Cursor MCP id** `plugin-paper-desktop-paper` and optional note when frames are pushed to Paper from the agent.
+
+---
+
+## [1.19.26] — Product dashboard: product brief intake modal + `/agent-prd` skill (2026-04-15)
+
+**Before:** **New idea** only asked for heading, description, stack, and priority — no alignment with **`/product-brief`** prompts, and no in-vault skill for **agent-oriented** PRDs ([the-vibe-pm `agent-prd`](https://github.com/davekilleen/the-vibe-pm/tree/main/skills/agent-prd)).
+
+**Now:** The **New idea** dialog lists the same question rounds in a condensed form (required-style fields + **More** for constraints, journey, validation, dependencies), seeds **Workspace notes** with structured markdown, stores answers in **`productBriefById`** (included in **Export JSON**), shows **Product brief (idea intake)** on the ticket, and passes the brief into the **discovery agent prompt**. New **`.claude/skills/agent-prd/`** skill (upstream + Dex paths for `Product_ideas` / `PRDs` and QMD). **`/agent-prd`** listed in **CLAUDE.md**; **`product-brief`** skill documents the dashboard link.
+
+---
+
+## [1.19.25] — Product dashboard: executive + lanes sort by tier and `priority` (2026-04-15)
+
+**Before:** The Executive table listed rows **by PDLC lane** (Idea, then Discovery, …), and saved **drag order** could override **`priority`**, so a **Next / P3** card could sit far down the page.
+
+**Now:** Both the **Executive** table and **orchestration** columns sort by **`compareInitDefault`** — **tier** (Next before Current before Future), then **`priority`** (P1, P2, …), then title — so your **Next P1–P6** stack stays visible at the top. **README** documents that display order follows **`initiatives.json`** priorities.
+
+---
+
 ## [1.19.24] — Product dashboard: stable `prd-{slug}` ids, rebuild-safe notes, tier UX (2026-04-14)
 
 **Before:** Initiative ids and `Product_ideas` filenames embedded **Current/Next/Future**, so “Now” in the UI did not match paths; re-running **`build_initiatives_from_prds.py`** could overwrite discovery markdown; card copy did not surface workspace excerpts; discovery viewer showed raw frontmatter.
@@ -179,7 +275,7 @@ All notable changes to Dex will be documented in this file.
 
 **Before:** The Dex **workboard** (`work-items.json` + Kanban + optional `workboard_server.py`) mixed tasks, roadmap, and PDLC doc stages in one heavy UI.
 
-**Now:** **`06-Resources/Dex_System/product-dashboard/`** — **`initiatives.json`** (schema: `initiatives.schema.json`), per-initiative **`initiatives/*.md`** context stubs, **`index.html`** with **Executive** and **Orchestration** (seven swim lanes). Legacy workboard JSON archived under **`product-dashboard/archive/`**; **`migrate_from_workboard.py`** can regenerate from `../workboard/*.json`. **`workboard/README.md`** points here; `.claude/launch.json` adds **`product-dashboard`** (port **8766**).
+**Now:** **`Dex_System/product-dashboard/`** — **`initiatives.json`** (schema: `initiatives.schema.json`), per-initiative **`initiatives/*.md`** context stubs, **`index.html`** with **Executive** and **Orchestration** (seven swim lanes). Legacy workboard JSON archived under **`product-dashboard/archive/`**; **`migrate_from_workboard.py`** can regenerate from `../workboard/*.json`. **`workboard/README.md`** points here; `.claude/launch.json` adds **`product-dashboard`** (port **8766**).
 
 ---
 
@@ -224,7 +320,7 @@ on MCP integration" — Dex finds the right content wherever it lives.
 
 **Roadmap:** **Future phase** is a **collapsible** block **below Then** (above Milestones). **Then** and **Future** share **draggable** cards — move items between phases for prioritisation (**Now** stays fixed). Order persisted in **`localStorage`** (`dex-roadmap-then-future-v2`). **Future** lists **every `PRDs/Future/*.md` theme** (index + `Discovery_backlog` + one card per theme file). **Page Builder** copy + **`Page_Builder.md`** + **`pdlc-doc-items.json`** as before.
 
-**What you need to do:** **`python3 sync_tasks_to_workboard.py`** then **`python3 build_index.py`** in **`06-Resources/Dex_System/workboard/`** when **`Tasks.md`** changes without the server.
+**What you need to do:** **`python3 sync_tasks_to_workboard.py`** then **`python3 build_index.py`** in **`Dex_System/workboard/`** when **`Tasks.md`** changes without the server.
 
 ---
 
@@ -236,7 +332,7 @@ on MCP integration" — Dex finds the right content wherever it lives.
 
 **PDLC doc process:** Replaced **Pipeline** tab with **PDLC doc process** — four stages **Discovery · Design · Develop · Deploy**; draggable cards; **`pdlc-doc-items.json`** + embedded JSON; **`localStorage`** (`dex-pdlc-doc-v1`) for stage moves. Footer note: future **orchestration** on stage change is optional.
 
-**What you need to do:** Run **`python3 build_index.py`** in **`06-Resources/Dex_System/workboard/`** after editing **`pdlc-doc-items.json`** or the template. Re-run after **`/daily-plan`** sync as usual.
+**What you need to do:** Run **`python3 build_index.py`** in **`Dex_System/workboard/`** after editing **`pdlc-doc-items.json`** or the template. Re-run after **`/daily-plan`** sync as usual.
 
 **Docs:** **`workboard/README.md`** tabs table matches the new layout; **`/daily-plan`** skill Step 9 notes **Today's focus** lives in the **Tasks** swim lane.
 
@@ -324,7 +420,7 @@ on MCP integration" — Dex finds the right content wherever it lives.
 
 ## [1.18.8] — Workboard two-way sync + optional always-on server (2026-03-26)
 
-**Vault → board:** New script **`06-Resources/Dex_System/workboard/sync_tasks_to_workboard.py`** merges **`03-Tasks/Tasks.md`** (lines with `[[^task-…]]`) into **`work-items.json`**, preserves rich fields on existing cards, then runs **`build_index.py`**. **`daily-plan-workboard.cjs`** runs this before embedding HTML so **`/daily-plan`** picks up assistant/task changes without opening the board first.
+**Vault → board:** New script **`Dex_System/workboard/sync_tasks_to_workboard.py`** merges **`03-Tasks/Tasks.md`** (lines with `[[^task-…]]`) into **`work-items.json`**, preserves rich fields on existing cards, then runs **`build_index.py`**. **`daily-plan-workboard.cjs`** runs this before embedding HTML so **`/daily-plan`** picks up assistant/task changes without opening the board first.
 
 **macOS:** **`com.dex.workboard.plist.example`** documents a LaunchAgent so **`workboard_server.py`** can run at login (bookmark **http://127.0.0.1:8765/** — no daily terminal step).
 
@@ -358,7 +454,7 @@ HubSpot export **`Deal Won vs Lost Analysis 2025.xlsx`** is now summarized in **
 
 ## [1.18.4] — Work board Kanban syncs to Tasks.md (2026-03-23)
 
-The Kanban in `06-Resources/Dex_System/workboard/` could only persist column moves in the browser. **`workboard_server.py`** (run locally) serves the same UI and **`POST /api/save`** writes **`work-items.json`**, regenerates **`03-Tasks/Tasks.md`** from board state (checkboxes: todo / in progress / on hold / done), and runs **`build_index.py`** so the embedded HTML stays aligned.
+The Kanban in `Dex_System/workboard/` could only persist column moves in the browser. **`workboard_server.py`** (run locally) serves the same UI and **`POST /api/save`** writes **`work-items.json`**, regenerates **`03-Tasks/Tasks.md`** from board state (checkboxes: todo / in progress / on hold / done), and runs **`build_index.py`** so the embedded HTML stays aligned.
 
 **What you need to do:** From `workboard/`, run `python3 workboard_server.py` and open http://127.0.0.1:8765/ — drag cards to update the vault without hand-editing `Tasks.md`.
 
@@ -971,7 +1067,7 @@ If you already have Notion/Slack/Google MCPs configured, Dex detects them and of
 
 **Why you'll care:** Never forget a promise or miss an ask again. The things you commit to in chat apps now surface in your task system automatically.
 
-**Requirements:** ScreenPipe must be installed and opted-in. See `06-Resources/Dex_System/ScreenPipe_Setup.md` for setup.
+**Requirements:** ScreenPipe must be installed and opted-in. See `Dex_System/ScreenPipe_Setup.md` for setup.
 
 ---
 

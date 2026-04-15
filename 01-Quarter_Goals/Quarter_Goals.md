@@ -55,7 +55,7 @@
 ## Evidence & execution (vault tools)
 
 - **Industry research (ICP / GTM / vertical depth):** [Industry research reports — README](../06-Resources/Research/Industry_research_reports/README.md) · [_INDEX](../06-Resources/Research/Industry_research_reports/_INDEX.md) — deskless/frontline summaries aligned with **mining, energy, manufacturing, logistics, retail**, and **global frontline** reports; use when closing **Q1 ICP/GTM gaps** and when framing **Q2 migrations** (Nu, KFC, Kauai and later cohorts). PDFs stay in SharePoint — vault text is the searchable layer.
-- **Workboard:** [workboard README](../06-Resources/Dex_System/workboard/README.md) execution rhythm — Kanban ↔ **`03-Tasks/Tasks.md`** and **`/daily-plan`** so quarter outcomes don’t drift from daily task state.
+- **Workboard:** [workboard README](../Dex_System/workboard/README.md) execution rhythm — Kanban ↔ **`03-Tasks/Tasks.md`** and **`/daily-plan`** so quarter outcomes don’t drift from daily task state.
 
 ---
 

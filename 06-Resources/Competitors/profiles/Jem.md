@@ -3,7 +3,7 @@ slug: jem
 name: JEM HR
 website: https://www.jemhr.com
 linkedin: https://www.linkedin.com/company/jemhr/
-last_reviewed: 2026-03-27
+last_reviewed: 2026-04-15
 ---
 
 # JEM HR
@@ -33,14 +33,14 @@ last_reviewed: 2026-03-27
 - **Leave:** Employees request on WhatsApp; employer manages in **Jem** admin.
 - **Earned wage access (EWA):** Original wedge under SmartWage; still central to financial-wellbeing story.
 - **Financial wellbeing roadmap (post–2025 raise):** Savings, low-cost insurance, credit-score support, financial wellness helpline, **airtime/data** bundles (equity + **R30m debt facility** to scale usage-linked products).
-- **Jem Mobile:** Devices/data bundles to improve **adoption** among workers without reliable smartphones or data (retain as differentiator vs app-only competitors — confirm packaging per RFP).
+- **Jem Mobile:** Launched **Oct 2025** (trade press + [product page](https://www.jemhr.com/jem-mobile/)): **smartphones + data contracts** for deskless workers via **payroll deduction** (positioning: no/little upfront cash; **employer zero-cost** narrative); network partners **Vodacom, MTN, Telkom** (per site); hands-on onboarding, insurance, repairs/SIM swap support (per marketing). **Implication:** strengthens **adoption** and **digital inclusion** vs pure **WhatsApp**-only plays when buyers worry about **device + data affordability**. See `EV-2026-04-002` — [IT News Africa](https://www.itnewsafrica.com/2025/10/jem-launches-mobile-service-to-cut-data-costs-for-south-africas-frontline-workers/), [Bizcommunity](https://www.bizcommunity.com/article/jem-hr-launches-new-mobile-service-for-sa-employees-515010a).
 
 **Positioning line (theirs):** “Ultimate HR system” for frontline, bridging office ↔ “faraway” workers using **WhatsApp** — [About](https://www.jemhr.com/about/).
 
 ## Vs **Wyzetalk**
 
 - **Overlap:** **South African ICP**; **deskless**; **WhatsApp** as HR and **payslip** channel; **EWA**/wellbeing narrative; **retail, logistics, security** vertical language; directly competes for **“WhatsApp HR”** mindshare and **RFPs** where buyer wants **fast mobile HR** without full EX platform.
-- **Differentiation (their edge):** **Deeper WhatsApp-native HR + payroll digitisation** bundle out of the box; **Deel Local Payroll (PaySpace)** **official integration** tightens payroll-adjacent distribution; **EWA + financial wellness** product depth; **strong local SA story**, PR, and logos; **usage-linked debt** suggests aggressive **lending/VAS** expansion; **lower friction** for employers who only want HR-on-WA vs full employee experience platform.
+- **Differentiation (their edge):** **Deeper WhatsApp-native HR + payroll digitisation** bundle out of the box; **Deel Local Payroll (PaySpace)** **official integration** tightens payroll-adjacent distribution; **EWA + financial wellness** product depth; **Jem Mobile** (devices + data via payroll) addresses **hardware/connectivity** barriers; **strong local SA story**, PR, and logos; **usage-linked debt** suggests aggressive **lending/VAS** expansion; **lower friction** for employers who only want HR-on-WA vs full employee experience platform.
 - **Differentiation (our edge):** **Wyzetalk** as **full EX / regulated-industry** stack — **safety & ops** (urgent alerts, operational comms), **feed + groups + posts**, broader **integrations** and **enterprise** narrative, **mining/energy** depth, **coexistence with Teams/Workplace**, and **Essential** as packaged **Requirements**-clear SKU; **not only** HR-on-WhatsApp. Battle cards: **regulated compliance**, **operational backbone**, **multi-channel** (app + SMS + WhatsApp + USSD path per ICP) vs **single-channel HR bot** framing (when fair).
 - **Geography:** **Home-court competitor in SA** — unlike Humand (LATAM-first), **JEM HR is a direct everyday competitor** in local retail, security, and QSR-style accounts; **expansion beyond Southern Africa** is explicitly funded — **watch** East/West Africa moves.
 - **Risk vector:** **WhatsApp parity** is table stakes (see **Wyzetalk** **WhatsApp Channel** PRD); **EWA + payroll** story wins **CFO/HR** buyers who narrow the problem to “payslip + WA.” **Price + speed-to-pilot** can displace if Essential **GTM** or **payslip path** lags in proof.
@@ -51,14 +51,15 @@ last_reviewed: 2026-03-27
 - Expansion beyond **Southern Africa** (offices, hiring, press).
 - New **financial products** tied to debt facility (credit, insurance attach rate).
 - **Enterprise** or **mining/energy** logos (moving upmarket from traditional Jem retail/security cluster).
+- **Jem Mobile** attach rate, employer uptake, and **RFP** packaging vs standalone WhatsApp HR.
 - **Pricing** / packaged tiers published for mid-market.
 - **Security or POPI** incidents; **Sprinto** / certification updates.
 - Any **exclusive** payroll or **batched WhatsApp** partnerships with SA HRIS/payroll vendors.
 
 ## Signal log (pointers)
 
-- [Market_and_deal_signals.md](../../Market_and_deal_signals.md) — **Deel / PaySpace** partnership row (2026-03-26 week).
-- [Evidence_register.md](../../PRDs/Evidence_register.md) — **`EV-2026-03-005`** (competitor payroll integration).
+- [Market_and_deal_signals.md](../../Market_and_deal_signals.md) — **Deel / PaySpace** partnership row (2026-03-26 week); **Jem Mobile** row (2026-04-15 week).
+- [Evidence_register.md](../../PRDs/Evidence_register.md) — **`EV-2026-03-005`** (competitor payroll integration); **`EV-2026-04-002`** (Jem Mobile launch / device + data).
 - [[Wyzetalk_Essential_Launch|Wyzetalk Essential Launch]] — WhatsApp + payslip scope justified partly vs **JEM** / **PayMeNow**-class churn risk.
 - Further **`EV-*`** when deal losses/wins cite Jem pricing or channel.
 
@@ -67,6 +68,8 @@ last_reviewed: 2026-03-27
 - [Jem on LinkedIn (company)](https://www.linkedin.com/company/jemhr/)
 - [LinkedIn — Deel / PaySpace integration announcement](https://www.linkedin.com/posts/jemhr_weve-done-a-deal-with-deel-very-happy-activity-7439938882831388696-yDmu/)
 - [jemhr.com](https://www.jemhr.com)
+- [Jem Mobile (product)](https://www.jemhr.com/jem-mobile/)
+- [IT News Africa — Jem Mobile launch (Oct 2025)](https://www.itnewsafrica.com/2025/10/jem-launches-mobile-service-to-cut-data-costs-for-south-africas-frontline-workers/)
 - [About / origin story (SmartWage → Jem)](https://www.jemhr.com/about/)
 - [Communications (WhatsApp comms product)](https://www.jemhr.com/communications/)
 - [Business Day — R60m pre-Series A (Mar 2025)](https://www.businesslive.co.za/bd/companies/telecoms-and-technology/2025-03-25-human-resources-firm-jem-hr-raises-r60m-in-new-funding-round/)

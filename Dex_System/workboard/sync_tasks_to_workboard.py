@@ -23,7 +23,7 @@ from datetime import date
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-VAULT_ROOT = HERE.parent.parent.parent
+VAULT_ROOT = HERE.parent.parent
 TASKS_MD = VAULT_ROOT / "03-Tasks" / "Tasks.md"
 WORK_ITEMS = HERE / "work-items.json"
 BUILD_INDEX = HERE / "build_index.py"

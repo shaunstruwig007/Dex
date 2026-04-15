@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 
 const vaultRoot = process.env.CLAUDE_PROJECT_DIR || path.resolve(__dirname, '../..');
-const workboardDir = path.join(vaultRoot, '06-Resources/Dex_System/workboard');
+const workboardDir = path.join(vaultRoot, 'Dex_System/workboard');
 
 if (!fs.existsSync(path.join(workboardDir, 'build_index.py'))) {
   process.exit(0);

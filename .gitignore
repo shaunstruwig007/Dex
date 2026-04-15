@@ -22,7 +22,7 @@ node_modules/
 *.log
 
 # Workboard — local PRD snapshots before edit (rollback)
-06-Resources/Dex_System/workboard/prd-backups/
+Dex_System/workboard/prd-backups/
 
 # ============================================
 # User Customizations - Protected from Updates

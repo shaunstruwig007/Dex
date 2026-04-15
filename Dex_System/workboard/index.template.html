@@ -584,7 +584,7 @@
     The app in your browser is running, but the background program is an <em>older version</em> (common after a Dex update).
     In the Terminal window where the workboard is running, press <strong>Ctrl+C</strong> to stop it.
     Then double-click <code>Start_Dex_Workboard.command</code> in this folder (or run <code>start_workboard.sh</code>), and refresh this page.
-    <span style="display:block;margin-top:0.5rem;color:var(--muted);font-size:0.8rem;">Folder: <code>06-Resources/Dex_System/workboard/</code></span>
+    <span style="display:block;margin-top:0.5rem;color:var(--muted);font-size:0.8rem;">Folder: <code>Dex_System/workboard/</code></span>
   </div>
 
   <!-- Tab navigation -->
@@ -1970,7 +1970,7 @@
         .catch(function () {
           if (msg) {
             msg.textContent =
-              "Cannot reach API — run python3 workboard_server.py from 06-Resources/Dex_System/workboard/ and use http://127.0.0.1:8765/";
+              "Cannot reach API — run python3 workboard_server.py from Dex_System/workboard/ and use http://127.0.0.1:8765/";
             msg.style.color = "#ffb4b4";
           }
           showToast("Create failed");
@@ -2210,7 +2210,7 @@
         .then(function (r) { return r.json(); })
         .then(function (data) {
           if (!data.ok) {
-            setFoot("Could not load file. Start workboard_server.py from 06-Resources/Dex_System/workboard/.", true);
+            setFoot("Could not load file. Start workboard_server.py from Dex_System/workboard/.", true);
             editor.value = "";
             syncVisualFromMarkdown();
             return;

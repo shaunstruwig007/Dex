@@ -26,7 +26,7 @@ from build_initiatives_from_prds import (  # noqa: E402
     gather_prd_rows,
 )
 
-VAULT = ROOT.parents[2]
+VAULT = ROOT.parents[1]
 INIT_PATH = ROOT / "initiatives.json"
 MAP_PATH = ROOT / "migration_id_map.json"
 

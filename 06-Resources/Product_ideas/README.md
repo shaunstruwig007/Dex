@@ -14,8 +14,8 @@
 
 ## Orchestration
 
-- **Product dashboard:** [`../Dex_System/product-dashboard/`](../Dex_System/product-dashboard/) — lanes (Idea → Shipped), Executive view, and `initiatives.json`.
-- **PDLC:** [`../Dex_System/product-dashboard/ORCHESTRATION.md`](../Dex_System/product-dashboard/ORCHESTRATION.md).
+- **Product dashboard:** [`../../Dex_System/product-dashboard/`](../../Dex_System/product-dashboard/) — lanes (Idea → Shipped), Executive view, and `initiatives.json`.
+- **PDLC:** [`../../Dex_System/product-dashboard/ORCHESTRATION.md`](../../Dex_System/product-dashboard/ORCHESTRATION.md).
 
 ## Title-derived ids
 

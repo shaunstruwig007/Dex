@@ -8,7 +8,7 @@ This guide explains how to distribute Dex as a Claude Code plugin.
 ✅ **Plugin [[README]] created** - `.claude-plugin/PLUGIN_README.md`
 ✅ **Core components organized** - Skills, MCP servers, hooks all in `.claude/`
 ✅ **Python MCP servers functional** - `core/mcp/` directory with all servers
-✅ **Documentation complete** - Comprehensive guides in `06-Resources/Dex_System/`
+✅ **Documentation complete** - Comprehensive guides in `Dex_System/`
 
 ## Distribution Options
 

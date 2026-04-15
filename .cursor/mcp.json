@@ -71,8 +71,11 @@
       "env": {}
     },
     "qmd": {
-      "command": "qmd",
-      "args": ["mcp"]
+      "command": "/Users/shaunstruwig/.bun/bin/qmd",
+      "args": ["mcp"],
+      "env": {
+        "PATH": "/Users/shaunstruwig/.bun/bin:/opt/homebrew/opt/sqlite/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+      }
     },
     "atlassian-mcp": {
       "command": "npx",

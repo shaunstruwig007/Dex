@@ -7,10 +7,10 @@
   <key>ProgramArguments</key>
   <array>
     <string>/usr/bin/python3</string>
-    <string>REPLACE_WITH_ABSOLUTE_PATH_TO_VAULT/06-Resources/Dex_System/workboard/workboard_server.py</string>
+    <string>REPLACE_WITH_ABSOLUTE_PATH_TO_VAULT/Dex_System/workboard/workboard_server.py</string>
   </array>
   <key>WorkingDirectory</key>
-  <string>REPLACE_WITH_ABSOLUTE_PATH_TO_VAULT/06-Resources/Dex_System/workboard</string>
+  <string>REPLACE_WITH_ABSOLUTE_PATH_TO_VAULT/Dex_System/workboard</string>
   <key>RunAtLoad</key>
   <true/>
   <key>KeepAlive</key>

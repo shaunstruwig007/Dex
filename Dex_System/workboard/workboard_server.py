@@ -21,8 +21,8 @@ from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
 HERE = Path(__file__).resolve().parent
-# workboard -> Dex_System -> 06-Resources -> vault root (Dex)
-VAULT_ROOT = HERE.parent.parent.parent.resolve()
+# workboard -> Dex_System -> vault root (Dex)
+VAULT_ROOT = HERE.parent.parent.resolve()
 TASKS_MD = VAULT_ROOT / "03-Tasks" / "Tasks.md"
 WORK_ITEMS = HERE / "work-items.json"
 BUILD_INDEX = HERE / "build_index.py"

@@ -11,7 +11,13 @@ This dashboard tracks **feature ideas** through the product development life cyc
 | **Idea** | Short **intent** for humans: title, stack status (Now / Next / Future / Backlog), and **card summary** — a digest you’d put on the card (outcome, who it’s for), **not** a full specification. | **`summary`** in `initiatives.json`, edited in the ticket as **Card summary (idea)**. |
 | **Discovery / workspace** | Research-backed problem framing, evidence, options — **not** a finished PRD. | **[`06-Resources/Product_ideas/`](../../Product_ideas/README.md)** — path in **`contextFile`** (vault-relative). Legacy paths under `product-dashboard/initiatives/` still resolve. |
 | **Design** | UX/UI exploration; may link to **draft** PRD material in the vault. | **Figma** on the card; optional **Product PRD (draft)** tab when the card is in **Design**. |
-| **Full PRD** | Locked spec + acceptance criteria, ready for engineering. | **`06-Resources/PRDs/...`** — the dashboard loads it in **Product PRD** only when the work is at **Design (draft)** or **Spec ready** (and later lanes), **not** for cards that are only in **Idea** or **Discovery**. |
+| **Full PRD** | Locked spec + acceptance criteria, ready for engineering. | **`06-Resources/PRDs/...`** — the dashboard loads it in the ticket **Requirements** tab (shown as **Product PRD** in UI copy in places) when the work is at **Design (draft)** or **Spec ready** (and later lanes), **not** for cards that are only in **Idea** or **Discovery**. |
+
+### Requirements tab — `agent-prd` output
+
+- The **Requirements** tab is the **primary screen** in the ticket for reading and editing the **vault PRD** once the lane/stage allows loading it (`prdStage` — see below).
+- **Authoring workflow:** produce and evolve that document with Dex **`/agent-prd`** — agent-oriented PRD structure (observable behaviors, metrics, work packages, agent-executable validation, etc.). The file stays **Markdown** on disk.
+- **Editing / formatting:** long-form editors in the dashboard should support **documentation** primitives that **round-trip to Markdown**: **headings**, normal paragraphs, **bullet (and numbered) lists**, **bold**, *italic*. Prefer these over exotic rich text so vault files stay portable (Cursor, git, Dex). See **`Paper_fresh_orchestration_UI.md`** (documentation editing section).
 
 ### `contextFile` (workspace markdown)
 

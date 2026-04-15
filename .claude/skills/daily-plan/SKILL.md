@@ -520,7 +520,7 @@ This only fires if the user has opted into analytics. No action needed if it ret
 
 ## Step 9: Workboard — refresh only (no auto-launch)
 
-After the plan is written and usage is tracked, sync **`03-Tasks/Tasks.md` → `work-items.json`** and run **`build_index.py`** so embedded `index.html` stays aligned. The board lives at `06-Resources/Dex_System/workboard/` (see `workboard/README.md`). On the workboard, **Today's focus** is the top swim lane under **Tasks** (not a separate tab); drag tasks between that lane and **All tasks** as needed.
+After the plan is written and usage is tracked, sync **`03-Tasks/Tasks.md` → `work-items.json`** and run **`build_index.py`** so embedded `index.html` stays aligned. The board lives at `Dex_System/workboard/` (see `workboard/README.md`). On the workboard, **Today's focus** is the top swim lane under **Tasks** (not a separate tab); drag tasks between that lane and **All tasks** as needed.
 
 **Does not** start `workboard_server.py` or open the browser.
 

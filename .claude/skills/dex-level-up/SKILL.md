@@ -431,7 +431,7 @@ Then show the essentials:
 > If you want to browse everything, check out:
 > - `CLAUDE.md` for the full system overview
 > - `.claude/commands/` folder for all available commands
-> - `06-Resources/Dex_System/Dex_System_Guide.md` for the complete guide"
+> - `Dex_System/Dex_System_Guide.md` for the complete guide"
 
 ---
 

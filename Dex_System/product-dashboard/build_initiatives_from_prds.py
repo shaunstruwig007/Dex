@@ -19,7 +19,7 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-VAULT = ROOT.parents[2]  # vault root (…/Dex)
+VAULT = ROOT.parents[1]  # …/Dex_System/product-dashboard → vault root
 PRD = VAULT / "06-Resources" / "PRDs"
 PRODUCT_IDEAS = VAULT / "06-Resources" / "Product_ideas"
 
@@ -38,7 +38,7 @@ CURRENT_IN_BUILD = {"WhatsApp_Channel.md", "Payslip_PDF.md"}
 
 SKIP_NAMES = {"README.md", "Template_Remote_App.md", "Template_Feature_Essential.md"}
 
-SCHEMA_VERSION = "2.3.0"
+SCHEMA_VERSION = "2.4.0"
 
 # Template body is shorter; above this we assume user edits and skip overwrite
 PRESERVE_MIN_BYTES = 650

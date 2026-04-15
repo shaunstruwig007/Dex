@@ -34,5 +34,5 @@ Resolve conflicts; preserve **`CLAUDE.md`** `USER_EXTENSIONS_START` … `END` an
 ## Related docs
 
 - [README.md](README.md) — Dex product overview (template)
-- [06-Resources/Dex_System/Dex_Technical_Guide.md](06-Resources/Dex_System/Dex_Technical_Guide.md) — technical setup
+- [Dex_System/Dex_Technical_Guide.md](Dex_System/Dex_Technical_Guide.md) — technical setup
 - [.claude/skills/dex-update/SKILL.md](.claude/skills/dex-update/SKILL.md) — guided update flow

@@ -3,706 +3,56 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Product dashboard — Dex</title>
-  <style>
-    :root {
-      --bg: #0f1419;
-      --surface: #1a2332;
-      --border: #2d3a4d;
-      --text: #e6edf3;
-      --muted: #8b9cb3;
-      --accent: #3b82f6;
-      --lane-w: 200px;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-    header {
-      padding: 0.75rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    h1 { font-size: 1.1rem; font-weight: 600; margin: 0; }
-    .tabs { display: flex; gap: 0.25rem; }
-    .tabs button {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.45rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-    .tabs button.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-    .toolbar {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .toolbar button {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 0.35rem 0.65rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-    .toolbar button:hover { color: var(--text); border-color: var(--muted); }
-    main { padding: 1rem; }
-    .panel { display: none; }
-    .panel.active { display: block; }
-    .hint {
-      color: var(--muted);
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-      max-width: 88ch;
-    }
-    .hint code { color: #93c5fd; }
-
-    #exec-focus {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.65rem 0.85rem;
-      margin-bottom: 1rem;
-      font-size: 0.85rem;
-    }
-    #exec-focus h2 {
-      margin: 0 0 0.4rem;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--muted);
-      font-weight: 700;
-    }
-    #exec-focus ul { margin: 0; padding-left: 1.1rem; color: var(--text); }
-    #exec-focus.empty { color: var(--muted); font-style: italic; }
-    .progress-mini {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      max-width: 120px;
-    }
-    .progress-mini .bar {
-      flex: 1;
-      height: 6px;
-      background: #243044;
-      border-radius: 3px;
-      overflow: hidden;
-      min-width: 48px;
-    }
-    .progress-mini .bar > i {
-      display: block;
-      height: 100%;
-      background: var(--accent);
-      border-radius: 3px;
-    }
-    .ticket-meta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem 1.25rem;
-      padding: 0 1rem 0.75rem;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.8rem;
-    }
-    .ticket-meta-row label { color: var(--muted); display: flex; flex-direction: column; gap: 0.25rem; }
-    .ticket-meta-row select {
-      background: #0f1419;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.35rem 0.5rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      min-width: 11rem;
-    }
-    .chip {
-      display: inline-block;
-      font-size: 0.62rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      padding: 0.1rem 0.3rem;
-      border-radius: 4px;
-      background: #1e293b;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      margin-right: 0.2rem;
-    }
-
-    .exec-table-wrap { overflow-x: auto; }
-    table.exec {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-    table.exec th, table.exec td {
-      border: 1px solid var(--border);
-      padding: 0.5rem 0.6rem;
-      text-align: left;
-      vertical-align: top;
-    }
-    table.exec th { background: var(--surface); color: var(--muted); font-weight: 600; }
-    table.exec tr:hover td { background: rgba(59, 130, 246, 0.06); }
-    .rag { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-    .rag.green { color: #4ade80; }
-    .rag.amber { color: #fbbf24; }
-    .rag.red { color: #f87171; }
-    table.exec a { color: var(--accent); }
-    .badge {
-      display: inline-block;
-      font-size: 0.65rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      padding: 0.12rem 0.35rem;
-      border-radius: 4px;
-      background: #243044;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      margin-right: 0.25rem;
-    }
-    .badge.current { border-color: #4ade80; color: #bbf7d0; }
-    .badge.next { border-color: #60a5fa; color: #bfdbfe; }
-    .badge.future { border-color: #a78bfa; color: #ddd6fe; }
-    .badge.backlog { border-color: #64748b; color: #cbd5e1; }
-
-    .lane-scroll {
-      display: flex;
-      gap: 0.65rem;
-      overflow-x: auto;
-      padding-bottom: 0.5rem;
-      min-height: 420px;
-      align-items: flex-start;
-    }
-    .lane {
-      flex: 0 0 var(--lane-w);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      min-height: 300px;
-      display: flex;
-      flex-direction: column;
-    }
-    .lane h3 {
-      margin: 0;
-      padding: 0.5rem 0.6rem;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text);
-      font-weight: 700;
-      border-bottom: 1px solid var(--border);
-    }
-    .lane-body {
-      flex: 1;
-      padding: 0.45rem;
-      min-height: 240px;
-    }
-    .lane-body.drag-over { outline: 2px dashed var(--accent); outline-offset: 2px; }
-    .add-idea-btn {
-      width: 100%;
-      margin-bottom: 0.45rem;
-      padding: 0.35rem;
-      background: transparent;
-      border: 1px dashed var(--border);
-      border-radius: 6px;
-      color: var(--muted);
-      font-size: 1.1rem;
-      line-height: 1;
-      cursor: pointer;
-    }
-    .add-idea-btn:hover { color: var(--text); border-color: var(--muted); }
-    .card {
-      background: #243044;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.45rem 0.5rem;
-      margin-bottom: 0.45rem;
-      cursor: grab;
-      font-size: 0.8rem;
-      line-height: 1.35;
-    }
-    .card.drag-target { border-color: var(--accent); }
-    .card:active { cursor: grabbing; }
-    .card strong { display: block; color: var(--text); margin-bottom: 0.2rem; font-size: 0.82rem; font-weight: 600; }
-    .card .sum { color: var(--muted); font-size: 0.72rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap; }
-    .card .meta { margin-top: 0.25rem; }
-
-    dialog {
-      background: var(--surface);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      max-width: min(560px, 96vw);
-      width: 100%;
-      padding: 0;
-    }
-    dialog.narrow { max-width: min(440px, 96vw); }
-    dialog::backdrop { background: rgba(0,0,0,0.65); }
-    .dlg-head {
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .dlg-head h2 { margin: 0; font-size: 1rem; font-weight: 600; }
-    .dlg-body { padding: 1rem; max-height: 70vh; overflow-y: auto; }
-    .dlg-field { margin-bottom: 1rem; }
-    .dlg-field:last-of-type { margin-bottom: 0; }
-    .dlg-field label {
-      display: block;
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-bottom: 0.35rem;
-    }
-    .dlg-field input[type="text"], .dlg-field textarea {
-      width: 100%;
-      background: #0f1419;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.5rem 0.55rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-family: inherit;
-    }
-    .dlg-field textarea { min-height: 8rem; resize: vertical; line-height: 1.45; }
-    .dlg-prd-paths {
-      font-size: 0.8rem;
-      color: var(--muted);
-      line-height: 1.5;
-      word-break: break-all;
-    }
-    .dlg-actions { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); }
-    .dlg-actions button.primary {
-      background: rgba(59, 130, 246, 0.35);
-      border: 1px solid var(--accent);
-      color: var(--text);
-      padding: 0.45rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-    dialog button.close {
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      font-size: 1.25rem;
-      cursor: pointer;
-      line-height: 1;
-    }
-    dialog.wide { max-width: min(640px, 96vw); }
-    .doc-path-row {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-bottom: 0.75rem;
-      font-size: 0.8rem;
-      color: var(--muted);
-      word-break: break-all;
-    }
-    .doc-path-row button {
-      flex-shrink: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.25rem 0.5rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      cursor: pointer;
-    }
-    .doc-viewer {
-      margin-top: 0.75rem;
-      max-height: 45vh;
-      overflow: auto;
-      background: #0f1419;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.65rem 0.75rem;
-      font-size: 0.8rem;
-      line-height: 1.45;
-      white-space: pre-wrap;
-      font-family: ui-monospace, monospace;
-      color: var(--text);
-    }
-    .doc-viewer.muted { color: var(--muted); font-family: inherit; }
-
-    .status-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-      background: #0f1419;
-    }
-    .status-bar button {
-      flex: 1;
-      min-width: 4.5rem;
-      padding: 0.45rem 0.5rem;
-      border: none;
-      border-right: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .status-bar button:last-child { border-right: none; }
-    .status-bar button:hover { color: var(--text); background: rgba(59, 130, 246, 0.08); }
-    .status-bar button.active {
-      background: rgba(59, 130, 246, 0.25);
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    /* Ticket dialog: only visible when open. */
-    dialog#detail-dlg:not([open]) {
-      display: none !important;
-      pointer-events: none;
-    }
-    dialog#detail-dlg[open].ticket-panel {
-      display: flex !important;
-    }
-
-    /* Ticket editor: vertical position is per .ticket-size-* (lg = full height, 10px top/bottom inset; md/sm shorter). Opens at lg every time. */
-    #detail-dlg.ticket-panel {
-      --ticket-inset: 10px;
-      position: fixed;
-      z-index: 1000;
-      margin: 0;
-      padding: var(--ticket-inset) 0;
-      box-sizing: border-box;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      flex-direction: column;
-      background: var(--surface);
-      box-shadow: 0 -8px 48px rgba(0, 0, 0, 0.4);
-      overflow: hidden;
-      max-width: none;
-      width: auto;
-      min-height: 200px;
-    }
-    /* Expanded (+): full height between 10px top/bottom viewport insets (width unchanged — dock rules). */
-    #detail-dlg.ticket-panel.ticket-size-lg {
-      top: var(--ticket-inset);
-      bottom: var(--ticket-inset);
-      max-height: none;
-      height: auto;
-      padding: 0;
-    }
-    /* Middle height — bottom-anchored; use + to reach lg. */
-    #detail-dlg.ticket-panel.ticket-size-md {
-      top: auto;
-      bottom: var(--ticket-inset);
-      max-height: min(58vh, calc(100vh - 2 * var(--ticket-inset)));
-    }
-    /* Shortest — − from md. */
-    #detail-dlg.ticket-panel.ticket-size-sm {
-      top: auto;
-      bottom: var(--ticket-inset);
-      max-height: min(38vh, calc(100vh - 2 * var(--ticket-inset)));
-    }
-    #detail-dlg.ticket-panel.dock-center {
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(1040px, 88vw);
-      max-width: 88vw;
-    }
-    #detail-dlg.ticket-panel.dock-left {
-      left: max(10px, 1.2vw);
-      right: auto;
-      transform: none;
-      width: min(980px, 76vw);
-      max-width: 76vw;
-    }
-    #detail-dlg.ticket-panel.dock-right {
-      right: max(10px, 1.2vw);
-      left: auto;
-      transform: none;
-      width: min(980px, 76vw);
-      max-width: 76vw;
-    }
-    dialog#detail-dlg.ticket-panel::backdrop {
-      background: rgba(15, 20, 25, 0.38);
-      backdrop-filter: blur(1px);
-    }
-    #detail-dlg.ticket-panel .ticket-dock-controls {
-      display: flex;
-      gap: 2px;
-      margin-right: 0.25rem;
-    }
-    #detail-dlg.ticket-panel .ticket-dock-controls button {
-      min-width: 2rem;
-      padding: 0.25rem 0.4rem;
-      font-size: 0.85rem;
-      line-height: 1;
-      background: #0f1419;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #detail-dlg.ticket-panel .ticket-dock-controls button:hover { color: var(--text); border-color: var(--muted); }
-    #detail-dlg.ticket-panel .ticket-dock-controls button.active {
-      border-color: var(--accent);
-      color: var(--text);
-      background: rgba(59, 130, 246, 0.12);
-    }
-    #detail-dlg.ticket-panel .ticket-size-controls {
-      display: flex;
-      gap: 2px;
-      align-items: center;
-    }
-    #detail-dlg.ticket-panel .ticket-size-controls button {
-      min-width: 2rem;
-      padding: 0.25rem 0.45rem;
-      font-size: 1rem;
-      line-height: 1;
-      background: #0f1419;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #detail-dlg.ticket-panel .ticket-size-controls button:hover {
-      color: var(--text);
-      border-color: var(--muted);
-    }
-    #detail-dlg.ticket-panel .ticket-toolbar {
-      flex-shrink: 0;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.5rem 0.75rem;
-      padding: 0.6rem 1rem;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-    }
-    #detail-dlg.ticket-panel .ticket-title-input {
-      flex: 1 1 200px;
-      min-width: 160px;
-      background: #0f1419;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.45rem 0.55rem;
-      border-radius: 6px;
-      font-size: 1rem;
-      font-weight: 600;
-    }
-    #detail-dlg.ticket-panel #dlg-status-bar {
-      flex: 2 1 280px;
-      max-width: 420px;
-    }
-    #detail-dlg.ticket-panel .ticket-figma-input {
-      flex: 1 1 140px;
-      min-width: 120px;
-      background: #0f1419;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.4rem 0.5rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
-    }
-    #detail-dlg.ticket-panel .ticket-toolbar-actions {
-      display: flex;
-      gap: 0.35rem;
-      flex-wrap: wrap;
-      margin-left: auto;
-      align-items: center;
-    }
-    #detail-dlg.ticket-panel .ticket-toolbar-actions button {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.4rem 0.65rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-    #detail-dlg.ticket-panel .ticket-toolbar-actions button.primary {
-      background: rgba(59, 130, 246, 0.35);
-      border-color: var(--accent);
-    }
-    #detail-dlg.ticket-panel .ticket-summary-row {
-      flex: 0 0 auto;
-      padding: 0.5rem 1rem;
-      border-bottom: 1px solid var(--border);
-      background: rgba(26, 35, 50, 0.6);
-    }
-    #detail-dlg.ticket-panel .ticket-summary-row label {
-      display: block;
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-bottom: 0.25rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    /* ~3 sentences: fixed line budget; document editor + tabs take the rest of the modal. */
-    #detail-dlg.ticket-panel #dlg-desc {
-      width: 100%;
-      box-sizing: border-box;
-      display: block;
-      min-height: 4.5rem;
-      max-height: 6rem;
-      height: 5.5rem;
-      background: #0f1419;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.45rem 0.55rem;
-      border-radius: 6px;
-      font-size: 0.88rem;
-      line-height: 1.45;
-      resize: none;
-      overflow-y: auto;
-      font-family: inherit;
-    }
-    #detail-dlg.ticket-panel .ticket-doc-bar {
-      flex-shrink: 0;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.45rem 1rem;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-    }
-    #detail-dlg.ticket-panel .ticket-doc-tabs {
-      display: flex;
-      gap: 0.25rem;
-    }
-    #detail-dlg.ticket-panel .ticket-doc-tabs button {
-      background: #0f1419;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 0.35rem 0.75rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-    #detail-dlg.ticket-panel .ticket-doc-tabs button.active {
-      border-color: var(--accent);
-      color: var(--text);
-      background: rgba(59, 130, 246, 0.15);
-    }
-    #detail-dlg.ticket-panel .ticket-doc-tabs button[hidden] { display: none !important; }
-    #detail-dlg.ticket-panel .ticket-workspace-hint {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin: 0 0 0.5rem 0;
-      max-width: 52rem;
-      line-height: 1.35;
-    }
-    #detail-dlg.ticket-panel #ticket-doc-path {
-      font-size: 0.75rem;
-      color: var(--muted);
-      word-break: break-all;
-      flex: 1 1 200px;
-    }
-    #detail-dlg.ticket-panel .ticket-format-bar {
-      flex-shrink: 0;
-      display: flex;
-      gap: 0.35rem;
-      padding: 0.35rem 1rem;
-      border-bottom: 1px solid var(--border);
-      background: #0f1419;
-    }
-    #detail-dlg.ticket-panel .ticket-format-bar button {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.3rem 0.55rem;
-      border-radius: 4px;
-      font-size: 0.78rem;
-      cursor: pointer;
-    }
-    #detail-dlg.ticket-panel #md-wysiwyg {
-      flex: 1 1 0;
-      min-height: 0;
-      overflow: auto;
-      padding: 1rem 1.25rem 1.25rem;
-      background: #0f1419;
-      outline: none;
-      font-size: 0.95rem;
-      line-height: 1.55;
-      color: var(--text);
-    }
-    #detail-dlg.ticket-panel #md-wysiwyg:focus { box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.25); }
-    #detail-dlg.ticket-panel #md-wysiwyg h1,
-    #detail-dlg.ticket-panel #md-wysiwyg h2,
-    #detail-dlg.ticket-panel #md-wysiwyg h3 { margin: 0.85em 0 0.4em; font-weight: 600; line-height: 1.25; }
-    #detail-dlg.ticket-panel #md-wysiwyg h1 { font-size: 1.35rem; }
-    #detail-dlg.ticket-panel #md-wysiwyg h2 { font-size: 1.15rem; }
-    #detail-dlg.ticket-panel #md-wysiwyg h3 { font-size: 1.02rem; }
-    #detail-dlg.ticket-panel #md-wysiwyg p { margin: 0.55em 0; }
-    #detail-dlg.ticket-panel #md-wysiwyg ul,
-    #detail-dlg.ticket-panel #md-wysiwyg ol { margin: 0.5em 0; padding-left: 1.5rem; }
-    #detail-dlg.ticket-panel #md-wysiwyg li { margin: 0.2em 0; }
-    #detail-dlg.ticket-panel #md-wysiwyg code { background: #1a2332; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.88em; }
-    #detail-dlg.ticket-panel #md-wysiwyg pre { background: #1a2332; padding: 0.75rem; border-radius: 6px; overflow-x: auto; }
-    #detail-dlg.ticket-panel #md-wysiwyg blockquote {
-      margin: 0.6em 0;
-      padding-left: 0.85rem;
-      border-left: 3px solid var(--border);
-      color: var(--muted);
-    }
-    #detail-dlg.ticket-panel .ticket-footer {
-      flex-shrink: 0;
-      padding: 0.5rem 1rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-    }
-    #detail-dlg.ticket-panel .ticket-footer a { color: var(--accent); cursor: pointer; }
-  </style>
+  <title>Orchestration — Dex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="product-dashboard.css" />
 </head>
 <body>
-  <header>
-    <h1>Product dashboard</h1>
-    <div class="tabs" role="tablist">
-      <button type="button" class="active" data-tab="exec" role="tab" aria-selected="true">Executive</button>
-      <button type="button" data-tab="orch" role="tab" aria-selected="false">Orchestration</button>
+  <header class="app-paper-shell" data-paper-ref="01 Orchestration board">
+    <div class="app-paper-chrome">
+      <div class="app-paper-top">
+        <div class="app-paper-brand">
+          <span class="app-paper-wordmark">Wyzetalk</span>
+          <p class="app-paper-subtitle">Product orchestration</p>
+        </div>
+        <div class="app-paper-user" title="Workspace">
+          <span class="app-paper-user-name">Workspace</span>
+          <div class="app-paper-avatar" aria-hidden="true">PM</div>
+        </div>
+      </div>
+      <div class="app-paper-nav">
+      <div class="tabs" role="tablist">
+        <button type="button" class="active" data-tab="orch" role="tab" aria-selected="true">Orchestration</button>
+        <button type="button" data-tab="exec" role="tab" aria-selected="false">Executive</button>
+      </div>
+      <div class="toolbar">
+        <span id="status" style="font-size:0.75rem;color:var(--muted)"></span>
+      </div>
     </div>
-    <div class="toolbar">
-      <button type="button" id="btn-export" title="Download merged JSON">Export JSON</button>
-      <button type="button" id="btn-reset" title="Clear lane moves and card order">Reset moves &amp; order</button>
-      <button type="button" id="btn-clear-custom" title="Remove custom ideas from this browser">Clear custom ideas</button>
-      <span id="status" style="font-size:0.75rem;color:var(--muted)"></span>
     </div>
   </header>
-  <main>
-    <p class="hint">
-      Local server required (e.g. <code>python3 -m http.server 8766</code>). Edits and order are stored in the browser until you export JSON.
-    </p>
+  <main class="main-paper-canvas">
+    <section id="panel-orch" class="panel active" role="tabpanel">
+      <p id="orch-load-error" class="orch-load-error" hidden role="alert"></p>
+      <div class="lane-scroll" id="orchestration-root" aria-label="Initiative swim lanes"></div>
+    </section>
 
-    <section id="panel-exec" class="panel active" role="tabpanel">
-      <div id="exec-focus" class="exec-focus empty" aria-live="polite"></div>
+    <section id="panel-exec" class="panel exec-paper" data-paper-ref="Executive — interim tab; standalone page design later" role="tabpanel" hidden>
+      <header class="exec-paper-head">
+        <h2 class="exec-paper-title">Executive</h2>
+        <p class="exec-context-line" id="exec-context-line"></p>
+      </header>
+      <div id="exec-focus" class="exec-focus-strip empty" aria-live="polite"></div>
       <div class="exec-table-wrap">
-        <table class="exec" id="exec-table">
+        <table class="exec exec-paper-table" id="exec-table">
           <thead>
             <tr>
               <th>Initiative</th>
               <th>Tier</th>
-              <th>Prio</th>
-              <th>PDLC</th>
+              <th>Priority</th>
+              <th>Lane</th>
               <th>Horizon</th>
               <th>Progress</th>
               <th>Next milestone</th>
@@ -716,22 +66,11 @@
         </table>
       </div>
     </section>
-
-    <section id="panel-orch" class="panel" role="tabpanel" hidden>
-      <div class="lane-scroll" id="orchestration-root" aria-label="Initiative swim lanes"></div>
-    </section>
   </main>
 
-  <dialog id="detail-dlg" class="ticket-panel dock-center ticket-size-lg">
+  <dialog id="detail-dlg" class="ticket-panel dock-center ticket-size-lg" data-paper-ref="02–04 Initiative detail">
     <div class="ticket-toolbar">
       <input type="text" id="dlg-title-input" class="ticket-title-input" placeholder="Heading" autocomplete="off" />
-      <div class="status-bar" id="dlg-status-bar" role="group" aria-label="Stack status">
-        <button type="button" data-tier="Current" title="Now / current focus">Now</button>
-        <button type="button" data-tier="Next" title="Next up">Next</button>
-        <button type="button" data-tier="Future" title="Future exploration">Future</button>
-        <button type="button" data-tier="Backlog" title="Backlog">Backlog</button>
-      </div>
-      <input type="text" id="dlg-figma" class="ticket-figma-input" placeholder="Figma URL" autocomplete="off" />
       <div class="ticket-dock-controls" title="Panel position — see the board behind">
         <button type="button" id="ticket-dock-left" aria-pressed="false" aria-label="Dock panel left">◀</button>
         <button type="button" id="ticket-dock-center" aria-pressed="true" aria-label="Centre panel">⊙</button>
@@ -747,51 +86,167 @@
         <button type="button" class="close" aria-label="Close ticket">&times;</button>
       </div>
     </div>
-    <div class="ticket-summary-row">
-      <label for="dlg-desc">Card summary (idea)</label>
-      <textarea id="dlg-desc" rows="4" placeholder="Digest for the card — outcome and intent (not the full PRD)."></textarea>
-    </div>
-    <div class="ticket-meta-row">
-      <label>Workflow status
-        <select id="dlg-workflow" aria-label="Workflow status">
-          <option value="">—</option>
-          <option value="blocked">Blocked</option>
-          <option value="ready_for_spec">Ready for spec</option>
-          <option value="in_review">In review</option>
-          <option value="at_risk">At risk</option>
+    <div class="ticket-paper-subhead">
+      <div class="ticket-paper-meta">
+        <select id="dlg-tier-select" class="ticket-pill ticket-pill-tier" aria-label="Stack status" title="Stack status">
+          <option value="Current">Now</option>
+          <option value="Next">Next</option>
+          <option value="Future">Future</option>
+          <option value="Backlog">Backlog</option>
         </select>
-      </label>
-      <label>Intake source
-        <select id="dlg-intake" aria-label="Intake source">
-          <option value="">—</option>
-          <option value="customer">Customer</option>
-          <option value="market">Market</option>
-          <option value="internal">Internal</option>
-          <option value="board">Board</option>
-        </select>
-      </label>
-    </div>
-    <div class="ticket-doc-bar">
-      <div class="ticket-doc-tabs" role="tablist">
-        <button type="button" id="tab-prd" data-doc-tab="prd" role="tab">Product PRD</button>
-        <button type="button" id="tab-workspace" data-doc-tab="workspace" role="tab" class="active">Workspace notes</button>
+        <span id="dlg-lane-pill" class="ticket-pill ticket-pill-lane">—</span>
+        <span class="ticket-updated" id="dlg-last-updated">Last updated —</span>
       </div>
-      <span id="ticket-doc-path"></span>
+      <div class="ticket-paper-lane-move">
+        <label for="dlg-move-lane">Move lane</label>
+        <select id="dlg-move-lane" aria-label="Move initiative to lane"></select>
+      </div>
     </div>
-    <p id="ticket-workspace-hint" class="ticket-workspace-hint" hidden>
-      Full <strong>Workspace notes</strong> (discovery and idea context) load below. Edit here or use <strong>Download .md</strong> to sync files in the vault.
-    </p>
-    <div class="ticket-format-bar" title="Formatting (optional)">
-      <button type="button" data-fmt="bold">Bold</button>
-      <button type="button" data-fmt="italic">Italic</button>
-      <button type="button" data-fmt="insertUnorderedList">Bullets</button>
+    <div class="ticket-lane-row" id="dlg-lane-row"></div>
+    <div class="ticket-main-tabs" role="tablist">
+      <button type="button" id="tab-brief" data-main-tab="brief" role="tab" class="active" title="Problem, users, success">Brief</button>
+      <button type="button" id="tab-discovery" data-main-tab="discovery" role="tab" title="Unlocks when you move to Discovery">Discovery <span class="tab-lock" id="lock-discovery">Locked</span></button>
+      <button type="button" id="tab-requirements" data-main-tab="requirements" role="tab" title="Unlocks in Design or later lanes when a PRD is linked">Requirements <span class="tab-lock" id="lock-requirements">Locked</span></button>
+      <button type="button" id="tab-design" data-main-tab="design" role="tab" title="Unlocks in Design or later">Design <span class="tab-lock" id="lock-design">Locked</span></button>
     </div>
-    <div id="md-wysiwyg" contenteditable="true" tabindex="0" aria-label="Document editor"></div>
-    <div class="ticket-footer">
-      <span id="dlg-prd-paths"></span>
-      <span id="dlg-discovery-row" hidden> · <span id="dlg-discovery-path-short"></span>
-        <button type="button" id="btn-open-discovery-doc" style="background:transparent;border:none;color:var(--accent);cursor:pointer;padding:0;font-size:inherit">Open discovery viewer</button>
-      </span>
+    <div class="ticket-panels-body">
+      <div id="ticket-panel-brief" class="ticket-tab-panel active">
+        <div id="card-summary-section" class="ticket-summary-row">
+          <label for="dlg-desc">Card summary (idea)</label>
+          <textarea id="dlg-desc" rows="4" placeholder="Digest for the card — outcome and intent (not the full PRD)."></textarea>
+        </div>
+        <div id="idea-intake-form" class="idea-intake-form" hidden>
+          <div class="dlg-field">
+            <label for="edit-problem">What problem does this solve?</label>
+            <textarea id="edit-problem" class="brief-ta" rows="3" placeholder="Current pain, gap, or job to be done."></textarea>
+          </div>
+          <div class="dlg-field">
+            <label for="edit-target-users">Who is it for?</label>
+            <textarea id="edit-target-users" class="brief-ta" rows="2" placeholder="Primary users, segments, or personas."></textarea>
+          </div>
+          <div class="dlg-field">
+            <label for="edit-success">What does success look like?</label>
+            <textarea id="edit-success" class="brief-ta" rows="2" placeholder="Outcomes, signals, or metrics."></textarea>
+          </div>
+          <details id="edit-brief-more" class="brief-more">
+            <summary>More product brief questions</summary>
+            <div class="dlg-field">
+              <label for="edit-constraints">Constraints &amp; scope</label>
+              <textarea id="edit-constraints" class="brief-ta" rows="2" placeholder="Timeline, technical constraints, integrations, out of scope."></textarea>
+            </div>
+            <div class="dlg-field">
+              <label for="edit-ux">User journey &amp; discovery</label>
+              <textarea id="edit-ux" class="brief-ta" rows="2" placeholder="How users find this, core journey, easy vs hard actions."></textarea>
+            </div>
+            <div class="dlg-field">
+              <label for="edit-validation">Success &amp; validation</label>
+              <textarea id="edit-validation" class="brief-ta" rows="2" placeholder="What to validate, assumptions to test."></textarea>
+            </div>
+            <div class="dlg-field">
+              <label for="edit-dependencies">Dependencies</label>
+              <textarea id="edit-dependencies" class="brief-ta" rows="2" placeholder="Teams, systems, other initiatives."></textarea>
+            </div>
+          </details>
+          <div class="dlg-field">
+            <label for="edit-priority">Priority</label>
+            <select id="edit-priority" aria-label="Priority">
+              <option value="P0">P0</option>
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+            </select>
+          </div>
+          <div class="dlg-field">
+            <label for="edit-intake">Intake source</label>
+            <select id="edit-intake" aria-label="Intake source">
+              <option value="">—</option>
+              <option value="customer">Customer interview</option>
+              <option value="market">Market / competitive</option>
+              <option value="internal">Internal</option>
+              <option value="board">Board / steering</option>
+            </select>
+          </div>
+        </div>
+        <div id="brief-non-idea-block">
+          <div id="dlg-brief-wrap" class="ticket-brief-wrap" hidden>
+            <h4>Product brief (idea intake)</h4>
+            <p id="dlg-brief-empty" class="ticket-workspace-hint" style="margin:0">No structured brief on file — only card summary below.</p>
+            <dl id="dlg-brief-dl" class="brief-dl" hidden></dl>
+          </div>
+          <div class="ticket-meta-row">
+            <label>Workflow status
+              <select id="dlg-workflow" aria-label="Workflow status">
+                <option value="">—</option>
+                <option value="blocked">Blocked</option>
+                <option value="ready_for_spec">Ready for spec</option>
+                <option value="in_review">In review</option>
+                <option value="at_risk">At risk</option>
+              </select>
+            </label>
+            <label>Intake source
+              <select id="dlg-intake" aria-label="Intake source">
+                <option value="">—</option>
+                <option value="customer">Customer</option>
+                <option value="market">Market</option>
+                <option value="internal">Internal</option>
+                <option value="board">Board</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div id="ticket-panel-doc" class="ticket-tab-panel">
+        <div id="discovery-agent-banner">
+          <div class="banner-text">
+            <strong>Enriching context…</strong>
+            <span>Linking related PRDs and touchpoints. You can keep editing <strong>Brief</strong> while this runs.</span>
+          </div>
+          <button type="button" class="discovery-rerun-btn" id="btn-rerun-discovery">Re-run discovery</button>
+        </div>
+        <p id="ticket-workspace-hint" class="ticket-workspace-hint" hidden>
+          Full <strong>Workspace notes</strong> (discovery) load below. Edit here or use <strong>Download .md</strong> to sync files in the vault.
+        </p>
+        <p id="ticket-req-placeholder" class="ticket-workspace-hint" hidden></p>
+        <div class="ticket-doc-bar">
+          <span id="ticket-doc-path"></span>
+        </div>
+        <div class="ticket-format-bar" title="Formatting (maps to Markdown on save)">
+          <button type="button" data-fmt="h2">H2</button>
+          <button type="button" data-fmt="bold">Bold</button>
+          <button type="button" data-fmt="italic">Italic</button>
+          <button type="button" data-fmt="insertUnorderedList">Bullets</button>
+        </div>
+        <div id="md-wysiwyg" contenteditable="true" tabindex="0" aria-label="Document editor"></div>
+        <div class="ticket-footer">
+          <span id="dlg-prd-paths"></span>
+          <span id="dlg-discovery-row" hidden> · <span id="dlg-discovery-path-short"></span>
+            <button type="button" id="btn-open-discovery-doc" style="background:transparent;border:none;color:var(--accent);cursor:pointer;padding:0;font-size:inherit">Open discovery viewer</button>
+          </span>
+        </div>
+      </div>
+      <div id="ticket-panel-design" class="ticket-tab-panel">
+        <p class="design-tab-lead ticket-workspace-hint">Primary design artifact (Paper frame <strong>04</strong>): link, revision, and open in tool.</p>
+        <div class="design-artifact-card">
+          <div class="design-artifact-icon" aria-hidden="true">◆</div>
+          <div class="design-artifact-body">
+            <div class="design-field">
+              <label for="dlg-figma">Figma</label>
+              <input type="text" id="dlg-figma" placeholder="Figma URL" autocomplete="off" />
+            </div>
+            <div class="design-field">
+              <label for="dlg-design-artifact">Design file</label>
+              <input type="text" id="dlg-design-artifact" placeholder="Paper or design tool link" autocomplete="off" />
+            </div>
+            <div class="design-field design-field-revision">
+              <label for="dlg-design-revision">Revision</label>
+              <input type="text" id="dlg-design-revision" placeholder="e.g. rev 4" autocomplete="off" />
+            </div>
+          </div>
+          <div class="design-artifact-actions">
+            <button type="button" class="primary" id="btn-open-design-artifact">Open</button>
+          </div>
+        </div>
+      </div>
     </div>
   </dialog>
 
@@ -835,23 +290,54 @@
     </div>
   </dialog>
 
-  <dialog id="add-idea-dlg" class="narrow">
+  <dialog id="add-idea-dlg" class="wide add-idea-dlg">
     <div class="dlg-head">
-      <h2>New idea</h2>
+      <h2>New initiative</h2>
       <button type="button" class="close" id="add-idea-close" aria-label="Close">&times;</button>
     </div>
-    <div class="dlg-body">
+    <div class="dlg-body add-idea-dlg-body">
       <div class="dlg-field">
-        <label for="add-title">Heading</label>
-        <input type="text" id="add-title" autocomplete="off" />
+        <label for="add-title">Title</label>
+        <input type="text" id="add-title" autocomplete="off" aria-describedby="add-title-hint" />
       </div>
       <div class="dlg-field">
-        <label for="add-summary">Description</label>
-        <textarea id="add-summary"></textarea>
+        <label for="add-summary">Card summary</label>
+        <textarea id="add-summary" placeholder="Short digest on the card — outcome and who it is for."></textarea>
       </div>
+      <div class="dlg-field">
+        <label for="add-problem">What problem does this solve?</label>
+        <textarea id="add-problem" class="brief-ta" rows="3" placeholder="Current pain, gap, or job to be done."></textarea>
+      </div>
+      <div class="dlg-field">
+        <label for="add-target-users">Who is it for?</label>
+        <textarea id="add-target-users" class="brief-ta" rows="2" placeholder="Primary users, segments, or personas."></textarea>
+      </div>
+      <div class="dlg-field">
+        <label for="add-success">What does success look like?</label>
+        <textarea id="add-success" class="brief-ta" rows="2" placeholder="Outcomes, signals, or metrics."></textarea>
+      </div>
+      <details id="add-brief-more" class="brief-more">
+        <summary>More product brief questions</summary>
+        <div class="dlg-field">
+          <label for="add-constraints">Constraints &amp; scope</label>
+          <textarea id="add-constraints" class="brief-ta" rows="2" placeholder="Timeline, technical constraints, integrations, out of scope."></textarea>
+        </div>
+        <div class="dlg-field">
+          <label for="add-ux">User journey &amp; discovery</label>
+          <textarea id="add-ux" class="brief-ta" rows="2" placeholder="How users find this, core journey, easy vs hard actions."></textarea>
+        </div>
+        <div class="dlg-field">
+          <label for="add-validation">Success &amp; validation</label>
+          <textarea id="add-validation" class="brief-ta" rows="2" placeholder="What to validate, assumptions to test."></textarea>
+        </div>
+        <div class="dlg-field">
+          <label for="add-dependencies">Dependencies</label>
+          <textarea id="add-dependencies" class="brief-ta" rows="2" placeholder="Teams, systems, other initiatives."></textarea>
+        </div>
+      </details>
       <div class="dlg-field">
         <label for="add-tier">Stack</label>
-        <select id="add-tier" style="width:100%;background:#0f1419;border:1px solid var(--border);color:var(--text);padding:0.45rem;border-radius:6px;font-size:0.85rem;">
+        <select id="add-tier">
           <option value="Backlog">Backlog</option>
           <option value="Current">Current</option>
           <option value="Next">Next</option>
@@ -860,17 +346,31 @@
       </div>
       <div class="dlg-field">
         <label for="add-prio">Priority</label>
-        <select id="add-prio" style="width:100%;background:#0f1419;border:1px solid var(--border);color:var(--text);padding:0.45rem;border-radius:6px;font-size:0.85rem;">
+        <select id="add-prio">
           <option value="P0">P0</option>
           <option value="P1">P1</option>
           <option value="P2" selected>P2</option>
           <option value="P3">P3</option>
         </select>
       </div>
-      <div class="dlg-actions">
-        <button type="button" class="primary" id="add-idea-save">Save</button>
+      <div class="dlg-field">
+        <label for="add-intake">Intake source</label>
+        <select id="add-intake" aria-label="Intake source">
+          <option value="">—</option>
+          <option value="customer">Customer interview</option>
+          <option value="market">Market / competitive</option>
+          <option value="internal">Internal</option>
+          <option value="board">Board / steering</option>
+        </select>
       </div>
     </div>
+    <form method="dialog" class="add-idea-dlg-foot dlg-actions-row">
+      <span id="add-title-hint" class="field-hint-muted" role="status"></span>
+      <div class="dlg-actions-buttons">
+        <button type="submit">Cancel</button>
+        <button type="button" class="primary" id="add-idea-save">Create draft</button>
+      </div>
+    </form>
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -889,11 +389,13 @@
     lastDiscoveryPrompt: "",
     ticketPrdVaultPath: null,
     ticketWsVaultPath: null,
-    ticketDocTab: "workspace",
+    ticketMainTab: "brief",
     ticketCurrentVaultPath: null,
     ticketDock: "center",
     ticketSize: "lg",
-    ticketPrdStage: "none"
+    ticketPrdStage: "none",
+    ticketLastSavedLabel: "",
+    prdBlurbFetchFailed: {}
   };
 
   var TICKET_DOCK_KEY = "dex-pd-ticket-dock";
@@ -950,7 +452,13 @@
       prdTierById: {},
       workflowStatusById: {},
       intakeSourceById: {},
-      mdOverrideByVaultPath: {}
+      mdOverrideByVaultPath: {},
+      productBriefById: {},
+      designArtifactUrlById: {},
+      designRevisionById: {},
+      priorityById: {},
+      discoveryPassCompleteById: {},
+      prdCardBlurbByHref: {}
     };
     try {
       var leg = localStorage.getItem(LEGACY_LANES);
@@ -978,6 +486,12 @@
   if (!state.store.workflowStatusById) state.store.workflowStatusById = {};
   if (!state.store.intakeSourceById) state.store.intakeSourceById = {};
   if (!state.store.mdOverrideByVaultPath) state.store.mdOverrideByVaultPath = {};
+  if (!state.store.productBriefById) state.store.productBriefById = {};
+  if (!state.store.designArtifactUrlById) state.store.designArtifactUrlById = {};
+  if (!state.store.designRevisionById) state.store.designRevisionById = {};
+  if (!state.store.priorityById) state.store.priorityById = {};
+  if (!state.store.discoveryPassCompleteById) state.store.discoveryPassCompleteById = {};
+  if (!state.store.prdCardBlurbByHref) state.store.prdCardBlurbByHref = {};
 
   state.ticketDock = loadTicketDock();
   applyTicketDock(state.ticketDock);
@@ -991,6 +505,16 @@
     return md.slice(end + 5);
   }
 
+  /** Local copy is the New-idea brief template — vault discovery markdown should load instead after the agent updates the file. */
+  function isDiscoverySeedMdOverride(md) {
+    var s = String(md || "").trim();
+    if (!s) return true;
+    if (s.indexOf("Captured from the product dashboard") !== -1) return true;
+    if (s.indexOf("## Product brief (intake)") !== -1 && s.indexOf("same question rounds") !== -1) return true;
+    if (s.indexOf("<!-- workspace:") !== -1 && s.indexOf("## Product brief (intake)") !== -1) return true;
+    return false;
+  }
+
   function getPrdVaultHrefFromInit(init) {
     var links = init.links || [];
     for (var i = 0; i < links.length; i++) {
@@ -1000,11 +524,134 @@
     return null;
   }
 
+  function truncateCardBlurbLine(s) {
+    s = String(s || "")
+      .replace(/\*\*/g, "")
+      .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (s.length <= 220) return s;
+    return s.slice(0, 217) + "…";
+  }
+
+  /** One sentence / lead line from PRD markdown for UAT card blurbs (blockquote, Problem Statement, or Problem). */
+  function extractPrdOneLineBlurb(md) {
+    var body = stripFrontmatter(md || "");
+    body = body.replace(/\r\n/g, "\n");
+    var lines = body.split("\n");
+    var qb = [];
+    var quoteStarted = false;
+    for (var i = 0; i < lines.length; i++) {
+      var ln = lines[i];
+      if (/^>\s?/.test(ln)) {
+        quoteStarted = true;
+        qb.push(ln.replace(/^>\s?/, "").trim());
+      } else if (quoteStarted) {
+        if (ln.trim() === "") continue;
+        break;
+      }
+    }
+    if (qb.length) {
+      var t = qb.join(" ").replace(/\s+/g, " ").trim();
+      if (t.length > 25) return truncateCardBlurbLine(t);
+    }
+    var psh = body.match(/#\s*Problem Statement\s*\n+\s*([^\n]+(?:\n(?![#])[^\n]+)*?)(?=\n\n#|\n---|$)/);
+    if (psh) {
+      var ph = psh[1].replace(/\n+/g, " ").trim();
+      if (ph.length > 25) return truncateCardBlurbLine(ph);
+    }
+    var ps = body.match(/##\s*Problem Statement\s*\n+([\s\S]+?)(?=\n##\s|\n---\s*\n##|$)/);
+    if (ps) {
+      var block = ps[1].trim().replace(/\n+/g, " ");
+      if (block.indexOf("---") === 0) block = block.replace(/^---\s*/, "");
+      var para = block.split(/\n\n/)[0] || block;
+      para = para.replace(/^[-*]\s+\*\*[^*]+\*\*\s*/g, "").trim();
+      if (para.length > 25) return truncateCardBlurbLine(para);
+    }
+    var p2 = body.match(/##\s*Problem\s*\n+([^\n#][^\n]*(?:\n(?![#\n])[^\n]+)*)/);
+    if (p2) {
+      var p = p2[1].replace(/\n+/g, " ").trim();
+      if (p.length > 25) return truncateCardBlurbLine(p);
+    }
+    var i0 = 0;
+    while (i0 < lines.length && !/^#\s+/.test(lines[i0])) i0++;
+    if (i0 < lines.length) i0++;
+    while (i0 < lines.length && (/^\s*$/.test(lines[i0]) || /^---$/.test(lines[i0].trim()))) i0++;
+    if (i0 < lines.length && lines[i0].indexOf(">") === 0) {
+      var acc = [];
+      for (var j = i0; j < lines.length && /^>\s?/.test(lines[j]); j++) {
+        acc.push(lines[j].replace(/^>\s?/, "").trim());
+      }
+      var u = acc.join(" ").trim();
+      if (u.length > 25) return truncateCardBlurbLine(u);
+    }
+    return "";
+  }
+
+  function persistStoreSilent() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(state.store));
+      try {
+        localStorage.removeItem(LEGACY_LANES);
+      } catch (e2) {}
+    } catch (e) {}
+  }
+
+  function ensureUatPrdCardBlurbs() {
+    if (!state.data) return;
+    var hrefs = {};
+    mergedInitiatives().forEach(function (init) {
+      if (effectiveLane(init) !== "test_uat") return;
+      var h = getPrdVaultHrefFromInit(init);
+      if (!h) return;
+      if (state.store.prdCardBlurbByHref && state.store.prdCardBlurbByHref[h]) return;
+      if (state.prdBlurbFetchFailed && state.prdBlurbFetchFailed[h]) return;
+      hrefs[h] = true;
+    });
+    Object.keys(hrefs).forEach(function (href) {
+      var url = vaultPathToFetchUrl(href);
+      if (!url) return;
+      fetch(url, { cache: "no-store" })
+        .then(function (r) {
+          if (!r.ok) throw new Error(String(r.status));
+          return r.text();
+        })
+        .then(function (txt) {
+          var bl = extractPrdOneLineBlurb(txt);
+          if (!bl) {
+            if (!state.prdBlurbFetchFailed) state.prdBlurbFetchFailed = {};
+            state.prdBlurbFetchFailed[href] = true;
+            return;
+          }
+          if (!state.store.prdCardBlurbByHref) state.store.prdCardBlurbByHref = {};
+          state.store.prdCardBlurbByHref[href] = bl;
+          persistStoreSilent();
+          renderOrchestration();
+          renderExecutive();
+        })
+        .catch(function () {
+          if (!state.prdBlurbFetchFailed) state.prdBlurbFetchFailed = {};
+          state.prdBlurbFetchFailed[href] = true;
+        });
+    });
+  }
+
+  var _uatPrdBlurbSchedule = null;
+  function scheduleEnsureUatPrdCardBlurbs() {
+    if (_uatPrdBlurbSchedule) clearTimeout(_uatPrdBlurbSchedule);
+    _uatPrdBlurbSchedule = setTimeout(function () {
+      _uatPrdBlurbSchedule = null;
+      ensureUatPrdCardBlurbs();
+    }, 120);
+  }
+
+  /** Relative URL from Dex_System/product-dashboard/index.html (vault root = ../../). */
   function vaultPathToFetchUrl(vaultPath) {
     if (!vaultPath) return null;
-    var pd = "06-Resources/Dex_System/product-dashboard/";
+    var pd = "Dex_System/product-dashboard/";
     if (vaultPath.indexOf(pd) === 0) return vaultPath.slice(pd.length);
-    if (vaultPath.indexOf("06-Resources/") === 0) return "../../" + vaultPath.slice("06-Resources/".length);
+    // Must keep 06-Resources/ — ../../Product_ideas/... 404s; ../../06-Resources/Product_ideas/... is correct
+    if (vaultPath.indexOf("06-Resources/") === 0) return "../../" + vaultPath;
     return vaultPath;
   }
 
@@ -1035,38 +682,153 @@
     }
   }
 
-  function updateTicketTabUi() {
-    var prdTab = document.getElementById("tab-prd");
-    var wsTab = document.getElementById("tab-workspace");
-    var hasPrd = !!state.ticketPrdVaultPath;
-    prdTab.hidden = !hasPrd;
-    prdTab.textContent = state.ticketPrdStage === "draft" ? "Product PRD (draft)" : "Product PRD";
-    prdTab.classList.toggle("active", hasPrd && state.ticketDocTab === "prd");
-    wsTab.classList.toggle("active", !hasPrd || state.ticketDocTab === "workspace");
+  function allowedTabsForLane(lane) {
+    if (lane === "idea") {
+      return { brief: true, discovery: false, requirements: false, design: false };
+    }
+    if (lane === "discovery") {
+      return { brief: true, discovery: true, requirements: false, design: false };
+    }
+    return { brief: true, discovery: true, requirements: true, design: true };
+  }
+
+  function normalizeTicketTabForLane(init, preferred) {
+    var a = allowedTabsForLane(effectiveLane(init));
+    var order = ["brief", "discovery", "requirements", "design"];
+    if (preferred && a[preferred]) return preferred;
+    for (var i = 0; i < order.length; i++) {
+      if (a[order[i]]) return order[i];
+    }
+    return "brief";
+  }
+
+  function updateTicketMainTabs(init) {
+    if (!init) return;
+    var cur = state.ticketMainTab;
+    var a = allowedTabsForLane(effectiveLane(init));
+    if (!a[cur]) {
+      state.ticketMainTab = normalizeTicketTabForLane(init, null);
+      cur = state.ticketMainTab;
+    }
+    ["brief", "discovery", "requirements", "design"].forEach(function (name) {
+      var btn = document.getElementById("tab-" + name);
+      if (!btn) return;
+      btn.disabled = !a[name];
+      btn.classList.toggle("active", cur === name);
+      btn.setAttribute("aria-selected", cur === name ? "true" : "false");
+    });
+    var briefP = document.getElementById("ticket-panel-brief");
+    var docP = document.getElementById("ticket-panel-doc");
+    var desP = document.getElementById("ticket-panel-design");
+    if (briefP) briefP.classList.toggle("active", cur === "brief");
+    if (docP) docP.classList.toggle("active", cur === "discovery" || cur === "requirements");
+    if (desP) desP.classList.toggle("active", cur === "design");
+    var banner = document.getElementById("discovery-agent-banner");
+    if (banner) {
+      banner.classList.toggle("visible", effectiveLane(init) === "discovery");
+    }
+    var wsHint = document.getElementById("ticket-workspace-hint");
+    if (wsHint) {
+      wsHint.hidden = cur !== "discovery";
+    }
+    var reqPh = document.getElementById("ticket-req-placeholder");
+    if (reqPh) {
+      var needPh = cur === "requirements" && state.ticketPrdStage === "none";
+      reqPh.hidden = !needPh;
+      if (needPh) {
+        reqPh.innerHTML =
+          "Full <strong>Product PRD</strong> loads here from <strong>Design</strong> (draft) and later lanes. In <strong>Idea</strong> / <strong>Discovery</strong>, use <strong>Workspace notes</strong> on the <strong>Discovery</strong> tab.";
+      }
+    }
   }
 
   function loadActiveTicketDocument() {
-    var vaultPath =
-      state.ticketDocTab === "prd" && state.ticketPrdVaultPath
-        ? state.ticketPrdVaultPath
-        : state.ticketWsVaultPath;
+    var tab = state.ticketMainTab;
+    if (tab === "brief" || tab === "design") {
+      state.ticketCurrentVaultPath = null;
+      return;
+    }
+    var vaultPath = null;
+    if (tab === "discovery") {
+      vaultPath = state.ticketWsVaultPath;
+    } else if (tab === "requirements") {
+      if (state.ticketPrdStage === "none" || !state.ticketPrdVaultPath) {
+        state.ticketCurrentVaultPath = null;
+        var w0 = document.getElementById("md-wysiwyg");
+        if (w0) {
+          w0.innerHTML =
+            "<p style=\"color:var(--muted)\">No vault PRD path for this lane yet. Move the card to <strong>Design</strong> or <strong>Spec ready</strong> when a PRD file is linked, or use <strong>Discovery</strong> for workspace notes.</p>";
+        }
+        return;
+      }
+      vaultPath = state.ticketPrdVaultPath;
+    }
     state.ticketCurrentVaultPath = vaultPath;
     var pathEl = document.getElementById("ticket-doc-path");
     if (pathEl) pathEl.textContent = vaultPath || "";
     var w = document.getElementById("md-wysiwyg");
     if (!w) return;
     w.innerHTML = "<p style=\"color:var(--muted)\">Loading…</p>";
-    updateTicketTabUi();
     if (!vaultPath) {
       w.innerHTML = "<p style=\"color:var(--muted)\">No document path for this card.</p>";
       return;
     }
     var ovr = state.store.mdOverrideByVaultPath && state.store.mdOverrideByVaultPath[vaultPath];
+    var url = vaultPathToFetchUrl(vaultPath);
+
+    function fetchDiscoveryVaultPreferFile() {
+      if (!url) {
+        if (ovr != null && String(ovr).length) {
+          applyMarkdownToWysiwyg(String(ovr));
+        } else {
+          applyMarkdownToWysiwyg("# Document\n\n(No fetch path.)");
+        }
+        return;
+      }
+      fetch(url, { cache: "no-store" })
+        .then(function (r) {
+          if (!r.ok) throw new Error(String(r.status));
+          return r.text();
+        })
+        .then(function (txt) {
+          var body = stripFrontmatter(txt || "");
+          if (!String(body).trim()) throw new Error("empty");
+          applyMarkdownToWysiwyg(body);
+          if (ovr && isDiscoverySeedMdOverride(String(ovr))) {
+            delete state.store.mdOverrideByVaultPath[vaultPath];
+            saveStore();
+          }
+        })
+        .catch(function () {
+          if (ovr != null && String(ovr).length && !isDiscoverySeedMdOverride(String(ovr))) {
+            applyMarkdownToWysiwyg(String(ovr));
+            return;
+          }
+          applyMarkdownToWysiwyg(
+            "# Discovery file could not be loaded\n\n" +
+            "Expected vault file: **`" +
+            vaultPath +
+            "`**\n\n" +
+            "Request URL (relative to this page): **`" +
+            (url || "(none)") +
+            "`**\n\n" +
+            "Run **`start_product_dashboard.sh`** from the vault so the server root includes **`06-Resources/`** (see README). " +
+            "Do not open only `product-dashboard/index.html` without that server — discovery markdown will not fetch.\n\n" +
+            "_The product brief belongs on the **Brief** tab; this tab should mirror the markdown file above._"
+          );
+        });
+    }
+
+    // Discovery workspace: load vault file first when override is missing or still the intake template — not the initial brief after discovery has run
+    if (tab === "discovery" && (!ovr || !String(ovr).trim() || isDiscoverySeedMdOverride(String(ovr)))) {
+      fetchDiscoveryVaultPreferFile();
+      return;
+    }
+
     if (ovr != null && String(ovr).length) {
       applyMarkdownToWysiwyg(String(ovr));
       return;
     }
-    var url = vaultPathToFetchUrl(vaultPath);
     if (!url) {
       applyMarkdownToWysiwyg("# Document\n\n(No fetch path.)");
       return;
@@ -1077,10 +839,10 @@
         return r.text();
       })
       .then(function (txt) {
-        applyMarkdownToWysiwyg(stripFrontmatter(txt));
+        applyMarkdownToWysiwyg(stripFrontmatter(txt || ""));
       })
       .catch(function () {
-        var isPrd = state.ticketDocTab === "prd";
+        var isPrd = tab === "requirements";
         var stage = state.ticketPrdStage || "none";
         var base =
           "# Document\n\n" +
@@ -1116,17 +878,20 @@
     return t;
   }
 
-  function syncStatusBarForInit(init) {
+  function syncTierSelectForInit(init) {
     var t = effectivePrdTier(init);
-    document.querySelectorAll("#dlg-status-bar [data-tier]").forEach(function (btn) {
-      btn.classList.toggle("active", btn.getAttribute("data-tier") === t);
-    });
+    var sel = document.getElementById("dlg-tier-select");
+    if (!sel) return;
+    sel.value = t;
+    sel.className = "ticket-pill ticket-pill-tier " + tierClass(t);
   }
 
-  function getSelectedStatusTierFromBar() {
-    var el = document.querySelector("#dlg-status-bar button.active");
-    if (!el) return "Backlog";
-    return el.getAttribute("data-tier") || "Backlog";
+  function getSelectedTierFromSelect() {
+    var sel = document.getElementById("dlg-tier-select");
+    if (!sel) return "Backlog";
+    var v = sel.value;
+    if (v === "Current" || v === "Next" || v === "Future" || v === "Backlog") return v;
+    return "Backlog";
   }
 
   function laneLabel(id) {
@@ -1211,10 +976,82 @@
     return init.summary || "";
   }
 
+  /** True when summary is the PRD-folder stack line from initiatives.json, not a user-facing digest. */
+  function isPrdStackPlaceholderSummary(s) {
+    return /^\s*PRD in\s+.+\s*—\s*prioritise\s+with/i.test(String(s || ""));
+  }
+
+  /** Card + exec table blurb: prefer real summary; if placeholder, derive from product brief (same idea as idea/discovery) then whatsNext / progress / horizon. */
+  function effectiveCardSummary(init) {
+    if (!init) return "";
+    var lane = effectiveLane(init);
+    var prdHref = getPrdVaultHrefFromInit(init);
+    if (lane === "test_uat" && prdHref && state.store.prdCardBlurbByHref && state.store.prdCardBlurbByHref[prdHref]) {
+      var cached = String(state.store.prdCardBlurbByHref[prdHref]).trim();
+      if (cached) return cached;
+    }
+    var raw = effectiveDescription(init);
+    if (!isPrdStackPlaceholderSummary(raw)) return raw;
+    var brief = effectiveProductBrief(init);
+    if (briefHasContent(brief)) {
+      var syn = synthesizeCardDigest(brief, "");
+      if (syn && String(syn).trim()) return syn;
+    }
+    var wn = (init.whatsNext || "").trim();
+    if (wn) return wn.length > 220 ? wn.slice(0, 217) + "…" : wn;
+    var pl = (init.progressLabel || "").trim();
+    if (pl) return pl.length > 220 ? pl.slice(0, 217) + "…" : pl;
+    var hz = (init.horizon || "").trim();
+    if (hz) return hz.length > 220 ? hz.slice(0, 217) + "…" : hz;
+    return raw;
+  }
+
+  function mergeBriefDefaults(b) {
+    var o = b && typeof b === "object" ? b : {};
+    return {
+      problem: o.problem || "",
+      targetUsers: o.targetUsers || "",
+      success: o.success || "",
+      constraints: o.constraints || "",
+      uxDiscovery: o.uxDiscovery || "",
+      validation: o.validation || "",
+      dependencies: o.dependencies || ""
+    };
+  }
+
+  function effectiveProductBrief(init) {
+    if (!init) return mergeBriefDefaults({});
+    var fromFile = mergeBriefDefaults(init.productBrief || {});
+    var st = state.store.productBriefById && state.store.productBriefById[init.id];
+    if (!st || typeof st !== "object") return mergeBriefDefaults(fromFile);
+    return mergeBriefDefaults(Object.assign({}, fromFile, st));
+  }
+
+  function effectivePriority(init) {
+    if (!init) return "";
+    var o = state.store.priorityById && state.store.priorityById[init.id];
+    if (o != null && String(o).trim() !== "") return String(o).trim();
+    return (init.priority && String(init.priority).trim()) || "";
+  }
+
   function effectiveFigma(init) {
     var u = init.figmaUrl || "";
     var loc = state.store.figmaById[init.id] || "";
     return (loc || u).trim();
+  }
+
+  function effectiveDesignArtifact(init) {
+    var id = init.id;
+    var o = state.store.designArtifactUrlById && state.store.designArtifactUrlById[id];
+    if (o != null && String(o).trim() !== "") return String(o).trim();
+    return (init.designArtifactUrl && String(init.designArtifactUrl).trim()) || "";
+  }
+
+  function effectiveDesignRevision(init) {
+    var id = init.id;
+    var o = state.store.designRevisionById && state.store.designRevisionById[id];
+    if (o != null && String(o).trim() !== "") return String(o).trim();
+    return (init.designRevision && String(init.designRevision).trim()) || "";
   }
 
   function effectiveWorkflowStatus(init) {
@@ -1271,11 +1108,11 @@
   function workspaceVaultPath(init) {
     var rel = discoveryDocRelativePath(init);
     if (rel.indexOf("06-Resources/") === 0) return rel;
-    return "06-Resources/Dex_System/product-dashboard/" + rel.replace(/^\/+/, "");
+    return "Dex_System/product-dashboard/" + rel.replace(/^\/+/, "");
   }
 
   function vaultPathFromRelative(rel) {
-    return "06-Resources/Dex_System/product-dashboard/" + rel.replace(/^\/+/, "");
+    return "Dex_System/product-dashboard/" + rel.replace(/^\/+/, "");
   }
 
   function workspaceFetchUrl(init) {
@@ -1288,6 +1125,192 @@
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
     return s.slice(0, 80) || "untitled";
+  }
+
+  function synthesizeCardDigest(brief, fallbackSummary) {
+    var s = (fallbackSummary || "").trim();
+    if (s) return s;
+    var parts = [];
+    if (brief.problem) parts.push(brief.problem);
+    if (brief.targetUsers) parts.push("For: " + brief.targetUsers);
+    var t = parts.join(" ").replace(/\s+/g, " ").trim();
+    if (!t) return "";
+    if (t.length > 220) return t.slice(0, 217) + "…";
+    return t;
+  }
+
+  function briefHasContent(brief) {
+    if (!brief || typeof brief !== "object") return false;
+    return ["problem", "targetUsers", "success", "constraints", "uxDiscovery", "validation", "dependencies"].some(function (k) {
+      return brief[k] && String(brief[k]).trim();
+    });
+  }
+
+  function buildProductBriefWorkspaceMarkdown(title, id, vaultPath, cardDigest, brief) {
+    var lines = [];
+    lines.push("---");
+    lines.push("id: " + id);
+    lines.push("dex_dashboard_preserve: true");
+    lines.push("---");
+    lines.push("");
+    lines.push("# " + title);
+    lines.push("");
+    if (cardDigest) {
+      lines.push("## Card summary");
+      lines.push("");
+      lines.push(cardDigest);
+      lines.push("");
+    }
+    lines.push("## Product brief (intake)");
+    lines.push("");
+    lines.push("Captured from the product dashboard **New idea** modal — same question rounds as **`/product-brief`** in Dex.");
+    lines.push("");
+    function sec(heading, body) {
+      if (!body || !String(body).trim()) return;
+      lines.push("### " + heading);
+      lines.push("");
+      lines.push(String(body).trim());
+      lines.push("");
+    }
+    sec("Problem", brief.problem);
+    sec("Target users", brief.targetUsers);
+    sec("Success", brief.success);
+    sec("Constraints & scope", brief.constraints);
+    sec("User journey & discovery", brief.uxDiscovery);
+    sec("Validation", brief.validation);
+    sec("Dependencies", brief.dependencies);
+    lines.push("<!-- workspace: " + vaultPath + " -->");
+    return lines.join("\n");
+  }
+
+  function populateTicketBriefSection(init) {
+    var wrap = document.getElementById("dlg-brief-wrap");
+    var empty = document.getElementById("dlg-brief-empty");
+    var dl = document.getElementById("dlg-brief-dl");
+    if (!wrap || !empty || !dl) return;
+    var brief = effectiveProductBrief(init);
+    if (!briefHasContent(brief)) {
+      if ((init.source || "") !== "dashboard") {
+        wrap.hidden = true;
+        return;
+      }
+      wrap.hidden = false;
+      empty.hidden = false;
+      dl.hidden = true;
+      dl.innerHTML = "";
+      return;
+    }
+    wrap.hidden = false;
+    empty.hidden = true;
+    dl.hidden = false;
+    dl.innerHTML = "";
+    var pairs = [
+      ["Problem", brief.problem],
+      ["Target users", brief.targetUsers],
+      ["Success", brief.success],
+      ["Constraints & scope", brief.constraints],
+      ["User journey & discovery", brief.uxDiscovery],
+      ["Validation", brief.validation],
+      ["Dependencies", brief.dependencies]
+    ];
+    pairs.forEach(function (p) {
+      if (!p[1] || !String(p[1]).trim()) return;
+      var dt = document.createElement("dt");
+      dt.textContent = p[0];
+      dl.appendChild(dt);
+      var dd = document.createElement("dd");
+      dd.textContent = String(p[1]).trim();
+      dl.appendChild(dd);
+    });
+  }
+
+  function hydrateIdeaIntakeForm(init) {
+    var b = effectiveProductBrief(init);
+    function set(id, val) {
+      var el = document.getElementById(id);
+      if (el) el.value = val != null ? String(val) : "";
+    }
+    set("edit-problem", b.problem);
+    set("edit-target-users", b.targetUsers);
+    set("edit-success", b.success);
+    set("edit-constraints", b.constraints);
+    set("edit-ux", b.uxDiscovery);
+    set("edit-validation", b.validation);
+    set("edit-dependencies", b.dependencies);
+    var pr = document.getElementById("edit-priority");
+    if (pr) {
+      var pv = effectivePriority(init);
+      pr.value = pv || "P2";
+    }
+    var ink = document.getElementById("edit-intake");
+    if (ink) ink.value = effectiveIntakeSource(init) || "";
+    var det = document.getElementById("edit-brief-more");
+    if (det) det.open = false;
+  }
+
+  function collectIdeaBriefFromForm() {
+    function val(id) {
+      var el = document.getElementById(id);
+      return el ? String(el.value || "").trim() : "";
+    }
+    return {
+      problem: val("edit-problem"),
+      targetUsers: val("edit-target-users"),
+      success: val("edit-success"),
+      constraints: val("edit-constraints"),
+      uxDiscovery: val("edit-ux"),
+      validation: val("edit-validation"),
+      dependencies: val("edit-dependencies")
+    };
+  }
+
+  function applyBriefPanelMode(init) {
+    var lane = effectiveLane(init);
+    var dlg = document.getElementById("detail-dlg");
+    var ideaForm = document.getElementById("idea-intake-form");
+    var nonIdea = document.getElementById("brief-non-idea-block");
+    if (!ideaForm || !nonIdea || !dlg) return;
+    if (lane === "idea") {
+      dlg.classList.add("detail-dlg--idea");
+      ideaForm.hidden = false;
+      nonIdea.hidden = true;
+      hydrateIdeaIntakeForm(init);
+    } else {
+      dlg.classList.remove("detail-dlg--idea");
+      ideaForm.hidden = true;
+      nonIdea.hidden = false;
+      populateTicketBriefSection(init);
+    }
+  }
+
+  function resetAddIdeaForm() {
+    [
+      "add-title",
+      "add-summary",
+      "add-problem",
+      "add-target-users",
+      "add-success",
+      "add-constraints",
+      "add-ux",
+      "add-validation",
+      "add-dependencies"
+    ].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+    var hint = document.getElementById("add-title-hint");
+    if (hint) {
+      hint.textContent = "";
+      hint.classList.remove("visible");
+    }
+    var intake = document.getElementById("add-intake");
+    if (intake) intake.value = "";
+    var det = document.getElementById("add-brief-more");
+    if (det) det.open = false;
+    var tier = document.getElementById("add-tier");
+    var prio = document.getElementById("add-prio");
+    if (tier) tier.value = "Backlog";
+    if (prio) prio.value = "P2";
   }
 
   function allocateIdeaId(title) {
@@ -1309,11 +1332,26 @@
     var linkLines = (init.links || []).map(function (L) {
       return "- " + L.label + ": " + L.href;
     });
+    var brief = effectiveProductBrief(init);
+    var briefBlock = "";
+    if (briefHasContent(brief)) {
+      briefBlock =
+        "=== Product brief (intake from board) ===\n" +
+        (brief.problem ? "Problem: " + brief.problem + "\n" : "") +
+        (brief.targetUsers ? "Target users: " + brief.targetUsers + "\n" : "") +
+        (brief.success ? "Success: " + brief.success + "\n" : "") +
+        (brief.constraints ? "Constraints: " + brief.constraints + "\n" : "") +
+        (brief.uxDiscovery ? "User journey / discovery: " + brief.uxDiscovery + "\n" : "") +
+        (brief.validation ? "Validation: " + brief.validation + "\n" : "") +
+        (brief.dependencies ? "Dependencies: " + brief.dependencies + "\n" : "") +
+        "\n";
+    }
     return (
       "You are running a structured discovery pass for a product idea in Dex. Use semantic search (QMD: prds, meetings, accounts, resources) and grep where needed. Be concrete and cite vault paths.\n\n" +
       "=== Idea ===\n" +
       "Title: " + title + "\n" +
       "Description:\n" + (desc || "(none)") + "\n\n" +
+      briefBlock +
       (linkLines.length ? "=== Linked PRDs / files ===\n" + linkLines.join("\n") + "\n\n" : "") +
       "=== Deliverables (write into the discovery file) ===\n" +
       "Update or create this markdown file (relative to vault root):\n" +
@@ -1454,16 +1492,25 @@
     if (!dragInit) return false;
     var prevLane = effectiveLane(dragInit);
     if (laneId !== "discovery" || prevLane === "discovery") return false;
+    if (state.store.discoveryPassCompleteById && state.store.discoveryPassCompleteById[o.id]) return false;
     state.pendingDiscovery = { id: o.id, prevLane: prevLane, beforeId: beforeId };
     openDiscoveryReviewModal();
     return true;
   }
 
+  function markDiscoveryPassCompleteIfLeaving(prevLane, newLane, initiativeId) {
+    if (prevLane !== "discovery" || newLane === "discovery") return;
+    if (!state.store.discoveryPassCompleteById) state.store.discoveryPassCompleteById = {};
+    state.store.discoveryPassCompleteById[initiativeId] = true;
+  }
+
   function applyCrossLaneDrop(o, laneId, beforeId) {
     var dragInit = getInit(o.id);
     if (!dragInit) return;
+    var prevLane = effectiveLane(dragInit);
     state.store.laneOverride[o.id] = laneId;
     insertIdInLane(o.id, laneId, beforeId);
+    markDiscoveryPassCompleteIfLeaving(prevLane, laneId, o.id);
     saveStore();
     renderExecutive();
     renderOrchestration();
@@ -1479,8 +1526,8 @@
   function compareInitDefault(a, b) {
     var tr = tierRank(effectivePrdTier(a)) - tierRank(effectivePrdTier(b));
     if (tr !== 0) return tr;
-    var pa = (a.priority || "").replace(/\D/g, "") || "99";
-    var pb = (b.priority || "").replace(/\D/g, "") || "99";
+    var pa = (effectivePriority(a) || a.priority || "").replace(/\D/g, "") || "99";
+    var pb = (effectivePriority(b) || b.priority || "").replace(/\D/g, "") || "99";
     var pi = parseInt(pa, 10) - parseInt(pb, 10);
     if (pi !== 0) return pi;
     return effectiveTitle(a).localeCompare(effectiveTitle(b));
@@ -1492,28 +1539,12 @@
     });
   }
 
+  /** Order cards by tier + priority + title (source of truth). Ignores saved drag order so P1–P6 stay visible. */
   function orderedIdsForLane(laneId, inits) {
     var ids = inits.map(function (i) { return i.id; });
-    var saved = state.store.cardOrder[laneId];
-    if (!saved || !saved.length) {
-      return ids.slice().sort(function (ida, idb) {
-        return compareInitDefault(getInit(ida), getInit(idb));
-      });
-    }
-    var seen = {};
-    var out = [];
-    ids.forEach(function (id) { seen[id] = true; });
-    saved.forEach(function (id) {
-      if (seen[id]) {
-        out.push(id);
-        delete seen[id];
-      }
-    });
-    var rest = Object.keys(seen);
-    rest.sort(function (ida, idb) {
+    return ids.slice().sort(function (ida, idb) {
       return compareInitDefault(getInit(ida), getInit(idb));
     });
-    return out.concat(rest);
   }
 
   function setLaneOrder(laneId, orderedIds) {
@@ -1574,52 +1605,64 @@
     });
   });
 
+  document.getElementById("panel-exec").addEventListener("click", function (e) {
+    var chip = e.target.closest(".exec-focus-chip");
+    if (!chip) return;
+    e.preventDefault();
+    var id = chip.getAttribute("data-init-id");
+    if (!id) return;
+    var ini = getInit(id);
+    if (ini) openDetail(ini);
+  });
+
   function renderExecFocus() {
+    var ctxLine = document.getElementById("exec-context-line");
+    var ctx = state.data && state.data.executiveContext ? String(state.data.executiveContext).trim() : "";
+    if (ctxLine) {
+      if (ctx) {
+        ctxLine.innerHTML = escapeHtml(ctx).replace(/\n/g, "<br/>");
+        ctxLine.hidden = false;
+      } else {
+        ctxLine.textContent = "";
+        ctxLine.hidden = true;
+      }
+    }
     var el = document.getElementById("exec-focus");
     if (!el) return;
-    var ctx = state.data && state.data.executiveContext ? String(state.data.executiveContext).trim() : "";
     var focus = mergedInitiatives().filter(function (i) {
       return i.steeringFocus === true;
     });
-    var parts = [];
-    if (ctx) {
-      parts.push("<p style='margin:0 0 0.5rem;color:var(--text)'>" + escapeHtml(ctx).replace(/\n/g, "<br/>") + "</p>");
-    }
-    if (focus.length) {
-      var lis = focus
-        .map(function (i) {
-          return (
-            "<li><strong>" +
-            escapeHtml(effectiveTitle(i)) +
-            "</strong> — " +
-            escapeHtml(laneLabel(effectiveLane(i))) +
-            "</li>"
-          );
-        })
-        .join("");
-      parts.push("<h2>Current focus</h2><ul>" + lis + "</ul>");
-    }
-    if (!parts.length) {
+    if (!focus.length) {
       el.innerHTML =
-        "<span>Set <code>executiveContext</code> in initiatives.json or mark initiatives with <code>steeringFocus: true</code>.</span>";
+        "<span class=\"exec-empty-hint\">No <strong>Current focus</strong> chips — set <code>steeringFocus: true</code> on initiatives in JSON.</span>";
       el.classList.add("empty");
-    } else {
-      el.innerHTML = parts.join("");
-      el.classList.remove("empty");
+      return;
     }
+    var chips = focus
+      .map(function (i) {
+        return (
+          '<button type="button" class="exec-focus-chip" data-init-id="' +
+          escapeAttr(i.id) +
+          '"><span class="exec-chip-title">' +
+          escapeHtml(effectiveTitle(i)) +
+          '</span><span class="exec-chip-lane">' +
+          escapeHtml(laneLabel(effectiveLane(i))) +
+          "</span></button>"
+        );
+      })
+      .join("");
+    el.innerHTML =
+      '<p class="exec-focus-label">Current focus</p><div class="exec-focus-chips" role="list">' + chips + "</div>";
+    el.classList.remove("empty");
   }
 
   function renderExecutive() {
     renderExecFocus();
     var tb = document.querySelector("#exec-table tbody");
     tb.innerHTML = "";
-    var lanes = (state.data && state.data.lanes) ? state.data.lanes : [];
-    lanes.forEach(function (laneId) {
-      var inits = initsForLane(laneId);
-      var ids = orderedIdsForLane(laneId, inits);
-      ids.forEach(function (id) {
-        var init = getInit(id);
-        if (!init) return;
+    var all = mergedInitiatives().slice();
+    all.sort(compareInitDefault);
+    all.forEach(function (init) {
         var lane = effectiveLane(init);
         var tr = document.createElement("tr");
         tr.style.cursor = "pointer";
@@ -1631,17 +1674,26 @@
           return '<a href="#" data-href="' + encodeURIComponent(L.href) + '">' + escapeHtml(L.label) + "</a>";
         }).join(" ");
         var tier = effectivePrdTier(init);
-        var pr = init.priority || "—";
+        var pr = effectivePriority(init) || "—";
         var tierOnly =
           '<span class="badge ' + tierClass(tier) + '">' + escapeHtml(tierBadgeLabel(tier)) + "</span>";
         var et = effectiveTitle(init);
-        var ed = effectiveDescription(init);
+        var ed = effectiveCardSummary(init);
+        var prdH = getPrdVaultHrefFromInit(init);
+        var uatPrdBlurb =
+          effectiveLane(init) === "test_uat" &&
+          prdH &&
+          state.store.prdCardBlurbByHref &&
+          state.store.prdCardBlurbByHref[prdH];
+        var ed100 = escapeHtml(ed.slice(0, 100)) + (ed.length > 100 ? "…" : "");
+        var subLine = uatPrdBlurb
+          ? "<strong class=\"exec-sum-prd\">" + ed100 + "</strong>"
+          : ed100;
         tr.innerHTML =
           "<td><strong>" +
           escapeHtml(et) +
           "</strong><br/><span style='color:var(--muted);font-size:0.75rem'>" +
-          escapeHtml(ed.slice(0, 100)) +
-          (ed.length > 100 ? "…" : "") +
+          subLine +
           "</span></td>" +
           "<td>" +
           tierOnly +
@@ -1689,7 +1741,6 @@
           });
         });
         tb.appendChild(tr);
-      });
     });
   }
 
@@ -1702,46 +1753,77 @@
       .replace(/"/g, "&quot;");
   }
 
+  function escapeAttr(s) {
+    return escapeHtml(s).replace(/'/g, "&#39;");
+  }
+
+  function syncTicketPaperSubhead(init) {
+    if (!init) return;
+    syncTierSelectForInit(init);
+    var lp = document.getElementById("dlg-lane-pill");
+    if (lp) {
+      lp.textContent = laneLabel(effectiveLane(init));
+    }
+    var lu = document.getElementById("dlg-last-updated");
+    if (lu) {
+      lu.textContent = state.ticketLastSavedLabel || "Last updated —";
+    }
+  }
+
+  function populateMoveLaneSelect(init) {
+    var sel = document.getElementById("dlg-move-lane");
+    if (!sel || !init) return;
+    var lanes = state.data && state.data.lanes ? state.data.lanes : [];
+    var cur = effectiveLane(init);
+    sel.innerHTML = lanes
+      .map(function (lid) {
+        return '<option value="' + escapeAttr(lid) + '">' + escapeHtml(laneLabel(lid)) + "</option>";
+      })
+      .join("");
+    sel.value = cur;
+  }
+
   function renderOrchestration() {
     var root = document.getElementById("orchestration-root");
     root.innerHTML = "";
     var lanes = (state.data && state.data.lanes) ? state.data.lanes : [];
 
     lanes.forEach(function (laneId) {
+      var inits = initsForLane(laneId);
+      var ids = orderedIdsForLane(laneId, inits);
       var col = document.createElement("div");
       col.className = "lane";
       col.dataset.lane = laneId;
-      col.innerHTML = "<h3>" + escapeHtml(laneLabel(laneId)) + "</h3><div class='lane-body'></div>";
+      col.innerHTML =
+        "<h3><span class='lane-title'>" +
+        escapeHtml(laneLabel(laneId)) +
+        "</span><span class='lane-count' aria-hidden='true'>" +
+        String(ids.length) +
+        "</span></h3><div class='lane-body'></div>";
       var body = col.querySelector(".lane-body");
 
       if (laneId === "idea") {
         var addBtn = document.createElement("button");
         addBtn.type = "button";
         addBtn.className = "add-idea-btn";
-        addBtn.setAttribute("aria-label", "Add idea");
-        addBtn.textContent = "+";
+        addBtn.setAttribute("aria-label", "New idea");
+        addBtn.textContent = "+ New idea";
         addBtn.addEventListener("click", function () {
-          document.getElementById("add-title").value = "";
-          document.getElementById("add-summary").value = "";
-          document.getElementById("add-tier").value = "Backlog";
-          document.getElementById("add-prio").value = "P2";
+          resetAddIdeaForm();
           document.getElementById("add-idea-dlg").showModal();
         });
         body.appendChild(addBtn);
       }
 
-      var inits = initsForLane(laneId);
-      var ids = orderedIdsForLane(laneId, inits);
-
       ids.forEach(function (id) {
         var init = getInit(id);
         if (!init) return;
         var card = document.createElement("div");
-        card.className = "card";
+        card.className = "card" + (init.steeringFocus === true ? " steering-focus" : "");
         card.draggable = true;
         card.dataset.id = init.id;
         var tier = effectivePrdTier(init);
-        var pr = init.priority || "";
+        var pr = effectivePriority(init) || "";
         var wf = effectiveWorkflowStatus(init);
         var intake = effectiveIntakeSource(init);
         var meta =
@@ -1752,9 +1834,26 @@
           (intake ? '<span class="chip" title="Intake">' + escapeHtml(intake) + "</span>" : "") +
           "</div>";
         var et = effectiveTitle(init);
-        var ed = effectiveDescription(init);
-        card.innerHTML = "<strong>" + escapeHtml(et) + "</strong>" +
-          (ed ? "<div class='sum'>" + escapeHtml(ed) + "</div>" : "") +
+        var ed = effectiveCardSummary(init);
+        var prdH = getPrdVaultHrefFromInit(init);
+        var uatPrdBlurb =
+          laneId === "test_uat" &&
+          prdH &&
+          state.store.prdCardBlurbByHref &&
+          state.store.prdCardBlurbByHref[prdH];
+        var sumBlock = "";
+        if (ed) {
+          sumBlock = uatPrdBlurb
+            ? "<div class='sum sum--uat-prd'><strong>" + escapeHtml(ed) + "</strong></div>"
+            : "<div class='sum'>" + escapeHtml(ed) + "</div>";
+        }
+        var focusLabel = init.steeringFocus === true ? '<div class="card-focus-label">Focus</div>' : "";
+        card.innerHTML =
+          focusLabel +
+          "<strong>" +
+          escapeHtml(et) +
+          "</strong>" +
+          sumBlock +
           meta;
 
         card.addEventListener("click", function (e) {
@@ -1840,6 +1939,7 @@
 
       root.appendChild(col);
     });
+    scheduleEnsureUatPrdCardBlurbs();
   }
 
   function openDetail(init) {
@@ -1849,18 +1949,28 @@
     state.ticketWsVaultPath = workspaceVaultPath(init);
     var laneOpen = effectiveLane(init);
     var prdStOpen = effectivePrdStage(init);
-    if (laneOpen === "discovery" || (laneOpen === "idea" && prdStOpen === "none")) {
-      state.ticketDocTab = "workspace";
+    if (laneOpen === "idea") {
+      state.ticketMainTab = "brief";
+    } else if (laneOpen === "discovery") {
+      state.ticketMainTab = "discovery";
     } else {
-      state.ticketDocTab = state.ticketPrdVaultPath ? "prd" : "workspace";
+      state.ticketMainTab = state.ticketPrdVaultPath ? "requirements" : "discovery";
     }
-    var wsHint = document.getElementById("ticket-workspace-hint");
-    if (wsHint) {
-      wsHint.hidden = !(laneOpen === "discovery" || (laneOpen === "idea" && prdStOpen === "none"));
+    state.ticketMainTab = normalizeTicketTabForLane(init, state.ticketMainTab);
+    var lr = document.getElementById("dlg-lane-row");
+    if (lr) {
+      lr.textContent =
+        "PDLC lane: " +
+        laneLabel(laneOpen) +
+        (prdStOpen && prdStOpen !== "none" ? " · PRD stage: " + prdStOpen : "");
     }
     document.getElementById("dlg-title-input").value = effectiveTitle(init);
     document.getElementById("dlg-desc").value = effectiveDescription(init);
     document.getElementById("dlg-figma").value = effectiveFigma(init);
+    var daEl = document.getElementById("dlg-design-artifact");
+    var drEl = document.getElementById("dlg-design-revision");
+    if (daEl) daEl.value = effectiveDesignArtifact(init);
+    if (drEl) drEl.value = effectiveDesignRevision(init);
     var prdEl = document.getElementById("dlg-prd-paths");
     var links = init.links || [];
     var prdHref = getPrdVaultHrefFromInit(init);
@@ -1884,9 +1994,12 @@
     document.getElementById("dlg-workflow").value = wf || "";
     var intake = effectiveIntakeSource(init);
     document.getElementById("dlg-intake").value = intake || "";
-    syncStatusBarForInit(init);
+    applyBriefPanelMode(init);
+    syncTicketPaperSubhead(init);
+    populateMoveLaneSelect(init);
     applyTicketDock(state.ticketDock);
     applyTicketSize("lg");
+    updateTicketMainTabs(init);
     document.getElementById("detail-dlg").showModal();
     loadActiveTicketDocument();
   }
@@ -1918,14 +2031,60 @@
     applyTicketSize(order[Math.min(2, i + 1)]);
   });
 
-  document.getElementById("dlg-status-bar").addEventListener("click", function (e) {
-    var btn = e.target.closest("[data-tier]");
-    if (!btn || !document.getElementById("dlg-status-bar").contains(btn)) return;
-    e.preventDefault();
-    var tier = btn.getAttribute("data-tier");
-    document.querySelectorAll("#dlg-status-bar [data-tier]").forEach(function (b) {
-      b.classList.toggle("active", b.getAttribute("data-tier") === tier);
-    });
+  document.getElementById("dlg-tier-select").addEventListener("change", function () {
+    var st = getSelectedTierFromSelect();
+    var sel = document.getElementById("dlg-tier-select");
+    if (sel) sel.className = "ticket-pill ticket-pill-tier " + tierClass(st);
+  });
+
+  document.getElementById("dlg-move-lane").addEventListener("change", function () {
+    var id = state.currentDetailId;
+    if (!id) return;
+    var init = getInit(id);
+    if (!init) return;
+    var newLane = this.value;
+    var prev = effectiveLane(init);
+    if (newLane === prev) return;
+    if (newLane === "discovery" && prev !== "discovery") {
+      if (!(state.store.discoveryPassCompleteById && state.store.discoveryPassCompleteById[id])) {
+        this.value = prev;
+        state.pendingDiscovery = { id: id, prevLane: prev, beforeId: null };
+        openDiscoveryReviewModal();
+        return;
+      }
+    }
+    state.store.laneOverride[id] = newLane;
+    insertIdInLane(id, newLane, null);
+    markDiscoveryPassCompleteIfLeaving(prev, newLane, id);
+    saveStore();
+    renderExecutive();
+    renderOrchestration();
+    var fresh = getInit(id);
+    if (!fresh) return;
+    state.ticketPrdStage = effectivePrdStage(fresh);
+    state.ticketPrdVaultPath = getPrdVaultHrefForModal(fresh);
+    state.ticketWsVaultPath = workspaceVaultPath(fresh);
+    state.ticketMainTab = normalizeTicketTabForLane(fresh, state.ticketMainTab);
+    var lr = document.getElementById("dlg-lane-row");
+    if (lr) {
+      var prdStOpen = effectivePrdStage(fresh);
+      lr.textContent =
+        "PDLC lane: " +
+        laneLabel(effectiveLane(fresh)) +
+        (prdStOpen && prdStOpen !== "none" ? " · PRD stage: " + prdStOpen : "");
+    }
+    syncTicketPaperSubhead(fresh);
+    populateMoveLaneSelect(fresh);
+    updateTicketMainTabs(fresh);
+    applyBriefPanelMode(fresh);
+    loadActiveTicketDocument();
+  });
+
+  document.getElementById("btn-open-design-artifact").addEventListener("click", function () {
+    var fig = document.getElementById("dlg-figma");
+    var art = document.getElementById("dlg-design-artifact");
+    var url = ((art && art.value.trim()) || (fig && fig.value.trim()) || "").trim();
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
   });
 
   document.getElementById("btn-open-discovery-doc").addEventListener("click", function () {
@@ -1944,18 +2103,22 @@
     saveStore();
   });
 
-  document.getElementById("tab-prd").addEventListener("click", function () {
-    if (!state.ticketPrdVaultPath) return;
+  function goTicketMainTab(name) {
+    var init = state.currentDetailId ? getInit(state.currentDetailId) : null;
+    if (!init) return;
+    if (!allowedTabsForLane(effectiveLane(init))[name]) return;
     persistTicketEditorMarkdown();
-    saveStore();
-    state.ticketDocTab = "prd";
+    state.ticketMainTab = name;
+    updateTicketMainTabs(init);
     loadActiveTicketDocument();
-  });
-  document.getElementById("tab-workspace").addEventListener("click", function () {
-    persistTicketEditorMarkdown();
-    saveStore();
-    state.ticketDocTab = "workspace";
-    loadActiveTicketDocument();
+  }
+  ["brief", "discovery", "requirements", "design"].forEach(function (name) {
+    var btn = document.getElementById("tab-" + name);
+    if (btn) {
+      btn.addEventListener("click", function () {
+        goTicketMainTab(name);
+      });
+    }
   });
 
   document.querySelector("#detail-dlg .ticket-format-bar").addEventListener("mousedown", function (e) {
@@ -1965,7 +2128,20 @@
     var fmt = b.getAttribute("data-fmt");
     var w = document.getElementById("md-wysiwyg");
     w.focus();
+    if (fmt === "h2") {
+      document.execCommand("formatBlock", false, "h2");
+      return;
+    }
     document.execCommand(fmt, false, null);
+  });
+
+  document.getElementById("btn-rerun-discovery").addEventListener("click", function () {
+    var id = state.currentDetailId;
+    if (!id) return;
+    var init = getInit(id);
+    if (!init) return;
+    loadActiveTicketDocument();
+    openDiscoveryDocViewer(init, true);
   });
 
   document.getElementById("btn-download-ticket-md").addEventListener("click", function () {
@@ -1992,21 +2168,55 @@
     var t = document.getElementById("dlg-title-input").value.trim();
     var d = document.getElementById("dlg-desc").value;
     var f = document.getElementById("dlg-figma").value.trim();
+    var dArtEl = document.getElementById("dlg-design-artifact");
+    var dRevEl = document.getElementById("dlg-design-revision");
+    var dArt = dArtEl ? dArtEl.value.trim() : "";
+    var dRev = dRevEl ? dRevEl.value.trim() : "";
     if (t) state.store.titleById[id] = t;
     else delete state.store.titleById[id];
     state.store.descriptionById[id] = d;
     state.store.figmaById[id] = f;
-    var stTier = getSelectedStatusTierFromBar();
+    if (dArt) state.store.designArtifactUrlById[id] = dArt;
+    else delete state.store.designArtifactUrlById[id];
+    if (dRev) state.store.designRevisionById[id] = dRev;
+    else delete state.store.designRevisionById[id];
+    var stTier = getSelectedTierFromSelect();
     var initRef = getInit(id);
     var baseTier = initRef ? normalizePrdTierKey(initRef.prdTier) : "Backlog";
     if (stTier === baseTier) delete state.store.prdTierById[id];
     else state.store.prdTierById[id] = stTier;
-    var wfSel = document.getElementById("dlg-workflow").value.trim();
-    var intakeSel = document.getElementById("dlg-intake").value.trim();
-    if (wfSel) state.store.workflowStatusById[id] = wfSel;
-    else delete state.store.workflowStatusById[id];
-    if (intakeSel) state.store.intakeSourceById[id] = intakeSel;
-    else delete state.store.intakeSourceById[id];
+    var laneOpen = initRef ? effectiveLane(initRef) : "";
+    var wfSel = "";
+    var intakeSel = "";
+    var briefSaved = null;
+    if (laneOpen === "idea") {
+      briefSaved = collectIdeaBriefFromForm();
+      state.store.productBriefById[id] = briefSaved;
+      var prEl = document.getElementById("edit-priority");
+      var pv = prEl ? prEl.value.trim() : "P2";
+      var baseP =
+        initRef && initRef.priority != null && String(initRef.priority).trim() !== ""
+          ? String(initRef.priority).trim()
+          : null;
+      if (baseP === null) {
+        if (pv === "P2") delete state.store.priorityById[id];
+        else state.store.priorityById[id] = pv;
+      } else {
+        if (pv === baseP) delete state.store.priorityById[id];
+        else state.store.priorityById[id] = pv;
+      }
+      var inkEl = document.getElementById("edit-intake");
+      intakeSel = inkEl ? inkEl.value.trim() : "";
+      if (intakeSel) state.store.intakeSourceById[id] = intakeSel;
+      else delete state.store.intakeSourceById[id];
+    } else {
+      wfSel = document.getElementById("dlg-workflow").value.trim();
+      intakeSel = document.getElementById("dlg-intake").value.trim();
+      if (wfSel) state.store.workflowStatusById[id] = wfSel;
+      else delete state.store.workflowStatusById[id];
+      if (intakeSel) state.store.intakeSourceById[id] = intakeSel;
+      else delete state.store.intakeSourceById[id];
+    }
     var custom = state.store.customInitiatives || [];
     for (var i = 0; i < custom.length; i++) {
       if (custom[i].id === id) {
@@ -2014,74 +2224,39 @@
         custom[i].summary = d;
         custom[i].prdTier = stTier;
         if (f) custom[i].figmaUrl = f;
-        if (wfSel) custom[i].workflowStatus = wfSel;
-        else delete custom[i].workflowStatus;
-        if (intakeSel) custom[i].intakeSource = intakeSel;
-        else delete custom[i].intakeSource;
+        if (dArt) custom[i].designArtifactUrl = dArt;
+        else delete custom[i].designArtifactUrl;
+        if (dRev) custom[i].designRevision = dRev;
+        else delete custom[i].designRevision;
+        if (laneOpen === "idea" && briefSaved) {
+          custom[i].productBrief = briefSaved;
+          var pvo = document.getElementById("edit-priority");
+          if (pvo && pvo.value.trim()) custom[i].priority = pvo.value.trim();
+          if (intakeSel) custom[i].intakeSource = intakeSel;
+          else delete custom[i].intakeSource;
+          delete custom[i].workflowStatus;
+        } else {
+          if (wfSel) custom[i].workflowStatus = wfSel;
+          else delete custom[i].workflowStatus;
+          if (intakeSel) custom[i].intakeSource = intakeSel;
+          else delete custom[i].intakeSource;
+        }
         break;
       }
     }
     saveStore();
+    try {
+      state.ticketLastSavedLabel =
+        "Last updated " +
+        new Date().toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+    } catch (e2) {
+      state.ticketLastSavedLabel = "Last updated " + new Date().toISOString().slice(0, 16);
+    }
+    var lu = document.getElementById("dlg-last-updated");
+    if (lu) lu.textContent = state.ticketLastSavedLabel;
     document.getElementById("detail-dlg").close();
     renderExecutive();
     renderOrchestration();
-  });
-
-  document.getElementById("btn-reset").addEventListener("click", function () {
-    if (confirm("Clear lane moves and per-lane card order? Browser text overrides for titles/descriptions stay.")) {
-      state.store.laneOverride = {};
-      state.store.cardOrder = {};
-      saveStore();
-      renderExecutive();
-      renderOrchestration();
-    }
-  });
-
-  document.getElementById("btn-clear-custom").addEventListener("click", function () {
-    if (confirm("Remove all ideas you added from this browser?")) {
-      state.store.customInitiatives = [];
-      saveStore();
-      renderExecutive();
-      renderOrchestration();
-    }
-  });
-
-  document.getElementById("btn-export").addEventListener("click", function () {
-    var out = JSON.parse(JSON.stringify(state.data));
-    out.initiatives = mergedInitiatives().map(function (init) {
-      var copy = JSON.parse(JSON.stringify(init));
-      var id = copy.id;
-      if (state.store.laneOverride[id]) copy.lane = state.store.laneOverride[id];
-      var tit = state.store.titleById[id];
-      if (tit != null && String(tit).trim() !== "") copy.title = tit;
-      var desc = state.store.descriptionById[id];
-      if (desc != null) copy.summary = desc;
-      var fig = state.store.figmaById[id];
-      if (fig) copy.figmaUrl = fig;
-      var pt = state.store.prdTierById[id];
-      if (pt != null && String(pt).trim() !== "") copy.prdTier = normalizePrdTierKey(pt);
-      copy.prdStage = effectivePrdStage(copy);
-      var wf = effectiveWorkflowStatus(copy);
-      if (wf) copy.workflowStatus = wf;
-      else delete copy.workflowStatus;
-      var ins = effectiveIntakeSource(copy);
-      if (ins) copy.intakeSource = ins;
-      else delete copy.intakeSource;
-      return copy;
-    });
-    out.updated = new Date().toISOString().slice(0, 10);
-    out.schemaVersion = "2.3.0";
-    if (out.executiveContext == null) out.executiveContext = "";
-    out.exportNote =
-      "Includes lane overrides, prdStage, workflowStatus, intakeSource, order, titles, summaries, Figma, markdown overrides from browser.";
-    out.cardOrder = state.store.cardOrder;
-    out.mdOverrideByVaultPath = state.store.mdOverrideByVaultPath || {};
-    var blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "initiatives.export.json";
-    a.click();
-    URL.revokeObjectURL(a.href);
   });
 
   document.getElementById("discovery-review-close").addEventListener("click", function () {
@@ -2128,15 +2303,38 @@
   });
   document.getElementById("add-idea-save").addEventListener("click", function () {
     var title = document.getElementById("add-title").value.trim();
+    var hintEl = document.getElementById("add-title-hint");
     if (!title) {
-      alert("Add a heading.");
+      if (hintEl) {
+        hintEl.textContent = "Add a title to create a draft.";
+        hintEl.classList.add("visible");
+      }
       return;
     }
-    var summary = document.getElementById("add-summary").value;
+    if (hintEl) {
+      hintEl.textContent = "";
+      hintEl.classList.remove("visible");
+    }
+    var brief = {
+      problem: document.getElementById("add-problem").value.trim(),
+      targetUsers: document.getElementById("add-target-users").value.trim(),
+      success: document.getElementById("add-success").value.trim(),
+      constraints: document.getElementById("add-constraints").value.trim(),
+      uxDiscovery: document.getElementById("add-ux").value.trim(),
+      validation: document.getElementById("add-validation").value.trim(),
+      dependencies: document.getElementById("add-dependencies").value.trim()
+    };
+    var digestInput = document.getElementById("add-summary").value.trim();
+    var summary = synthesizeCardDigest(brief, digestInput);
     var tier = document.getElementById("add-tier").value;
     var prio = document.getElementById("add-prio").value;
+    var intakeVal = document.getElementById("add-intake");
+    var intakeSource = intakeVal ? intakeVal.value.trim() : "";
     var nid = allocateIdeaId(title);
     var cf = "06-Resources/Product_ideas/" + nid + ".md";
+    /* Do not seed mdOverrideByVaultPath — a browser-only template blocked fetch of the real vault file after discovery. Brief lives in productBriefById; Discovery tab loads from disk or builds fallback. */
+    if (!state.store.productBriefById) state.store.productBriefById = {};
+    state.store.productBriefById[nid] = brief;
     var newI = {
       id: nid,
       kind: "feature_idea",
@@ -2154,12 +2352,13 @@
       links: [],
       contextFile: cf,
       source: "dashboard",
-      intakeSource: "",
+      intakeSource: intakeSource,
       progress: null,
       progressLabel: "",
       milestones: [],
       steeringFocus: false,
-      workflowStatus: ""
+      workflowStatus: "",
+      productBrief: brief
     };
     state.store.customInitiatives.push(newI);
     state.store.descriptionById[newI.id] = summary;
@@ -2177,13 +2376,22 @@
     })
     .then(function (data) {
       state.data = data;
+      var errEl = document.getElementById("orch-load-error");
+      if (errEl) {
+        errEl.hidden = true;
+        errEl.textContent = "";
+      }
       renderExecutive();
       renderOrchestration();
     })
     .catch(function (e) {
-      document.querySelector(".hint").innerHTML =
-        "<strong style='color:#f87171'>Could not load initiatives.json.</strong> " +
-        "Start a server in this folder (e.g. <code>python3 -m http.server 8766</code>). (" + e.message + ")";
+      var errEl = document.getElementById("orch-load-error");
+      if (errEl) {
+        errEl.hidden = false;
+        errEl.textContent =
+          "Could not load initiatives.json. Start a local server in this folder (e.g. python3 -m http.server 8766). " +
+          e.message;
+      }
     });
 })();
   </script>

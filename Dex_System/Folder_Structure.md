@@ -19,6 +19,7 @@ Dex creates this structure during onboarding (adapted to your role):
 
 ```
 Dex/
+├── Dex_System/                  # How Dex works: guides, product-dashboard, workboard (vault root)
 ├── 04-Projects/                 # Time-bound initiatives
 ├── 05-Areas/                    # Ongoing responsibilities
 │   ├── People/               # Person pages
@@ -28,7 +29,6 @@ Dex/
 │   ├── Career/               # Career development (via /career-setup)
 │   └── [Role-specific]/     # Accounts/, Team/, Content/, etc.
 ├── 06-Resources/                # Reference material
-│   ├── Dex_System/           # System documentation
 │   ├── Learnings/            # Compound knowledge
 │   └── Quarterly_Reviews/    # Quarterly reflection and strategic reviews
 ├── 07-Archives/                 # Historical records
@@ -119,13 +119,11 @@ Project = has an end ("Onboard Acme Corp")
 
 ```
 06-Resources/
-├── Dex_System/           # Documentation about how Dex works
-│   ├── Dex_Jobs_to_Be_Done.md
-│   ├── Dex_System_Guide.md
-│   └── Folder_Structure.md (this file)
 ├── Learnings/            # Compound knowledge (frameworks, lessons learned)
 └── Quarterly_Reviews/    # Quarterly reflection and strategic reviews
 ```
+
+**Dex system docs and tools** live at the vault root as **`Dex_System/`** (not inside `06-Resources/`): guides, **product-dashboard**, **workboard**, and this **`Folder_Structure.md`**.
 
 **Note:** Templates are stored in `System/Templates/` for easy access during file creation.
 
@@ -330,6 +328,6 @@ Want to explore Dex with sample data before adding your own? Run `/dex-demo on` 
 ## Related Documentation
 
 - `CLAUDE.md` — Core system configuration
-- `06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md` — Why the system exists
-- `06-Resources/Dex_System/Dex_System_Guide.md` — How to use everything
+- `Dex_System/Dex_Jobs_to_Be_Done.md` — Why the system exists
+- `Dex_System/Dex_System_Guide.md` — How to use everything
 - `System/pillars.yaml` — Your strategic pillars configuration

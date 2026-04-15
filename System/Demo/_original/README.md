@@ -310,7 +310,7 @@ Eight jobs that happen reliably every day:
 | **Keep Projects Moving** | Auto-detects stalls (12+ days no update). Surfaces blockers. You know what needs attention. |
 | **Evolve Itself** | System suggests improvements based on usage patterns. Monitors Claude Code releases daily - when new capabilities drop, explains what they mean for YOUR system and suggests implementations. Captures your improvement ideas too. AI ranks all by impact. `/dex-improve` plans implementation. System adapts to you. |
 
-**Want deeper context?** See [Dex_Jobs_to_Be_Done.md](06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md) for the full framework.
+**Want deeper context?** See [Dex_Jobs_to_Be_Done.md](Dex_System/Dex_Jobs_to_Be_Done.md) for the full framework.
 
 ---
 
@@ -446,7 +446,7 @@ flowchart TD
 
 Work backwards from career impact: *What would make you incredibly happy you accomplished three months from now?* Quarterly goals become the north star connecting daily work to career-defining outcomes.
 
-See [Dex_System_Guide.md](06-Resources/Dex_System/Dex_System_Guide.md) for details.
+See [Dex_System_Guide.md](Dex_System/Dex_System_Guide.md) for details.
 
 ---
 
@@ -555,10 +555,10 @@ Each session makes the next one better.
 
 Comprehensive guides included in the repo:
 
-- [Dex_System_Guide.md](06-Resources/Dex_System/Dex_System_Guide.md) - Complete feature reference and workflows
-- [Dex_Jobs_to_Be_Done.md](06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md) - Why each piece exists and how they connect
-- [Dex_Technical_Guide.md](06-Resources/Dex_System/Dex_Technical_Guide.md) - Technical deep dive for those who want it
-- [FOLDER_STRUCTURE.md](06-Resources/Dex_System/FOLDER_STRUCTURE.md) - PARA organization explained
+- [Dex_System_Guide.md](Dex_System/Dex_System_Guide.md) - Complete feature reference and workflows
+- [Dex_Jobs_to_Be_Done.md](Dex_System/Dex_Jobs_to_Be_Done.md) - Why each piece exists and how they connect
+- [Dex_Technical_Guide.md](Dex_System/Dex_Technical_Guide.md) - Technical deep dive for those who want it
+- [FOLDER_STRUCTURE.md](Dex_System/FOLDER_STRUCTURE.md) - PARA organization explained
 
 Start with what you need. Go deeper if you're curious. No forced learning paths.
 

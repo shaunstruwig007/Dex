@@ -24,9 +24,9 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 PORT="${1:-8766}"
-# product-dashboard → Dex_System → 06-Resources → vault root
-VAULT_ROOT="$(cd "$DIR/../../.." && pwd)"
-INDEX_REL="06-Resources/Dex_System/product-dashboard/index.html"
+# product-dashboard → Dex_System → vault root
+VAULT_ROOT="$(cd "$DIR/../.." && pwd)"
+INDEX_REL="Dex_System/product-dashboard/index.html"
 if [[ ! -f "$VAULT_ROOT/$INDEX_REL" ]]; then
   echo "error: could not resolve vault root from this script (missing $INDEX_REL under $VAULT_ROOT)" >&2
   exit 1

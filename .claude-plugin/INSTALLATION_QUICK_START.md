@@ -224,7 +224,7 @@ If you get stuck during onboarding:
 
 ## Getting Help
 
-- **Documentation**: Check `06-Resources/Dex_System/Dex_System_Guide.md` in your vault
+- **Documentation**: Check `Dex_System/Dex_System_Guide.md` in your vault
 - **Feature Discovery**: Type `/dex-level-up` to see unused features
 - **System Updates**: Type `/dex-whats-new` for latest improvements
 - **Issues**: Report on [GitHub Issues](https://github.com/davekilleen/dex/issues)

@@ -751,6 +751,7 @@ A few more questions:
 
 ## Integration with Dex System
 
+- **Product dashboard:** `Dex_System/product-dashboard/` — the **New idea** modal exposes the same question rounds in a condensed form (problem, users, success, optional constraints / journey / validation / dependencies). Answers seed **Workspace notes** and are shown under **Product brief (idea intake)** on the card. Expand in chat with `/product-brief`; for an agent-implementation spec use **`/agent-prd`**.
 - **Pillars:** Link PRD to relevant strategic pillar
 - **Quarter Goals:** If this supports a quarterly goal, note it
 - **Week Priorities:** Suggest adding "finalize PRD" to this week if urgent

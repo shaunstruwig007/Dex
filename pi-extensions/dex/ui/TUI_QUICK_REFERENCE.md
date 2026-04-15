@@ -338,7 +338,7 @@ validateLineWidth(line: string, maxWidth: number, component: string, context: st
 ## 🔗 Related Documentation
 
 - **Pi TUI API:** `/opt/homebrew/lib/node_modules/@mariozechner/pi-coding-agent/docs/tui.md`
-- **Dex TUI Reference:** `06-Resources/Dex_System/Pi_TUI_Reference.md`
+- **Dex TUI Reference:** `Dex_System/Pi_TUI_Reference.md`
 - **Bug fix details:** `System/PRDs/tui-width-bug-fix.md`
 - **Examples:** Look at `progress-indicator.ts`, `task-board.ts`, `daily-plan-wizard.ts`
 

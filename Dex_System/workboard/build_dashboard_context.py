@@ -11,7 +11,7 @@ from datetime import date
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-VAULT_ROOT = HERE.parent.parent.parent
+VAULT_ROOT = HERE.parent.parent
 OUTPUT = HERE / "dashboard-context.json"
 
 TASK_REF = re.compile(r"\[\[\^(task-\d{8}-\d{3})\]\]")

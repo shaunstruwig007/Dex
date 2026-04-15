@@ -9,7 +9,7 @@
 | **[Product dashboard](../product-dashboard/)** | Initiatives, **Executive** view (tier, PDLC, progress, milestones), **Orchestration** lanes (Idea → Shipped), discovery workspace under `06-Resources/Product_ideas/`. |
 | **This workboard** | Day-to-day **task** execution, Today’s focus, planning map tabs. |
 
-**Open Product dashboard:** from vault root, e.g. `http://127.0.0.1:8766/06-Resources/Dex_System/product-dashboard/index.html` — see [product-dashboard README](../product-dashboard/README.md).
+**Open Product dashboard:** from vault root, e.g. `http://127.0.0.1:8766/Dex_System/product-dashboard/index.html` — see [product-dashboard README](../product-dashboard/README.md).
 
 ## Daily plan hook
 
