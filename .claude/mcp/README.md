@@ -83,4 +83,4 @@ Use `/create-mcp` skill to:
 - **Reference** (`.claude/reference/mcp-servers.md`) - Technical MCP documentation
 - **Core MCP** (`core/mcp/`) - MCP server implementations
 - **Skills** (`.claude/skills/create-mcp/`) - MCP creation wizard
-- **Integrations** (`Dex_System/Integrations/`) - Integration guides
+- **Integrations** (`System/integrations/`) - Integration guides

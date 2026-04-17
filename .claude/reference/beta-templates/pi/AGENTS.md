@@ -92,8 +92,8 @@ Pillars (ongoing) -> Quarter Goals (optional) -> Week Priorities -> Daily Plans 
 ## Reference Documentation
 
 For detailed system information:
-- `Dex_System/Dex_System_Guide.md` - Complete usage guide
-- `Dex_System/Folder_Structure.md` - Folder details
+- `06-Resources/Dex_System/Dex_System_Guide.md` - Complete usage guide
+- `06-Resources/Dex_System/Folder_Structure.md` - Folder details
 - `CLAUDE.md` - Full Claude Code configuration
 
 ---

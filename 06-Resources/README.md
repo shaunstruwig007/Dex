@@ -6,6 +6,7 @@ Reference material you consult but aren't actively working on.
 
 - **Learnings/** — Compound knowledge organized by topic
 - **Dex_System/** — Documentation about how Dex works
+- **PRDs/** — Product requirements (flat specs + BDD); **Market_and_competitive_signals.md** — `EV-*` evidence — see [PRDs/README.md](./PRDs/README.md)
 - **Quarterly_Reviews/** — Quarterly reflection and strategic reviews
 
 ## What Goes Here

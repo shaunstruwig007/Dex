@@ -20,9 +20,9 @@ from datetime import datetime, timedelta, timezone
 
 import EventKit
 
-from core.paths import RESOURCES_DIR, VAULT_ROOT
+from core.paths import VAULT_ROOT
 
-CALENDAR_SETUP_DOC = RESOURCES_DIR / "Dex_System" / "Calendar_Setup.md"
+CALENDAR_SETUP_DOC = VAULT_ROOT / "06-Resources" / "Dex_System" / "Calendar_Setup.md"
 CALENDAR_ACCESS_DENIED = (
     "Calendar access denied. Enable in System Settings → Privacy & Security → Calendars. "
     f"See {CALENDAR_SETUP_DOC.relative_to(VAULT_ROOT)} for full setup."

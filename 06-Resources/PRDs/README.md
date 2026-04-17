@@ -1,109 +1,69 @@
-# PRDs (vault-maintained)
+# PRDs (product requirements)
 
-Feature specs live here as markdown. **Requirements ownership** is this vault — PRDs and acceptance criteria are edited here; there is no external doc sync.
+Feature specs live as **flat markdown files** in this folder. Each feature PRD uses **YAML frontmatter** (`lifecycle`, `prd_id`, …) aligned with **Steerco / product orchestration** — see [agent-prd skill](../../.claude/skills/agent-prd/SKILL.md).
 
-## Folder model
+**Integration / cross-PRD rules:** [PRD_Product_Map.md](./PRD_Product_Map.md) — dependencies, canonical overlap (e.g. Feed vs Posts vs archive), suggested build order.
 
-| Folder | Meaning | Tagging / status (your convention) |
-|--------|---------|-------------------------------------|
-| **[Current/](Current/)** | **Wyzetalk Essential** — shipped or in-flight for the current release. | PRD + acceptance criteria; extend with tags such as **done**, **BDD done**, **AC done** per requirement as you refine tracking. |
-| **[Next/](Next/)** | **Specified** post–Essential GA capabilities (formal stubs / drafts): Elevated Auth, scheduled content & messaging, Smart HR, Product Analytics, Explorer, Page Builder, templates. | Ready for sequencing after Essential; add design/dev tags as you adopt them. |
-| **[Then/](Then/)** | **Pipeline** — items moving from discovery/design into build; when **development is complete**, the spec + AC move to **Current**. | Use for: **discovery**, **design**, **done (spec)** / in dev, until release lands in Current. |
-| **[Future/](Future/)** | **Pre-PRD themes** — exploration only until promoted to **Next** or **Then**. | No committed delivery until promoted. |
+**Market & competitive evidence (`EV-*`):** [../Market_and_competitive_signals.md](../Market_and_competitive_signals.md)
 
-**Cross-cutting (stay at this level):** [PRD_Product_Map.md](./PRD_Product_Map.md) · [PRD_Cross_cutting_open_questions.md](./PRD_Cross_cutting_open_questions.md) · [Evidence_and_traceability.md](./Evidence_and_traceability.md) · [Evidence_register.md](./Evidence_register.md)
-
-**Product brief roll-up (Current + Next):** [Product_Briefs_Current_and_Next.md](./Product_Briefs_Current_and_Next.md) — one-page summaries per PRD. **`Future/`** briefs run after workshops promote themes (see file footer).
-
-**Discovery → spec traceability:** [Evidence_and_traceability.md](./Evidence_and_traceability.md) · **Register:** [Evidence_register.md](./Evidence_register.md)
-
-**Market & deal signals:** [../Market_and_deal_signals.md](../Market_and_deal_signals.md)
+**Retrofit playbook (agent-prd uplift):** [_Retrofit_playbook.md](./_Retrofit_playbook.md)
 
 ---
 
-## Current — Wyzetalk Essential
+## Lifecycle (Steerco)
+
+Main path: `idea` → `brief` → `discovery` → `spec_ready` → `develop` → `uat` → `done` · Branch: `parked`
+
+---
+
+## Wyzetalk Essential (core product)
 
 | PRD | File |
 |-----|------|
-| Communication | [Current/Communication.md](./Current/Communication.md) |
-| Feed | [Current/Feed.md](./Current/Feed.md) |
-| Groups | [Current/Groups.md](./Current/Groups.md) |
-| Login & Account Activation | [Current/Login_Account_Activation.md](./Current/Login_Account_Activation.md) |
-| Messaging: Ops & Urgent Alerts | [Current/Messaging_Ops_Urgent_Alerts.md](./Current/Messaging_Ops_Urgent_Alerts.md) |
-| Notifications | [Current/Notifications.md](./Current/Notifications.md) |
-| Payslip PDF | [Current/Payslip_PDF.md](./Current/Payslip_PDF.md) |
-| Posts | [Current/Posts.md](./Current/Posts.md) |
-| Profile: Users | [Current/Profile_Users.md](./Current/Profile_Users.md) |
-| Requirements | [Current/Requirements.md](./Current/Requirements.md) |
-| Tenant Management | [Current/Tenant_Management.md](./Current/Tenant_Management.md) |
-| Theming | [Current/Theming.md](./Current/Theming.md) |
-| User Importer | [Current/User_Importer.md](./Current/User_Importer.md) |
-| User Management | [Current/User_Management.md](./Current/User_Management.md) |
-| WhatsApp Channel | [Current/WhatsApp_Channel.md](./Current/WhatsApp_Channel.md) |
-
-**How specs connect:** [PRD_Product_Map.md](./PRD_Product_Map.md)
-
+| Communication | [communication_service.md](./communication_service.md) |
+| Feed | [Feed.md](./Feed.md) |
+| Groups | [Groups.md](./Groups.md) |
+| Login & Account Activation | [Login_Account_Activation.md](./Login_Account_Activation.md) |
+| Messaging: Ops, Urgent Alerts & WhatsApp (Part 1 + Part 2) | [Messaging_Ops_Urgent_Alerts.md](./Messaging_Ops_Urgent_Alerts.md) |
+| Notifications | [Notifications.md](./Notifications.md) |
+| Payslip PDF | [Payslip_PDF.md](./Payslip_PDF.md) |
+| Posts | [Posts.md](./Posts.md) |
+| Profile: Users | [Profile_Users.md](./Profile_Users.md) |
+| Requirements (hub) | [Requirements.md](./Requirements.md) |
+| Tenant Management | [Tenant_Management.md](./Tenant_Management.md) |
+| Theming | [Theming.md](./Theming.md) |
+| User Importer | [User_Importer.md](./User_Importer.md) |
+| User Management | [User_Management.md](./User_Management.md) |
 ---
 
-## Next — specified post-Essential GA
+## Roadmap — specified / discovery
 
-Full index: [Next/README.md](./Next/README.md)
-
-| PRD | File | Status |
+| PRD | File | Notes |
 |-----|------|--------|
-| Content — Scheduled & Recurring Publishing | [Next/Scheduled_Content_Extended.md](./Next/Scheduled_Content_Extended.md) | Stub |
-| WhatsApp — Smart HR (Conversational) | [Next/WhatsApp_Smart_HR.md](./Next/WhatsApp_Smart_HR.md) | Stub |
-| Elevated Auth — Remote App Integration | [Next/Elevated_Auth_Remote_App.md](./Next/Elevated_Auth_Remote_App.md) | Stub |
-| Product Analytics | [Next/Product_Analytics.md](./Next/Product_Analytics.md) | Stub |
-| Explorer — Category-Based Navigation | [Next/Explorer.md](./Next/Explorer.md) | Stub |
-| Page Builder — Widget-Driven Content | [Next/Page_Builder.md](./Next/Page_Builder.md) | Stub |
-
-**Discovery templates**
-
-| Template | File |
-|----------|------|
-| Remote App (federated / Air) | [Next/Template_Remote_App.md](./Next/Template_Remote_App.md) |
-| Feature within Essential (core) | [Next/Template_Feature_Essential.md](./Next/Template_Feature_Essential.md) |
+| Elevated Auth — Remote App | [Elevated_Auth_Remote_App.md](./Elevated_Auth_Remote_App.md) | |
+| Explorer | [Explorer.md](./Explorer.md) | |
+| Page Builder | [Page_Builder.md](./Page_Builder.md) | |
+| Product Analytics | [Product_Analytics.md](./Product_Analytics.md) | |
+| Scheduled & recurring content | [Scheduled_Content.md](./Scheduled_Content.md) | |
+| WhatsApp Smart HR | [Smart_HR_Whatsapp.md](./Smart_HR_Whatsapp.md) | |
+| Employee chat & groups | [Employee_Chat_and_Groups.md](./Employee_Chat_and_Groups.md) | Discovery |
+| AI Assistant — FAQ | [AI_Assistant_FAQ.md](./AI_Assistant_FAQ.md) | |
+| Floatpays integration | [Integrations_floatpays.md](./Integrations_floatpays.md) | |
 
 ---
 
-## Then — discovery / design / pre-release dev
+## Acceptance criteria
 
-See [Then/README.md](./Then/README.md). Add specs here when they graduate from **Future** but are not yet **Current**.
-
----
-
-## Future — pre-PRD themes
-
-Index: [Future/README.md](./Future/README.md) · Hub: [Future/Discovery_backlog.md](./Future/Discovery_backlog.md)
-
-| Spec (future-phase) | File | Notes |
-|---------------------|------|--------|
-| SSO — Enterprise Identity Federation | [Future/SSO.md](./Future/SSO.md) | Formal PRD + AC; parked here until promoted to **Next** (moved from Next 2026-04-13). |
+Testable **Given / When / Then** criteria live under **`## Acceptance criteria (BDD)`** inside each feature PRD (merged from former `*_acceptance_criteria.md` files).
 
 ---
 
-## Acceptance criteria & QA layer
+## How to add a new PRD
 
-| PRD | Acceptance criteria |
-|-----|----------------------|
-| Communication | [Current/Communication_acceptance_criteria.md](./Current/Communication_acceptance_criteria.md) |
-| Feed | [Current/Feed_acceptance_criteria.md](./Current/Feed_acceptance_criteria.md) |
-| Groups | [Current/Groups_acceptance_criteria.md](./Current/Groups_acceptance_criteria.md) |
-| Login & Account Activation | [Current/Login_Account_Activation_acceptance_criteria.md](./Current/Login_Account_Activation_acceptance_criteria.md) |
-| Messaging: Ops & Urgent Alerts | [Current/Messaging_Ops_Urgent_Alerts_acceptance_criteria.md](./Current/Messaging_Ops_Urgent_Alerts_acceptance_criteria.md) |
-| Notifications | [Current/Notifications_acceptance_criteria.md](./Current/Notifications_acceptance_criteria.md) |
-| Payslip PDF | [Current/Payslip_PDF_acceptance_criteria.md](./Current/Payslip_PDF_acceptance_criteria.md) |
-| Posts | [Current/Posts_acceptance_criteria.md](./Current/Posts_acceptance_criteria.md) |
-| Profile: Users | [Current/Profile_Users_acceptance_criteria.md](./Current/Profile_Users_acceptance_criteria.md) |
-| Tenant Management | [Current/Tenant_Management_acceptance_criteria.md](./Current/Tenant_Management_acceptance_criteria.md) |
-| Theming | [Current/Theming_acceptance_criteria.md](./Current/Theming_acceptance_criteria.md) |
-| User Importer | [Current/User_Importer_acceptance_criteria.md](./Current/User_Importer_acceptance_criteria.md) |
-| User Management | [Current/User_Management_acceptance_criteria.md](./Current/User_Management_acceptance_criteria.md) |
-| WhatsApp Channel | [Current/WhatsApp_Channel_acceptance_criteria.md](./Current/WhatsApp_Channel_acceptance_criteria.md) |
-| SSO (Future-phase) | [Future/SSO_acceptance_criteria.md](./Future/SSO_acceptance_criteria.md) |
+1. Capture idea in orchestration → **`/product-brief`** through **`spec_ready`**.  
+2. Create `06-Resources/PRDs/<Feature>.md` with frontmatter and run **`/agent-prd`** to complete the binding spec.  
+3. Link from [PRD_Product_Map.md](./PRD_Product_Map.md) if the feature touches cross-PRD rules.
 
-| Cross-cutting | File |
-|---------------|------|
-| Integration-only open questions | [PRD_Cross_cutting_open_questions.md](./PRD_Cross_cutting_open_questions.md) |
-| Product map & canonical overlap rules | [PRD_Product_Map.md](./PRD_Product_Map.md) |
+## Agent-prd uplift
+
+Library-wide: **flat paths**, **BDD merged** into parents, **Steerco `lifecycle`**, **[PRD_Product_Map.md](./PRD_Product_Map.md)** (incl. §8 agent structure). **2026-04-17:** All README-indexed **feature PRDs** retrofitted with [`/agent-prd`](../../.claude/skills/agent-prd/SKILL.md) sections (Work packages, Technical blueprint hybrid, Validation protocol, extended frontmatter). Defaults and file list: [_Retrofit_playbook.md](./_Retrofit_playbook.md). **Pilot:** [AI_Assistant_FAQ.md](./AI_Assistant_FAQ.md). Use the playbook session prompt for **new** PRDs or major rewrites.

@@ -6,7 +6,9 @@ description: Write agent-oriented PRDs (observable behaviors, metrics, work pack
 ## Dex vault (this workspace)
 
 - **Pre-PRD / discovery:** `06-Resources/Product_ideas/` — intake from the product dashboard and `/product-brief`.
-- **Binding PRDs:** `06-Resources/PRDs/` — when the card reaches **Spec ready** or you are locking requirements.
+- **Binding PRDs:** Flat markdown files under `06-Resources/PRDs/*.md` (no `Current/` / `Next/` / `Future/` subfolders). Each file carries **YAML frontmatter** with **`lifecycle`** aligned to Steerco: `idea` → `brief` → `discovery` → `spec_ready` → `develop` → `uat` → `done`, plus **`parked`** when set aside. See `06-Resources/PRDs/README.md`.
+- **Cross-PRD rules:** [PRD_Product_Map.md](../../06-Resources/PRDs/PRD_Product_Map.md).
+- **Market evidence (`EV-*`):** [Market_and_competitive_signals.md](../../06-Resources/Market_and_competitive_signals.md).
 - **Search:** Use QMD semantic search (`qmd query` with the right collection) per `.cursor/rules/search-routing.mdc`; do not rely on `grep -r` for natural-language vault search.
 - **Review swarm:** Parallel sub-agents are orchestration guidance; run the four review passes sequentially if your client does not spawn parallel agents.
 

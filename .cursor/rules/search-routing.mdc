@@ -27,7 +27,7 @@ Use `qmd query "your intent" -c <collection>` for all vault content searches:
 | Tasks | `tasks` | `03-Tasks` |
 | Goals | `goals` | `01-Quarter_Goals` |
 | Weekly priorities | `priorities` | `02-Week_Priorities` |
-| PRDs / feature specs | `prds` | `System/PRDs` |
+| PRDs / feature specs | `prds` | `06-Resources/PRDs` |
 | Implementation plans | `plans` | `plans/` |
 | Session learnings | `learnings` | `System/Session_Learnings` |
 | Reference / guides | `resources` | `06-Resources` |

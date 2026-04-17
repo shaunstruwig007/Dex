@@ -7,6 +7,62 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.19.47] — PRD renames: communication_service, merged messaging+WhatsApp, Smart HR, integrations (2026-04-17)
+
+**Before:** Separate **`Communication.md`**, **`WhatsApp_Channel.md`**, **`AI_Assistant_Conversational.md`**, **`Product_Dashboard_Paper_v1_UI.md`**, and older filenames for Smart HR, scheduled content, and Floatpays.
+
+**Now:** **`communication_service.md`** (renamed from Communication). **`Messaging_Ops_Urgent_Alerts.md`** includes former **WhatsApp Channel** content as Part 2; **`WhatsApp_Channel.md`** removed. **`Smart_HR_Whatsapp.md`**, **`Scheduled_Content.md`**, **`Integrations_floatpays.md`** renamed. **`AI_Assistant_Conversational.md`** and **`Product_Dashboard_Paper_v1_UI.md`** removed; links updated across PRDs, README, and market signals.
+
+---
+
+## [1.19.46] — PRD library flatten, Steerco lifecycle, market signals roll-up (2026-04-17)
+
+**Before:** PRDs lived under **`Current/`**, **`Next/`**, and **`Future/`**, with separate `*_acceptance_criteria.md` files and scattered evidence (`Evidence_register.md`, traceability stubs).
+
+**Now:** All retained feature specs sit as **flat `06-Resources/PRDs/*.md`** files. **BDD acceptance criteria** are merged into each parent PRD. **`PRD_Product_Map.md`** stays at `PRDs/` root and was refreshed for the new layout. Removed: `Evidence_and_traceability.md`, `Evidence_register.md`, `PRD_Cross_cutting_open_questions.md`, `Product_Briefs_Current_and_Next.md`, and non-kept Next/Future stubs. **`06-Resources/Market_and_competitive_signals.md`** holds migrated **`EV-*`** rows; intel skills point there. Each PRD has **YAML frontmatter** (`lifecycle` for Steerco: `idea`→`done`, plus `parked`). **`agent-prd`** and **`product-brief`** skills document the new paths. **`06-Resources/PRDs/README.md`** is the canonical index.
+
+---
+
+## [1.19.45] — Restore `06-Resources/PRDs/` from snapshot; align Cursor MCP with root (2026-04-17)
+
+**Before:** After the template reset, **`06-Resources/PRDs/`** was absent from the live vault (PRDs only in **`07-Archives/Full_vault_snapshot_2026-04-16/`**). **`.cursor/mcp.json`** used a venv Python path, **`qmd`**, and a remote Atlassian entry, diverging from the vault root **`.mcp.json`**.
+
+**Now:** **`PRDs/`** is copied back from the full vault snapshot (**~70** spec files). **`.cursor/mcp.json`** matches the root **`mcp.json`** (same servers and `python3` paths). **`06-Resources/README.md`** lists **PRDs/** under Subfolders.
+
+---
+
+## [1.19.44] — Remove `blueprint/` (product-dashboard, workboard, duplicate guides) (2026-04-16)
+
+**Before:** System guides, product-dashboard, and workboard also lived under **`blueprint/`** at the vault root (parallel to **`06-Resources/Dex_System/`**).
+
+**Now:** The **`blueprint/`** tree is **removed**. Documentation links use **`06-Resources/Dex_System/`** only. **`core/mcp/scripts/calendar_eventkit.py`** points at **`06-Resources/Dex_System/Calendar_Setup.md`**. **`.claude/launch.json`** has no static-file servers for removed UIs. **`/daily-plan`** no longer assumes an embedded workboard under `blueprint/`.
+
+---
+
+## [1.19.43] — Full vault snapshot + template reset for fresh onboarding (2026-04-16)
+
+**Before:** The vault contained fork-specific projects, areas, PRDs, market intelligence, and configured `System/user-profile.yaml` / `pillars.yaml`.
+
+**Now:** A **complete snapshot** of that state lives under **`07-Archives/Full_vault_snapshot_2026-04-16/`** (including `prior_07-Archives/`, full `06-Resources/`, `System/` with profile files, and copies of `CLAUDE.md` / `.mcp.json`). PARA folders (`00-`–`06-`), `07-Archives/` skeleton, and **`06-Resources/`** were reset from **`upstream/release`** (template-only Resources). **`System/user-profile.yaml`** and **`System/pillars.yaml`** were removed so onboarding can run cleanly; **`CLAUDE.md`** matches upstream until you extend it again. Run **`install.sh`** / onboarding MCP and **`/getting-started`** as needed.
+
+---
+
+## [1.19.42] — Orchestration playbook + operational clean slate (2026-04-16)
+
+**Before:** Custom and duplicated agent workflows (e.g. parallel intel skills) mixed with shipped skills; tasks, inbox, and planning files carried legacy state.
+
+**Now:** **[`06-Resources/Product_orchestration_playbook.md`](06-Resources/Product_orchestration_playbook.md)** is the single map for idea → discovery → **`/agent-prd`** → PRD promotion and for the canonical intelligence stack (**`/intelligence-scanning`**, **`/daily-intelligence-brief`**, **`/scrape`**). Prior operational data and a **`daily-plan-workboard.cjs`** backup sit under **`07-Archives/System_Reset_2026-04-16/`**; git tag **`pre-clean-slate-2026-04-16`** supports rollback. **`upstream/release`** was already merged (no new upstream commits at merge time).
+
+---
+
+## [1.19.41] — Vault folder: `Dex_System` → `blueprint` (2026-04-16)
+
+**Before:** System guides, product-dashboard, and workboard lived under **`Dex_System/`** at the vault root.
+
+**Now:** That folder is **`blueprint/`**. All references (skills, hooks, launch configs, product dashboard URLs, `.gitignore`, and **`core/mcp/scripts/calendar_eventkit.py`**) point at **`blueprint/`**. The main user guide file remains **`blueprint/Dex_System_Guide.md`**.
+
+---
+
 ## [1.19.40] — Product dashboard: stack tier as pill dropdown (2026-04-15)
 
 **Before:** The ticket toolbar had a full **Now / Next / Future / Backlog** segmented control plus a duplicate **tier pill** in the subhead.
@@ -27,7 +83,7 @@ All notable changes to Dex will be documented in this file.
 
 **Before:** The orchestration UI did not fully match the **Product UI v1** Paper frames (wordmark row, lane chrome, primary **Create idea**, modal **Create draft** / intake, **Re-run discovery**).
 
-**Now:** **[`06-Resources/PRDs/Current/Product_Dashboard_Paper_v1_UI.md`](06-Resources/PRDs/Current/Product_Dashboard_Paper_v1_UI.md)** is the agent-oriented build spec (OB/WP/VAL, DOM ID inventory, Paper MCP checklist). **`Dex_System/product-dashboard/product-dashboard.css`** / **`index.html`** implement teal-forward tokens, **Wyzetalk** + **Product orchestration** header, open swimlane columns with white cards, **+ New idea** primary button, ticket **Save** and format bar **H2**, discovery **Re-run discovery**, new initiative **Create draft** / **Cancel** / **Intake source** / title hint — behaviour and vault **`fetch()`** unchanged.
+**Now:** **[`06-Resources/PRDs/Current/Product_Dashboard_Paper_v1_UI.md`](06-Resources/PRDs/Current/Product_Dashboard_Paper_v1_UI.md)** is the agent-oriented build spec (OB/WP/VAL, DOM ID inventory, Paper MCP checklist). **`blueprint/product-dashboard/product-dashboard.css`** / **`index.html`** implement teal-forward tokens, **Wyzetalk** + **Product orchestration** header, open swimlane columns with white cards, **+ New idea** primary button, ticket **Save** and format bar **H2**, discovery **Re-run discovery**, new initiative **Create draft** / **Cancel** / **Intake source** / title hint — behaviour and vault **`fetch()`** unchanged.
 
 ---
 
@@ -83,7 +139,7 @@ All notable changes to Dex will be documented in this file.
 
 **Before:** Artboard order and copy-paste prompts for a **fresh** (non–vault-clone) orchestration UI lived only in chat.
 
-**Now:** **`Dex_System/product-dashboard/Paper_fresh_orchestration_UI.md`** lists the sequence (board → ticket Idea/Discovery/Design → new initiative modal → executive), prerequisites for Paper Desktop + MCP, and full prompts for Cursor/Paper. Doc updated with **Cursor MCP id** `plugin-paper-desktop-paper` and optional note when frames are pushed to Paper from the agent.
+**Now:** **`blueprint/product-dashboard/Paper_fresh_orchestration_UI.md`** lists the sequence (board → ticket Idea/Discovery/Design → new initiative modal → executive), prerequisites for Paper Desktop + MCP, and full prompts for Cursor/Paper. Doc updated with **Cursor MCP id** `plugin-paper-desktop-paper` and optional note when frames are pushed to Paper from the agent.
 
 ---
 
@@ -275,7 +331,7 @@ All notable changes to Dex will be documented in this file.
 
 **Before:** The Dex **workboard** (`work-items.json` + Kanban + optional `workboard_server.py`) mixed tasks, roadmap, and PDLC doc stages in one heavy UI.
 
-**Now:** **`Dex_System/product-dashboard/`** — **`initiatives.json`** (schema: `initiatives.schema.json`), per-initiative **`initiatives/*.md`** context stubs, **`index.html`** with **Executive** and **Orchestration** (seven swim lanes). Legacy workboard JSON archived under **`product-dashboard/archive/`**; **`migrate_from_workboard.py`** can regenerate from `../workboard/*.json`. **`workboard/README.md`** points here; `.claude/launch.json` adds **`product-dashboard`** (port **8766**).
+**Now:** **`blueprint/product-dashboard/`** — **`initiatives.json`** (schema: `initiatives.schema.json`), per-initiative **`initiatives/*.md`** context stubs, **`index.html`** with **Executive** and **Orchestration** (seven swim lanes). Legacy workboard JSON archived under **`product-dashboard/archive/`**; **`migrate_from_workboard.py`** can regenerate from `../workboard/*.json`. **`workboard/README.md`** points here; `.claude/launch.json` adds **`product-dashboard`** (port **8766**).
 
 ---
 
@@ -320,7 +376,7 @@ on MCP integration" — Dex finds the right content wherever it lives.
 
 **Roadmap:** **Future phase** is a **collapsible** block **below Then** (above Milestones). **Then** and **Future** share **draggable** cards — move items between phases for prioritisation (**Now** stays fixed). Order persisted in **`localStorage`** (`dex-roadmap-then-future-v2`). **Future** lists **every `PRDs/Future/*.md` theme** (index + `Discovery_backlog` + one card per theme file). **Page Builder** copy + **`Page_Builder.md`** + **`pdlc-doc-items.json`** as before.
 
-**What you need to do:** **`python3 sync_tasks_to_workboard.py`** then **`python3 build_index.py`** in **`Dex_System/workboard/`** when **`Tasks.md`** changes without the server.
+**What you need to do:** **`python3 sync_tasks_to_workboard.py`** then **`python3 build_index.py`** in **`blueprint/workboard/`** when **`Tasks.md`** changes without the server.
 
 ---
 
@@ -332,7 +388,7 @@ on MCP integration" — Dex finds the right content wherever it lives.
 
 **PDLC doc process:** Replaced **Pipeline** tab with **PDLC doc process** — four stages **Discovery · Design · Develop · Deploy**; draggable cards; **`pdlc-doc-items.json`** + embedded JSON; **`localStorage`** (`dex-pdlc-doc-v1`) for stage moves. Footer note: future **orchestration** on stage change is optional.
 
-**What you need to do:** Run **`python3 build_index.py`** in **`Dex_System/workboard/`** after editing **`pdlc-doc-items.json`** or the template. Re-run after **`/daily-plan`** sync as usual.
+**What you need to do:** Run **`python3 build_index.py`** in **`blueprint/workboard/`** after editing **`pdlc-doc-items.json`** or the template. Re-run after **`/daily-plan`** sync as usual.
 
 **Docs:** **`workboard/README.md`** tabs table matches the new layout; **`/daily-plan`** skill Step 9 notes **Today's focus** lives in the **Tasks** swim lane.
 
@@ -420,7 +476,7 @@ on MCP integration" — Dex finds the right content wherever it lives.
 
 ## [1.18.8] — Workboard two-way sync + optional always-on server (2026-03-26)
 
-**Vault → board:** New script **`Dex_System/workboard/sync_tasks_to_workboard.py`** merges **`03-Tasks/Tasks.md`** (lines with `[[^task-…]]`) into **`work-items.json`**, preserves rich fields on existing cards, then runs **`build_index.py`**. **`daily-plan-workboard.cjs`** runs this before embedding HTML so **`/daily-plan`** picks up assistant/task changes without opening the board first.
+**Vault → board:** New script **`blueprint/workboard/sync_tasks_to_workboard.py`** merges **`03-Tasks/Tasks.md`** (lines with `[[^task-…]]`) into **`work-items.json`**, preserves rich fields on existing cards, then runs **`build_index.py`**. **`daily-plan-workboard.cjs`** runs this before embedding HTML so **`/daily-plan`** picks up assistant/task changes without opening the board first.
 
 **macOS:** **`com.dex.workboard.plist.example`** documents a LaunchAgent so **`workboard_server.py`** can run at login (bookmark **http://127.0.0.1:8765/** — no daily terminal step).
 
@@ -454,7 +510,7 @@ HubSpot export **`Deal Won vs Lost Analysis 2025.xlsx`** is now summarized in **
 
 ## [1.18.4] — Work board Kanban syncs to Tasks.md (2026-03-23)
 
-The Kanban in `Dex_System/workboard/` could only persist column moves in the browser. **`workboard_server.py`** (run locally) serves the same UI and **`POST /api/save`** writes **`work-items.json`**, regenerates **`03-Tasks/Tasks.md`** from board state (checkboxes: todo / in progress / on hold / done), and runs **`build_index.py`** so the embedded HTML stays aligned.
+The Kanban in `blueprint/workboard/` could only persist column moves in the browser. **`workboard_server.py`** (run locally) serves the same UI and **`POST /api/save`** writes **`work-items.json`**, regenerates **`03-Tasks/Tasks.md`** from board state (checkboxes: todo / in progress / on hold / done), and runs **`build_index.py`** so the embedded HTML stays aligned.
 
 **What you need to do:** From `workboard/`, run `python3 workboard_server.py` and open http://127.0.0.1:8765/ — drag cards to update the vault without hand-editing `Tasks.md`.
 
@@ -1067,7 +1123,7 @@ If you already have Notion/Slack/Google MCPs configured, Dex detects them and of
 
 **Why you'll care:** Never forget a promise or miss an ask again. The things you commit to in chat apps now surface in your task system automatically.
 
-**Requirements:** ScreenPipe must be installed and opted-in. See `Dex_System/ScreenPipe_Setup.md` for setup.
+**Requirements:** ScreenPipe must be installed and opted-in. See `blueprint/ScreenPipe_Setup.md` for setup.
 
 ---
 

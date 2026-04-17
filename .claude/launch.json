@@ -1,17 +1,4 @@
 {
   "version": "0.0.1",
-  "configurations": [
-    {
-      "name": "product-dashboard",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8766", "-d", "Dex_System/product-dashboard"],
-      "port": 8766
-    },
-    {
-      "name": "workboard-legacy",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8234", "-d", "Dex_System/workboard"],
-      "port": 8234
-    }
-  ]
+  "configurations": []
 }

@@ -13,5 +13,5 @@ description: Run the weekly source rotation from Market_and_deal_signals and cap
 
 1. Walk the priority sources for the current week phase (Monday–Friday focus areas in the table).
 2. For each notable item, add or extend a row in **Phase 1 — Signal log** in `Market_and_deal_signals.md` (week of, source, theme, implication).
-3. If material for product decisions, add `EV-*` to `06-Resources/PRDs/Evidence_register.md` and link from specs as needed.
+3. If material for product decisions, add `EV-*` to `06-Resources/Market_and_competitive_signals.md` and link from specs as needed.
 4. Optionally refresh [Competitors/COMPETITOR_INDEX.md](../../../06-Resources/Competitors/COMPETITOR_INDEX.md) competitor-pass rows.

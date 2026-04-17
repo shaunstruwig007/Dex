@@ -27,6 +27,8 @@ You have an idea for a product or feature in your mind, but struggle to explain 
 
 ## Process Flow
 
+**Dex vault — binding PRD:** When the work reaches **`spec_ready`**, create or update **`06-Resources/PRDs/<Feature>.md`** (flat folder; no `Current/`/`Next/`). Use YAML frontmatter: `lifecycle`, `prd_id`, `source: product_brief`, optional `related_brief`, then run **`/agent-prd`** for the full template (work packages, technical blueprint, validation). While still in **brief** or **discovery**, you may keep `lifecycle` on that file or only on the orchestration board — see `06-Resources/PRDs/README.md`.
+
 ### Phase 1: Capture Initial Idea
 
 **If no idea is provided:**
@@ -751,7 +753,6 @@ A few more questions:
 
 ## Integration with Dex System
 
-- **Product dashboard:** `Dex_System/product-dashboard/` — the **New idea** modal exposes the same question rounds in a condensed form (problem, users, success, optional constraints / journey / validation / dependencies). Answers seed **Workspace notes** and are shown under **Product brief (idea intake)** on the card. Expand in chat with `/product-brief`; for an agent-implementation spec use **`/agent-prd`**.
 - **Pillars:** Link PRD to relevant strategic pillar
 - **Quarter Goals:** If this supports a quarterly goal, note it
 - **Week Priorities:** Suggest adding "finalize PRD" to this week if urgent

@@ -46,7 +46,7 @@ bash .scripts/market-intelligence/run-weekly-intel-fetch.sh --since-days 10 --ve
 5. **Write the weekly pack:** Create **`06-Resources/Market_intelligence/synthesis/weekly/YYYY-MM-DD_weekly_exec_brief.md`** (use **week-ending** date or say so in the title) from [_template_weekly_exec_brief.md](../../../06-Resources/Market_intelligence/synthesis/weekly/_template_weekly_exec_brief.md).
 
    - **Executive snapshot:** 3–5 bullets max; outcome-oriented.
-   - **Product:** Themes with **implications** for roadmap/priorities; suggest **`EV-*`** rows for [Evidence_register.md](../../../06-Resources/PRDs/Evidence_register.md) when a signal should bind to specs.
+   - **Product:** Themes with **implications** for roadmap/priorities; suggest **`EV-*`** rows for [Market_and_competitive_signals.md](../../../06-Resources/Market_and_competitive_signals.md) when a signal should bind to specs.
    - **Leadership / market:** Competitive moves, category shifts, **risks and mitigations** (not just cheerleading).
    - **Contrarian angle:** One skeptical read + one non-obvious second-order effect — aligns with daily brief discipline.
    - **[[Company]] relevance:** Replace with your company wiki link (e.g. `[[Wyzetalk]]`) per vault convention.
