@@ -34,7 +34,7 @@ The system teaches you as you go. Start shallow, go deep as you get curious. Two
 
 **For teams and organizations:** One person adopts Dex, sees the value, shares it with colleagues. Technical leaders can distribute the repo (everyone gets the same foundation, adapted to their role) or share demo mode (let people explore without committing their own data). Teams develop common language around what AI can reliably do. Your organization moves from AI demos to AI operations.
 
-**Want to share this?** Point colleagues to the [companion blog post](https://link-tbd) for the full story with more detail and color about how everything comes together. At the bottom of this [[README]], there's a ready-to-use message you can copy and paste to share with your team - makes it easy to accelerate AI fluency adoption across your organization.
+**Want to share this?** Point colleagues to the [companion blog post](https://link-tbd) for the full story with more detail and color about how everything comes together. At the bottom of this README, there's a ready-to-use message you can copy and paste to share with your team - makes it easy to accelerate AI fluency adoption across your organization.
 
 ---
 
@@ -310,7 +310,7 @@ Eight jobs that happen reliably every day:
 | **Keep Projects Moving** | Auto-detects stalls (12+ days no update). Surfaces blockers. You know what needs attention. |
 | **Evolve Itself** | System suggests improvements based on usage patterns. Monitors Claude Code releases daily - when new capabilities drop, explains what they mean for YOUR system and suggests implementations. Captures your improvement ideas too. AI ranks all by impact. `/dex-improve` plans implementation. System adapts to you. |
 
-**Want deeper context?** See [Dex_Jobs_to_Be_Done.md](Dex_System/Dex_Jobs_to_Be_Done.md) for the full framework.
+**Want deeper context?** See [Dex_Jobs_to_Be_Done.md](06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md) for the full framework.
 
 ---
 
@@ -406,7 +406,7 @@ Your data stays on your laptop. It's yours.
 
 Tasks in multiple places (meeting notes, project files, person pages) don't sync in traditional systems. Check off one, others stay open.
 
-Dex handles this with unique task IDs. When you process a meeting, action items get IDs like `[[^task-20260128-001]]`. Tasks appear in both the meeting note and `03-Tasks/Tasks.md` with the same ID.
+Dex handles this with unique task IDs. When you process a meeting, action items get IDs like `^task-20260128-001`. Tasks appear in both the meeting note and `03-Tasks/Tasks.md` with the same ID.
 
 Just tell Dex what you finished in natural language:
 - "I finished following up with John"
@@ -446,7 +446,7 @@ flowchart TD
 
 Work backwards from career impact: *What would make you incredibly happy you accomplished three months from now?* Quarterly goals become the north star connecting daily work to career-defining outcomes.
 
-See [Dex_System_Guide.md](Dex_System/Dex_System_Guide.md) for details.
+See [Dex_System_Guide.md](06-Resources/Dex_System/Dex_System_Guide.md) for details.
 
 ---
 
@@ -555,10 +555,10 @@ Each session makes the next one better.
 
 Comprehensive guides included in the repo:
 
-- [Dex_System_Guide.md](Dex_System/Dex_System_Guide.md) - Complete feature reference and workflows
-- [Dex_Jobs_to_Be_Done.md](Dex_System/Dex_Jobs_to_Be_Done.md) - Why each piece exists and how they connect
-- [Dex_Technical_Guide.md](Dex_System/Dex_Technical_Guide.md) - Technical deep dive for those who want it
-- [FOLDER_STRUCTURE.md](Dex_System/FOLDER_STRUCTURE.md) - PARA organization explained
+- [Dex_System_Guide.md](06-Resources/Dex_System/Dex_System_Guide.md) - Complete feature reference and workflows
+- [Dex_Jobs_to_Be_Done.md](06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md) - Why each piece exists and how they connect
+- [Dex_Technical_Guide.md](06-Resources/Dex_System/Dex_Technical_Guide.md) - Technical deep dive for those who want it
+- [FOLDER_STRUCTURE.md](06-Resources/Dex_System/FOLDER_STRUCTURE.md) - PARA organization explained
 
 Start with what you need. Go deeper if you're curious. No forced learning paths.
 

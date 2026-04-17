@@ -20,7 +20,7 @@ Everything below this block is user-facing and ships as-is.
 **What dex-core owns:**
 - `core/` — Python path contracts, CLI runtime
 - `System/` — vault system files (product-context, backlog, etc.)
-- `.claude/skills/` — canonical slash-command skills; `.agents/skills/` holds thin stubs for the same names where needed (avoid duplicating long `SKILL.md` bodies)
+- `.agents/skills/` — distributable skills (anything in `personal/` stays local)
 - `mcp-servers/` — MCP scripts that ship to users
 - `install.sh` — installer
 
@@ -73,27 +73,23 @@ The system automatically suggests `/getting-started` at next session if vault < 
 ## User Profile
 
 <!-- Updated during onboarding -->
-**Name:** Shaun
-**Role:** Product Manager / Product Owner
-**Company:** [[Wyzetalk]] — frontline employee experience (deskless workforce: comms, safety, digitisation, engagement). [wyzetalk.com](https://www.wyzetalk.com/)
-**Email domain (internal vs external):** `wyzetalk.com` *(only domain)*
-**Company Size:** Startup / small (1–100)
-**Working Style:** Backlog + delivery with stakeholders; **AI adoption and efficiency in the PDLC**. Meetings: **Microsoft Teams + Copilot** — **not Granola** (paste or import notes into the vault).
+**Name:** Not yet configured
+**Role:** Not yet configured
+**Company Size:** Not yet configured
+**Working Style:** Not yet configured
 **Pillars:**
-- **New product launch** — MVP / skeleton in motion; **roadmap and next steps still to define**
-- **Client migration**
-- **AI in the PDLC** — adoption, improvement, efficiency
+- Not yet configured
 
 ---
 
 ## Reference Documentation
 
 For detailed information, see:
-- **Folder structure:** `Dex_System/Folder_Structure.md`
-- **Complete guide:** `Dex_System/Dex_System_Guide.md`
-- **Technical setup:** `Dex_System/Dex_Technical_Guide.md`
-- **Update guide:** `Dex_System/Updating_Dex.md`
-- **Skills catalog:** `.claude/skills/[[README]].md` or run `/dex-level-up`
+- **Folder structure:** `06-Resources/Dex_System/Folder_Structure.md`
+- **Complete guide:** `06-Resources/Dex_System/Dex_System_Guide.md`
+- **Technical setup:** `06-Resources/Dex_System/Dex_Technical_Guide.md`
+- **Update guide:** `06-Resources/Dex_System/Updating_Dex.md`
+- **Skills catalog:** `.claude/skills/README.md` or run `/dex-level-up`
 
 Read these files when users ask about system details, features, or setup.
 
@@ -335,8 +331,8 @@ When asked about something:
 
 ### Documentation Sync
 When making significant system changes:
-1. Check if `Dex_System/Dex_Jobs_to_Be_Done.md` needs updating
-2. Check if `Dex_System/Dex_System_Guide.md` needs updating
+1. Check if `06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md` needs updating
+2. Check if `06-Resources/Dex_System/Dex_System_Guide.md` needs updating
 
 ### Learning Capture
 After significant work (new features, complex integrations), ask: "Worth capturing any learnings from this?" Don't prompt after routine tasks.
@@ -377,7 +373,7 @@ Dex continuously learns from usage and external sources through automatic checks
 - Surfaces alerts during session start and `/daily-plan`
 - Pattern recognition during weekly reviews
 
-**Setup details:** See `Dex_System/Dex_Technical_Guide.md` for installation and configuration.
+**Setup details:** See `06-Resources/Dex_System/Dex_Technical_Guide.md` for installation and configuration.
 
 ### Changelog Discipline
 After making significant system changes (new commands, CLAUDE.md edits, structural changes), update `CHANGELOG.md` before finishing the task.
@@ -499,7 +495,7 @@ Skills extend Dex capabilities and are invoked with `/skill-name`. Common skills
 - `/week-plan`, `/week-review` - Weekly workflow
 - `/quarter-plan`, `/quarter-review` - Quarterly planning
 - `/triage`, `/meeting-prep`, `/process-meetings` - Meetings and inbox
-- `/project-health`, `/product-brief`, `/agent-prd` - Projects (discovery PRD vs agent-oriented spec)
+- `/project-health`, `/product-brief` - Projects
 - `/career-coach`, `/resume-builder` - Career development
 - `/ai-setup`, `/ai-status` - Configure budget cloud models (80% cheaper) and offline mode
 - `/enable-semantic-search` - Enable local AI-powered semantic search with smart collection discovery
@@ -512,16 +508,7 @@ Skills extend Dex capabilities and are invoked with `/skill-name`. Common skills
 - `/scrape` - Web scraping with stealth, anti-bot bypass, CSS selectors (no API key needed)
 - `/identity-snapshot` - Generate a living profile of your working patterns from Dex data
 
-**Market & product intelligence (vault):**
-
-- `/intelligence-scanning` — New ingest → daily signal brief (`06-Resources/Market_intelligence/`)
-- `/daily-intelligence-brief` — Synthesize a brief from existing ingest only (no transcript fetch)
-- `/weekly-market-discovery` — Run the weekly source rotation into `Market_and_deal_signals.md`
-- `/weekly-exec-intel` — Weekly stakeholder brief for Product & Executive (after `run-weekly-intel-fetch.sh` or ingest); output in `Market_intelligence/synthesis/weekly/`
-
-See `06-Resources/Market_intelligence/ARCHITECTURE.md` for the full flow and `06-Resources/PRDs/Evidence_register.md` for `EV-*` traceability.
-
-**Complete catalog:** Run `/dex-level-up` or see `.claude/skills/[[README]].md`
+**Complete catalog:** Run `/dex-level-up` or see `.claude/skills/README.md`
 
 ---
 
@@ -544,13 +531,13 @@ Dex uses the PARA method: Projects (time-bound), Areas (ongoing), Resources (ref
 
 **Planning hierarchy:** Pillars → Quarter Goals → Week Priorities → Daily Plans → Tasks
 
-**Complete details:** See `Dex_System/Folder_Structure.md`
+**Complete details:** See `06-Resources/Dex_System/Folder_Structure.md`
 
 ### Dex System Improvement Backlog
 
 Use `capture_idea` MCP tool to capture Dex system improvements anytime. Ideas are AI-ranked and reviewed via `/dex-backlog`. Workshop ideas with `/dex-improve`.
 
-**Details:** See `Dex_System/Dex_Technical_Guide.md`
+**Details:** See `06-Resources/Dex_System/Dex_Technical_Guide.md`
 
 ---
 
@@ -569,7 +556,7 @@ Use `capture_idea` MCP tool to capture Dex system improvements anytime. Ideas ar
 - Meeting notes: `YYYY-MM-DD - Meeting Topic.md`
 - Person pages: `Firstname_Lastname.md`
 - Career skill tags: Add `# Career: [skill]` to tasks/goals that develop specific skills
-  - Example: `Ship payments redesign [[^task-20260128-001]] # Career: System Design`
+  - Example: `Ship payments redesign ^task-20260128-001 # Career: System Design`
   - Helps track skill development over time
   - Surfaces in weekly reviews for evidence capture
   - Links daily work to career growth goals
@@ -611,17 +598,17 @@ Full skill: `/scrape`
 ## Reference Documents
 
 **System docs:**
-- `Dex_System/Dex_Jobs_to_Be_Done.md` — Why the system exists
-- `Dex_System/Dex_System_Guide.md` — How to use everything
+- `06-Resources/Dex_System/Dex_Jobs_to_Be_Done.md` — Why the system exists
+- `06-Resources/Dex_System/Dex_System_Guide.md` — How to use everything
 - `System/pillars.yaml` — Strategic pillars config
 
 **Technical reference (read when needed):**
 - `.claude/reference/mcp-servers.md` — MCP server setup and integration
 - `.claude/reference/meeting-intel.md` — Meeting processing details
 - `.claude/reference/demo-mode.md` — Demo mode usage
-- `Dex_System/Memory_Ownership.md` — How memory layers work together
-- `Dex_System/Named_Sessions_Guide.md` — Named session conventions
-- `Dex_System/Background_Processing_Guide.md` — Background execution patterns
+- `06-Resources/Dex_System/Memory_Ownership.md` — How memory layers work together
+- `06-Resources/Dex_System/Named_Sessions_Guide.md` — Named session conventions
+- `06-Resources/Dex_System/Background_Processing_Guide.md` — Background execution patterns
 
 **Setup:**
 - `.claude/flows/onboarding.md` — New user onboarding flow

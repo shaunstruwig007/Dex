@@ -2,19 +2,11 @@
 
 Reference material you consult but aren't actively working on.
 
-**Dex system docs and tools** (guides, **product-dashboard**, **workboard**) live at the vault root: **`Dex_System/`** — not under `06-Resources/`.
-
 ## Subfolders
 
 - **Learnings/** — Compound knowledge organized by topic
+- **Dex_System/** — Documentation about how Dex works
 - **Quarterly_Reviews/** — Quarterly reflection and strategic reviews
-- **Market_intelligence/** — Ingest (transcripts, newsletters) and daily signal briefs — see [Market_intelligence/[[README]].md](./Market_intelligence/[[README]].md)
-- **Intel/** — Legacy path only; use **Market_intelligence** — see [Intel/README.md](./Intel/README.md)
-- **PRDs/** — Product requirements, evidence registers, traceability — see [PRDs/[[README]].md](./PRDs/[[README]].md)
-- **Competitors/** — Competitor index and profiles — see [Competitors/COMPETITOR_INDEX.md](./Competitors/COMPETITOR_INDEX.md)
-- **Research/Industry_research_reports/** — Frontline / deskless PDFs summarized in Markdown; PDFs stay in SharePoint — see [Research/Industry_research_reports/README.md](./Research/Industry_research_reports/README.md)
-
-**Cross-cutting market log:** [Market_and_deal_signals.md](./Market_and_deal_signals.md) · **Source guide (26 sources):** [Market_intelligence_Source_Guide.md](./Market_intelligence_Source_Guide.md)
 
 ## What Goes Here
 

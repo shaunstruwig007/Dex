@@ -10,29 +10,6 @@ Person pages are automatically routed here if their email domain matches your co
 
 This routing happens automatically during meeting processing via `/process-meetings`.
 
-## Shaun — regular internal contacts (Wyzetalk)
-
-| Person | Role (summary) | Page |
-|--------|----------------|------|
-| Leon Jansen van Rensburg | COO / indirect CTO — **line manager**; Steerco | [Leon_Jansen_van_Rensburg.md](./Leon_Jansen_van_Rensburg.md) |
-| Jan Vosloo | Software Development Manager; Steerco | [Jan_Vosloo.md](./Jan_Vosloo.md) |
-| Anneke Vermeulen | Head of Implementation; Steerco | [Anneke_Vermeulen.md](./Anneke_Vermeulen.md) |
-| Tanya Hoffman | Senior UX/UI (Essential); Steerco | [Tanya_Hoffman.md](./Tanya_Hoffman.md) |
-| Merel van der Lei | CEO & CPO; Steerco | [Merel_van_der_Lei.md](./Merel_van_der_Lei.md) |
-| Armandt van Rooyen | Sr backend (Essential) | [Armandt_van_Rooyen.md](./Armandt_van_Rooyen.md) |
-| Schalk Griebenow | Sr UI dev (Essential) | [Schalk_Griebenow.md](./Schalk_Griebenow.md) |
-| Brent Lombaard | Jr backend (Essential) | [Brent_Lombaard.md](./Brent_Lombaard.md) |
-| Mosos Ngwerume | UI + mobile (iOS/Android) | [Mosos_Ngwerume.md](./Mosos_Ngwerume.md) |
-| Phelo Macanda | Frontend | [Phelo_Macanda.md](./Phelo_Macanda.md) |
-| Stefan Zeuch | Full-stack; custom Essential + remote apps scope | [Stefan_Zeuch.md](./Stefan_Zeuch.md) |
-| Gerhard Pretorius | Founder; chief systems architect | [Gerhard_Pretorius.md](./Gerhard_Pretorius.md) |
-| Pieter Roodt | ICT / security & compliance | [Pieter_Roodt.md](./Pieter_Roodt.md) |
-| Kino MacDonald | Support manager → Essential support | [Kino_MacDonald.md](./Kino_MacDonald.md) |
-| Nicola Profir | CS Lead enablement; Steerco | [Nicola_Profir.md](./Nicola_Profir.md) |
-| Michelle de Villiers | Partner & client enablement; Steerco | [Michelle_de_Villiers.md](./Michelle_de_Villiers.md) |
-
----
-
 ## What Goes Here
 
 - **Manager** — Your direct manager (track 1:1s, feedback, career discussions)

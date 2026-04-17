@@ -7,29 +7,26 @@
 # Toggle with /demo on or /demo off
 demo_mode: false
 
-# Obsidian: vault uses [[wiki links]] for graph navigation (see /dex-obsidian-setup)
-obsidian_mode: true
-
 # Your name (used to identify you in meetings, filter yourself from participant lists)
-name: "Shaun"
+name: ""
 
 # Your role (used in meeting analysis prompts)
-role: "Product Manager / Product Owner"
+role: ""
 
 # Role group (for command filtering and adaptation)
 # Options: product, sales, marketing, finance, engineering, customer_success, operations, leadership, design, support, advisory
-role_group: "product"
+role_group: ""
 
 # Your company (optional, adds context to meeting analysis)
-company: "Wyzetalk"
+company: ""
 
 # Company size tier
-company_size: "startup"  # options: startup (1-100), scaling (100-1000), enterprise (1000-10000), large_enterprise (10000+)
+company_size: ""  # options: startup (1-100), scaling (100-1000), enterprise (1000-10000), large_enterprise (10000+)
 
 # Your company email domain (used to identify internal vs external people)
 # Example: "pendo.io" (without @)
 # Multiple domains: "pendo.io, pendo.com"
-email_domain: "wyzetalk.com"
+email_domain: ""
 
 # Communication Preferences
 # How the AI adapts its tone and language when working with you
@@ -53,8 +50,7 @@ communication:
 # How Dex processes meetings from Granola
 meeting_processing:
   # Mode: "automatic" (notes appear in your vault within 30min) or "manual" (run /process-meetings)
-  # Manual: not using Granola; internal meetings via Teams + Copilot — paste or import notes as needed.
-  mode: manual
+  mode: automatic
   
   # API provider for automatic mode: gemini, anthropic, or openai
   api_provider: gemini
@@ -62,11 +58,11 @@ meeting_processing:
 # Meeting Intelligence Configuration
 # Controls what gets extracted from your meetings (set during onboarding based on role)
 meeting_intelligence:
-  # Extract customer pain points and challenges (PM / sales-style)
-  extract_customer_intel: true
+  # Extract customer pain points and challenges
+  extract_customer_intel: false
   
-  # Extract competitive mentions and comparisons (PM / sales-style)
-  extract_competitive_intel: true
+  # Extract competitive mentions and comparisons
+  extract_competitive_intel: false
   
   # Extract action items (always recommended)
   extract_action_items: true
@@ -99,10 +95,10 @@ journaling:
 # Controls whether you use quarterly goal setting
 quarterly_planning:
   # Whether quarterly planning is enabled
-  enabled: true
+  enabled: false
   
   # Has user been asked about quarterly planning during onboarding?
-  prompted: true
+  prompted: false
   
   # Month when Q1 starts (1=Jan, 2=Feb, 4=Apr, etc)
   # Common: 1 (calendar year), 2 (some fiscal years), 4 (many fiscal years)

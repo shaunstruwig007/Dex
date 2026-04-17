@@ -8,9 +8,9 @@
 
 ## Core Workflows (8 features)
 
-- [x] Daily planning (`/daily-plan`)
-- [x] Daily review (`/review` or `/daily-review`)
-- [x] Weekly planning (`/week-plan`)
+- [ ] Daily planning (`/daily-plan`)
+- [ ] Daily review (`/review` or `/daily-review`)
+- [ ] Weekly planning (`/week-plan`)
 - [ ] Weekly review (`/week-review`)
 - [ ] Quarterly planning (`/quarter-plan`)
 - [ ] Quarterly review (`/quarter-review`)
@@ -19,8 +19,8 @@
 
 ## Meeting Workflows (7 features)
 
-- [x] Meeting prep (`/meeting-prep`)
-- [x] Meeting processing (`/process-meetings`)
+- [ ] Meeting prep (`/meeting-prep`)
+- [ ] Meeting processing (`/process-meetings`)
 - [ ] Commitment scan (`/commitment-scan`)
 - [ ] Person page created
 - [ ] Person page updated
@@ -40,8 +40,8 @@
 
 - [ ] Inbox triage (`/triage` or `/process-inbox`)
 - [ ] Learning capture (`/save-insight`)
-- [x] Project tracking (`/project-health`)
-- [x] Product brief (`/product-brief`)
+- [ ] Project tracking (`/project-health`)
+- [ ] Product brief (`/product-brief`)
 - [ ] Project page created
 
 ## Journaling (4 features)
@@ -62,13 +62,13 @@
 
 ## System Discovery & Improvement (10 features)
 
-- [x] Feature discovery (`/dex-level-up`)
+- [ ] Feature discovery (`/dex-level-up`)
 - [ ] X-ray transparency (`/xray`)
 - [ ] What's new check (`/dex-whats-new`)
 - [ ] Backlog review (`/dex-backlog`)
 - [ ] Improvement workshop (`/dex-improve`)
 - [ ] Idea captured (via MCP)
-- [x] Dex updated (`/dex-update`)
+- [ ] Dex updated (`/dex-update`)
 - [ ] Dex rolled back (`/dex-rollback`)
 - [ ] Learnings reviewed (`/learnings`)
 - [ ] Beta feature activated (`/beta-activate`)
@@ -78,7 +78,7 @@
 - [ ] Calendar connected (via Calendar MCP)
 - [ ] Calendar synced daily
 - [ ] Granola connected (via Granola MCP)
-- [x] Obsidian enabled (`/dex-obsidian-setup`)
+- [ ] Obsidian enabled (`/dex-obsidian-setup`)
 - [ ] ScreenPipe enabled (`/screenpipe-setup`)
 - [ ] ScreenPipe used (`/screen-recall` or `/screen-summary`)
 - [ ] MCP added (`/dex-add-mcp`)
@@ -102,23 +102,11 @@
 - [ ] Vault reset (`/reset`)
 - [ ] Setup re-run (`/setup`)
 
-## Role-Specific Skills
-
-**Installed:**
-- [x] `/roadmap`
-- [x] `/feature-decision`
-- [x] `/customer-intel`
-
-**Used:**
-- [x] `/roadmap`
-- [x] `/feature-decision`
-- [x] `/customer-intel`
-
 ---
 
 ## Tracking Metadata
 
-- **Last dex-level-up prompt:** 2026-03-30
+- **Last dex-level-up prompt:** (not yet prompted)
 - **First daily plan:** (not yet run)
 - **Setup date:** (set during onboarding)
 

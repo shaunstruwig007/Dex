@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dex Dashboard — Wyzetalk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0d12;
+      --surface: #121820;
+      --card: #141a24;
+      --border: #2a3441;
+      --text: #e8eaef;
+      --muted: #8b95a5;
+      --accent: #d4a574;
+      --accent-dim: rgba(212,165,116,0.12);
+      --green: #6bcf8e;
+      --amber: #e8b84a;
+      --blue: #7eb8ff;
+      --col-todo: #74c0fc;
+      --col-hold: #e8b84a;
+      --col-doing: #a78bfa;
+      --col-done: #6bcf8e;
+      --pillar-launch: #d4a574;
+      --pillar-migration: #7eb8ff;
+      --pillar-ai: #a78bfa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: "Instrument Sans", system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.4; font-size: 15px;
+    }
+    .layout { max-width: 1600px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+    header { margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    header h1 { font-size: 1.4rem; font-weight: 700; margin: 0 0 0.2rem; letter-spacing: -0.02em; }
+    header .sub { color: var(--muted); font-size: 0.85rem; margin: 0; }
+
+    /* ── Tab nav ── */
+    .tab-nav {
+      display: flex; gap: 0; margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab-btn {
+      background: none; border: none; border-bottom: 2px solid transparent;
+      color: var(--muted); font-family: inherit; font-size: 0.88rem; font-weight: 500;
+      padding: 0.6rem 1.1rem 0.55rem; cursor: pointer; margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s; letter-spacing: 0.01em;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Shared: toolbar / toast / error ── */
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;
+      margin-bottom: 0.75rem; font-size: 0.82rem;
+    }
+    .toolbar button {
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+      font-family: inherit; font-size: 0.82rem; padding: 0.35rem 0.65rem;
+      border-radius: 6px; cursor: pointer;
+    }
+    .toolbar button:hover { color: var(--text); border-color: var(--muted); }
+    .error {
+      background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.35);
+      color: #ffb4b4; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem;
+    }
+    .toast {
+      font-size: 0.85rem; color: var(--green); margin: 0 0 0.75rem;
+      padding: 0.4rem 0.65rem; background: rgba(107,207,142,0.12);
+      border-radius: 6px; border: 1px solid rgba(107,207,142,0.35);
+    }
+
+    /* ── Shared: explainer ── */
+    details.explainer {
+      margin-bottom: 1rem; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.6rem 1rem;
+    }
+    details.explainer summary {
+      cursor: pointer; font-weight: 600; color: var(--accent); font-size: 0.9rem;
+      list-style: none; display: flex; align-items: center; gap: 0.5rem;
+    }
+    details.explainer summary::-webkit-details-marker { display: none; }
+    details.explainer summary::before { content: "▸"; font-size: 0.75rem; transition: transform 0.15s; }
+    details.explainer[open] summary::before { transform: rotate(90deg); }
+    .explainer-body {
+      margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border);
+      font-size: 0.85rem; color: #c5cad3; line-height: 1.55;
+    }
+    .explainer-body p { margin: 0 0 0.5rem; }
+    .explainer-body strong { color: var(--text); }
+
+    /* ── Kanban (Tasks + Daily Plan) ── */
+    .kanban {
+      display: flex; gap: 0.75rem; align-items: stretch;
+      overflow-x: auto; padding-bottom: 0.5rem; min-height: 420px;
+    }
+    .column {
+      flex: 1; min-width: 220px; max-width: 320px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; display: flex; flex-direction: column;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .column.drag-over { background: var(--accent-dim); border-color: var(--accent); }
+    .column-head { padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border); }
+    .column-head h2 { margin: 0; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+    .column-head .hint { font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem; line-height: 1.35; }
+    .column-head .count { float: right; font-size: 0.72rem; color: var(--muted); font-weight: 500; }
+    .column-body { flex: 1; padding: 0.5rem; min-height: 200px; display: flex; flex-direction: column; gap: 0.45rem; }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.45rem 0.5rem 0.5rem; cursor: grab; font-size: 0.8rem;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+    .card:active { cursor: grabbing; }
+    .card:hover { border-color: #3d4a5c; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.35rem; margin-bottom: 0.35rem; }
+    .card-rank { font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 0.95rem; color: var(--accent); line-height: 1; }
+    .card-rank span { font-size: 0.6rem; font-weight: 500; color: var(--muted); display: block; margin-top: 0.15rem; }
+    .card-status-pill { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.15rem 0.35rem; border-radius: 4px; white-space: nowrap; }
+    .card h3 { margin: 0 0 0.25rem; font-size: 0.82rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
+    .card .desc { color: #aeb4bf; font-size: 0.76rem; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-expand { margin-top: 0.35rem; padding: 0; border: none; background: none; color: var(--blue); font-size: 0.7rem; font-family: inherit; cursor: pointer; text-align: left; width: 100%; }
+    .card-expand:hover { text-decoration: underline; }
+    .card-details { display: none; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); font-size: 0.74rem; color: #c5cad3; }
+    .card.open .card-details { display: block; }
+    .card.open .desc { -webkit-line-clamp: unset; }
+    .card-details .next { margin-bottom: 0.45rem; padding-left: 0.5rem; border-left: 2px solid var(--accent); }
+    .card-details .next strong { color: var(--accent); }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.35rem; }
+    .tag { font-size: 0.65rem; background: var(--bg); color: var(--muted); padding: 0.1rem 0.35rem; border-radius: 3px; }
+    .links { margin-top: 0.35rem; font-family: "JetBrains Mono", monospace; font-size: 0.68rem; }
+    .links a { color: var(--blue); text-decoration: none; display: block; word-break: break-all; margin-top: 0.2rem; }
+    .links a:hover { text-decoration: underline; }
+    .card-id { font-family: "JetBrains Mono", monospace; font-size: 0.62rem; color: var(--muted); margin-top: 0.35rem; }
+
+    /* ── Planning Map ── */
+    .planning-map {
+      display: grid;
+      grid-template-columns: 280px 260px 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    .plan-col-header {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); margin-bottom: 0.75rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem;
+    }
+    .level-badge {
+      background: var(--surface); border: 1px solid var(--border);
+      font-size: 0.62rem; padding: 0.1rem 0.4rem; border-radius: 3px; color: var(--muted);
+    }
+    .plan-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.75rem; margin-bottom: 0.65rem; border-left: 3px solid transparent;
+    }
+    .plan-card.q1 { border-left-color: #aeb4bf; }
+    .plan-card.q2 { border-left-color: var(--green); }
+    .plan-card.h2 { border-left-color: var(--blue); }
+    .plan-card.week-launch { border-left-color: var(--pillar-launch); }
+    .plan-card.week-migration { border-left-color: var(--pillar-migration); }
+    .plan-card-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+    .plan-card h3 { margin: 0 0 0.35rem; font-size: 0.88rem; font-weight: 600; line-height: 1.3; }
+    .plan-card p { margin: 0; font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+    .plan-status-row { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.5rem; }
+    .plan-status-chip { font-size: 0.62rem; font-weight: 600; padding: 0.15rem 0.4rem; border-radius: 3px; }
+    .chip-done { background: rgba(107,207,142,0.15); color: var(--green); }
+    .chip-active { background: rgba(212,165,116,0.15); color: var(--accent); }
+    .chip-todo { background: rgba(139,149,165,0.12); color: var(--muted); }
+
+    .task-mini {
+      background: var(--card); border: 1px solid var(--border); border-left: 2px solid var(--border);
+      border-radius: 7px; padding: 0.45rem 0.6rem; margin-bottom: 0.4rem; font-size: 0.78rem;
+    }
+    .task-mini.status-started { border-left-color: var(--amber); }
+    .task-mini.status-todo { border-left-color: var(--border); }
+    .task-mini.status-done { opacity: 0.5; border-left-color: var(--green); }
+    .task-mini-title { font-weight: 600; margin-bottom: 0.2rem; line-height: 1.25; color: var(--text); }
+    .task-mini-meta { font-size: 0.68rem; color: var(--muted); }
+    .tasks-group-label {
+      font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      padding-left: 0.2rem; margin-bottom: 0.4rem; margin-top: 0.75rem;
+    }
+    .tasks-group-label:first-child { margin-top: 0; }
+
+    /* ── Roadmap ── */
+    .roadmap-wrap { display: flex; flex-direction: column; gap: 1.5rem; }
+    .phase-banner {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.85rem 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .phase-block { display: flex; flex-direction: column; }
+    .phase-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+    .phase-value { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-top: 0.1rem; }
+    .phase-sep { color: var(--border); font-size: 1.5rem; padding: 0 0.25rem; }
+    .roadmap-section-title {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .phase-chip { font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700; }
+    .chip-now { background: rgba(107,207,142,0.15); color: var(--green); }
+    .chip-then { background: rgba(126,184,255,0.15); color: var(--blue); }
+    .chip-future { background: rgba(167,139,250,0.12); color: #c4b5fd; }
+    /* Collapsible Future block (after Now, before Then) */
+    details.roadmap-future-block {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      margin-bottom: 0.25rem; overflow: hidden;
+    }
+    details.roadmap-future-block > summary {
+      list-style: none; cursor: pointer; padding: 0.75rem 1rem;
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+      user-select: none;
+    }
+    details.roadmap-future-block > summary::-webkit-details-marker { display: none; }
+    details.roadmap-future-block > summary::before {
+      content: "▸"; font-size: 0.65rem; color: #a78bfa; transition: transform 0.15s ease;
+    }
+    details.roadmap-future-block[open] > summary::before { transform: rotate(90deg); }
+    details.roadmap-future-block .future-inner { padding: 0 1rem 1rem; }
+    .rm-card.future { border-top-color: #8b7ab8; }
+    .roadmap-dnd-hint {
+      font-size: 0.72rem; color: var(--muted); margin: -0.35rem 0 0.75rem 0; line-height: 1.45;
+    }
+    .rm-drop-zone { min-height: 2rem; border-radius: 8px; transition: background 0.12s ease, box-shadow 0.12s ease; }
+    .rm-drop-zone.rd-drag-over { outline: 2px dashed var(--accent); background: rgba(212,165,116,0.07); }
+    .rm-card-roadmap { cursor: grab; }
+    .rm-card-roadmap:active { cursor: grabbing; }
+    .rm-card[data-prd-path] { cursor: pointer; }
+
+    /* Roadmap PRD — right sidebar (Linear-style), not centered modal */
+    .prd-side-root {
+      position: fixed; inset: 0; z-index: 10000;
+      pointer-events: none; visibility: hidden;
+      transition: visibility 0s linear 0.28s;
+    }
+    .prd-side-root.open {
+      pointer-events: auto; visibility: visible;
+      transition: visibility 0s;
+    }
+    .prd-side-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(9, 12, 18, 0.55); backdrop-filter: blur(3px);
+      opacity: 0; transition: opacity 0.25s ease;
+    }
+    .prd-side-root.open .prd-side-backdrop { opacity: 1; }
+    .prd-side-sheet {
+      position: absolute; top: 0; right: 0; bottom: 0;
+      width: min(560px, 96vw); max-width: 720px;
+      background: var(--card); border-left: 1px solid var(--border);
+      box-shadow: -12px 0 40px rgba(0,0,0,0.35);
+      display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .prd-side-root.open .prd-side-sheet { transform: translateX(0); }
+    .prd-side-head-row {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem;
+    }
+    .prd-side-close {
+      flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+      font-size: 1.35rem; line-height: 1; cursor: pointer; padding: 0; margin-top: -0.15rem;
+    }
+    .prd-side-close:hover { color: var(--text); border-color: var(--muted); }
+    .prd-wysiwyg-toolbar {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem;
+      padding: 0.45rem 1rem; border-bottom: 1px solid var(--border);
+      background: var(--surface); flex-shrink: 0;
+    }
+    .prd-wysiwyg-toolbar .toolbar-sep {
+      width: 1px; height: 1.1rem; background: var(--border); margin: 0 0.2rem;
+    }
+    .prd-wysiwyg-toolbar .toolbar-label {
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); margin-right: 0.35rem;
+    }
+    .prd-wysiwyg-toolbar button {
+      border: 1px solid var(--border); background: var(--bg); color: var(--text);
+      padding: 0.28rem 0.45rem; border-radius: 5px; font-size: 0.72rem; font-weight: 600;
+      cursor: pointer; font-family: inherit; min-width: 1.85rem;
+    }
+    .prd-wysiwyg-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+    .prd-wysiwyg-toolbar button[data-cmd="italic"] { font-style: italic; }
+    .prd-wysiwyg-toolbar button[data-cmd="underline"] { text-decoration: underline; }
+    .prd-rich-editor {
+      min-height: 320px; max-height: calc(100vh - 340px); overflow-y: auto;
+      padding: 1rem 1.1rem; outline: none;
+      border: 1px solid transparent; border-radius: 0;
+    }
+    .prd-rich-editor:focus { border-color: rgba(212,165,116,0.25); }
+    .prd-side-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .prd-modal-head {
+      padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .prd-modal-head h2 { margin: 0; font-size: 1.05rem; font-weight: 700; flex: 1; }
+    .prd-modal-meta { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; font-size: 0.75rem; color: var(--muted); }
+    .prd-modal-meta label { display: flex; align-items: center; gap: 0.35rem; }
+    .prd-modal-meta select, .prd-modal-meta input[type="text"] {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+      color: var(--text); padding: 0.25rem 0.5rem; font-size: 0.78rem;
+    }
+    .prd-modal-path { font-family: "JetBrains Mono", monospace; font-size: 0.68rem; color: var(--accent); word-break: break-all; }
+    .prd-modal-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .prd-modal-tabs button {
+      border: none; background: transparent; color: var(--muted); padding: 0.55rem 1rem;
+      font-size: 0.75rem; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+    }
+    .prd-modal-tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .prd-modal-pane { display: none; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; overflow-y: auto; }
+    .prd-modal-pane.active { display: flex; }
+    .prd-modal-pane[data-prd-pane="raw"] { padding: 1rem 1.1rem; }
+    .md-preview {
+      font-size: 0.85rem; line-height: 1.55; color: #d8dee8;
+    }
+    .md-preview h1 { font-size: 1.25rem; margin: 1rem 0 0.5rem; }
+    .md-preview h2 { font-size: 1.05rem; margin: 0.9rem 0 0.4rem; color: var(--text); }
+    .md-preview h3 { font-size: 0.95rem; margin: 0.75rem 0 0.35rem; }
+    .md-preview p { margin: 0.5rem 0; }
+    .md-preview ul, .md-preview ol { margin: 0.5rem 0; padding-left: 1.35rem; }
+    .md-preview code { background: var(--surface); padding: 0.12rem 0.35rem; border-radius: 4px; font-size: 0.8em; }
+    .md-preview pre { background: var(--surface); padding: 0.75rem; border-radius: 8px; overflow: auto; font-size: 0.78rem; }
+    .md-preview blockquote { border-left: 3px solid var(--accent); margin: 0.5rem 0; padding-left: 0.75rem; color: var(--muted); }
+    .prd-modal-edit { width: 100%; min-height: 420px; font-family: "JetBrains Mono", monospace; font-size: 0.78rem;
+      background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; resize: vertical;
+    }
+    .prd-modal-foot {
+      padding: 0.75rem 1.1rem; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; justify-content: flex-end; flex-shrink: 0;
+    }
+    .prd-modal-foot .prd-modal-status-msg { margin-right: auto; flex: 1; min-width: 0; font-size: 0.72rem; color: var(--muted); }
+    .prd-modal-foot .btn {
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+    }
+    .prd-modal-foot .btn-primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+    .prd-modal-foot .btn-danger { border-color: #c94a4a; color: #e8a0a0; background: rgba(201,74,74,0.12); }
+    .prd-modal-summary-label { font-size: 0.7rem; font-weight: 600; color: var(--muted); display: block; margin-bottom: 0.25rem; }
+    .prd-modal-summary { width: 100%; min-height: 3.5rem; font-size: 0.8rem; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+    .prd-modal-status { margin-top: 0.5rem; font-size: 0.72rem; color: var(--muted); min-height: 1.2rem; }
+    .rm-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem; }
+    .rm-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.85rem; border-top: 3px solid transparent;
+    }
+    .rm-card.now { border-top-color: var(--green); }
+    .rm-card.then { border-top-color: var(--blue); }
+    .rm-card-icon { font-size: 1.15rem; margin-bottom: 0.4rem; }
+    .rm-card h3 { margin: 0 0 0.4rem; font-size: 0.9rem; font-weight: 700; }
+    .rm-card p { margin: 0; font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+    .rm-tag { font-size: 0.63rem; margin-top: 0.5rem; color: var(--accent); font-weight: 600; }
+    .rm-card.prd-side-active {
+      outline: 2px solid var(--accent);
+      box-shadow: 0 0 0 4px rgba(212, 165, 116, 0.12);
+    }
+
+    /* Milestones */
+    .milestones { display: flex; flex-direction: column; }
+    .milestone-row { display: grid; grid-template-columns: 150px 20px 1fr; align-items: start; }
+    .ms-date { font-family: "JetBrains Mono", monospace; font-size: 0.7rem; color: var(--muted); text-align: right; padding: 0.25rem 0.75rem 0.25rem 0; padding-top: 0.28rem; }
+    .ms-dot-col { display: flex; flex-direction: column; align-items: center; }
+    .ms-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--border); background: var(--bg); flex-shrink: 0; margin-top: 0.28rem; }
+    .ms-dot.done { background: var(--green); border-color: var(--green); }
+    .ms-dot.active { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,165,116,0.2); }
+    .ms-dot.planned { background: var(--blue); border-color: var(--blue); }
+    .ms-dot.tbd { background: var(--bg); border-color: #3d4a5c; }
+    .ms-line { flex: 1; width: 2px; background: var(--border); margin: 3px auto 0; min-height: 20px; }
+    .ms-content { padding: 0.12rem 0 0.9rem 0.8rem; }
+    .ms-content strong { font-size: 0.85rem; font-weight: 600; display: block; line-height: 1.3; }
+    .ms-content span { font-size: 0.74rem; color: var(--muted); }
+
+    /* Migration table */
+    .mig-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+    .mig-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .mig-table th {
+      text-align: left; padding: 0.55rem 0.85rem;
+      font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); border-bottom: 1px solid var(--border); background: var(--surface);
+    }
+    .mig-table td { padding: 0.55rem 0.85rem; border-bottom: 1px solid rgba(42,52,65,0.6); vertical-align: top; }
+    .mig-table tr:last-child td { border-bottom: none; }
+    .mig-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .mig-table .mrr { font-family: "JetBrains Mono", monospace; color: var(--accent); white-space: nowrap; font-weight: 600; }
+    .mig-table .q-label { font-weight: 700; white-space: nowrap; }
+    .mig-table .theme-text { color: var(--muted); font-size: 0.75rem; }
+    .mig-table .accounts { font-size: 0.75rem; color: #c5cad3; }
+    .q2-row td { background: rgba(107,207,142,0.05); }
+    .tbd-row td { color: var(--muted); }
+    .total-row td { border-top: 1px solid var(--border); font-weight: 700; background: var(--surface); }
+
+    /* Pillar legend */
+    .pillar-legend { display: flex; gap: 1.25rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .pillar-legend-item { font-size: 0.75rem; display: flex; align-items: center; gap: 0.4rem; color: var(--muted); }
+    .pillar-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+
+    /* MRR progression bar */
+    .mrr-progression { display: flex; flex-direction: column; gap: 0.75rem; }
+    .mrr-bar-row { display: grid; grid-template-columns: 90px 1fr 80px; gap: 0.75rem; align-items: center; }
+    .mrr-bar-label { font-size: 0.75rem; font-weight: 600; text-align: right; white-space: nowrap; }
+    .mrr-bar-track { height: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; position: relative; }
+    .mrr-bar-fill { height: 100%; border-radius: 5px; display: flex; align-items: center; padding-left: 0.5rem; font-size: 0.68rem; font-weight: 600; color: var(--bg); min-width: 24px; transition: width 0.4s ease; }
+    .mrr-bar-fill.mrr-now { background: var(--green); }
+    .mrr-bar-fill.mrr-then { background: var(--blue); }
+    .mrr-bar-fill.mrr-then-soft { background: rgba(126,184,255,0.72); }
+    .mrr-bar-fill.tbd { background: #3d4a5c; }
+    .mrr-bar-value { font-family: "JetBrains Mono", monospace; font-size: 0.78rem; font-weight: 600; color: var(--accent); }
+    .mrr-bar-accounts { font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; line-height: 1.3; }
+    .mrr-summary-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; padding-top: 0.65rem; border-top: 1px solid var(--border); }
+    .mrr-summary-block { display: flex; flex-direction: column; }
+    .mrr-summary-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .mrr-summary-value { font-family: "JetBrains Mono", monospace; font-size: 0.88rem; font-weight: 700; margin-top: 0.1rem; }
+
+    footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--muted); }
+
+    @media (max-width: 1000px) {
+      .planning-map { grid-template-columns: 1fr; }
+      .column { min-width: 200px; }
+    }
+    @media (max-width: 700px) {
+      .rm-cards { grid-template-columns: 1fr; }
+      .phase-banner { gap: 0.6rem; }
+      .phase-sep { display: none; }
+    }
+    /* ── PDLC status badges on roadmap cards ── */
+    .pdlc-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 0.18rem 0.45rem;
+      border-radius: 20px; margin-bottom: 0.55rem;
+    }
+    .pdlc-discovery { background: rgba(232,184,74,0.15); color: #e8b84a; border: 1px solid rgba(232,184,74,0.3); }
+    .pdlc-design    { background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid rgba(167,139,250,0.3); }
+    .pdlc-develop   { background: rgba(126,184,255,0.15); color: #7eb8ff; border: 1px solid rgba(126,184,255,0.3); }
+    .pdlc-deploy    { background: rgba(107,207,142,0.15); color: #6bcf8e; border: 1px solid rgba(107,207,142,0.3); }
+    .pdlc-test      { background: rgba(45,212,191,0.15);  color: #2dd4bf; border: 1px solid rgba(45,212,191,0.3); }
+    .pdlc-done      { background: rgba(107,207,142,0.10); color: #6bcf8e; border: 1px solid rgba(107,207,142,0.2); opacity: 0.7; }
+
+    /* ── Pipeline tab — PDLC Kanban ── */
+    .pipeline-wrap { padding-top: 0.5rem; }
+    .pipeline-header {
+      display: flex; align-items: baseline; gap: 1rem;
+      margin-bottom: 1rem; padding-bottom: 0.65rem; border-bottom: 1px solid var(--border);
+    }
+    .pipeline-header h2 { margin: 0; font-size: 1rem; font-weight: 700; }
+    .pipeline-header p { margin: 0; font-size: 0.82rem; color: var(--muted); }
+    .pipeline-board {
+      display: flex; gap: 0.65rem; overflow-x: auto; padding-bottom: 1rem;
+      align-items: flex-start;
+    }
+    .pl-col {
+      flex: 0 0 220px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; display: flex; flex-direction: column; min-width: 200px;
+    }
+    .pl-col-head {
+      padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .pl-col-head h3 {
+      margin: 0; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    .pl-col-count {
+      font-size: 0.65rem; font-weight: 600; padding: 0.1rem 0.4rem;
+      border-radius: 10px; background: var(--card);
+    }
+    .pl-col-body { padding: 0.45rem; display: flex; flex-direction: column; gap: 0.4rem; min-height: 120px; }
+    .pl-col-body.drag-over { background: var(--accent-dim); outline: 1px dashed var(--accent); border-radius: 8px; }
+    .pl-item {
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.5rem 0.6rem; font-size: 0.78rem; line-height: 1.35;
+      cursor: grab;
+    }
+    .pl-item:active { cursor: grabbing; }
+    .pl-item-name { font-weight: 600; margin-bottom: 0.2rem; color: var(--text); }
+    .pl-item-meta { font-size: 0.68rem; color: var(--muted); }
+    .pl-item-phase {
+      font-size: 0.58rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; padding: 0.1rem 0.35rem; border-radius: 10px;
+      display: inline-block; margin-bottom: 0.3rem;
+    }
+    .phase-now-tag  { background: rgba(107,207,142,0.15); color: var(--green); }
+    .phase-next-tag { background: rgba(126,184,255,0.15); color: var(--blue); }
+    .phase-h2-tag   { background: rgba(167,139,250,0.15); color: #a78bfa; }
+    .phase-done-tag { background: rgba(107,207,142,0.10); color: var(--green); opacity: 0.7; }
+    /* Column accent top borders */
+    .pl-discovery .pl-col-head h3 { color: #e8b84a; }
+    .pl-design    .pl-col-head h3 { color: #a78bfa; }
+    .pl-develop   .pl-col-head h3 { color: #7eb8ff; }
+    .pl-deploy    .pl-col-head h3 { color: var(--green); }
+    .pl-test      .pl-col-head h3 { color: #2dd4bf; }
+    .pl-done      .pl-col-head h3 { color: var(--muted); }
+    .pl-discovery { border-top: 2px solid rgba(232,184,74,0.5); }
+    .pl-design    { border-top: 2px solid rgba(167,139,250,0.5); }
+    .pl-develop   { border-top: 2px solid rgba(126,184,255,0.5); }
+    .pl-deploy    { border-top: 2px solid rgba(107,207,142,0.5); }
+    .pl-test      { border-top: 2px solid rgba(45,212,191,0.5); }
+    .swim-board { display: flex; flex-direction: column; gap: 1.25rem; }
+    .swim-lane { display: flex; flex-direction: column; gap: 0.45rem; }
+    .swim-lane-head {
+      display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.35rem;
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--accent); padding: 0.15rem 0.15rem 0;
+    }
+    .swim-lane-head .lane-hint { font-weight: 500; color: var(--muted); text-transform: none; letter-spacing: 0; font-size: 0.78rem; }
+    .kanban.swim-kanban { min-height: 280px; }
+
+    .pl-done      { border-top: 2px solid rgba(107,207,142,0.25); }
+    .pl-stage-note {
+      font-size: 0.67rem; color: var(--muted); padding: 0.35rem 0.45rem;
+      font-style: italic; text-align: center;
+    }
+
+    /* Create Future PRD stub (banner + form) */
+    .doc-create-banner {
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+      padding: 0.55rem 0.85rem; margin-bottom: 1rem;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      font-size: 0.78rem;
+    }
+    .doc-create-banner[hidden] { display: none !important; }
+    .doc-create-banner-label { font-weight: 700; color: var(--accent); }
+    .workboard-restart-banner {
+      margin: 0 0 1rem; padding: 0.85rem 1rem; border-radius: 8px;
+      background: linear-gradient(135deg, rgba(180, 83, 9, 0.2), rgba(220, 38, 38, 0.12));
+      border: 1px solid rgba(251, 191, 36, 0.45); color: var(--fg, #e7e5e4);
+      font-size: 0.92rem; line-height: 1.45;
+    }
+    .workboard-restart-banner[hidden] { display: none !important; }
+    .workboard-restart-banner strong { color: #fcd34d; }
+    .workboard-restart-banner code { font-size: 0.78rem; background: rgba(0,0,0,.2); padding: 0.1rem 0.35rem; border-radius: 4px; }
+    .btn-create-doc {
+      background: var(--accent-dim); border: 1px solid var(--accent); color: var(--accent);
+      font-family: inherit; font-size: 0.78rem; font-weight: 600;
+      padding: 0.4rem 0.85rem; border-radius: 6px; cursor: pointer;
+    }
+    .btn-create-doc:hover { color: var(--text); border-color: var(--text); }
+    .create-future-doc-block {
+      margin-bottom: 1rem; border: 1px dashed rgba(167,139,250,0.45); border-radius: 8px;
+      background: rgba(167,139,250,0.06);
+    }
+    .create-future-doc-block > summary {
+      cursor: pointer; padding: 0.5rem 0.65rem; font-weight: 600; font-size: 0.8rem; color: #c4b5fd;
+      list-style: none;
+    }
+    .create-future-doc-block > summary::-webkit-details-marker { display: none; }
+    .create-future-doc-block .create-future-form-inner { padding: 0 0.85rem 0.85rem; }
+    .create-future-form .field { margin-bottom: 0.65rem; }
+    .create-future-form label { display: block; font-size: 0.7rem; font-weight: 600; color: var(--muted); margin-bottom: 0.25rem; }
+    .create-future-form input[type="text"], .create-future-form textarea {
+      width: 100%; max-width: 560px; padding: 0.45rem 0.55rem; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: inherit; font-size: 0.8rem;
+    }
+    .create-future-form textarea { min-height: 4rem; resize: vertical; }
+    .create-future-form .form-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-top: 0.35rem; }
+    .create-future-form .btn-submit {
+      background: rgba(167,139,250,0.2); border: 1px solid #a78bfa; color: #c4b5fd;
+      font-family: inherit; font-size: 0.78rem; font-weight: 600; padding: 0.4rem 0.85rem; border-radius: 6px; cursor: pointer;
+    }
+    .create-future-form .btn-submit:hover { color: var(--text); }
+    .create-future-form .form-msg { font-size: 0.72rem; color: var(--muted); min-height: 1rem; flex: 1; }
+    .create-path-preview {
+      font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.74rem; color: var(--accent);
+      padding: 0.45rem 0.55rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+      max-width: 560px; word-break: break-all;
+    }
+    .create-future-form .field-hint { font-size: 0.68rem; color: var(--muted); margin: 0.35rem 0 0; max-width: 560px; line-height: 1.4; }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <header>
+    <h1>Dex Dashboard — Wyzetalk</h1>
+    <p class="sub">Wednesday, 25 March 2026 &nbsp;·&nbsp; Essential launch &nbsp;/&nbsp; client migration &nbsp;/&nbsp; AI in PDLC</p>
+  </header>
+
+  <div class="workboard-restart-banner" id="workboard-restart-banner" hidden>
+    <strong>Workboard needs a fresh start.</strong>
+    The app in your browser is running, but the background program is an <em>older version</em> (common after a Dex update).
+    In the Terminal window where the workboard is running, press <strong>Ctrl+C</strong> to stop it.
+    Then double-click <code>Start_Dex_Workboard.command</code> in this folder (or run <code>start_workboard.sh</code>), and refresh this page.
+    <span style="display:block;margin-top:0.5rem;color:var(--muted);font-size:0.8rem;">Folder: <code>blueprint/workboard/</code></span>
+  </div>
+
+  <!-- Tab navigation -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="tasks">Tasks</button>
+    <button class="tab-btn" data-tab="planning">Planning Map</button>
+    <button class="tab-btn" data-tab="roadmap">Roadmap</button>
+    <button class="tab-btn" data-tab="pdlc">PDLC doc process</button>
+  </nav>
+
+  <div class="doc-create-banner" id="doc-create-banner" hidden>
+    <span class="doc-create-banner-label">Documentation</span>
+    <button type="button" class="btn-create-doc" id="btn-open-create-future-doc" title="Jump to Roadmap → Future and open the create form">
+      ＋ Create Future PRD stub
+    </button>
+    <span style="color:var(--muted);font-size:0.72rem;">Path is derived from the heading (<code>06-Resources/PRDs/Future/…</code>) + roadmap card (server required).</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TAB 1 — TASKS (Kanban)
+  ════════════════════════════════════════════ -->
+  <div id="tab-tasks" class="tab-panel active">
+    <div class="error" id="err" hidden></div>
+    <div class="toolbar">
+      <span id="toolbarHint" style="color:var(--muted);font-size:0.82rem;">Checking sync…</span>
+      <button type="button" id="btnReset">Reload from disk</button>
+    </div>
+    <p id="toast" class="toast" hidden></p>
+    <details class="explainer" open>
+      <summary>Tasks — swim lanes &amp; priority</summary>
+      <div class="explainer-body">
+        <p><strong>Today's focus</strong> (top lane) is for work you want front-and-centre today. Drag any card <em>between</em> lanes or <em>across</em> columns. Moves sync to <code>work-items.json</code> when the server is running.</p>
+        <p><strong>All tasks</strong> (bottom lane) is the full board. <strong>Priority rank</strong> (1–100) sorts within a column; <strong>P0–P3</strong> is the coarse bucket.</p>
+        <p><strong>Week narrative:</strong> Must / should / if-time commitments stay light-touch below — tune in <code>07-Archives/Plans/</code> and drag matching tasks into Today's focus.</p>
+        <p><strong>Must complete:</strong> Elevated auth follow-through &nbsp;·&nbsp; at least two of: Dependencies · ICPs · PRD/AC WhatsApp + payslip.</p>
+        <p><strong>Should complete:</strong> GTM one-pager skeleton &nbsp;·&nbsp; Calendar / O365 → Apple Calendar.</p>
+        <p><strong>If time permits:</strong> Pipeline → vault hygiene &nbsp;·&nbsp; Then-phase Monday.com notes (no build commit).</p>
+      </div>
+    </details>
+    <div class="swim-board" id="tasks-swim-board" aria-label="Task board with daily focus lane"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TAB 3 — PLANNING MAP
+  ════════════════════════════════════════════ -->
+  <div id="tab-planning" class="tab-panel">
+    <div class="toolbar">
+      <span style="color:var(--muted);font-size:0.82rem;">Hierarchy: Quarter Goals → Week Priorities → Tasks</span>
+    </div>
+
+    <div class="pillar-legend">
+      <div class="pillar-legend-item"><span class="pillar-swatch" style="background:var(--pillar-launch);"></span> New product launch</div>
+      <div class="pillar-legend-item"><span class="pillar-swatch" style="background:var(--pillar-migration);"></span> Client migration</div>
+      <div class="pillar-legend-item"><span class="pillar-swatch" style="background:var(--pillar-ai);"></span> AI in PDLC</div>
+    </div>
+
+    <div class="planning-map">
+
+      <!-- Column 1: Quarter Goals -->
+      <div>
+        <div class="plan-col-header">Quarter Goals <span class="level-badge">L1</span></div>
+
+        <div class="plan-card q1">
+          <div class="plan-card-label" style="color:var(--muted);">Q1 2026 — Closing out</div>
+          <h3>Lock MVP scope + execution readiness</h3>
+          <p>Essential named, GA window set, Requirements tree in vault, migration roadmap imported, ICPs + RACI in flight.</p>
+          <div class="plan-status-row">
+            <span class="plan-status-chip chip-done">Essential named ✓</span>
+            <span class="plan-status-chip chip-done">Requirements ✓</span>
+            <span class="plan-status-chip chip-done">Migration roadmap ✓</span>
+            <span class="plan-status-chip chip-active">ICPs →</span>
+            <span class="plan-status-chip chip-active">RACI →</span>
+          </div>
+        </div>
+
+        <div class="plan-card q2">
+          <div class="plan-card-label" style="color:var(--green);">Q2 2026 — Active quarter</div>
+          <h3>Ship Essential (MVP) + migrate 2–3 clients</h3>
+          <p>GA by end April / early Q2. WhatsApp + payslip in scope or explicitly phased. 2–3 clients through substantive migration in Q2.</p>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;font-weight:600;color:var(--green);margin-top:0.4rem;">Est. MRR: €3,441</div>
+          <div class="plan-status-row">
+            <span class="plan-status-chip chip-todo">GA end-April</span>
+            <span class="plan-status-chip chip-todo">2–3 migrations</span>
+            <span class="plan-status-chip chip-todo">PRD debt post-GA</span>
+            <span class="plan-status-chip chip-todo">Migration machine live</span>
+          </div>
+        </div>
+
+        <div class="plan-card h2">
+          <div class="plan-card-label" style="color:var(--blue);">H2 2026 — Planned</div>
+          <h3>Scale migrations + Then-phase delivery</h3>
+          <p>Q3 incentive switchers (4 accounts) + Q4 SSO/integration wave (6 accounts). Scheduler service → scheduling + celebrations, each gated by Discovery → Design.</p>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;font-weight:600;color:var(--blue);margin-top:0.4rem;">Est. MRR: €44,575 <span style="color:var(--muted);font-weight:400;font-size:0.7rem;">(Q3 €11,767 + Q4 €32,808)</span></div>
+          <div class="plan-status-row">
+            <span class="plan-status-chip chip-todo">Q3 — 4 accounts</span>
+            <span class="plan-status-chip chip-todo">Q4 — 6 accounts</span>
+            <span class="plan-status-chip chip-todo">Scheduler service</span>
+            <span class="plan-status-chip chip-todo">Celebrations</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2: Week Priorities -->
+      <div>
+        <div class="plan-col-header">Week Priorities <span class="level-badge">L2</span></div>
+
+        <div class="plan-card week-launch">
+          <div class="plan-card-label" style="color:var(--pillar-launch);">Priority 1 — Product launch</div>
+          <h3>Unblock April GA</h3>
+          <p>Dependencies + RACI on launch doc. ICPs far enough for GTM one-pager and sales alignment.</p>
+          <div class="plan-status-row"><span class="plan-status-chip chip-active">In flight this week</span></div>
+        </div>
+
+        <div class="plan-card week-launch" style="margin-top:0.1rem;">
+          <div class="plan-card-label" style="color:var(--pillar-launch);">Priority 2 — Product launch</div>
+          <h3>Spec clarity for competitive parity</h3>
+          <p>PRD/AC for WhatsApp + federated payslip / remote app so build and comms don't drift.</p>
+          <div class="plan-status-row"><span class="plan-status-chip chip-todo">Not started</span></div>
+        </div>
+
+        <div class="plan-card week-migration" style="margin-top:0.1rem;">
+          <div class="plan-card-label" style="color:var(--pillar-migration);">Priority 3 — Client migration</div>
+          <h3>Migration readiness (Q2)</h3>
+          <p>Owners per account, cutover criteria, steering cadence — aligned to Q2 target (Nu, KFC, Kauai), not just "end May" calendar.</p>
+          <div class="plan-status-row"><span class="plan-status-chip chip-todo">Not started</span></div>
+        </div>
+      </div>
+
+      <!-- Column 3: Tasks by priority -->
+      <div>
+        <div class="plan-col-header">Tasks <span class="level-badge">L3</span></div>
+
+        <div class="tasks-group-label" style="color:var(--pillar-launch);">→ Unblock April GA</div>
+        <div class="task-mini status-started">
+          <div class="task-mini-title">Essential launch — Dependencies</div>
+          <div class="task-mini-meta">In progress · P2 · task-20260323-003</div>
+        </div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Essential — stakeholder RACI</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-007</div>
+        </div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Essential launch — ICPs</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-002</div>
+        </div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Essential — GTM foundation</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-005</div>
+        </div>
+
+        <div class="tasks-group-label" style="color:var(--pillar-launch);">→ Spec clarity</div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Essential — PRD/AC catch-up</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-006</div>
+        </div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Elevated auth — follow-through</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-008</div>
+        </div>
+
+        <div class="tasks-group-label" style="color:var(--pillar-migration);">→ Migration readiness</div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Essential launch — migration execution</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-001</div>
+        </div>
+        <div class="task-mini status-todo">
+          <div class="task-mini-title">Pipeline data — PowerFlow → vault</div>
+          <div class="task-mini-meta">To do · P2 · task-20260323-009</div>
+        </div>
+
+        <div class="tasks-group-label" style="color:var(--pillar-ai);">→ AI in PDLC</div>
+        <div class="task-mini status-started">
+          <div class="task-mini-title">Calendar — O365 via Apple Calendar</div>
+          <div class="task-mini-meta">In progress · P2 · task-20260323-004</div>
+        </div>
+
+        <div class="tasks-group-label" style="color:var(--muted);">→ Done this cycle</div>
+        <div class="task-mini status-done">
+          <div class="task-mini-title">Wyzetalk Essential — scope narrative</div>
+          <div class="task-mini-meta">Done · task-20260319-001</div>
+        </div>
+        <div class="task-mini status-done">
+          <div class="task-mini-title">PRDs in vault</div>
+          <div class="task-mini-meta">Done · task-20260319-002</div>
+        </div>
+      </div>
+
+    </div><!-- /planning-map -->
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TAB 4 — ROADMAP
+  ════════════════════════════════════════════ -->
+  <div id="tab-roadmap" class="tab-panel">
+    <div class="roadmap-wrap">
+
+      <!-- Phase banner -->
+      <div class="phase-banner">
+        <div class="phase-block">
+          <div class="phase-label">Program phase</div>
+          <div class="phase-value">Execution / pre-GA</div>
+        </div>
+        <div class="phase-sep">|</div>
+        <div class="phase-block">
+          <div class="phase-label">GA target</div>
+          <div class="phase-value">Mid-April – May 2026</div>
+        </div>
+        <div class="phase-sep">|</div>
+        <div class="phase-block">
+          <div class="phase-label">Migration kickoff</div>
+          <div class="phase-value">End May 2026</div>
+        </div>
+      </div>
+
+      <!-- Now section -->
+      <div>
+        <div class="roadmap-section-title">Now <span class="phase-chip chip-now">Through Essential GA + Q2</span></div>
+        <div class="rm-cards">
+          <div class="rm-card now" data-roadmap-id="rm-now-essential" data-prd-path="04-Projects/Wyzetalk_Essential_Launch.md">
+            <div class="pdlc-badge pdlc-deploy">● Deploy</div>
+            <div class="rm-card-icon">🚀</div>
+            <h3>Essential MVP</h3>
+            <p>GA mid–end April / early Q2. Full Requirements scope + committed WhatsApp + federated remote app / payslip path.</p>
+            <div class="rm-tag">product_launch_mvp</div>
+          </div>
+          <div class="rm-card now" data-roadmap-id="rm-now-prds" data-prd-path="06-Resources/PRDs/README.md">
+            <div class="pdlc-badge pdlc-done">✓ Done</div>
+            <div class="rm-card-icon">📋</div>
+            <h3>PRDs / AC</h3>
+            <p>Essential specs in <code>PRDs/Current/</code>. Post-GA stubs in <code>PRDs/Next/</code> — SSO, Scheduled Content, Smart HR WhatsApp, Elevated Auth, Product Analytics.</p>
+            <div class="rm-tag">product_launch_mvp</div>
+          </div>
+          <div class="rm-card now" data-roadmap-id="rm-now-migration" data-prd-path="04-Projects/Wyzetalk_Essential_Launch.md">
+            <div class="pdlc-badge pdlc-develop">● Develop</div>
+            <div class="rm-card-icon">🔄</div>
+            <h3>Client migration (2–3)</h3>
+            <p>Nu, KFC, Kauai on new packaging / cutover in Q2. Reconcile with phasing table + steering before end May kickoff.</p>
+            <div class="rm-tag">client_migration · €3,441 est. MRR</div>
+          </div>
+          <div class="rm-card now" data-roadmap-id="rm-now-migration-ops" data-prd-path="04-Projects/Wyzetalk_Essential_Launch.md">
+            <div class="pdlc-badge pdlc-develop">● Develop</div>
+            <div class="rm-card-icon">⚙️</div>
+            <h3>Migration operating model</h3>
+            <p>Owners per cohort, cutover criteria, steering cadence — live even if kickoff date flexes slightly vs "end May."</p>
+            <div class="rm-tag">client_migration</div>
+          </div>
+          <div class="rm-card now" data-roadmap-id="rm-now-build-test" data-prd-path="04-Projects/Wyzetalk_Essential_Launch.md">
+            <div class="pdlc-badge pdlc-develop">● Build &amp; Test — in progress</div>
+            <div class="rm-card-icon">🏗️</div>
+            <h3>Build &amp; Test</h3>
+            <p>Scope locked · designs signed off. <strong>Internal build</strong> and <strong>internal QA</strong> in progress (UAT to follow). GTM assets mid-Apr → May. ⚠️ Testing phase = high capacity pull.</p>
+            <details style="margin:0.45rem 0 0.35rem;">
+              <summary style="font-size:0.7rem;font-weight:600;color:var(--muted);cursor:pointer;user-select:none;list-style:none;">▸ View 15 PRD specs in build</summary>
+              <ul style="margin:0.35rem 0 0 0;padding-left:1.1rem;font-size:0.68rem;color:var(--muted);line-height:1.7;">
+                <li>Requirements</li>
+                <li>Login &amp; Account Activation</li>
+                <li>Tenant Management</li>
+                <li>User Management</li>
+                <li>User Importer</li>
+                <li>Communication</li>
+                <li>Messaging: Ops &amp; Urgent Alerts</li>
+                <li>Notifications</li>
+                <li>Feed</li>
+                <li>Groups</li>
+                <li>Posts</li>
+                <li>Profile: Users</li>
+                <li>Theming</li>
+                <li>Payslip PDF</li>
+                <li>WhatsApp Channel</li>
+              </ul>
+            </details>
+            <div class="rm-tag">product_launch_mvp</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Then section (drop zone — cards can move to Future below; Now is fixed above) -->
+      <div>
+        <div class="roadmap-section-title">Then <span class="phase-chip chip-then">Next phase — post-Essential GA</span> <span style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;font-weight:600;color:var(--blue);margin-left:0.5rem;">€93,348 MRR gated on Next features</span></div>
+        <p class="roadmap-dnd-hint">Drag cards between <strong>Then</strong> and <strong>Future</strong> to prioritise. <strong>Click</strong> any roadmap card (Now / Then / Future) to open the <strong>right-hand PRD panel</strong> (visual or raw Markdown) when <code>workboard_server.py</code> is running. <strong>Now</strong> does not move between phases.</p>
+        <div class="rm-cards rm-drop-zone" id="rm-drop-then" data-roadmap-phase="then">
+          <div class="rm-card then rm-card-roadmap" draggable="true" data-roadmap-id="rm-sso" data-prd-path="06-Resources/PRDs/Future/SSO.md">
+            <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+            <div class="rm-card-icon">🔐</div>
+            <h3>SSO — Enterprise Identity</h3>
+            <p>SAML 2.0 + OIDC federation (Azure AD, Okta, Google). Unblocks H2 2026 + H2 2027 migration cohorts. 18 deals tagged with technical/integration fit as loss theme (keyword-derived); 3 explicitly cite technical non-compliance in HubSpot.</p>
+            <div class="rm-tag" style="color:var(--blue);">€93,348 MRR gated · PRDs/Future/SSO.md</div>
+          </div>
+          <div class="rm-card then rm-card-roadmap" draggable="true" data-roadmap-id="rm-elevated" data-prd-path="06-Resources/PRDs/Next/Elevated_Auth_Remote_App.md">
+            <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+            <div class="rm-card-icon">🛡️</div>
+            <h3>Elevated Auth — Remote Apps</h3>
+            <p>Token protocol for remote apps (payslip, leave, HR self-service) to request + validate step-up auth from core. Depends on Phase 1 elevated auth workshop.</p>
+            <div class="rm-tag">Depends on P1 elevated auth · PRDs/Next/Elevated_Auth_Remote_App.md</div>
+          </div>
+          <div class="rm-card then rm-card-roadmap" draggable="true" data-roadmap-id="rm-scheduled" data-prd-path="06-Resources/PRDs/Next/Scheduled_Content_Extended.md">
+            <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+            <div class="rm-card-icon">📅</div>
+            <h3>Scheduled Content</h3>
+            <p>Schedule + recur all content types: Text, Image, Link, PDF, Video, Form Link posts + Standard Messages. Timezone-aware, draft queue, delivery channel scheduling.</p>
+            <div class="rm-tag">PRDs/Next/Scheduled_Content_Extended.md</div>
+          </div>
+          <div class="rm-card then rm-card-roadmap" draggable="true" data-roadmap-id="rm-smart-hr" data-prd-path="06-Resources/PRDs/Next/WhatsApp_Smart_HR.md">
+            <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+            <div class="rm-card-icon">💬</div>
+            <h3>WhatsApp Smart HR</h3>
+            <p>Two-way conversational HR on WhatsApp: payslip on demand, leave balance, shift queries. Extends Phase 1 one-way broadcast. Depends on HRIS integration.</p>
+            <div class="rm-tag">Depends on WhatsApp Channel P1 · PRDs/Next/WhatsApp_Smart_HR.md</div>
+          </div>
+          <div class="rm-card then rm-card-roadmap" draggable="true" data-roadmap-id="rm-analytics" data-prd-path="06-Resources/PRDs/Next/Product_Analytics.md">
+            <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+            <div class="rm-card-icon">📊</div>
+            <h3>Product Analytics</h3>
+            <p>Tenant admin: activation funnel, DAU/MAU, content engagement, channel delivery rates. Platform: cross-tenant benchmarks + feature adoption. Instrument events at GA.</p>
+            <div class="rm-tag">Instrument Phase 1 events now · PRDs/Next/Product_Analytics.md</div>
+          </div>
+          <div class="rm-card then rm-card-roadmap" draggable="true" data-roadmap-id="rm-explorer" data-prd-path="06-Resources/PRDs/Next/Explorer.md">
+            <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+            <div class="rm-card-icon">🗂️</div>
+            <h3>Explorer</h3>
+            <p>Tiled category navigation (Announcements, Safety, HR, Learning…). Permanent reference content hub — the filing cabinet to the Feed's newspaper. Permanent posts auto-populate it.</p>
+            <div class="rm-tag">Core feature · PRDs/Next/Explorer.md</div>
+          </div>
+          <div class="rm-card then rm-card-roadmap" draggable="true" data-roadmap-id="rm-page-builder" data-prd-path="06-Resources/PRDs/Next/Page_Builder.md">
+            <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+            <div class="rm-card-icon">🧩</div>
+            <h3>Page Builder</h3>
+            <p><strong>Widget-driven page composer</strong> — stack widgets (text, image, video, PDF, CTA, form, …) so <strong>static or dynamic</strong> content can live in <strong>Explorer</strong> at stable URLs. <strong>Two notions in discovery:</strong> (1) extend <strong>Posts</strong> into richer linked pages, or (2) define <strong>templates</strong> we build once, then publish pages in Explorer with the right metadata — not “article-only.”</p>
+            <div class="rm-tag">Core feature · PRDs/Next/Page_Builder.md</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Future — collapsible; below Then; one card per PRDs/Future theme file (excl. README, Discovery_backlog) -->
+      <details class="roadmap-future-block" id="roadmap-future-details">
+        <summary>
+          Future phase
+          <span class="phase-chip chip-future">PRDs/Future · pre-PRD discovery</span>
+          <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted);font-size:0.72rem;">One card per theme in <code>06-Resources/PRDs/Future/</code> — drag to/from <strong>Then</strong> to prioritise</span>
+        </summary>
+        <div class="future-inner">
+          <details class="create-future-doc-block" id="create-future-doc-details">
+            <summary>Create new Future theme (markdown file)</summary>
+            <div class="create-future-form-inner">
+              <form id="form-create-future-doc" class="create-future-form">
+                <div class="field">
+                  <label for="future-doc-heading">Heading</label>
+                  <input type="text" id="future-doc-heading" name="heading" required maxlength="200" placeholder="e.g. Shift handoff checklist" autocomplete="off" />
+                </div>
+                <div class="field">
+                  <label id="future-doc-path-label">Doc path (auto from heading)</label>
+                  <div id="future-doc-path-preview" class="create-path-preview" role="status" aria-labelledby="future-doc-path-label">06-Resources/PRDs/Future/…</div>
+                  <p class="field-hint">Matches vault layout: <code>06-Resources/PRDs/Future/</code> + filename from the heading. If that file already exists, the server creates <code>_2</code>, <code>_3</code>, … instead.</p>
+                </div>
+                <div class="field">
+                  <label for="future-doc-description">Hypothesis (short)</label>
+                  <textarea id="future-doc-description" name="description" maxlength="4000" placeholder="One or two sentences: the problem, bet, or outcome this discovery theme explores — becomes the ## Hypothesis section in the PRD (see other PRDs/Future/*.md)."></textarea>
+                  <p class="field-hint">Shown on the roadmap card and as the discovery stub body under Hypothesis. Use bullets in the doc later for scope, related specs, and dependencies.</p>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn-submit">Create in vault</button>
+                  <span class="form-msg" id="create-future-form-msg" aria-live="polite"></span>
+                </div>
+              </form>
+            </div>
+          </details>
+          <div class="rm-cards rm-drop-zone" id="rm-drop-future" data-roadmap-phase="future">
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-ai" data-prd-path="06-Resources/PRDs/Future/AI_Assistant_Conversational.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">🤖</div>
+              <h3>AI assistant &amp; conversational Q&amp;A</h3>
+              <p>Align with WhatsApp Smart HR and in-app surfaces.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/AI_Assistant_Conversational.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-employee-chat" data-prd-path="06-Resources/PRDs/Future/Employee_Chat_and_Groups.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">💬</div>
+              <h3>Employee chat (1:1 &amp; groups)</h3>
+              <p>Same product lane as AI; distinct from Ops messaging.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Employee_Chat_and_Groups.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-notif-prefs" data-prd-path="06-Resources/PRDs/Future/Notification_Preferences_Granular.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">🔔</div>
+              <h3>Notification preferences (granular)</h3>
+              <p>Per-channel / per-type controls beyond baseline notifications.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Notification_Preferences_Granular.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-internal-support" data-prd-path="06-Resources/PRDs/Future/Internal_Support_Self_Service.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">🛎️</div>
+              <h3>Internal support / IT self-service</h3>
+              <p>Employee-facing IT and internal help paths.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Internal_Support_Self_Service.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-onboarding" data-prd-path="06-Resources/PRDs/Future/Onboarding_Users_and_Admins.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">👋</div>
+              <h3>Onboarding (users &amp; admins)</h3>
+              <p>Structured onboarding flows for workers and tenant admins.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Onboarding_Users_and_Admins.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-file-manager" data-prd-path="06-Resources/PRDs/Future/File_Manager_Governed_Attachments.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">📁</div>
+              <h3>File manager &amp; governed attachments</h3>
+              <p>Governed file surfaces and attachment policy.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/File_Manager_Governed_Attachments.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-localization" data-prd-path="06-Resources/PRDs/Future/Localization_Dynamic_Content.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">🌍</div>
+              <h3>Localization &amp; dynamic content</h3>
+              <p>Locales, copy sets, and dynamic content rules.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Localization_Dynamic_Content.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-polls" data-prd-path="06-Resources/PRDs/Future/Polls_on_Posts.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">📎</div>
+              <h3>Polls on posts</h3>
+              <p>Polls as a post / engagement primitive.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Polls_on_Posts.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-forms" data-prd-path="06-Resources/PRDs/Future/Forms_Authoring.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">📝</div>
+              <h3>Forms authoring</h3>
+              <p>eNPS, pulse, generic forms — authoring and reporting.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Forms_Authoring.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-billing" data-prd-path="06-Resources/PRDs/Future/Billing_Self_Service.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">💳</div>
+              <h3>Billing &amp; commercial self-service</h3>
+              <p>Tenant commercial surfaces and self-serve billing.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Billing_Self_Service.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-security" data-prd-path="06-Resources/PRDs/Future/Security_Deep_Dive.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">🔒</div>
+              <h3>Security (deep dive)</h3>
+              <p>Beyond baseline — threat model, hardening, enterprise expectations.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Security_Deep_Dive.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-moderation" data-prd-path="06-Resources/PRDs/Future/Content_Moderation_Mentions_Celebrations.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">✨</div>
+              <h3>Moderation, @mentions &amp; celebrations</h3>
+              <p>Mentions, moderation workflows, birthdays / long-service / recognition.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Content_Moderation_Mentions_Celebrations.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-in-app-feedback" data-prd-path="06-Resources/PRDs/Future/In_App_Feedback.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">💭</div>
+              <h3>In-app feedback</h3>
+              <p>Capture product feedback inside the app.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/In_App_Feedback.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-rewards" data-prd-path="06-Resources/PRDs/Future/Rewards_and_Recognition.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">🏅</div>
+              <h3>Rewards &amp; recognition</h3>
+              <p>Programmes beyond baseline celebrations.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Rewards_and_Recognition.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-org-calendar" data-prd-path="06-Resources/PRDs/Future/Org_Calendar_Important_Dates.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">📆</div>
+              <h3>Org calendar (important dates)</h3>
+              <p>Company-wide dates and awareness in the app.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Org_Calendar_Important_Dates.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-shift-roster" data-prd-path="06-Resources/PRDs/Future/Shift_Roster_Integrations.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">⏱️</div>
+              <h3>Shift / roster integrations</h3>
+              <p>Remote-app candidate; workforce time data.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Shift_Roster_Integrations.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-feed-social" data-prd-path="06-Resources/PRDs/Future/Feed_Social_Layer.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">🧵</div>
+              <h3>Feed — social layer</h3>
+              <p>Social / engagement layer on top of core feed.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Feed_Social_Layer.md</div>
+            </div>
+            <div class="rm-card future rm-card-roadmap" draggable="true" data-roadmap-id="rm-fut-page-builder-streams" data-prd-path="06-Resources/PRDs/Future/Page_Builder_Streams.md">
+              <div class="pdlc-badge pdlc-discovery">◐ Discovery</div>
+              <div class="rm-card-icon">🌊</div>
+              <h3>Page Builder — streams</h3>
+              <p>Extends Next Page Builder — streams / multi-page journeys.</p>
+              <div class="rm-tag" style="color:#c4b5fd;">PRDs/Future/Page_Builder_Streams.md</div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Milestones timeline -->
+      <div>
+        <div class="roadmap-section-title">Milestones</div>
+        <div class="milestones">
+          <div class="milestone-row">
+            <div class="ms-date">2026-03-19</div>
+            <div class="ms-dot-col"><div class="ms-dot done"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>Scope locked</strong><span>Full Requirements tree in vault. Wyzetalk Essential named.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">2026-03-23</div>
+            <div class="ms-dot-col"><div class="ms-dot done"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>Design / spec sign-off</strong><span>Done per product sync. Migration roadmap imported.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">Before GA window</div>
+            <div class="ms-dot-col"><div class="ms-dot active"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>Build complete (internal)</strong><span><strong>In progress.</strong> Align with GA window; track blockers vs milestones in launch doc.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">Apr 2026</div>
+            <div class="ms-dot-col"><div class="ms-dot active"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>Test cycle — internal QA + UAT</strong><span><strong>Internal QA in progress.</strong> First structured test run before public launch. Regression + UAT with internal team. Blockers resolved before GA window opens.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">Mid-Apr – May 2026</div>
+            <div class="ms-dot-col"><div class="ms-dot planned"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>GA / public comms</strong><span>Essential live in market. GTM assets + web narrative + deck ready.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">End May 2026</div>
+            <div class="ms-dot-col"><div class="ms-dot planned"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>Migration kickoff (steering)</strong><span>Q2 cohort: Nu, KFC, Kauai. Owners + cutover criteria + steering forum live. May move earlier if GA lands end-April.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">Mid-Apr – End Apr</div>
+            <div class="ms-dot-col"><div class="ms-dot tbd"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>Discovery workshops — Next phase</strong><span>4 workshops: SSO, Elevated Auth, Scheduled Content + Smart HR WhatsApp. Explorer + Page Builder scoped. Templates (Remote App / Feature) framework agreed. Scope may shift based on outcomes.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">Q2 2026</div>
+            <div class="ms-dot-col"><div class="ms-dot tbd"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>Next phase design gates open</strong><span>Post-workshop: PRDs updated, design briefs issued, build sequencing locked. Product Analytics instrumentation begins at GA.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">H2 2026 <span class="phase-chip chip-then" style="font-size:0.55rem;vertical-align:middle;">Then</span></div>
+            <div class="ms-dot-col"><div class="ms-dot tbd"></div><div class="ms-line"></div></div>
+            <div class="ms-content"><strong>SSO build → GA + twin migration waves</strong><span><strong>Wave A (incentive switchers):</strong> Toyota, Nord, DebMarine &amp; Namdeb, Cobre Panama — est. €11,767 MRR. <strong>Wave B (SSO / integrations):</strong> Ardagh Glass, Khumani, Ekapa, Black Rock, Jonsson's, Sun International — est. €32,808 MRR. Combined H2 2026 target €44,575 MRR.</span></div>
+          </div>
+          <div class="milestone-row">
+            <div class="ms-date">H2 2027 <span class="phase-chip chip-then" style="font-size:0.55rem;vertical-align:middle;">Then</span></div>
+            <div class="ms-dot-col"><div class="ms-dot tbd"></div></div>
+            <div class="ms-content"><strong>Next-phase features + migration cohorts</strong><span>Scheduled Content, Smart HR WhatsApp, Product Analytics, Explorer + Page Builder in delivery. <strong>H2 2027 accounts:</strong> Food Lover's, Ulwazi, Sibanye-Stillwater, Glencore SA, Harmony, Lactalis, Isuzu, Bidvest (€60,540) + Glencore DRC, Exxaro, Arcelor Mittal, Capricorn, Italtile, Overberg Agri (€34,339). Elevated Auth remote app protocol live. Combined H2 2027 target €94,879 MRR.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MRR — after milestones; colours = Now (green) vs Then (blue) -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;">
+        <div class="roadmap-section-title" style="margin-bottom:0.35rem;">Est. platform MRR — migration targets</div>
+        <p style="font-size:0.75rem;color:var(--muted);margin:0 0 0.85rem;line-height:1.45;">
+          <span class="phase-chip chip-now">Now</span> Essential + Q2 pilots &nbsp;·&nbsp;
+          <span class="phase-chip chip-then">Then</span> H2 2026 onward (same colours as roadmap chips).
+          Bar widths scaled to <strong>€142,895</strong> pinned total; TBD row uses standalone scale for readability.
+        </p>
+        <div class="mrr-progression">
+          <div class="mrr-bar-row">
+            <div class="mrr-bar-label" style="color:var(--green);">Q2 2026 <span class="phase-chip chip-now" style="font-size:0.55rem;">Now</span></div>
+            <div>
+              <div class="mrr-bar-track"><div class="mrr-bar-fill mrr-now" style="width:2.41%;"></div></div>
+              <div class="mrr-bar-accounts">Nu, KFC, Kauai · Low hanging fruit / pilots · 2–3 clients</div>
+            </div>
+            <div class="mrr-bar-value" style="color:var(--green);">€3,441</div>
+          </div>
+          <div class="mrr-bar-row">
+            <div class="mrr-bar-label" style="color:var(--blue);">H2 2026 <span class="phase-chip chip-then" style="font-size:0.55rem;">Then</span></div>
+            <div>
+              <div class="mrr-bar-track"><div class="mrr-bar-fill mrr-then" style="width:31.2%;"></div></div>
+              <div class="mrr-bar-accounts">Q3 incentive switchers (€11,767) + Q4 SSO wave (€32,808) — see migration table for account lists</div>
+            </div>
+            <div class="mrr-bar-value" style="color:var(--blue);">€44,575</div>
+          </div>
+          <div class="mrr-bar-row">
+            <div class="mrr-bar-label" style="color:var(--blue);">H2 2027 <span class="phase-chip chip-then" style="font-size:0.55rem;">Then</span></div>
+            <div>
+              <div class="mrr-bar-track"><div class="mrr-bar-fill mrr-then-soft" style="width:66.4%;"></div></div>
+              <div class="mrr-bar-accounts">2027 Q1 + Q2 cohorts combined — €60,540 + €34,339</div>
+            </div>
+            <div class="mrr-bar-value" style="color:var(--blue);">€94,879</div>
+          </div>
+          <div class="mrr-bar-row">
+            <div class="mrr-bar-label" style="color:var(--muted);">TBD 2027+</div>
+            <div>
+              <div class="mrr-bar-track"><div class="mrr-bar-fill tbd" style="width:49.6%;"></div></div>
+              <div class="mrr-bar-accounts">G4S, CFAO, Anglo American, Valterra, Clover, Rainbow, RCL, Natref, Sasol, Impala · Not pinned</div>
+            </div>
+            <div class="mrr-bar-value" style="color:var(--muted);">€70,895</div>
+          </div>
+          <div class="mrr-summary-row">
+            <div class="mrr-summary-block">
+              <div class="mrr-summary-label">Q2 (Now)</div>
+              <div class="mrr-summary-value" style="color:var(--green);">€3,441</div>
+            </div>
+            <div class="mrr-summary-block">
+              <div class="mrr-summary-label">H2 2026 (Then)</div>
+              <div class="mrr-summary-value" style="color:var(--blue);">€44,575</div>
+            </div>
+            <div class="mrr-summary-block">
+              <div class="mrr-summary-label">H2 2027 (Then)</div>
+              <div class="mrr-summary-value" style="color:var(--blue);">€94,879</div>
+            </div>
+            <div class="mrr-summary-block">
+              <div class="mrr-summary-label">Total pinned</div>
+              <div class="mrr-summary-value" style="color:var(--text);">€142,895</div>
+            </div>
+            <div class="mrr-summary-block">
+              <div class="mrr-summary-label">TBD + Likely not</div>
+              <div class="mrr-summary-value" style="color:var(--muted);">€80,625</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Migration phasing table -->
+      <div>
+        <div class="roadmap-section-title">Migration phasing — est. platform MRR (€)</div>
+        <div class="mig-table-wrap">
+          <table class="mig-table">
+            <thead>
+              <tr>
+                <th>Quarter</th>
+                <th>Theme</th>
+                <th>Target accounts</th>
+                <th>Est. MRR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="q2-row">
+                <td class="q-label">2026 Q2 ★</td>
+                <td class="theme-text">Low hanging fruit / pilots</td>
+                <td class="accounts">Nu, KFC, Kauai</td>
+                <td class="mrr">€3,441</td>
+              </tr>
+              <tr>
+                <td class="q-label">2026 Q3</td>
+                <td class="theme-text">Incentive switchers</td>
+                <td class="accounts">Toyota, Nord, DebMarine &amp; Namdeb, Cobre Panama</td>
+                <td class="mrr">€11,767</td>
+              </tr>
+              <tr>
+                <td class="q-label">2026 Q4</td>
+                <td class="theme-text">SSO / integrations / feature dependent / Partner</td>
+                <td class="accounts">Ardagh Glass, Khumani, Ekapa, Black Rock, Jonsson's Workwear, Sun International</td>
+                <td class="mrr">€32,808</td>
+              </tr>
+              <tr>
+                <td class="q-label">2027 Q1</td>
+                <td class="theme-text">SSO / integrations / Partner (continued)</td>
+                <td class="accounts">Food Lover's Market, Ulwazi, Sibanye-Stillwater, Glencore SA, Harmony, Lactalis, Isuzu, Bidvest</td>
+                <td class="mrr">€60,540</td>
+              </tr>
+              <tr>
+                <td class="q-label">2027 Q2</td>
+                <td class="theme-text">SSO / integrations / Partner (continued)</td>
+                <td class="accounts">Glencore DRC, Exxaro, Arcelor Mittal, Capricorn, Italtile, Overberg Agri</td>
+                <td class="mrr">€34,339</td>
+              </tr>
+              <tr class="tbd-row">
+                <td class="q-label">TBD 2027+</td>
+                <td class="theme-text">Integrations / features only available later</td>
+                <td class="accounts">G4S, CFAO, Anglo American, Valterra, Clover, Rainbow, RCL, Natref, Sasol, Impala</td>
+                <td class="mrr">€70,895</td>
+              </tr>
+              <tr class="tbd-row">
+                <td class="q-label">Likely not</td>
+                <td class="theme-text">—</td>
+                <td class="accounts">Woolworths, Volkswagen</td>
+                <td class="mrr">€9,730</td>
+              </tr>
+              <tr class="total-row">
+                <td colspan="3" style="font-size:0.82rem;">Total — pinned quarters (Q2 2026 → Q2 2027)</td>
+                <td class="mrr">€142,895</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:0.72rem;color:var(--muted);margin-top:0.6rem;">★ Active cohort. Figures from migration roadmap slide (Mar 2026) — validate with finance + account owners. TBD and Likely-not buckets excluded from total.</p>
+      </div>
+
+    </div><!-- /roadmap-wrap -->
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TAB — PDLC DOC PROCESS
+  ════════════════════════════════════════════ -->
+  <div id="tab-pdlc" class="tab-panel">
+    <div class="pipeline-wrap">
+      <div class="pipeline-header">
+        <h2>PDLC doc process</h2>
+        <p>PRDs and AC move <strong>Discovery → Design → Develop → Deploy</strong>. Drag cards between columns — order is saved in browser localStorage (<code>dex-pdlc-doc-v1</code>). Edit seed data in <code>pdlc-doc-items.json</code> + run <code>python3 build_index.py</code>. <em>Idea for later:</em> orchestration hooks on stage change (Slack, branch, checklist).</p>
+      </div>
+      <div class="pipeline-board" id="pdlc-doc-board" aria-label="PDLC documentation stages"></div>
+    </div>
+  </div>
+
+  <footer>
+    <strong>Tasks server:</strong> <code>python3 workboard_server.py</code> — task swim lanes update <code>work-items.json</code> + <code>03-Tasks/Tasks.md</code>.
+    &nbsp; <strong>Roadmap PRD panel:</strong> right sidebar + visual edit (HTML→MD via Turndown) / raw tab; GET/POST <code>/api/prd</code>, rollback, <code>POST /api/prd/create</code>, <code>GET /api/prd/future-created</code>; backups <code>prd-backups/</code>.
+    &nbsp; Roadmap tile summary + PDLC override: <code>localStorage</code> <code>dex-roadmap-card-meta-v1</code>.
+    &nbsp; PDLC doc board: localStorage only (no server API yet).
+    &nbsp; Roadmap <strong>Then ↔ Future</strong> order: <code>dex-roadmap-then-future-v3</code>.
+    &nbsp; Offline tasks only: <code>python3 -m http.server 8765</code> (PRD save unavailable).
+  </footer>
+</div>
+
+<!-- Roadmap PRD — right sidebar (Linear-style); save/rollback via workboard_server -->
+<div id="roadmap-prd-modal" class="prd-side-root" aria-hidden="true">
+  <div class="prd-side-backdrop" id="prd-side-backdrop" aria-hidden="true"></div>
+  <aside class="prd-side-sheet" role="dialog" aria-modal="true" aria-labelledby="prd-modal-heading">
+    <div class="prd-modal-head">
+      <div class="prd-side-head-row">
+        <h2 id="prd-modal-heading">Document</h2>
+        <button type="button" class="prd-side-close" id="prd-modal-close" aria-label="Close panel">×</button>
+      </div>
+      <div class="prd-modal-meta">
+        <label>PDLC <select id="prd-modal-pdlc" aria-label="PDLC stage">
+          <option value="discovery">Discovery</option>
+          <option value="design">Design</option>
+          <option value="develop">Develop</option>
+          <option value="deploy">Deploy</option>
+          <option value="test">Test</option>
+          <option value="done">Done</option>
+        </select></label>
+        <label>Status <input type="text" id="prd-modal-status-input" size="22" placeholder="e.g. In discovery" aria-label="Status note" /></label>
+      </div>
+      <div class="prd-modal-path" id="prd-modal-path"></div>
+      <label class="prd-modal-summary-label" for="prd-modal-card-summary">Card summary (roadmap tile — browser only)</label>
+      <textarea id="prd-modal-card-summary" class="prd-modal-summary" rows="2"></textarea>
+    </div>
+    <div class="prd-modal-tabs" role="tablist">
+      <button type="button" class="active" data-prd-tab="visual" role="tab" aria-selected="true">Visual edit</button>
+      <button type="button" data-prd-tab="raw" role="tab" aria-selected="false">Raw Markdown</button>
+    </div>
+    <div id="prd-wysiwyg-toolbar" class="prd-wysiwyg-toolbar">
+      <span class="toolbar-label">Format</span>
+      <button type="button" data-fmt="h2" title="Section heading">H2</button>
+      <button type="button" data-fmt="h3" title="Subheading">H3</button>
+      <span class="toolbar-sep"></span>
+      <button type="button" data-fmt="bold" title="Bold"><b>B</b></button>
+      <button type="button" data-fmt="italic" title="Italic"><i>I</i></button>
+      <button type="button" data-fmt="underline" title="Underline">U</button>
+      <span class="toolbar-sep"></span>
+      <button type="button" data-fmt="ul" title="Bullet list">• List</button>
+      <button type="button" data-fmt="ol" title="Numbered list">1. List</button>
+      <span class="toolbar-sep"></span>
+      <button type="button" data-fmt="link" title="Insert link">Link</button>
+      <button type="button" data-fmt="code" title="Inline code">&lt;/&gt;</button>
+    </div>
+    <div class="prd-side-body">
+      <div class="prd-modal-pane active" data-prd-pane="visual" role="tabpanel">
+        <div id="prd-rich-editor" class="md-preview prd-rich-editor" contenteditable="true" spellcheck="true" aria-label="Document content — edit with formatting toolbar"></div>
+      </div>
+      <div class="prd-modal-pane" data-prd-pane="raw" role="tabpanel">
+        <textarea id="prd-modal-editor" class="prd-modal-edit" spellcheck="true" aria-label="Markdown source"></textarea>
+      </div>
+    </div>
+    <div class="prd-modal-foot">
+      <span class="prd-modal-status-msg" id="prd-modal-foot-status"></span>
+      <button type="button" class="btn btn-danger" id="prd-modal-rollback">Rollback file</button>
+      <button type="button" class="btn btn-primary" id="prd-modal-save">Save to vault</button>
+    </div>
+  </aside>
+</div>
+
+<!-- ══════════════════════════════════════════
+     EMBEDDED DATA
+════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/turndown@7.1.3/lib/turndown.browser.umd.js" crossorigin="anonymous"></script>
+<script type="application/json" id="embedded-board">{"schemaVersion":"1.1.0","title":"Shaun \u2014 consolidated work","updated":"2026-04-16","items":[{"id":"task-20260409-001","kind":"task","title":"VSP decision","summary":"Evaluate voluntary severance package before end of April; aligns with end-of-May exit window and 1 June new role start.","nextAction":"","priorityBand":"P0","rankScore":100,"status":"todo","pillar":"personal","tags":[],"links":[]},{"id":"task-20260409-004","kind":"task","title":"Lock new role contracting","summary":"Awaiting final sign-off on Solutions Consultant/Analyst contract; do not plan around it until signed.","nextAction":"","priorityBand":"P0","rankScore":99,"status":"todo","pillar":"personal","tags":[],"links":[]},{"id":"task-20260330-002","kind":"task","title":"April discovery workshops","summary":"In progress: organise with [[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]], **Mark**, and **Aracey** for **wk 2\u20133 April**. Agenda: elevated auth, WhatsApp, AI, Explorer, page builder (**SSO de-prioritised** per Exco/Board 2026-04-14). Align invites, agenda, pre-reads.","nextAction":"","priorityBand":"P1","rankScore":83,"status":"todo","pillar":"product_launch_mvp","tags":[],"links":[]},{"id":"task-20260323-005","kind":"task","title":"Essential \u2014 GTM foundation","summary":"One-pager (problem, buyer, outcome, proof); align marketing + sales on Essential vs future tiers + ICP; outline deck/web narrative before GA.","nextAction":"Draft one-pager skeleton, then schedule alignment with marketing + sales.","priorityBand":"P1","rankScore":67,"status":"todo","pillar":"product_launch_mvp","tags":["GTM","ICP"],"links":[{"label":"Launch doc \u2014 Next actions","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260323-007","kind":"task","title":"Essential \u2014 stakeholder RACI","summary":"Populate stakeholder table on launch doc with wiki links to Internal (and External) people pages.","nextAction":"Map Steerco + workstream leads into RACI rows.","priorityBand":"P1","rankScore":60,"status":"todo","pillar":"product_launch_mvp","tags":["RACI","people"],"links":[{"label":"Launch doc","href":"04-Projects/Wyzetalk_Essential_Launch.md"},{"label":"Internal people","href":"05-Areas/People/Internal/README.md"}],"swimLane":"daily"},{"id":"task-20260323-001","kind":"epic","title":"Essential launch \u2014 migration execution","summary":"Owners per cohort, cutover criteria, steering cadence \u2014 aligned to migration roadmap and end-May kickoff.","nextAction":"Name owner per Q2 pilot account; confirm steering forum.","priorityBand":"P1","rankScore":63,"status":"todo","pillar":"client_migration","tags":["migration","Steerco"],"links":[{"label":"Launch doc \u2014 migration","href":"04-Projects/Wyzetalk_Essential_Launch.md"},{"label":"Roadmap image","href":"04-Projects/assets/migration-roadmap-2026-2027.png"}]},{"id":"task-20260413-001","kind":"task","title":"Steerco \u2014 GTM \u201cin the game\u201d bar (login + feed)","summary":"Prioritise minimal **login flow + feed** so GTM can engage meaningfully in Steerco before full polish; aligns with 2026-04-09 Steerco and existing GTM one-pager work.","nextAction":"","priorityBand":"P2","rankScore":69,"status":"todo","pillar":"product_launch_mvp","tags":[],"links":[]},{"id":"task-20260330-003","kind":"task","title":"Scheduling \u2014 simplest implementation","summary":"Cron-based posts/messages first; input for April discovery workshops.","nextAction":"","priorityBand":"P2","rankScore":69,"status":"todo","pillar":"product_launch_mvp","tags":[],"links":[]},{"id":"task-20260330-009","kind":"task","title":"Workboard \u2014 expand dashboard (review + plan)","summary":"**Start 2026-04-09+:** New tab(s) for **competitor analysis** + **market insights** (fed from vault / Market_intelligence); **connect to Bitbucket** (builds on [[^task-20260325-001]]); **automation / orchestration** (Kanban triggers, optional CI hooks).","nextAction":"","priorityBand":"P2","rankScore":68,"status":"todo","pillar":"ai_pdlc","tags":[],"links":[]},{"id":"task-20260330-004","kind":"task","title":"([[05-Areas/People/Internal/Anneke_Vermeulen|Anneke Vermeulen]]) WhatsApp one-way pricing","summary":"Applicability for message module; cross-check with [[05-Areas/People/Internal/Merel_van_der_Lei|Merel van der Lei]] briefing / Meta 2026 model. *Coordination / PM follow-up.*","nextAction":"","priorityBand":"P2","rankScore":67,"status":"todo","pillar":"product_launch_mvp","tags":[],"links":[]},{"id":"task-20260330-005","kind":"task","title":"([[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]]) Importer + demo users","summary":"Confirm importer works; demo users importable for grouping (demo environment).","nextAction":"","priorityBand":"P2","rankScore":66,"status":"todo","pillar":"product_launch_mvp","tags":[],"links":[]},{"id":"task-20260330-006","kind":"task","title":"Dependency: [[05-Areas/People/Internal/Jan_Vosloo|Jan Vosloo]] \u2014 WhatsApp Flow + Flow Gear","summary":"Feasibility + technical requirements; mid-April demo target. *Track / unblock.*","nextAction":"","priorityBand":"P2","rankScore":65,"status":"todo","pillar":"product_launch_mvp","tags":[],"links":[]},{"id":"task-20260323-009","kind":"task","title":"Pipeline data \u2014 PowerFlow \u2192 vault","summary":"Export/sync so pipeline/deals file lands in repo when it changes; define folder, naming, and how you use it for planning.","nextAction":"Pick vault folder + filename; verify PowerFlow trigger.","priorityBand":"P2","rankScore":58,"status":"todo","pillar":"client_migration","tags":["PowerFlow","pipeline"],"links":[]},{"id":"task-20260323-004","kind":"task","title":"Calendar \u2014 O365 via Apple Calendar (Dex)","summary":"Confirm work calendar syncs to Calendar.app; run /calendar-setup for fast local daily-plan queries.","nextAction":"If calendar visible in Calendar.app, run calendar-setup script from dex-obsidian/calendar skill.","priorityBand":"P2","rankScore":48,"status":"in_progress","swimLane":"daily","pillar":"ai_pdlc","tags":["Dex","calendar"],"links":[{"label":"Tasks.md","href":"03-Tasks/Tasks.md"}]},{"id":"task-20260323-003","kind":"task","title":"Essential launch \u2014 Dependencies","summary":"Fill Dependencies section on launch doc with named owners: Eng, Design, Legal, CS, integrations.","nextAction":"Ping each function for one line + ticket link per dependency.","priorityBand":"P2","rankScore":68,"status":"done","pillar":"product_launch_mvp","tags":["Essential","launch"],"links":[{"label":"Launch doc","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260323-002","kind":"task","title":"Essential launch \u2014 ICPs","summary":"Add ideal customer profiles to launch narrative and GTM.","nextAction":"List 2\u20133 ICP segments with pains, buying triggers, and anti-ICP.","priorityBand":"P2","rankScore":66,"status":"done","pillar":"product_launch_mvp","tags":["ICP","GTM"],"links":[{"label":"Launch doc","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260323-006","kind":"prd","title":"Essential \u2014 PRD/AC catch-up","summary":"Fold federated remote app (Air) / PDF payslip path and WhatsApp into formal PRD + acceptance criteria where missing.","nextAction":"Gap-review PRD index vs launch scope; open AC updates per PRD.","priorityBand":"P2","rankScore":65,"status":"done","pillar":"product_launch_mvp","tags":["PRD","WhatsApp","remote app"],"links":[{"label":"PRD README","href":"06-Resources/PRDs/README.md"},{"label":"Product map","href":"06-Resources/PRDs/PRD_Product_Map.md"}]},{"id":"task-20260323-008","kind":"task","title":"Elevated auth \u2014 follow-through","summary":"Workshop core vs remote app split and validation; [[05-Areas/People/Internal/Tanya_Hoffman|Tanya Hoffman]] docs \u2192 [[05-Areas/People/Internal/Pieter_Roodt|Pieter Roodt]] review per elevated auth meeting.","nextAction":"Schedule workshop; track doc handoff to Pieter.","priorityBand":"P2","rankScore":64,"status":"done","pillar":"product_launch_mvp","tags":["auth","compliance"],"links":[{"label":"Meeting note","href":"00-Inbox/Meetings/2026-03-21 - Elevated auth.md"}]},{"id":"task-20260319-001","kind":"task","title":"Wyzetalk Essential \u2014 scope narrative","summary":"Elevator pitch, GA window, migration kickoff, full Requirements scope \u2014 captured on launch doc.","priorityBand":"P2","rankScore":20,"status":"done","pillar":"product_launch_mvp","tags":["Essential"],"links":[{"label":"Launch doc","href":"04-Projects/Wyzetalk_Essential_Launch.md"}]},{"id":"task-20260319-002","kind":"task","title":"PRDs in vault","summary":"Requirements tree maintained under 06-Resources/PRDs/.","priorityBand":"P2","rankScore":19,"status":"done","pillar":"product_launch_mvp","tags":["PRD"],"links":[{"label":"PRDs","href":"06-Resources/PRDs/README.md"}]}]}</script>
+
+<script type="application/json" id="embedded-pdlc">{"schemaVersion":"1.0.0","title":"PDLC documentation","items":[{"id":"doc-sso","stage":"discovery","title":"SSO \u2014 Enterprise Identity","meta":"SAML 2.0 + OIDC \u00b7 PRDs/Future/SSO.md","badge":"Then \u00b7 H2 2026"},{"id":"doc-elevated","stage":"discovery","title":"Elevated Auth \u2014 Remote Apps","meta":"Token step-up for payslip, leave \u00b7 Next/Elevated_Auth_Remote_App.md","badge":"Then"},{"id":"doc-scheduled","stage":"discovery","title":"Scheduled Content","meta":"Posts + Standard Messages \u00b7 Next/Scheduled_Content_Extended.md","badge":"Then"},{"id":"doc-smart-hr","stage":"discovery","title":"WhatsApp Smart HR","meta":"Two-way HR \u00b7 Next/WhatsApp_Smart_HR.md","badge":"Then"},{"id":"doc-analytics","stage":"discovery","title":"Product Analytics","meta":"Funnel + engagement \u00b7 Next/Product_Analytics.md","badge":"Then"},{"id":"doc-explorer","stage":"discovery","title":"Explorer","meta":"Category nav \u00b7 Next/Explorer.md","badge":"Then"},{"id":"doc-page-builder","stage":"discovery","title":"Page Builder","meta":"Widget page composer \u00b7 static/dynamic in Explorer \u00b7 extends Posts or templates \u00b7 Next/Page_Builder.md","badge":"Then"},{"id":"doc-tpl-remote","stage":"discovery","title":"Template: Remote Apps","meta":"Next/Template_Remote_App.md","badge":"Future"},{"id":"doc-tpl-feature","stage":"discovery","title":"Template: Feature Essential","meta":"Next/Template_Feature_Essential.md","badge":"Future"},{"id":"doc-whatsapp-ch","stage":"develop","title":"WhatsApp Channel (Phase 1)","meta":"One-way broadcast \u00b7 Current/WhatsApp_Channel.md","badge":"Now \u00b7 Essential"},{"id":"doc-payslip","stage":"develop","title":"Payslip / Remote App","meta":"Current/Payslip_PDF.md","badge":"Now \u00b7 Essential"},{"id":"doc-migration-ex","stage":"develop","title":"Client migration (Q2 cohort)","meta":"Nu, KFC, Kauai \u00b7 playbook + launch doc","badge":"Now"},{"id":"doc-migration-ops","stage":"develop","title":"Migration operating model","meta":"Owners, cutover, steering","badge":"Now"},{"id":"doc-essential-mvp","stage":"deploy","title":"Essential MVP scope","meta":"Requirements + launch narrative \u00b7 vault","badge":"Now"},{"id":"doc-feed-posts","stage":"deploy","title":"Feed & Posts","meta":"Current/Feed.md \u00b7 Current/Posts.md","badge":"Current"},{"id":"doc-messaging","stage":"deploy","title":"Messaging Ops","meta":"Current/Messaging_Ops_Urgent_Alerts.md","badge":"Current"},{"id":"doc-tenant","stage":"deploy","title":"Tenant Management","meta":"Current/Tenant_Management.md","badge":"Current"},{"id":"doc-p1-complete","stage":"deploy","title":"Phase 1 PRDs / AC \u2014 published","meta":"Current/* + PRD map \u00b7 scope locked Mar 2026","badge":"Done"}]}</script>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════ -->
+<script>
+(function () {
+  var STORAGE_KEY = "dex-workboard-kanban-v1";
+  var PDLC_KEY = "dex-pdlc-doc-v1";
+  var serverSync = false;
+  var boardState = null;
+  /** Set by initRoadmapPhaseDnD; used when injecting new Future cards. */
+  var registerRoadmapDraggableCard = function () {};
+
+  function syncDocCreateBanner() {
+    var active = document.querySelector(".tab-btn.active");
+    var ban = document.getElementById("doc-create-banner");
+    if (!ban || !active) return;
+    var t = active.getAttribute("data-tab");
+    ban.hidden = !(t === "roadmap" || t === "pdlc");
+  }
+
+  function activateTab(tabName) {
+    document.querySelectorAll(".tab-btn").forEach(function (b) {
+      b.classList.toggle("active", b.getAttribute("data-tab") === tabName);
+    });
+    document.querySelectorAll(".tab-panel").forEach(function (p) {
+      p.classList.toggle("active", p.id === "tab-" + tabName);
+    });
+    syncDocCreateBanner();
+  }
+
+  document.querySelectorAll(".tab-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      activateTab(btn.getAttribute("data-tab"));
+    });
+  });
+  syncDocCreateBanner();
+
+  var btnJumpCreateFuture = document.getElementById("btn-open-create-future-doc");
+  if (btnJumpCreateFuture) {
+    btnJumpCreateFuture.addEventListener("click", function () {
+      activateTab("roadmap");
+      var det = document.getElementById("roadmap-future-details");
+      if (det) det.open = true;
+      var cr = document.getElementById("create-future-doc-details");
+      if (cr) {
+        cr.open = true;
+        cr.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+      var h = document.getElementById("future-doc-heading");
+      if (h) setTimeout(function () { h.focus(); }, 350);
+    });
+  }
+
+  function loadOverrides(key) {
+    try { var r = localStorage.getItem(key); return r ? JSON.parse(r) : {}; } catch (e) { return {}; }
+  }
+  function saveOverrides(key, o) {
+    try { localStorage.setItem(key, JSON.stringify(o)); } catch (e) {}
+  }
+
+  function migrateTaskOv(raw) {
+    if (!raw || typeof raw !== "object") return {};
+    var out = {};
+    Object.keys(raw).forEach(function (id) {
+      var v = raw[id];
+      out[id] = typeof v === "string" ? { status: v } : (v && typeof v === "object" ? v : {});
+    });
+    return out;
+  }
+  function loadTaskOv() { return migrateTaskOv(loadOverrides(STORAGE_KEY)); }
+  function saveTaskOv(o) { saveOverrides(STORAGE_KEY, o); }
+
+  function normalizeStatus(s) {
+    var m = { open: "todo", started: "in_progress", blocked: "on_hold", done: "done",
+              todo: "todo", on_hold: "on_hold", in_progress: "in_progress" };
+    return m[s] || "todo";
+  }
+  function statusLabel(id) {
+    var m = { todo: "To do", on_hold: "On hold", in_progress: "In progress", done: "Done" };
+    return m[id] || id;
+  }
+  function normalizeSwim(item) {
+    return item.swimLane === "daily" ? "daily" : "main";
+  }
+
+  function showToast(msg) {
+    var t = document.getElementById("toast");
+    if (!t) return;
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(function () { t.hidden = true; }, 5000);
+  }
+
+  function esc(s) {
+    if (!s) return "";
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function renderCard(item) {
+    var card = document.createElement("article");
+    card.className = "card";
+    card.draggable = true;
+    card.dataset.id = item.id;
+    card.addEventListener("dragstart", function (e) {
+      e.dataTransfer.setData("text/plain", item.id);
+      e.dataTransfer.effectAllowed = "move";
+    });
+    var top = document.createElement("div");
+    top.className = "card-top";
+    var rank = document.createElement("div");
+    rank.className = "card-rank";
+    rank.innerHTML = item.rankScore + "<span>rank</span>";
+    var meta = document.createElement("div");
+    meta.style.cssText = "display:flex;flex-direction:column;align-items:flex-end;gap:0.2rem;";
+    var band = document.createElement("span");
+    band.className = "card-status-pill";
+    band.style.cssText = "background:rgba(116,192,252,0.15);color:#91d5ff;";
+    band.textContent = item.priorityBand || "—";
+    var stEl = document.createElement("span");
+    stEl.className = "card-status-pill";
+    stEl.style.cssText = "background:rgba(167,139,250,0.15);color:#c4b5fd;";
+    stEl.textContent = statusLabel(normalizeStatus(item.status));
+    meta.appendChild(band);
+    meta.appendChild(stEl);
+    top.appendChild(rank);
+    top.appendChild(meta);
+    var h3 = document.createElement("h3");
+    h3.textContent = item.title;
+    var desc = document.createElement("div");
+    desc.className = "desc";
+    desc.textContent = item.summary || "";
+    var btn = document.createElement("button");
+    btn.type = "button"; btn.className = "card-expand"; btn.draggable = false;
+    btn.textContent = "▸ More details";
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var open = card.classList.toggle("open");
+      btn.textContent = open ? "▾ Hide details" : "▸ More details";
+    });
+    var det = document.createElement("div");
+    det.className = "card-details";
+    if (item.nextAction) {
+      var nx = document.createElement("div");
+      nx.className = "next";
+      nx.innerHTML = "<strong>Next</strong> — " + esc(item.nextAction);
+      det.appendChild(nx);
+    }
+    if (item.tags && item.tags.length) {
+      var tags = document.createElement("div");
+      tags.className = "tags";
+      item.tags.forEach(function (t) {
+        var s = document.createElement("span"); s.className = "tag"; s.textContent = t;
+        tags.appendChild(s);
+      });
+      det.appendChild(tags);
+    }
+    if (item.links && item.links.length) {
+      var links = document.createElement("div");
+      links.className = "links";
+      item.links.forEach(function (l) {
+        var a = document.createElement("a");
+        a.href = "#";
+        a.textContent = l.label + " → " + l.href;
+        a.addEventListener("click", function (ev) {
+          ev.preventDefault();
+          navigator.clipboard.writeText(l.href).catch(function () {});
+        });
+        links.appendChild(a);
+      });
+      det.appendChild(links);
+    }
+    var idl = document.createElement("div");
+    idl.className = "card-id";
+    idl.textContent = item.id + (item.pillar ? " · " + item.pillar : "") +
+      (normalizeSwim(item) === "daily" ? " · daily lane" : "");
+    det.appendChild(idl);
+    card.appendChild(top);
+    card.appendChild(h3);
+    card.appendChild(desc);
+    card.appendChild(btn);
+    card.appendChild(det);
+    return card;
+  }
+
+  var TASK_COLS = [
+    { id: "todo",        title: "To do",       hint: "Queued — not started or waiting.",   color: "var(--col-todo)" },
+    { id: "on_hold",     title: "On hold",      hint: "Blocked or paused.",                 color: "var(--col-hold)" },
+    { id: "in_progress", title: "In progress",  hint: "Actively working on this.",          color: "var(--col-doing)" },
+    { id: "done",        title: "Done",         hint: "Shipped, decided, or closed.",       color: "var(--col-done)" }
+  ];
+
+  function applyTaskItems(items) {
+    var ov = loadTaskOv();
+    return items.map(function (item) {
+      var status = normalizeStatus(item.status);
+      var swim = normalizeSwim(item);
+      var o = ov[item.id];
+      if (o) {
+        if (o.status != null) status = normalizeStatus(o.status);
+        if (o.swimLane === "daily" || o.swimLane === "main") swim = o.swimLane;
+      }
+      return Object.assign({}, item, { status: status, swimLane: swim });
+    });
+  }
+
+  function buildSwimBoard(data) {
+    var root = document.getElementById("tasks-swim-board");
+    if (!root) return;
+    root.innerHTML = "";
+    var items = applyTaskItems(data.items || []);
+    var lanes = [
+      { id: "daily", title: "Today's focus", hint: "Drag cards here for priority attention today — or drag back to All tasks." },
+      { id: "main", title: "All tasks", hint: "Full backlog. Same columns; rank still sorts within each cell." }
+    ];
+    lanes.forEach(function (lane) {
+      var lw = document.createElement("div");
+      lw.className = "swim-lane";
+      var head = document.createElement("div");
+      head.className = "swim-lane-head";
+      head.innerHTML = "<span>" + lane.title + '</span><span class="lane-hint">' + lane.hint + "</span>";
+      lw.appendChild(head);
+      var row = document.createElement("div");
+      row.className = "kanban swim-kanban";
+      TASK_COLS.forEach(function (col) {
+        var inCell = items.filter(function (it) {
+          return normalizeSwim(it) === lane.id && normalizeStatus(it.status) === col.id;
+        });
+        inCell.sort(function (a, b) { return b.rankScore - a.rankScore; });
+        var wrap = document.createElement("section");
+        wrap.className = "column";
+        wrap.dataset.status = col.id;
+        wrap.dataset.swim = lane.id;
+        var hd = document.createElement("div");
+        hd.className = "column-head";
+        hd.innerHTML =
+          '<span class="count">' + inCell.length + "</span>" +
+          '<h2 style="color:' + col.color + '">' + col.title + "</h2>" +
+          '<div class="hint">' + col.hint + "</div>";
+        wrap.appendChild(hd);
+        var body = document.createElement("div");
+        body.className = "column-body";
+        inCell.forEach(function (item) { body.appendChild(renderCard(item)); });
+        wrap.appendChild(body);
+        row.appendChild(wrap);
+      });
+      lw.appendChild(row);
+      root.appendChild(lw);
+    });
+
+    if (!window.__dexSwimDnd) {
+      window.__dexSwimDnd = true;
+      root.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        var col = e.target.closest(".column");
+        root.querySelectorAll(".column").forEach(function (c) {
+          c.classList.toggle("drag-over", c === col);
+        });
+      });
+      root.addEventListener("drop", function (e) {
+        e.preventDefault();
+        root.querySelectorAll(".column").forEach(function (c) { c.classList.remove("drag-over"); });
+        var col = e.target.closest(".column");
+        if (!col) return;
+        var id = e.dataTransfer.getData("text/plain");
+        if (!id) return;
+        var newStatus = col.dataset.status;
+        var newSwim = col.dataset.swim || "main";
+        var ov = loadTaskOv();
+        if (!ov[id]) ov[id] = {};
+        ov[id].status = newStatus;
+        ov[id].swimLane = newSwim;
+        saveTaskOv(ov);
+
+        if (serverSync && boardState) {
+          var it = boardState.items.find(function (x) { return x.id === id; });
+          if (it) {
+            it.status = newStatus;
+            it.swimLane = newSwim;
+          }
+          fetch("/api/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(boardState)
+          })
+            .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+            .then(function () {
+              showToast("Saved — work-items.json + Tasks.md updated.");
+              loadTasksBoard(renderTasksBoard);
+            })
+            .catch(function () {
+              showToast("Server save failed — kept local overrides.");
+              loadTasksBoard(renderTasksBoard);
+            });
+        } else {
+          loadTasksBoard(renderTasksBoard);
+        }
+      });
+    }
+  }
+
+  function loadTasksBoard(cb) {
+    function use(data) {
+      boardState = JSON.parse(JSON.stringify(data));
+      cb(data);
+    }
+    fetch("work-items.json", { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+      .then(function (d) {
+        // work-items.json is served by plain http.server too — APIs need workboard_server.py
+        fetch("/api/health", { cache: "no-store" })
+          .then(function (hr) {
+            if (!hr.ok) throw new Error();
+            return hr.json();
+          })
+          .then(function (h) {
+            serverSync = !!(h && h.ok);
+            var prdReady = !!(h && h.features && h.features.prdCreate === true);
+            var rb = document.getElementById("workboard-restart-banner");
+            if (rb) {
+              rb.hidden = !(serverSync && !prdReady);
+            }
+          })
+          .catch(function () {
+            serverSync = false;
+            var rb = document.getElementById("workboard-restart-banner");
+            if (rb) rb.hidden = true;
+          })
+          .then(function () {
+            use(d);
+          });
+      })
+      .catch(function () {
+        serverSync = false;
+        use(JSON.parse(document.getElementById("embedded-board").textContent.trim()));
+      });
+  }
+
+  function renderTasksBoard(data) {
+    var hint = document.getElementById("toolbarHint");
+    if (hint) {
+      hint.textContent = serverSync
+        ? "Connected — lane + column drops save work-items.json and Tasks.md."
+        : "Offline — use workboard_server.py (not python -m http.server). Future PRD create needs the API.";
+    }
+    buildSwimBoard(data);
+  }
+
+  document.getElementById("btnReset").addEventListener("click", function () {
+    localStorage.removeItem(STORAGE_KEY);
+    loadTasksBoard(renderTasksBoard);
+  });
+
+  var PDLC_STAGES = [
+    { id: "discovery", title: "◐ Discovery", cls: "pl-discovery" },
+    { id: "design",    title: "✏ Design",    cls: "pl-design" },
+    { id: "develop",   title: "⚙ Develop",   cls: "pl-develop" },
+    { id: "deploy",    title: "🚀 Deploy",   cls: "pl-deploy" }
+  ];
+
+  function loadPdlcPayload() {
+    try {
+      return JSON.parse(document.getElementById("embedded-pdlc").textContent.trim());
+    } catch (e) { return { items: [] }; }
+  }
+
+  function loadPdlcOv() { return loadOverrides(PDLC_KEY) || {}; }
+  function savePdlcOv(o) { saveOverrides(PDLC_KEY, o); }
+
+  function applyPdlc(items) {
+    var ov = loadPdlcOv();
+    return items.map(function (it) {
+      var st = ov[it.id] || it.stage;
+      if (PDLC_STAGES.every(function (s) { return s.id !== st; })) st = it.stage;
+      return Object.assign({}, it, { stage: st });
+    });
+  }
+
+  function renderPdlcCard(it) {
+    var el = document.createElement("div");
+    el.className = "pl-item";
+    el.draggable = true;
+    el.addEventListener("dragstart", function (e) {
+      e.dataTransfer.setData("text/plain", it.id);
+      e.dataTransfer.effectAllowed = "move";
+    });
+    if (it.badge) {
+      var ph = document.createElement("div");
+      ph.className = "pl-item-phase phase-next-tag";
+      ph.textContent = it.badge;
+      el.appendChild(ph);
+    }
+    var nm = document.createElement("div");
+    nm.className = "pl-item-name";
+    nm.textContent = it.title;
+    var meta = document.createElement("div");
+    meta.className = "pl-item-meta";
+    meta.textContent = it.meta || "";
+    el.appendChild(nm);
+    el.appendChild(meta);
+    return el;
+  }
+
+  function renderPdlcBoard() {
+    var raw = loadPdlcPayload();
+    var items = applyPdlc(raw.items || []);
+    var root = document.getElementById("pdlc-doc-board");
+    if (!root) return;
+    root.innerHTML = "";
+
+    PDLC_STAGES.forEach(function (stage) {
+      var sub = items.filter(function (it) { return it.stage === stage.id; });
+      var col = document.createElement("div");
+      col.className = "pl-col " + stage.cls;
+      var head = document.createElement("div");
+      head.className = "pl-col-head";
+      head.innerHTML = "<h3>" + stage.title + '</h3><span class="pl-col-count">' + sub.length + "</span>";
+      var body = document.createElement("div");
+      body.className = "pl-col-body";
+      body.dataset.pdlcStage = stage.id;
+      if (sub.length === 0 && stage.id === "design") {
+        var note = document.createElement("div");
+        note.className = "pl-stage-note";
+        note.textContent = "Drop docs here when discovery exits — workshops / briefs.";
+        body.appendChild(note);
+      }
+      sub.forEach(function (it) { body.appendChild(renderPdlcCard(it)); });
+      col.appendChild(head);
+      col.appendChild(body);
+      root.appendChild(col);
+    });
+
+    if (!window.__pdlcDnd) {
+      window.__pdlcDnd = true;
+      root.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        var b = e.target.closest(".pl-col-body");
+        root.querySelectorAll(".pl-col-body").forEach(function (x) {
+          x.classList.toggle("drag-over", x === b);
+        });
+      });
+      root.addEventListener("dragleave", function (e) {
+        if (e.target.classList && e.target.classList.contains("pl-col-body") && !e.relatedTarget) {
+          e.target.classList.remove("drag-over");
+        }
+      });
+      root.addEventListener("drop", function (e) {
+        e.preventDefault();
+        root.querySelectorAll(".pl-col-body").forEach(function (x) { x.classList.remove("drag-over"); });
+        var body = e.target.closest(".pl-col-body");
+        if (!body) return;
+        var nid = e.dataTransfer.getData("text/plain");
+        if (!nid) return;
+        var st = body.dataset.pdlcStage;
+        var ov = loadPdlcOv();
+        ov[nid] = st;
+        savePdlcOv(ov);
+        renderPdlcBoard();
+      });
+    }
+  }
+
+  function buildFutureRoadmapCard(item) {
+    var card = document.createElement("div");
+    card.className = "rm-card future rm-card-roadmap";
+    card.setAttribute("draggable", "true");
+    card.setAttribute("data-roadmap-id", item.roadmapId || "");
+    card.setAttribute("data-prd-path", item.prdPath || "");
+    card.innerHTML =
+      '<div class="pdlc-badge pdlc-discovery">◐ Discovery</div>' +
+      '<div class="rm-card-icon">📄</div>' +
+      '<h3></h3><p></p>' +
+      '<div class="rm-tag" style="color:#c4b5fd;"></div>';
+    var h3 = card.querySelector("h3");
+    var p = card.querySelector("p");
+    var tag = card.querySelector(".rm-tag");
+    if (h3) h3.textContent = item.title || "";
+    if (p) p.textContent = item.summary || "";
+    if (tag) tag.textContent = item.prdPath || "";
+    return card;
+  }
+
+  function futureCardExistsInDom(prdPath) {
+    var found = false;
+    if (!prdPath) return true;
+    document.querySelectorAll("[data-prd-path]").forEach(function (el) {
+      if (el.getAttribute("data-prd-path") === prdPath) found = true;
+    });
+    return found;
+  }
+
+  function loadFutureCreatedFromServer() {
+    fetch("/api/prd/future-created")
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data || !data.ok || !data.items) return;
+        var futZ = document.getElementById("rm-drop-future");
+        if (!futZ) return;
+        data.items.forEach(function (item) {
+          if (!item || !item.prdPath || futureCardExistsInDom(item.prdPath)) return;
+          var card = buildFutureRoadmapCard(item);
+          futZ.appendChild(card);
+          registerRoadmapDraggableCard(card);
+        });
+      })
+      .catch(function () {});
+  }
+
+  function futureStemFromHeading(heading) {
+    var words = String(heading).trim().match(/[A-Za-z0-9]+/g);
+    if (!words || !words.length) return "Future_theme";
+    return words.slice(0, 12).map(function (w) {
+      return w.length > 1 ? w[0].toUpperCase() + w.slice(1).toLowerCase() : w.toUpperCase();
+    }).join("_");
+  }
+
+  function syncFutureDocPathPreview() {
+    var el = document.getElementById("future-doc-path-preview");
+    var h = document.getElementById("future-doc-heading");
+    if (!el || !h) return;
+    el.textContent = "06-Resources/PRDs/Future/" + futureStemFromHeading(h.value) + ".md";
+  }
+
+  function initCreateFutureDocForm() {
+    var form = document.getElementById("form-create-future-doc");
+    if (!form) return;
+    var headingInput = document.getElementById("future-doc-heading");
+    if (headingInput) {
+      headingInput.addEventListener("input", syncFutureDocPathPreview);
+      headingInput.addEventListener("change", syncFutureDocPathPreview);
+    }
+    syncFutureDocPathPreview();
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var headingEl = document.getElementById("future-doc-heading");
+      var descEl = document.getElementById("future-doc-description");
+      var msg = document.getElementById("create-future-form-msg");
+      var heading = headingEl ? headingEl.value.trim() : "";
+      var desc = descEl ? descEl.value.trim() : "";
+      if (!heading) {
+        if (msg) {
+          msg.textContent = "Heading is required.";
+          msg.style.color = "#ffb4b4";
+        }
+        return;
+      }
+      if (msg) {
+        msg.textContent = "Creating…";
+        msg.style.color = "var(--muted)";
+      }
+      fetch("/api/prd/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ heading: heading, description: desc })
+      })
+        .then(function (r) {
+          return r.text().then(function (t) {
+            var data = null;
+            try {
+              data = t ? JSON.parse(t) : null;
+            } catch (e) {
+              data = null;
+            }
+            if (!r.ok || !data) {
+              var hint =
+                r.status === 404
+                  ? "Wrong server — open http://127.0.0.1:8765/ via workboard_server.py (not python -m http.server)."
+                  : "Server offline? From workboard/: python3 workboard_server.py then reload.";
+              if (msg) {
+                msg.textContent = (data && data.error) ? data.error : hint;
+                msg.style.color = "#ffb4b4";
+              }
+              showToast("Create failed");
+              return null;
+            }
+            return data;
+          });
+        })
+        .then(function (data) {
+          if (!data) return;
+          if (!data.ok) {
+            if (msg) {
+              msg.textContent = data.error ? data.error : "Create failed";
+              msg.style.color = "#ffb4b4";
+            }
+            showToast("Create failed");
+            return;
+          }
+          var item = data.item;
+          var futZ = document.getElementById("rm-drop-future");
+          if (futZ && item && item.prdPath && !futureCardExistsInDom(item.prdPath)) {
+            var card = buildFutureRoadmapCard(item);
+            futZ.appendChild(card);
+            registerRoadmapDraggableCard(card);
+          }
+          form.reset();
+          syncFutureDocPathPreview();
+          if (msg) {
+            msg.textContent = "Created " + (item && item.prdPath ? item.prdPath : data.path);
+            msg.style.color = "var(--green)";
+          }
+          showToast("Created " + (data.path || ""));
+        })
+        .catch(function () {
+          if (msg) {
+            msg.textContent =
+              "Cannot reach API — run python3 workboard_server.py from blueprint/workboard/ and use http://127.0.0.1:8765/";
+            msg.style.color = "#ffb4b4";
+          }
+          showToast("Create failed");
+        });
+    });
+  }
+
+  /** Roadmap: drag cards between Then ↔ Future (Now fixed). Persist order in localStorage. */
+  var ROADMAP_PHASE_KEY = "dex-roadmap-then-future-v3";
+  var ROADMAP_CARD_META_KEY = "dex-roadmap-card-meta-v1";
+  var PDLC_STAGE_LABELS = {
+    discovery: "◐ Discovery",
+    design: "● Design",
+    develop: "● Develop",
+    deploy: "● Deploy",
+    test: "● Test",
+    done: "✓ Done"
+  };
+
+  function loadRoadmapCardMeta() {
+    return loadOverrides(ROADMAP_CARD_META_KEY);
+  }
+  function saveRoadmapCardMeta(o) {
+    saveOverrides(ROADMAP_CARD_META_KEY, o);
+  }
+
+  function pdlcStageFromCard(card) {
+    var badge = card.querySelector(".pdlc-badge");
+    if (!badge) return "discovery";
+    var m = badge.className.match(/pdlc-(discovery|design|develop|deploy|test|done)/);
+    return m ? m[1] : "discovery";
+  }
+
+  function applyRoadmapCardMetaFromLS() {
+    var root = document.getElementById("tab-roadmap");
+    if (!root) return;
+    var meta = loadRoadmapCardMeta();
+    root.querySelectorAll(".rm-card[data-roadmap-id]").forEach(function (card) {
+      var id = card.getAttribute("data-roadmap-id");
+      if (!id || !meta[id]) return;
+      var mmeta = meta[id];
+      if (mmeta.title) {
+        var h3 = card.querySelector("h3");
+        if (h3) h3.textContent = mmeta.title;
+      }
+      if (mmeta.summary != null && mmeta.summary !== "") {
+        var p = card.querySelector("p");
+        if (p) p.innerHTML = mmeta.summary;
+      }
+      if (mmeta.pdlc && PDLC_STAGE_LABELS[mmeta.pdlc]) {
+        var badge = card.querySelector(".pdlc-badge");
+        if (badge) {
+          badge.className = "pdlc-badge pdlc-" + mmeta.pdlc;
+          badge.textContent = PDLC_STAGE_LABELS[mmeta.pdlc];
+        }
+      }
+    });
+  }
+
+  function initRoadmapPrdModal() {
+    var root = document.getElementById("roadmap-prd-modal");
+    var backdrop = document.getElementById("prd-side-backdrop");
+    var heading = document.getElementById("prd-modal-heading");
+    var pathEl = document.getElementById("prd-modal-path");
+    var pdlcSel = document.getElementById("prd-modal-pdlc");
+    var statusIn = document.getElementById("prd-modal-status-input");
+    var summaryTa = document.getElementById("prd-modal-card-summary");
+    var richEl = document.getElementById("prd-rich-editor");
+    var editor = document.getElementById("prd-modal-editor");
+    var footStatus = document.getElementById("prd-modal-foot-status");
+    var fmtToolbar = document.getElementById("prd-wysiwyg-toolbar");
+    var state = { path: "", roadmapId: "", cardEl: null };
+
+    if (!root || !editor || !richEl) return;
+
+    function setFoot(msg, isErr) {
+      if (!footStatus) return;
+      footStatus.textContent = msg || "";
+      footStatus.style.color = isErr ? "#ffb4b4" : "var(--muted)";
+    }
+
+    function renderMarkdown(md) {
+      if (window.marked && typeof marked.parse === "function") {
+        try {
+          marked.setOptions({ breaks: true, gfm: true });
+          return marked.parse(md || "");
+        } catch (err) {
+          return "<pre class=\"md-preview\">" + esc(md || "") + "</pre>";
+        }
+      }
+      return "<pre class=\"md-preview\">" + esc(md || "") + "</pre>";
+    }
+
+    function makeTurndown() {
+      if (typeof TurndownService === "undefined") return null;
+      var td = new TurndownService({
+        headingStyle: "atx",
+        codeBlockStyle: "fenced",
+        bulletListMarker: "-",
+        emDelimiter: "*"
+      });
+      td.addRule("preserveUnderline", {
+        filter: "u",
+        replacement: function (content) {
+          return "<u>" + content + "</u>";
+        }
+      });
+      return td;
+    }
+
+    function syncVisualFromMarkdown() {
+      richEl.innerHTML = renderMarkdown(editor.value);
+    }
+
+    function syncMarkdownFromVisual() {
+      var td = makeTurndown();
+      var html = richEl.innerHTML.trim();
+      if (!html || html === "<br>" || html === "<p><br></p>") {
+        editor.value = "";
+        return;
+      }
+      if (td) {
+        editor.value = td.turndown(richEl.innerHTML);
+      } else {
+        editor.value = richEl.innerText || "";
+        setFoot("Turndown script missing — switch to Raw Markdown to edit accurately.", true);
+      }
+    }
+
+    function activePrdTab() {
+      var pane = document.querySelector(".prd-side-body .prd-modal-pane.active");
+      return pane ? pane.getAttribute("data-prd-pane") : "visual";
+    }
+
+    function setTab(name) {
+      if (name === "raw" && activePrdTab() === "visual") syncMarkdownFromVisual();
+      if (name === "visual" && activePrdTab() === "raw") syncVisualFromMarkdown();
+      document.querySelectorAll(".prd-modal-tabs [data-prd-tab]").forEach(function (b) {
+        var on = b.getAttribute("data-prd-tab") === name;
+        b.classList.toggle("active", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      document.querySelectorAll(".prd-side-body [data-prd-pane]").forEach(function (pane) {
+        pane.classList.toggle("active", pane.getAttribute("data-prd-pane") === name);
+      });
+      if (fmtToolbar) fmtToolbar.style.display = name === "visual" ? "" : "none";
+    }
+
+    document.querySelectorAll(".prd-modal-tabs [data-prd-tab]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        setTab(btn.getAttribute("data-prd-tab"));
+      });
+    });
+
+    function runVisualFormat(fmt) {
+      richEl.focus();
+      try {
+        if (fmt === "h2" || fmt === "h3") {
+          document.execCommand("formatBlock", false, fmt);
+        } else if (fmt === "bold") {
+          document.execCommand("bold", false, null);
+        } else if (fmt === "italic") {
+          document.execCommand("italic", false, null);
+        } else if (fmt === "underline") {
+          document.execCommand("underline", false, null);
+        } else if (fmt === "ul") {
+          document.execCommand("insertUnorderedList", false, null);
+        } else if (fmt === "ol") {
+          document.execCommand("insertOrderedList", false, null);
+        } else if (fmt === "link") {
+          var url = window.prompt("Link URL (https:// or relative path):", "https://");
+          if (url) document.execCommand("createLink", false, url.trim());
+        } else if (fmt === "code") {
+          var sel = window.getSelection();
+          var t = sel && sel.toString ? sel.toString() : "";
+          if (!t) t = "code";
+          document.execCommand("insertHTML", false, "<code>" + esc(t) + "</code>");
+        }
+      } catch (err) {
+        setFoot("Format action not supported in this browser.", true);
+      }
+    }
+
+    if (fmtToolbar) {
+      fmtToolbar.querySelectorAll("[data-fmt]").forEach(function (btn) {
+        btn.addEventListener("mousedown", function (e) {
+          e.preventDefault();
+        });
+        btn.addEventListener("click", function () {
+          runVisualFormat(btn.getAttribute("data-fmt"));
+        });
+      });
+    }
+
+    function clearCardHighlight() {
+      document.querySelectorAll(".rm-card.prd-side-active").forEach(function (c) {
+        c.classList.remove("prd-side-active");
+      });
+      state.cardEl = null;
+    }
+
+    function closeModal() {
+      root.classList.remove("open");
+      root.setAttribute("aria-hidden", "true");
+      clearCardHighlight();
+      setFoot("");
+    }
+
+    function openModal(card) {
+      var path = card.getAttribute("data-prd-path");
+      if (!path) return;
+      clearCardHighlight();
+      state.cardEl = card;
+      card.classList.add("prd-side-active");
+      state.path = path;
+      state.roadmapId = card.getAttribute("data-roadmap-id") || "";
+      var h3 = card.querySelector("h3");
+      var title = h3 ? h3.textContent.trim() : "Document";
+      heading.textContent = title;
+      pathEl.textContent = path;
+      setFoot("Loading…");
+      var meta = loadRoadmapCardMeta();
+      var mid = state.roadmapId;
+      var m = mid ? meta[mid] : null;
+      pdlcSel.value = m && m.pdlc ? m.pdlc : pdlcStageFromCard(card);
+      statusIn.value = m && m.status ? m.status : "";
+      var p = card.querySelector("p");
+      var defaultSum = p ? p.innerHTML : "";
+      summaryTa.value = m && m.summary != null && m.summary !== "" ? m.summary : defaultSum;
+      editor.value = "";
+      richEl.innerHTML = "";
+      setTab("visual");
+      root.classList.add("open");
+      root.setAttribute("aria-hidden", "false");
+
+      fetch("/api/prd?path=" + encodeURIComponent(path))
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (!data.ok) {
+            setFoot("Could not load file. Start workboard_server.py from blueprint/workboard/.", true);
+            editor.value = "";
+            syncVisualFromMarkdown();
+            return;
+          }
+          editor.value = data.content || "";
+          setFoot(data.exists ? "" : "New file — will be created on save.");
+          syncVisualFromMarkdown();
+        })
+        .catch(function () {
+          setFoot("Server unreachable. Run python3 workboard_server.py and reload.", true);
+          editor.value = "";
+          syncVisualFromMarkdown();
+        });
+    }
+
+    if (backdrop) backdrop.addEventListener("click", closeModal);
+    var btnClose = document.getElementById("prd-modal-close");
+    if (btnClose) btnClose.addEventListener("click", closeModal);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && root.classList.contains("open")) closeModal();
+    });
+
+    var btnSave = document.getElementById("prd-modal-save");
+    if (btnSave) {
+      btnSave.addEventListener("click", function () {
+        if (!state.path) return;
+        if (activePrdTab() === "visual") syncMarkdownFromVisual();
+        setFoot("Saving…");
+        fetch("/api/prd", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: state.path, content: editor.value })
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (!data.ok) {
+              setFoot(data.error || "Save failed — is the server running?", true);
+              showToast("Save failed");
+              return;
+            }
+            var meta = loadRoadmapCardMeta();
+            var mid = state.roadmapId;
+            if (mid) {
+              meta[mid] = {
+                pdlc: pdlcSel.value,
+                status: statusIn.value.trim(),
+                summary: summaryTa.value
+              };
+              saveRoadmapCardMeta(meta);
+              var c = document.querySelector('[data-roadmap-id="' + mid + '"]');
+              if (c) {
+                var pp = c.querySelector("p");
+                if (pp) pp.innerHTML = summaryTa.value;
+                var badge = c.querySelector(".pdlc-badge");
+                if (badge && PDLC_STAGE_LABELS[pdlcSel.value]) {
+                  badge.className = "pdlc-badge pdlc-" + pdlcSel.value;
+                  badge.textContent = PDLC_STAGE_LABELS[pdlcSel.value];
+                }
+              }
+            }
+            setFoot("Saved. Previous version backed up under prd-backups/ (if file existed).");
+            showToast("Saved " + state.path);
+          })
+          .catch(function () {
+            setFoot("Save failed — server offline?", true);
+            showToast("Save failed");
+          });
+      });
+    }
+
+    var btnRollback = document.getElementById("prd-modal-rollback");
+    if (btnRollback) {
+      btnRollback.addEventListener("click", function () {
+        if (!state.path) return;
+        if (!confirm("Restore this file from the latest backup? Unsaved editor changes will be lost.")) return;
+        setFoot("Rolling back…");
+        fetch("/api/prd/rollback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: state.path })
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (rollData) {
+            if (!rollData.ok) {
+              setFoot(rollData.error || "Rollback failed — no backup?", true);
+              return null;
+            }
+            return fetch("/api/prd?path=" + encodeURIComponent(state.path)).then(function (r) { return r.json(); });
+          })
+          .then(function (fileData) {
+            if (!fileData || !fileData.ok) return;
+            editor.value = fileData.content || "";
+            syncVisualFromMarkdown();
+            setFoot("Restored from backup.");
+            showToast("Rollback complete");
+          })
+          .catch(function () {
+            setFoot("Rollback failed.", true);
+          });
+      });
+    }
+
+    var roadmapTab = document.getElementById("tab-roadmap");
+    if (!roadmapTab) return;
+    roadmapTab.addEventListener("click", function (e) {
+      var card = e.target.closest(".rm-card[data-prd-path]");
+      if (!card) return;
+      if (card.getAttribute("data-rd-suppress-click")) return;
+      if (e.target.closest("a, button, input, select, textarea")) return;
+      openModal(card);
+    });
+  }
+
+  function initRoadmapPhaseDnD() {
+    var thenZ = document.getElementById("rm-drop-then");
+    var futZ = document.getElementById("rm-drop-future");
+    var det = document.getElementById("roadmap-future-details");
+    if (!thenZ || !futZ || window.__roadmapPhaseDnd) return;
+    window.__roadmapPhaseDnd = true;
+
+    function setPhaseClass(el, phase) {
+      el.classList.remove("then", "future");
+      el.classList.add(phase);
+    }
+
+    function applySavedOrder() {
+      var raw = localStorage.getItem(ROADMAP_PHASE_KEY);
+      if (!raw) return;
+      try {
+        var o = JSON.parse(raw);
+        (o.then || []).forEach(function (id) {
+          var el = document.querySelector('[data-roadmap-id="' + id + '"]');
+          if (el) {
+            thenZ.appendChild(el);
+            setPhaseClass(el, "then");
+          }
+        });
+        (o.future || []).forEach(function (id) {
+          var el = document.querySelector('[data-roadmap-id="' + id + '"]');
+          if (el) {
+            futZ.appendChild(el);
+            setPhaseClass(el, "future");
+          }
+        });
+      } catch (e) {}
+    }
+
+    function saveOrder() {
+      var tIds = [];
+      thenZ.querySelectorAll("[data-roadmap-id]").forEach(function (n) {
+        tIds.push(n.getAttribute("data-roadmap-id"));
+      });
+      var fIds = [];
+      futZ.querySelectorAll("[data-roadmap-id]").forEach(function (n) {
+        fIds.push(n.getAttribute("data-roadmap-id"));
+      });
+      localStorage.setItem(ROADMAP_PHASE_KEY, JSON.stringify({ then: tIds, future: fIds }));
+    }
+
+    function clearOver() {
+      document.querySelectorAll(".rm-drop-zone.rd-drag-over").forEach(function (z) {
+        z.classList.remove("rd-drag-over");
+      });
+    }
+
+    applySavedOrder();
+
+    registerRoadmapDraggableCard = function (card) {
+      if (!card.classList.contains("rm-card-roadmap")) return;
+      card.addEventListener("dragstart", function (e) {
+        e.dataTransfer.setData("text/plain", card.getAttribute("data-roadmap-id"));
+        e.dataTransfer.effectAllowed = "move";
+        if (det) det.open = true;
+      });
+      card.addEventListener("dragend", function () {
+        clearOver();
+        card.setAttribute("data-rd-suppress-click", "1");
+        setTimeout(function () {
+          card.removeAttribute("data-rd-suppress-click");
+        }, 200);
+      });
+    };
+
+    document.querySelectorAll(".rm-card-roadmap").forEach(registerRoadmapDraggableCard);
+
+    [thenZ, futZ].forEach(function (zone) {
+      zone.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+      });
+      zone.addEventListener("dragenter", function (e) {
+        e.preventDefault();
+        zone.classList.add("rd-drag-over");
+        if (det && zone === futZ) det.open = true;
+      });
+      zone.addEventListener("dragleave", function (e) {
+        if (!zone.contains(e.relatedTarget)) zone.classList.remove("rd-drag-over");
+      });
+      zone.addEventListener("drop", function (e) {
+        e.preventDefault();
+        clearOver();
+        var id = e.dataTransfer.getData("text/plain");
+        if (!id) return;
+        var card = document.querySelector('[data-roadmap-id="' + id + '"]');
+        if (!card || !card.classList.contains("rm-card-roadmap")) return;
+        var targetZone = e.target.closest(".rm-drop-zone");
+        if (!targetZone) return;
+        var after = e.target.closest("[data-roadmap-id]");
+        if (after && after !== card && targetZone.contains(after)) {
+          targetZone.insertBefore(card, after);
+        } else {
+          targetZone.appendChild(card);
+        }
+        var ph = targetZone.getAttribute("data-roadmap-phase");
+        setPhaseClass(card, ph === "future" ? "future" : "then");
+        saveOrder();
+      });
+    });
+  }
+
+  initRoadmapPhaseDnD();
+  initCreateFutureDocForm();
+  loadFutureCreatedFromServer();
+  initRoadmapPrdModal();
+  applyRoadmapCardMetaFromLS();
+  loadTasksBoard(renderTasksBoard);
+  renderPdlcBoard();
+}());
+</script>
+</body>
+</html>

@@ -1,0 +1,2399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orchestration — Dex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="product-dashboard.css" />
+</head>
+<body>
+  <header class="app-paper-shell" data-paper-ref="01 Orchestration board">
+    <div class="app-paper-chrome">
+      <div class="app-paper-top">
+        <div class="app-paper-brand">
+          <span class="app-paper-wordmark">Wyzetalk</span>
+          <p class="app-paper-subtitle">Product orchestration</p>
+        </div>
+        <div class="app-paper-user" title="Workspace">
+          <span class="app-paper-user-name">Workspace</span>
+          <div class="app-paper-avatar" aria-hidden="true">PM</div>
+        </div>
+      </div>
+      <div class="app-paper-nav">
+      <div class="tabs" role="tablist">
+        <button type="button" class="active" data-tab="orch" role="tab" aria-selected="true">Orchestration</button>
+        <button type="button" data-tab="exec" role="tab" aria-selected="false">Executive</button>
+      </div>
+      <div class="toolbar">
+        <span id="status" style="font-size:0.75rem;color:var(--muted)"></span>
+      </div>
+    </div>
+    </div>
+  </header>
+  <main class="main-paper-canvas">
+    <section id="panel-orch" class="panel active" role="tabpanel">
+      <p id="orch-load-error" class="orch-load-error" hidden role="alert"></p>
+      <div class="lane-scroll" id="orchestration-root" aria-label="Initiative swim lanes"></div>
+    </section>
+
+    <section id="panel-exec" class="panel exec-paper" data-paper-ref="Executive — interim tab; standalone page design later" role="tabpanel" hidden>
+      <header class="exec-paper-head">
+        <h2 class="exec-paper-title">Executive</h2>
+        <p class="exec-context-line" id="exec-context-line"></p>
+      </header>
+      <div id="exec-focus" class="exec-focus-strip empty" aria-live="polite"></div>
+      <div class="exec-table-wrap">
+        <table class="exec exec-paper-table" id="exec-table">
+          <thead>
+            <tr>
+              <th>Initiative</th>
+              <th>Tier</th>
+              <th>Priority</th>
+              <th>Lane</th>
+              <th>Horizon</th>
+              <th>Progress</th>
+              <th>Next milestone</th>
+              <th>RAG</th>
+              <th>Owner</th>
+              <th>What’s next</th>
+              <th>Links</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="detail-dlg" class="ticket-panel dock-center ticket-size-lg" data-paper-ref="02–04 Initiative detail">
+    <div class="ticket-toolbar">
+      <input type="text" id="dlg-title-input" class="ticket-title-input" placeholder="Heading" autocomplete="off" />
+      <div class="ticket-dock-controls" title="Panel position — see the board behind">
+        <button type="button" id="ticket-dock-left" aria-pressed="false" aria-label="Dock panel left">◀</button>
+        <button type="button" id="ticket-dock-center" aria-pressed="true" aria-label="Centre panel">⊙</button>
+        <button type="button" id="ticket-dock-right" aria-pressed="false" aria-label="Dock panel right">▶</button>
+      </div>
+      <div class="ticket-size-controls" title="Opens tall (10px inset). − Shorter · + Taller">
+        <button type="button" id="ticket-shrink" aria-label="Shorter panel">−</button>
+        <button type="button" id="ticket-expand" aria-label="Taller panel">+</button>
+      </div>
+      <div class="ticket-toolbar-actions">
+        <button type="button" class="primary" id="btn-save-card">Save</button>
+        <button type="button" id="btn-download-ticket-md" title="Download current document as .md">Download .md</button>
+        <button type="button" class="close" aria-label="Close ticket">&times;</button>
+      </div>
+    </div>
+    <div class="ticket-paper-subhead">
+      <div class="ticket-paper-meta">
+        <select id="dlg-tier-select" class="ticket-pill ticket-pill-tier" aria-label="Stack status" title="Stack status">
+          <option value="Current">Now</option>
+          <option value="Next">Next</option>
+          <option value="Future">Future</option>
+          <option value="Backlog">Backlog</option>
+        </select>
+        <span id="dlg-lane-pill" class="ticket-pill ticket-pill-lane">—</span>
+        <span class="ticket-updated" id="dlg-last-updated">Last updated —</span>
+      </div>
+      <div class="ticket-paper-lane-move">
+        <label for="dlg-move-lane">Move lane</label>
+        <select id="dlg-move-lane" aria-label="Move initiative to lane"></select>
+      </div>
+    </div>
+    <div class="ticket-lane-row" id="dlg-lane-row"></div>
+    <div class="ticket-main-tabs" role="tablist">
+      <button type="button" id="tab-brief" data-main-tab="brief" role="tab" class="active" title="Problem, users, success">Brief</button>
+      <button type="button" id="tab-discovery" data-main-tab="discovery" role="tab" title="Unlocks when you move to Discovery">Discovery <span class="tab-lock" id="lock-discovery">Locked</span></button>
+      <button type="button" id="tab-requirements" data-main-tab="requirements" role="tab" title="Unlocks in Design or later lanes when a PRD is linked">Requirements <span class="tab-lock" id="lock-requirements">Locked</span></button>
+      <button type="button" id="tab-design" data-main-tab="design" role="tab" title="Unlocks in Design or later">Design <span class="tab-lock" id="lock-design">Locked</span></button>
+    </div>
+    <div class="ticket-panels-body">
+      <div id="ticket-panel-brief" class="ticket-tab-panel active">
+        <div id="card-summary-section" class="ticket-summary-row">
+          <label for="dlg-desc">Card summary (idea)</label>
+          <textarea id="dlg-desc" rows="4" placeholder="Digest for the card — outcome and intent (not the full PRD)."></textarea>
+        </div>
+        <div id="idea-intake-form" class="idea-intake-form" hidden>
+          <div class="dlg-field">
+            <label for="edit-problem">What problem does this solve?</label>
+            <textarea id="edit-problem" class="brief-ta" rows="3" placeholder="Current pain, gap, or job to be done."></textarea>
+          </div>
+          <div class="dlg-field">
+            <label for="edit-target-users">Who is it for?</label>
+            <textarea id="edit-target-users" class="brief-ta" rows="2" placeholder="Primary users, segments, or personas."></textarea>
+          </div>
+          <div class="dlg-field">
+            <label for="edit-success">What does success look like?</label>
+            <textarea id="edit-success" class="brief-ta" rows="2" placeholder="Outcomes, signals, or metrics."></textarea>
+          </div>
+          <details id="edit-brief-more" class="brief-more">
+            <summary>More product brief questions</summary>
+            <div class="dlg-field">
+              <label for="edit-constraints">Constraints &amp; scope</label>
+              <textarea id="edit-constraints" class="brief-ta" rows="2" placeholder="Timeline, technical constraints, integrations, out of scope."></textarea>
+            </div>
+            <div class="dlg-field">
+              <label for="edit-ux">User journey &amp; discovery</label>
+              <textarea id="edit-ux" class="brief-ta" rows="2" placeholder="How users find this, core journey, easy vs hard actions."></textarea>
+            </div>
+            <div class="dlg-field">
+              <label for="edit-validation">Success &amp; validation</label>
+              <textarea id="edit-validation" class="brief-ta" rows="2" placeholder="What to validate, assumptions to test."></textarea>
+            </div>
+            <div class="dlg-field">
+              <label for="edit-dependencies">Dependencies</label>
+              <textarea id="edit-dependencies" class="brief-ta" rows="2" placeholder="Teams, systems, other initiatives."></textarea>
+            </div>
+          </details>
+          <div class="dlg-field">
+            <label for="edit-priority">Priority</label>
+            <select id="edit-priority" aria-label="Priority">
+              <option value="P0">P0</option>
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+            </select>
+          </div>
+          <div class="dlg-field">
+            <label for="edit-intake">Intake source</label>
+            <select id="edit-intake" aria-label="Intake source">
+              <option value="">—</option>
+              <option value="customer">Customer interview</option>
+              <option value="market">Market / competitive</option>
+              <option value="internal">Internal</option>
+              <option value="board">Board / steering</option>
+            </select>
+          </div>
+        </div>
+        <div id="brief-non-idea-block">
+          <div id="dlg-brief-wrap" class="ticket-brief-wrap" hidden>
+            <h4>Product brief (idea intake)</h4>
+            <p id="dlg-brief-empty" class="ticket-workspace-hint" style="margin:0">No structured brief on file — only card summary below.</p>
+            <dl id="dlg-brief-dl" class="brief-dl" hidden></dl>
+          </div>
+          <div class="ticket-meta-row">
+            <label>Workflow status
+              <select id="dlg-workflow" aria-label="Workflow status">
+                <option value="">—</option>
+                <option value="blocked">Blocked</option>
+                <option value="ready_for_spec">Ready for spec</option>
+                <option value="in_review">In review</option>
+                <option value="at_risk">At risk</option>
+              </select>
+            </label>
+            <label>Intake source
+              <select id="dlg-intake" aria-label="Intake source">
+                <option value="">—</option>
+                <option value="customer">Customer</option>
+                <option value="market">Market</option>
+                <option value="internal">Internal</option>
+                <option value="board">Board</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div id="ticket-panel-doc" class="ticket-tab-panel">
+        <div id="discovery-agent-banner">
+          <div class="banner-text">
+            <strong>Enriching context…</strong>
+            <span>Linking related PRDs and touchpoints. You can keep editing <strong>Brief</strong> while this runs.</span>
+          </div>
+          <button type="button" class="discovery-rerun-btn" id="btn-rerun-discovery">Re-run discovery</button>
+        </div>
+        <p id="ticket-workspace-hint" class="ticket-workspace-hint" hidden>
+          Full <strong>Workspace notes</strong> (discovery) load below. Edit here or use <strong>Download .md</strong> to sync files in the vault.
+        </p>
+        <p id="ticket-req-placeholder" class="ticket-workspace-hint" hidden></p>
+        <div class="ticket-doc-bar">
+          <span id="ticket-doc-path"></span>
+        </div>
+        <div class="ticket-format-bar" title="Formatting (maps to Markdown on save)">
+          <button type="button" data-fmt="h2">H2</button>
+          <button type="button" data-fmt="bold">Bold</button>
+          <button type="button" data-fmt="italic">Italic</button>
+          <button type="button" data-fmt="insertUnorderedList">Bullets</button>
+        </div>
+        <div id="md-wysiwyg" contenteditable="true" tabindex="0" aria-label="Document editor"></div>
+        <div class="ticket-footer">
+          <span id="dlg-prd-paths"></span>
+          <span id="dlg-discovery-row" hidden> · <span id="dlg-discovery-path-short"></span>
+            <button type="button" id="btn-open-discovery-doc" style="background:transparent;border:none;color:var(--accent);cursor:pointer;padding:0;font-size:inherit">Open discovery viewer</button>
+          </span>
+        </div>
+      </div>
+      <div id="ticket-panel-design" class="ticket-tab-panel">
+        <p class="design-tab-lead ticket-workspace-hint">Primary design artifact (Paper frame <strong>04</strong>): link, revision, and open in tool.</p>
+        <div class="design-artifact-card">
+          <div class="design-artifact-icon" aria-hidden="true">◆</div>
+          <div class="design-artifact-body">
+            <div class="design-field">
+              <label for="dlg-figma">Figma</label>
+              <input type="text" id="dlg-figma" placeholder="Figma URL" autocomplete="off" />
+            </div>
+            <div class="design-field">
+              <label for="dlg-design-artifact">Design file</label>
+              <input type="text" id="dlg-design-artifact" placeholder="Paper or design tool link" autocomplete="off" />
+            </div>
+            <div class="design-field design-field-revision">
+              <label for="dlg-design-revision">Revision</label>
+              <input type="text" id="dlg-design-revision" placeholder="e.g. rev 4" autocomplete="off" />
+            </div>
+          </div>
+          <div class="design-artifact-actions">
+            <button type="button" class="primary" id="btn-open-design-artifact">Open</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="discovery-review-dlg" class="wide">
+    <div class="dlg-head">
+      <h2>Discovery</h2>
+      <button type="button" class="close" id="discovery-review-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="dlg-body">
+      <p style="margin:0 0 1rem;font-size:0.85rem;color:var(--muted)">Check the heading and description, add anything useful, then continue.</p>
+      <div class="dlg-field">
+        <label for="disc-title">Heading</label>
+        <input type="text" id="disc-title" autocomplete="off" />
+      </div>
+      <div class="dlg-field">
+        <label for="disc-desc">Description</label>
+        <textarea id="disc-desc" placeholder="Context, constraints, links to remember…"></textarea>
+      </div>
+      <div class="dlg-field dlg-prd-paths" id="disc-prd-paths" hidden></div>
+      <div class="dlg-actions" style="display:flex;gap:0.5rem;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:1rem;margin-top:1rem">
+        <button type="button" id="discovery-review-cancel">Cancel</button>
+        <button type="button" class="primary" id="discovery-review-accept">Move to Discovery and start</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="discovery-run-dlg" class="wide">
+    <div class="dlg-head">
+      <h2>Discovery file</h2>
+      <button type="button" class="close" id="discovery-run-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="dlg-body">
+      <p style="margin:0 0 0.75rem;font-size:0.85rem;color:var(--muted)">After you start from the board, the research prompt is copied once — use Copy prompt again if needed. Paste into Cursor so the agent can search the vault and update the file below. Refresh after you edit the file on disk.</p>
+      <div class="doc-path-row">
+        <span id="discovery-vault-path"></span>
+        <button type="button" id="discovery-copy-path">Copy path</button>
+        <button type="button" id="discovery-copy-prompt">Copy prompt again</button>
+        <button type="button" id="discovery-refresh-doc">Refresh</button>
+      </div>
+      <div class="doc-viewer muted" id="discovery-doc-view">Loading…</div>
+    </div>
+  </dialog>
+
+  <dialog id="add-idea-dlg" class="wide add-idea-dlg">
+    <div class="dlg-head">
+      <h2>New initiative</h2>
+      <button type="button" class="close" id="add-idea-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="dlg-body add-idea-dlg-body">
+      <div class="dlg-field">
+        <label for="add-title">Title</label>
+        <input type="text" id="add-title" autocomplete="off" aria-describedby="add-title-hint" />
+      </div>
+      <div class="dlg-field">
+        <label for="add-summary">Card summary</label>
+        <textarea id="add-summary" placeholder="Short digest on the card — outcome and who it is for."></textarea>
+      </div>
+      <div class="dlg-field">
+        <label for="add-problem">What problem does this solve?</label>
+        <textarea id="add-problem" class="brief-ta" rows="3" placeholder="Current pain, gap, or job to be done."></textarea>
+      </div>
+      <div class="dlg-field">
+        <label for="add-target-users">Who is it for?</label>
+        <textarea id="add-target-users" class="brief-ta" rows="2" placeholder="Primary users, segments, or personas."></textarea>
+      </div>
+      <div class="dlg-field">
+        <label for="add-success">What does success look like?</label>
+        <textarea id="add-success" class="brief-ta" rows="2" placeholder="Outcomes, signals, or metrics."></textarea>
+      </div>
+      <details id="add-brief-more" class="brief-more">
+        <summary>More product brief questions</summary>
+        <div class="dlg-field">
+          <label for="add-constraints">Constraints &amp; scope</label>
+          <textarea id="add-constraints" class="brief-ta" rows="2" placeholder="Timeline, technical constraints, integrations, out of scope."></textarea>
+        </div>
+        <div class="dlg-field">
+          <label for="add-ux">User journey &amp; discovery</label>
+          <textarea id="add-ux" class="brief-ta" rows="2" placeholder="How users find this, core journey, easy vs hard actions."></textarea>
+        </div>
+        <div class="dlg-field">
+          <label for="add-validation">Success &amp; validation</label>
+          <textarea id="add-validation" class="brief-ta" rows="2" placeholder="What to validate, assumptions to test."></textarea>
+        </div>
+        <div class="dlg-field">
+          <label for="add-dependencies">Dependencies</label>
+          <textarea id="add-dependencies" class="brief-ta" rows="2" placeholder="Teams, systems, other initiatives."></textarea>
+        </div>
+      </details>
+      <div class="dlg-field">
+        <label for="add-tier">Stack</label>
+        <select id="add-tier">
+          <option value="Backlog">Backlog</option>
+          <option value="Current">Current</option>
+          <option value="Next">Next</option>
+          <option value="Future">Future</option>
+        </select>
+      </div>
+      <div class="dlg-field">
+        <label for="add-prio">Priority</label>
+        <select id="add-prio">
+          <option value="P0">P0</option>
+          <option value="P1">P1</option>
+          <option value="P2" selected>P2</option>
+          <option value="P3">P3</option>
+        </select>
+      </div>
+      <div class="dlg-field">
+        <label for="add-intake">Intake source</label>
+        <select id="add-intake" aria-label="Intake source">
+          <option value="">—</option>
+          <option value="customer">Customer interview</option>
+          <option value="market">Market / competitive</option>
+          <option value="internal">Internal</option>
+          <option value="board">Board / steering</option>
+        </select>
+      </div>
+    </div>
+    <form method="dialog" class="add-idea-dlg-foot dlg-actions-row">
+      <span id="add-title-hint" class="field-hint-muted" role="status"></span>
+      <div class="dlg-actions-buttons">
+        <button type="submit">Cancel</button>
+        <button type="button" class="primary" id="add-idea-save">Create draft</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/turndown/dist/turndown.js"></script>
+  <script>
+(function () {
+  var STORE_KEY = "dex-product-dashboard-v2";
+  var LEGACY_LANES = "dex-product-dashboard-lanes-v1";
+  var state = {
+    data: null,
+    store: null,
+    currentDetailId: null,
+    dragId: null,
+    pendingDiscovery: null,
+    discoveryRunInitId: null,
+    lastDiscoveryPrompt: "",
+    ticketPrdVaultPath: null,
+    ticketWsVaultPath: null,
+    ticketMainTab: "brief",
+    ticketCurrentVaultPath: null,
+    ticketDock: "center",
+    ticketSize: "lg",
+    ticketPrdStage: "none",
+    ticketLastSavedLabel: "",
+    prdBlurbFetchFailed: {}
+  };
+
+  var TICKET_DOCK_KEY = "dex-pd-ticket-dock";
+
+  function loadTicketDock() {
+    try {
+      var s = localStorage.getItem(TICKET_DOCK_KEY);
+      if (s === "left" || s === "center" || s === "right") return s;
+    } catch (e) {}
+    return "center";
+  }
+
+  function applyTicketDock(dock) {
+    if (dock !== "left" && dock !== "center" && dock !== "right") dock = "center";
+    state.ticketDock = dock;
+    try {
+      localStorage.setItem(TICKET_DOCK_KEY, dock);
+    } catch (e) {}
+    var dlg = document.getElementById("detail-dlg");
+    if (!dlg) return;
+    dlg.classList.remove("dock-left", "dock-center", "dock-right");
+    dlg.classList.add("dock-" + dock);
+    [["ticket-dock-left", "left"], ["ticket-dock-center", "center"], ["ticket-dock-right", "right"]].forEach(function (pair) {
+      var btn = document.getElementById(pair[0]);
+      if (btn) {
+        var on = pair[1] === dock;
+        btn.classList.toggle("active", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      }
+    });
+  }
+
+  function applyTicketSize(sz) {
+    if (sz !== "sm" && sz !== "md" && sz !== "lg") sz = "lg";
+    state.ticketSize = sz;
+    var dlg = document.getElementById("detail-dlg");
+    if (!dlg) return;
+    dlg.classList.remove("ticket-size-sm", "ticket-size-md", "ticket-size-lg");
+    dlg.classList.add("ticket-size-" + sz);
+  }
+
+  function loadStore() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    var o = {
+      laneOverride: {},
+      customInitiatives: [],
+      figmaById: {},
+      titleById: {},
+      descriptionById: {},
+      cardOrder: {},
+      prdTierById: {},
+      workflowStatusById: {},
+      intakeSourceById: {},
+      mdOverrideByVaultPath: {},
+      productBriefById: {},
+      designArtifactUrlById: {},
+      designRevisionById: {},
+      priorityById: {},
+      discoveryPassCompleteById: {},
+      prdCardBlurbByHref: {}
+    };
+    try {
+      var leg = localStorage.getItem(LEGACY_LANES);
+      if (leg) o.laneOverride = JSON.parse(leg) || {};
+    } catch (e2) {}
+    return o;
+  }
+
+  function saveStore() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state.store));
+    try { localStorage.removeItem(LEGACY_LANES); } catch (e) {}
+    var el = document.getElementById("status");
+    el.textContent = "Saved.";
+    setTimeout(function () { el.textContent = ""; }, 2000);
+  }
+
+  state.store = loadStore();
+  if (!state.store.laneOverride) state.store.laneOverride = {};
+  if (!state.store.customInitiatives) state.store.customInitiatives = [];
+  if (!state.store.figmaById) state.store.figmaById = {};
+  if (!state.store.titleById) state.store.titleById = {};
+  if (!state.store.descriptionById) state.store.descriptionById = {};
+  if (!state.store.cardOrder) state.store.cardOrder = {};
+  if (!state.store.prdTierById) state.store.prdTierById = {};
+  if (!state.store.workflowStatusById) state.store.workflowStatusById = {};
+  if (!state.store.intakeSourceById) state.store.intakeSourceById = {};
+  if (!state.store.mdOverrideByVaultPath) state.store.mdOverrideByVaultPath = {};
+  if (!state.store.productBriefById) state.store.productBriefById = {};
+  if (!state.store.designArtifactUrlById) state.store.designArtifactUrlById = {};
+  if (!state.store.designRevisionById) state.store.designRevisionById = {};
+  if (!state.store.priorityById) state.store.priorityById = {};
+  if (!state.store.discoveryPassCompleteById) state.store.discoveryPassCompleteById = {};
+  if (!state.store.prdCardBlurbByHref) state.store.prdCardBlurbByHref = {};
+
+  state.ticketDock = loadTicketDock();
+  applyTicketDock(state.ticketDock);
+  state.ticketSize = "lg";
+  applyTicketSize("lg");
+
+  function stripFrontmatter(md) {
+    if (!md || md.indexOf("---") !== 0) return md;
+    var end = md.indexOf("\n---\n", 3);
+    if (end === -1) return md;
+    return md.slice(end + 5);
+  }
+
+  /** Local copy is the New-idea brief template — vault discovery markdown should load instead after the agent updates the file. */
+  function isDiscoverySeedMdOverride(md) {
+    var s = String(md || "").trim();
+    if (!s) return true;
+    if (s.indexOf("Captured from the product dashboard") !== -1) return true;
+    if (s.indexOf("## Product brief (intake)") !== -1 && s.indexOf("same question rounds") !== -1) return true;
+    if (s.indexOf("<!-- workspace:") !== -1 && s.indexOf("## Product brief (intake)") !== -1) return true;
+    return false;
+  }
+
+  function getPrdVaultHrefFromInit(init) {
+    var links = init.links || [];
+    for (var i = 0; i < links.length; i++) {
+      var h = (links[i].href || "").trim();
+      if (/\.md$/i.test(h) && h.indexOf("PRDs/") !== -1) return h;
+    }
+    return null;
+  }
+
+  function truncateCardBlurbLine(s) {
+    s = String(s || "")
+      .replace(/\*\*/g, "")
+      .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (s.length <= 220) return s;
+    return s.slice(0, 217) + "…";
+  }
+
+  /** One sentence / lead line from PRD markdown for UAT card blurbs (blockquote, Problem Statement, or Problem). */
+  function extractPrdOneLineBlurb(md) {
+    var body = stripFrontmatter(md || "");
+    body = body.replace(/\r\n/g, "\n");
+    var lines = body.split("\n");
+    var qb = [];
+    var quoteStarted = false;
+    for (var i = 0; i < lines.length; i++) {
+      var ln = lines[i];
+      if (/^>\s?/.test(ln)) {
+        quoteStarted = true;
+        qb.push(ln.replace(/^>\s?/, "").trim());
+      } else if (quoteStarted) {
+        if (ln.trim() === "") continue;
+        break;
+      }
+    }
+    if (qb.length) {
+      var t = qb.join(" ").replace(/\s+/g, " ").trim();
+      if (t.length > 25) return truncateCardBlurbLine(t);
+    }
+    var psh = body.match(/#\s*Problem Statement\s*\n+\s*([^\n]+(?:\n(?![#])[^\n]+)*?)(?=\n\n#|\n---|$)/);
+    if (psh) {
+      var ph = psh[1].replace(/\n+/g, " ").trim();
+      if (ph.length > 25) return truncateCardBlurbLine(ph);
+    }
+    var ps = body.match(/##\s*Problem Statement\s*\n+([\s\S]+?)(?=\n##\s|\n---\s*\n##|$)/);
+    if (ps) {
+      var block = ps[1].trim().replace(/\n+/g, " ");
+      if (block.indexOf("---") === 0) block = block.replace(/^---\s*/, "");
+      var para = block.split(/\n\n/)[0] || block;
+      para = para.replace(/^[-*]\s+\*\*[^*]+\*\*\s*/g, "").trim();
+      if (para.length > 25) return truncateCardBlurbLine(para);
+    }
+    var p2 = body.match(/##\s*Problem\s*\n+([^\n#][^\n]*(?:\n(?![#\n])[^\n]+)*)/);
+    if (p2) {
+      var p = p2[1].replace(/\n+/g, " ").trim();
+      if (p.length > 25) return truncateCardBlurbLine(p);
+    }
+    var i0 = 0;
+    while (i0 < lines.length && !/^#\s+/.test(lines[i0])) i0++;
+    if (i0 < lines.length) i0++;
+    while (i0 < lines.length && (/^\s*$/.test(lines[i0]) || /^---$/.test(lines[i0].trim()))) i0++;
+    if (i0 < lines.length && lines[i0].indexOf(">") === 0) {
+      var acc = [];
+      for (var j = i0; j < lines.length && /^>\s?/.test(lines[j]); j++) {
+        acc.push(lines[j].replace(/^>\s?/, "").trim());
+      }
+      var u = acc.join(" ").trim();
+      if (u.length > 25) return truncateCardBlurbLine(u);
+    }
+    return "";
+  }
+
+  function persistStoreSilent() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(state.store));
+      try {
+        localStorage.removeItem(LEGACY_LANES);
+      } catch (e2) {}
+    } catch (e) {}
+  }
+
+  function ensureUatPrdCardBlurbs() {
+    if (!state.data) return;
+    var hrefs = {};
+    mergedInitiatives().forEach(function (init) {
+      if (effectiveLane(init) !== "test_uat") return;
+      var h = getPrdVaultHrefFromInit(init);
+      if (!h) return;
+      if (state.store.prdCardBlurbByHref && state.store.prdCardBlurbByHref[h]) return;
+      if (state.prdBlurbFetchFailed && state.prdBlurbFetchFailed[h]) return;
+      hrefs[h] = true;
+    });
+    Object.keys(hrefs).forEach(function (href) {
+      var url = vaultPathToFetchUrl(href);
+      if (!url) return;
+      fetch(url, { cache: "no-store" })
+        .then(function (r) {
+          if (!r.ok) throw new Error(String(r.status));
+          return r.text();
+        })
+        .then(function (txt) {
+          var bl = extractPrdOneLineBlurb(txt);
+          if (!bl) {
+            if (!state.prdBlurbFetchFailed) state.prdBlurbFetchFailed = {};
+            state.prdBlurbFetchFailed[href] = true;
+            return;
+          }
+          if (!state.store.prdCardBlurbByHref) state.store.prdCardBlurbByHref = {};
+          state.store.prdCardBlurbByHref[href] = bl;
+          persistStoreSilent();
+          renderOrchestration();
+          renderExecutive();
+        })
+        .catch(function () {
+          if (!state.prdBlurbFetchFailed) state.prdBlurbFetchFailed = {};
+          state.prdBlurbFetchFailed[href] = true;
+        });
+    });
+  }
+
+  var _uatPrdBlurbSchedule = null;
+  function scheduleEnsureUatPrdCardBlurbs() {
+    if (_uatPrdBlurbSchedule) clearTimeout(_uatPrdBlurbSchedule);
+    _uatPrdBlurbSchedule = setTimeout(function () {
+      _uatPrdBlurbSchedule = null;
+      ensureUatPrdCardBlurbs();
+    }, 120);
+  }
+
+  /** Relative URL from blueprint/product-dashboard/index.html (vault root = ../../). */
+  function vaultPathToFetchUrl(vaultPath) {
+    if (!vaultPath) return null;
+    var pd = "blueprint/product-dashboard/";
+    if (vaultPath.indexOf(pd) === 0) return vaultPath.slice(pd.length);
+    // Must keep 06-Resources/ — ../../Product_ideas/... 404s; ../../06-Resources/Product_ideas/... is correct
+    if (vaultPath.indexOf("06-Resources/") === 0) return "../../" + vaultPath;
+    return vaultPath;
+  }
+
+  function getTurndown() {
+    var TD = typeof TurndownService !== "undefined" ? TurndownService : window.TurndownService;
+    if (!TD) return null;
+    return new TD({ headingStyle: "atx", bulletListMarker: "-" });
+  }
+
+  function persistTicketEditorMarkdown() {
+    var vp = state.ticketCurrentVaultPath;
+    var el = document.getElementById("md-wysiwyg");
+    if (!vp || !el) return;
+    var td = getTurndown();
+    if (!td) return;
+    if (!state.store.mdOverrideByVaultPath) state.store.mdOverrideByVaultPath = {};
+    state.store.mdOverrideByVaultPath[vp] = td.turndown(el.innerHTML);
+  }
+
+  function applyMarkdownToWysiwyg(md) {
+    var w = document.getElementById("md-wysiwyg");
+    if (!w) return;
+    var text = md || "";
+    if (typeof marked !== "undefined" && marked.parse) {
+      w.innerHTML = marked.parse(text, { breaks: true });
+    } else {
+      w.innerHTML = "<p>" + escapeHtml(text).replace(/\n/g, "<br/>") + "</p>";
+    }
+  }
+
+  function allowedTabsForLane(lane) {
+    if (lane === "idea") {
+      return { brief: true, discovery: false, requirements: false, design: false };
+    }
+    if (lane === "discovery") {
+      return { brief: true, discovery: true, requirements: false, design: false };
+    }
+    return { brief: true, discovery: true, requirements: true, design: true };
+  }
+
+  function normalizeTicketTabForLane(init, preferred) {
+    var a = allowedTabsForLane(effectiveLane(init));
+    var order = ["brief", "discovery", "requirements", "design"];
+    if (preferred && a[preferred]) return preferred;
+    for (var i = 0; i < order.length; i++) {
+      if (a[order[i]]) return order[i];
+    }
+    return "brief";
+  }
+
+  function updateTicketMainTabs(init) {
+    if (!init) return;
+    var cur = state.ticketMainTab;
+    var a = allowedTabsForLane(effectiveLane(init));
+    if (!a[cur]) {
+      state.ticketMainTab = normalizeTicketTabForLane(init, null);
+      cur = state.ticketMainTab;
+    }
+    ["brief", "discovery", "requirements", "design"].forEach(function (name) {
+      var btn = document.getElementById("tab-" + name);
+      if (!btn) return;
+      btn.disabled = !a[name];
+      btn.classList.toggle("active", cur === name);
+      btn.setAttribute("aria-selected", cur === name ? "true" : "false");
+    });
+    var briefP = document.getElementById("ticket-panel-brief");
+    var docP = document.getElementById("ticket-panel-doc");
+    var desP = document.getElementById("ticket-panel-design");
+    if (briefP) briefP.classList.toggle("active", cur === "brief");
+    if (docP) docP.classList.toggle("active", cur === "discovery" || cur === "requirements");
+    if (desP) desP.classList.toggle("active", cur === "design");
+    var banner = document.getElementById("discovery-agent-banner");
+    if (banner) {
+      banner.classList.toggle("visible", effectiveLane(init) === "discovery");
+    }
+    var wsHint = document.getElementById("ticket-workspace-hint");
+    if (wsHint) {
+      wsHint.hidden = cur !== "discovery";
+    }
+    var reqPh = document.getElementById("ticket-req-placeholder");
+    if (reqPh) {
+      var needPh = cur === "requirements" && state.ticketPrdStage === "none";
+      reqPh.hidden = !needPh;
+      if (needPh) {
+        reqPh.innerHTML =
+          "Full <strong>Product PRD</strong> loads here from <strong>Design</strong> (draft) and later lanes. In <strong>Idea</strong> / <strong>Discovery</strong>, use <strong>Workspace notes</strong> on the <strong>Discovery</strong> tab.";
+      }
+    }
+  }
+
+  function loadActiveTicketDocument() {
+    var tab = state.ticketMainTab;
+    if (tab === "brief" || tab === "design") {
+      state.ticketCurrentVaultPath = null;
+      return;
+    }
+    var vaultPath = null;
+    if (tab === "discovery") {
+      vaultPath = state.ticketWsVaultPath;
+    } else if (tab === "requirements") {
+      if (state.ticketPrdStage === "none" || !state.ticketPrdVaultPath) {
+        state.ticketCurrentVaultPath = null;
+        var w0 = document.getElementById("md-wysiwyg");
+        if (w0) {
+          w0.innerHTML =
+            "<p style=\"color:var(--muted)\">No vault PRD path for this lane yet. Move the card to <strong>Design</strong> or <strong>Spec ready</strong> when a PRD file is linked, or use <strong>Discovery</strong> for workspace notes.</p>";
+        }
+        return;
+      }
+      vaultPath = state.ticketPrdVaultPath;
+    }
+    state.ticketCurrentVaultPath = vaultPath;
+    var pathEl = document.getElementById("ticket-doc-path");
+    if (pathEl) pathEl.textContent = vaultPath || "";
+    var w = document.getElementById("md-wysiwyg");
+    if (!w) return;
+    w.innerHTML = "<p style=\"color:var(--muted)\">Loading…</p>";
+    if (!vaultPath) {
+      w.innerHTML = "<p style=\"color:var(--muted)\">No document path for this card.</p>";
+      return;
+    }
+    var ovr = state.store.mdOverrideByVaultPath && state.store.mdOverrideByVaultPath[vaultPath];
+    var url = vaultPathToFetchUrl(vaultPath);
+
+    function fetchDiscoveryVaultPreferFile() {
+      if (!url) {
+        if (ovr != null && String(ovr).length) {
+          applyMarkdownToWysiwyg(String(ovr));
+        } else {
+          applyMarkdownToWysiwyg("# Document\n\n(No fetch path.)");
+        }
+        return;
+      }
+      fetch(url, { cache: "no-store" })
+        .then(function (r) {
+          if (!r.ok) throw new Error(String(r.status));
+          return r.text();
+        })
+        .then(function (txt) {
+          var body = stripFrontmatter(txt || "");
+          if (!String(body).trim()) throw new Error("empty");
+          applyMarkdownToWysiwyg(body);
+          if (ovr && isDiscoverySeedMdOverride(String(ovr))) {
+            delete state.store.mdOverrideByVaultPath[vaultPath];
+            saveStore();
+          }
+        })
+        .catch(function () {
+          if (ovr != null && String(ovr).length && !isDiscoverySeedMdOverride(String(ovr))) {
+            applyMarkdownToWysiwyg(String(ovr));
+            return;
+          }
+          applyMarkdownToWysiwyg(
+            "# Discovery file could not be loaded\n\n" +
+            "Expected vault file: **`" +
+            vaultPath +
+            "`**\n\n" +
+            "Request URL (relative to this page): **`" +
+            (url || "(none)") +
+            "`**\n\n" +
+            "Run **`start_product_dashboard.sh`** from the vault so the server root includes **`06-Resources/`** (see README). " +
+            "Do not open only `product-dashboard/index.html` without that server — discovery markdown will not fetch.\n\n" +
+            "_The product brief belongs on the **Brief** tab; this tab should mirror the markdown file above._"
+          );
+        });
+    }
+
+    // Discovery workspace: load vault file first when override is missing or still the intake template — not the initial brief after discovery has run
+    if (tab === "discovery" && (!ovr || !String(ovr).trim() || isDiscoverySeedMdOverride(String(ovr)))) {
+      fetchDiscoveryVaultPreferFile();
+      return;
+    }
+
+    if (ovr != null && String(ovr).length) {
+      applyMarkdownToWysiwyg(String(ovr));
+      return;
+    }
+    if (!url) {
+      applyMarkdownToWysiwyg("# Document\n\n(No fetch path.)");
+      return;
+    }
+    fetch(url, { cache: "no-store" })
+      .then(function (r) {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.text();
+      })
+      .then(function (txt) {
+        applyMarkdownToWysiwyg(stripFrontmatter(txt || ""));
+      })
+      .catch(function () {
+        var isPrd = tab === "requirements";
+        var stage = state.ticketPrdStage || "none";
+        var base =
+          "# Document\n\n" +
+          (isPrd && stage === "spec_ready"
+            ? "**Could not load the PRD file.** Serve the **vault root** (not only `product-dashboard/`) and open the URL from **`start_product_dashboard.sh`**. See **README → Run locally**.\n\n"
+            : isPrd && stage === "draft"
+              ? "**Could not load this draft PRD.** Check the server URL and vault layout as in the README.\n\n"
+              : "**Could not load this document.** If this is a PRD path, serve the vault root. See **README → Run locally**.\n\n") +
+          "You can still type here — **Save** stores a copy in the browser; use **Download .md** to replace the file in your vault.";
+        applyMarkdownToWysiwyg(base);
+      });
+  }
+
+  function normalizePrdTierKey(t) {
+    var x = String(t || "").trim();
+    if (!x) return "Backlog";
+    var lower = x.toLowerCase();
+    if (lower === "now") return "Current";
+    var cap = x.charAt(0).toUpperCase() + x.slice(1).toLowerCase();
+    if (cap === "Current" || cap === "Next" || cap === "Future" || cap === "Backlog") return cap;
+    return "Backlog";
+  }
+
+  function effectivePrdTier(init) {
+    var o = state.store.prdTierById[init.id];
+    if (o != null && String(o).trim() !== "") return normalizePrdTierKey(o);
+    return normalizePrdTierKey(init.prdTier);
+  }
+
+  function tierBadgeLabel(prdTier) {
+    var t = normalizePrdTierKey(prdTier);
+    if (t === "Current") return "Now";
+    return t;
+  }
+
+  function syncTierSelectForInit(init) {
+    var t = effectivePrdTier(init);
+    var sel = document.getElementById("dlg-tier-select");
+    if (!sel) return;
+    sel.value = t;
+    sel.className = "ticket-pill ticket-pill-tier " + tierClass(t);
+  }
+
+  function getSelectedTierFromSelect() {
+    var sel = document.getElementById("dlg-tier-select");
+    if (!sel) return "Backlog";
+    var v = sel.value;
+    if (v === "Current" || v === "Next" || v === "Future" || v === "Backlog") return v;
+    return "Backlog";
+  }
+
+  function laneLabel(id) {
+    var labels = {
+      idea: "Idea",
+      discovery: "Discovery",
+      design: "Design",
+      spec_ready: "Spec ready",
+      in_build: "In build",
+      test_uat: "Test / UAT",
+      shipped_live: "Shipped / Live"
+    };
+    return labels[id] || id;
+  }
+
+  function tierClass(t) {
+    var x = (t || "").toLowerCase();
+    if (x === "current") return "current";
+    if (x === "next") return "next";
+    if (x === "future") return "future";
+    return "backlog";
+  }
+
+  function tierRank(prdTier) {
+    var x = String(prdTier || "").toLowerCase();
+    if (x === "next") return 0;
+    if (x === "current") return 1;
+    if (x === "backlog") return 2;
+    if (x === "future") return 3;
+    return 2;
+  }
+
+  function mergedInitiatives() {
+    var base = (state.data && state.data.initiatives) ? state.data.initiatives.slice() : [];
+    return base.concat(state.store.customInitiatives || []);
+  }
+
+  function getInit(id) {
+    var list = mergedInitiatives();
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === id) return list[i];
+    }
+    return null;
+  }
+
+  function effectiveLane(init) {
+    return state.store.laneOverride[init.id] || init.lane;
+  }
+
+  /** Idea vs PRD: full vault PRD loads in the modal only at draft (Design) or spec_ready lanes — not Idea/Discovery. */
+  function effectivePrdStage(init) {
+    if (!init) return "none";
+    var explicit = init.prdStage;
+    if (explicit === "none" || explicit === "draft" || explicit === "spec_ready") return explicit;
+    var lane = effectiveLane(init);
+    if (lane === "idea" || lane === "discovery") return "none";
+    if (lane === "design") return "draft";
+    if (
+      lane === "spec_ready" ||
+      lane === "in_build" ||
+      lane === "test_uat" ||
+      lane === "shipped_live"
+    ) {
+      return "spec_ready";
+    }
+    return "none";
+  }
+
+  function getPrdVaultHrefForModal(init) {
+    if (effectivePrdStage(init) === "none") return null;
+    return getPrdVaultHrefFromInit(init);
+  }
+
+  function effectiveTitle(init) {
+    var o = state.store.titleById[init.id];
+    return (o != null && String(o).trim() !== "") ? String(o) : init.title;
+  }
+
+  function effectiveDescription(init) {
+    var o = state.store.descriptionById[init.id];
+    if (o != null && String(o).trim() !== "") return String(o);
+    return init.summary || "";
+  }
+
+  /** True when summary is the PRD-folder stack line from initiatives.json, not a user-facing digest. */
+  function isPrdStackPlaceholderSummary(s) {
+    return /^\s*PRD in\s+.+\s*—\s*prioritise\s+with/i.test(String(s || ""));
+  }
+
+  /** Card + exec table blurb: prefer real summary; if placeholder, derive from product brief (same idea as idea/discovery) then whatsNext / progress / horizon. */
+  function effectiveCardSummary(init) {
+    if (!init) return "";
+    var lane = effectiveLane(init);
+    var prdHref = getPrdVaultHrefFromInit(init);
+    if (lane === "test_uat" && prdHref && state.store.prdCardBlurbByHref && state.store.prdCardBlurbByHref[prdHref]) {
+      var cached = String(state.store.prdCardBlurbByHref[prdHref]).trim();
+      if (cached) return cached;
+    }
+    var raw = effectiveDescription(init);
+    if (!isPrdStackPlaceholderSummary(raw)) return raw;
+    var brief = effectiveProductBrief(init);
+    if (briefHasContent(brief)) {
+      var syn = synthesizeCardDigest(brief, "");
+      if (syn && String(syn).trim()) return syn;
+    }
+    var wn = (init.whatsNext || "").trim();
+    if (wn) return wn.length > 220 ? wn.slice(0, 217) + "…" : wn;
+    var pl = (init.progressLabel || "").trim();
+    if (pl) return pl.length > 220 ? pl.slice(0, 217) + "…" : pl;
+    var hz = (init.horizon || "").trim();
+    if (hz) return hz.length > 220 ? hz.slice(0, 217) + "…" : hz;
+    return raw;
+  }
+
+  function mergeBriefDefaults(b) {
+    var o = b && typeof b === "object" ? b : {};
+    return {
+      problem: o.problem || "",
+      targetUsers: o.targetUsers || "",
+      success: o.success || "",
+      constraints: o.constraints || "",
+      uxDiscovery: o.uxDiscovery || "",
+      validation: o.validation || "",
+      dependencies: o.dependencies || ""
+    };
+  }
+
+  function effectiveProductBrief(init) {
+    if (!init) return mergeBriefDefaults({});
+    var fromFile = mergeBriefDefaults(init.productBrief || {});
+    var st = state.store.productBriefById && state.store.productBriefById[init.id];
+    if (!st || typeof st !== "object") return mergeBriefDefaults(fromFile);
+    return mergeBriefDefaults(Object.assign({}, fromFile, st));
+  }
+
+  function effectivePriority(init) {
+    if (!init) return "";
+    var o = state.store.priorityById && state.store.priorityById[init.id];
+    if (o != null && String(o).trim() !== "") return String(o).trim();
+    return (init.priority && String(init.priority).trim()) || "";
+  }
+
+  function effectiveFigma(init) {
+    var u = init.figmaUrl || "";
+    var loc = state.store.figmaById[init.id] || "";
+    return (loc || u).trim();
+  }
+
+  function effectiveDesignArtifact(init) {
+    var id = init.id;
+    var o = state.store.designArtifactUrlById && state.store.designArtifactUrlById[id];
+    if (o != null && String(o).trim() !== "") return String(o).trim();
+    return (init.designArtifactUrl && String(init.designArtifactUrl).trim()) || "";
+  }
+
+  function effectiveDesignRevision(init) {
+    var id = init.id;
+    var o = state.store.designRevisionById && state.store.designRevisionById[id];
+    if (o != null && String(o).trim() !== "") return String(o).trim();
+    return (init.designRevision && String(init.designRevision).trim()) || "";
+  }
+
+  function effectiveWorkflowStatus(init) {
+    var o = state.store.workflowStatusById && state.store.workflowStatusById[init.id];
+    if (o != null && String(o).trim() !== "") return String(o).trim();
+    return (init.workflowStatus && String(init.workflowStatus).trim()) || "";
+  }
+
+  function effectiveIntakeSource(init) {
+    var o = state.store.intakeSourceById && state.store.intakeSourceById[init.id];
+    if (o != null && String(o).trim() !== "") return String(o).trim();
+    return (init.intakeSource && String(init.intakeSource).trim()) || "";
+  }
+
+  function nextMilestoneLabel(init) {
+    var ms = init.milestones;
+    if (!ms || !ms.length) return "—";
+    var pending = ms.filter(function (m) {
+      return !m.done;
+    });
+    var list = pending.length ? pending : ms.slice();
+    var best = list[0];
+    for (var i = 0; i < list.length; i++) {
+      var m = list[i];
+      if (!best) best = m;
+      else if (m.date && (!best.date || m.date < best.date)) best = m;
+    }
+    if (!best) return "—";
+    return (best.label || "Milestone") + (best.date ? " · " + best.date : "");
+  }
+
+  function progressCellHtml(init) {
+    var pl = init.progressLabel && String(init.progressLabel).trim();
+    if (init.progress != null && init.progress !== "" && !isNaN(Number(init.progress))) {
+      var p = Math.max(0, Math.min(100, Number(init.progress)));
+      return (
+        '<span class="progress-mini"><span class="bar"><i style="width:' +
+        p +
+        '%"></i></span>' +
+        p +
+        "%</span>"
+      );
+    }
+    if (pl) return escapeHtml(pl);
+    return "—";
+  }
+
+  function discoveryDocRelativePath(init) {
+    if (init.contextFile && String(init.contextFile).trim()) return String(init.contextFile).trim();
+    return "06-Resources/Product_ideas/" + init.id + ".md";
+  }
+
+  /** Full vault path for workspace / discovery markdown. */
+  function workspaceVaultPath(init) {
+    var rel = discoveryDocRelativePath(init);
+    if (rel.indexOf("06-Resources/") === 0) return rel;
+    return "blueprint/product-dashboard/" + rel.replace(/^\/+/, "");
+  }
+
+  function vaultPathFromRelative(rel) {
+    return "blueprint/product-dashboard/" + rel.replace(/^\/+/, "");
+  }
+
+  function workspaceFetchUrl(init) {
+    return vaultPathToFetchUrl(workspaceVaultPath(init));
+  }
+
+  function slugifyTitle(title) {
+    var s = String(title || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    return s.slice(0, 80) || "untitled";
+  }
+
+  function synthesizeCardDigest(brief, fallbackSummary) {
+    var s = (fallbackSummary || "").trim();
+    if (s) return s;
+    var parts = [];
+    if (brief.problem) parts.push(brief.problem);
+    if (brief.targetUsers) parts.push("For: " + brief.targetUsers);
+    var t = parts.join(" ").replace(/\s+/g, " ").trim();
+    if (!t) return "";
+    if (t.length > 220) return t.slice(0, 217) + "…";
+    return t;
+  }
+
+  function briefHasContent(brief) {
+    if (!brief || typeof brief !== "object") return false;
+    return ["problem", "targetUsers", "success", "constraints", "uxDiscovery", "validation", "dependencies"].some(function (k) {
+      return brief[k] && String(brief[k]).trim();
+    });
+  }
+
+  function buildProductBriefWorkspaceMarkdown(title, id, vaultPath, cardDigest, brief) {
+    var lines = [];
+    lines.push("---");
+    lines.push("id: " + id);
+    lines.push("dex_dashboard_preserve: true");
+    lines.push("---");
+    lines.push("");
+    lines.push("# " + title);
+    lines.push("");
+    if (cardDigest) {
+      lines.push("## Card summary");
+      lines.push("");
+      lines.push(cardDigest);
+      lines.push("");
+    }
+    lines.push("## Product brief (intake)");
+    lines.push("");
+    lines.push("Captured from the product dashboard **New idea** modal — same question rounds as **`/product-brief`** in Dex.");
+    lines.push("");
+    function sec(heading, body) {
+      if (!body || !String(body).trim()) return;
+      lines.push("### " + heading);
+      lines.push("");
+      lines.push(String(body).trim());
+      lines.push("");
+    }
+    sec("Problem", brief.problem);
+    sec("Target users", brief.targetUsers);
+    sec("Success", brief.success);
+    sec("Constraints & scope", brief.constraints);
+    sec("User journey & discovery", brief.uxDiscovery);
+    sec("Validation", brief.validation);
+    sec("Dependencies", brief.dependencies);
+    lines.push("<!-- workspace: " + vaultPath + " -->");
+    return lines.join("\n");
+  }
+
+  function populateTicketBriefSection(init) {
+    var wrap = document.getElementById("dlg-brief-wrap");
+    var empty = document.getElementById("dlg-brief-empty");
+    var dl = document.getElementById("dlg-brief-dl");
+    if (!wrap || !empty || !dl) return;
+    var brief = effectiveProductBrief(init);
+    if (!briefHasContent(brief)) {
+      if ((init.source || "") !== "dashboard") {
+        wrap.hidden = true;
+        return;
+      }
+      wrap.hidden = false;
+      empty.hidden = false;
+      dl.hidden = true;
+      dl.innerHTML = "";
+      return;
+    }
+    wrap.hidden = false;
+    empty.hidden = true;
+    dl.hidden = false;
+    dl.innerHTML = "";
+    var pairs = [
+      ["Problem", brief.problem],
+      ["Target users", brief.targetUsers],
+      ["Success", brief.success],
+      ["Constraints & scope", brief.constraints],
+      ["User journey & discovery", brief.uxDiscovery],
+      ["Validation", brief.validation],
+      ["Dependencies", brief.dependencies]
+    ];
+    pairs.forEach(function (p) {
+      if (!p[1] || !String(p[1]).trim()) return;
+      var dt = document.createElement("dt");
+      dt.textContent = p[0];
+      dl.appendChild(dt);
+      var dd = document.createElement("dd");
+      dd.textContent = String(p[1]).trim();
+      dl.appendChild(dd);
+    });
+  }
+
+  function hydrateIdeaIntakeForm(init) {
+    var b = effectiveProductBrief(init);
+    function set(id, val) {
+      var el = document.getElementById(id);
+      if (el) el.value = val != null ? String(val) : "";
+    }
+    set("edit-problem", b.problem);
+    set("edit-target-users", b.targetUsers);
+    set("edit-success", b.success);
+    set("edit-constraints", b.constraints);
+    set("edit-ux", b.uxDiscovery);
+    set("edit-validation", b.validation);
+    set("edit-dependencies", b.dependencies);
+    var pr = document.getElementById("edit-priority");
+    if (pr) {
+      var pv = effectivePriority(init);
+      pr.value = pv || "P2";
+    }
+    var ink = document.getElementById("edit-intake");
+    if (ink) ink.value = effectiveIntakeSource(init) || "";
+    var det = document.getElementById("edit-brief-more");
+    if (det) det.open = false;
+  }
+
+  function collectIdeaBriefFromForm() {
+    function val(id) {
+      var el = document.getElementById(id);
+      return el ? String(el.value || "").trim() : "";
+    }
+    return {
+      problem: val("edit-problem"),
+      targetUsers: val("edit-target-users"),
+      success: val("edit-success"),
+      constraints: val("edit-constraints"),
+      uxDiscovery: val("edit-ux"),
+      validation: val("edit-validation"),
+      dependencies: val("edit-dependencies")
+    };
+  }
+
+  function applyBriefPanelMode(init) {
+    var lane = effectiveLane(init);
+    var dlg = document.getElementById("detail-dlg");
+    var ideaForm = document.getElementById("idea-intake-form");
+    var nonIdea = document.getElementById("brief-non-idea-block");
+    if (!ideaForm || !nonIdea || !dlg) return;
+    if (lane === "idea") {
+      dlg.classList.add("detail-dlg--idea");
+      ideaForm.hidden = false;
+      nonIdea.hidden = true;
+      hydrateIdeaIntakeForm(init);
+    } else {
+      dlg.classList.remove("detail-dlg--idea");
+      ideaForm.hidden = true;
+      nonIdea.hidden = false;
+      populateTicketBriefSection(init);
+    }
+  }
+
+  function resetAddIdeaForm() {
+    [
+      "add-title",
+      "add-summary",
+      "add-problem",
+      "add-target-users",
+      "add-success",
+      "add-constraints",
+      "add-ux",
+      "add-validation",
+      "add-dependencies"
+    ].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+    var hint = document.getElementById("add-title-hint");
+    if (hint) {
+      hint.textContent = "";
+      hint.classList.remove("visible");
+    }
+    var intake = document.getElementById("add-intake");
+    if (intake) intake.value = "";
+    var det = document.getElementById("add-brief-more");
+    if (det) det.open = false;
+    var tier = document.getElementById("add-tier");
+    var prio = document.getElementById("add-prio");
+    if (tier) tier.value = "Backlog";
+    if (prio) prio.value = "P2";
+  }
+
+  function allocateIdeaId(title) {
+    var base = "idea-" + slugifyTitle(title);
+    var ids = {};
+    mergedInitiatives().forEach(function (x) {
+      ids[x.id] = true;
+    });
+    if (!ids[base]) return base;
+    var n = 2;
+    while (ids[base + "-" + n]) n++;
+    return base + "-" + n;
+  }
+
+  function buildDiscoveryAgentPrompt(init) {
+    var title = effectiveTitle(init);
+    var desc = effectiveDescription(init);
+    var vaultPath = workspaceVaultPath(init);
+    var linkLines = (init.links || []).map(function (L) {
+      return "- " + L.label + ": " + L.href;
+    });
+    var brief = effectiveProductBrief(init);
+    var briefBlock = "";
+    if (briefHasContent(brief)) {
+      briefBlock =
+        "=== Product brief (intake from board) ===\n" +
+        (brief.problem ? "Problem: " + brief.problem + "\n" : "") +
+        (brief.targetUsers ? "Target users: " + brief.targetUsers + "\n" : "") +
+        (brief.success ? "Success: " + brief.success + "\n" : "") +
+        (brief.constraints ? "Constraints: " + brief.constraints + "\n" : "") +
+        (brief.uxDiscovery ? "User journey / discovery: " + brief.uxDiscovery + "\n" : "") +
+        (brief.validation ? "Validation: " + brief.validation + "\n" : "") +
+        (brief.dependencies ? "Dependencies: " + brief.dependencies + "\n" : "") +
+        "\n";
+    }
+    return (
+      "You are running a structured discovery pass for a product idea in Dex. Use semantic search (QMD: prds, meetings, accounts, resources) and grep where needed. Be concrete and cite vault paths.\n\n" +
+      "=== Idea ===\n" +
+      "Title: " + title + "\n" +
+      "Description:\n" + (desc || "(none)") + "\n\n" +
+      briefBlock +
+      (linkLines.length ? "=== Linked PRDs / files ===\n" + linkLines.join("\n") + "\n\n" : "") +
+      "=== Deliverables (write into the discovery file) ===\n" +
+      "Update or create this markdown file (relative to vault root):\n" +
+      vaultPath + "\n\n" +
+      "Use this structure (replace or fill each section):\n\n" +
+      "## Problem formulation\n" +
+      "- Who has the problem, when, and what is broken today\n" +
+      "- Success looks like…\n\n" +
+      "## Evidence from the vault\n" +
+      "- Bullet points with file references\n\n" +
+      "## Solution directions\n" +
+      "- Options, trade-offs, recommendation\n\n" +
+      "## Novel ideas\n" +
+      "- Non-obvious angles, combinations, or bets\n\n" +
+      "## Risks and assumptions\n\n" +
+      "## Open questions\n\n" +
+      "If the file already exists, merge new findings; keep prior notes where still valid. Id: " + init.id + "\n"
+    );
+  }
+
+  function copyTextToClipboard(text, thenFn) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(thenFn).catch(function () {
+        window.prompt("Copy:", text);
+        if (thenFn) thenFn();
+      });
+    } else {
+      window.prompt("Copy:", text);
+      if (thenFn) thenFn();
+    }
+  }
+
+  function openDiscoveryReviewModal() {
+    var p = state.pendingDiscovery;
+    if (!p) return;
+    var init = getInit(p.id);
+    if (!init) return;
+    document.getElementById("disc-title").value = effectiveTitle(init);
+    document.getElementById("disc-desc").value = effectiveDescription(init);
+    var prdEl = document.getElementById("disc-prd-paths");
+    var links = init.links || [];
+    if (links.length) {
+      prdEl.hidden = false;
+      prdEl.textContent = links.map(function (L) { return L.label + ": " + L.href; }).join("\n");
+    } else {
+      prdEl.hidden = true;
+      prdEl.textContent = "";
+    }
+    document.getElementById("discovery-review-dlg").showModal();
+  }
+
+  function clearPendingDiscovery() {
+    state.pendingDiscovery = null;
+  }
+
+  function commitDiscoveryFromReview() {
+    var p = state.pendingDiscovery;
+    if (!p) return;
+    var id = p.id;
+    var init = getInit(id);
+    if (!init) {
+      clearPendingDiscovery();
+      return;
+    }
+    var t = document.getElementById("disc-title").value.trim();
+    var d = document.getElementById("disc-desc").value;
+    if (t) state.store.titleById[id] = t;
+    else delete state.store.titleById[id];
+    state.store.descriptionById[id] = d;
+    var custom = state.store.customInitiatives || [];
+    for (var i = 0; i < custom.length; i++) {
+      if (custom[i].id === id) {
+        custom[i].title = t || custom[i].title;
+        custom[i].summary = d;
+        break;
+      }
+    }
+    state.store.laneOverride[id] = "discovery";
+    insertIdInLane(id, "discovery", p.beforeId);
+    saveStore();
+    document.getElementById("discovery-review-dlg").close();
+    clearPendingDiscovery();
+    renderExecutive();
+    renderOrchestration();
+    runDiscoveryAutomation(getInit(id));
+  }
+
+  function loadDiscoveryDocPreview(init) {
+    var el = document.getElementById("discovery-doc-view");
+    var url = workspaceFetchUrl(init);
+    el.textContent = "Loading…";
+    el.className = "doc-viewer muted";
+    if (!url) {
+      el.textContent = "No fetch path for this workspace file.";
+      return;
+    }
+    fetch(url, { cache: "no-store" })
+      .then(function (r) {
+        if (!r.ok) throw new Error(r.status === 404 ? "File not found yet — the agent can create it." : r.statusText);
+        return r.text();
+      })
+      .then(function (txt) {
+        var body = stripFrontmatter(txt || "");
+        el.textContent = body || "(empty file)";
+        el.className = "doc-viewer";
+      })
+      .catch(function (err) {
+        el.textContent = String(err.message || err);
+        el.className = "doc-viewer muted";
+      });
+  }
+
+  function openDiscoveryDocViewer(init, copyPrompt) {
+    if (!init) return;
+    state.discoveryRunInitId = init.id;
+    var prompt = buildDiscoveryAgentPrompt(init);
+    state.lastDiscoveryPrompt = prompt;
+    var vaultPath = workspaceVaultPath(init);
+    document.getElementById("discovery-vault-path").textContent = vaultPath;
+    document.getElementById("discovery-doc-view").textContent = "Loading…";
+    document.getElementById("discovery-run-dlg").showModal();
+    loadDiscoveryDocPreview(init);
+    if (copyPrompt) {
+      copyTextToClipboard(prompt, function () {
+        var st = document.getElementById("status");
+        st.textContent = "Discovery prompt copied — paste into Cursor.";
+        setTimeout(function () { st.textContent = ""; }, 6000);
+      });
+    }
+  }
+
+  function runDiscoveryAutomation(init) {
+    openDiscoveryDocViewer(init, true);
+  }
+
+  function tryBeginDiscoveryMove(o, laneId, beforeId) {
+    var dragInit = getInit(o.id);
+    if (!dragInit) return false;
+    var prevLane = effectiveLane(dragInit);
+    if (laneId !== "discovery" || prevLane === "discovery") return false;
+    if (state.store.discoveryPassCompleteById && state.store.discoveryPassCompleteById[o.id]) return false;
+    state.pendingDiscovery = { id: o.id, prevLane: prevLane, beforeId: beforeId };
+    openDiscoveryReviewModal();
+    return true;
+  }
+
+  function markDiscoveryPassCompleteIfLeaving(prevLane, newLane, initiativeId) {
+    if (prevLane !== "discovery" || newLane === "discovery") return;
+    if (!state.store.discoveryPassCompleteById) state.store.discoveryPassCompleteById = {};
+    state.store.discoveryPassCompleteById[initiativeId] = true;
+  }
+
+  function applyCrossLaneDrop(o, laneId, beforeId) {
+    var dragInit = getInit(o.id);
+    if (!dragInit) return;
+    var prevLane = effectiveLane(dragInit);
+    state.store.laneOverride[o.id] = laneId;
+    insertIdInLane(o.id, laneId, beforeId);
+    markDiscoveryPassCompleteIfLeaving(prevLane, laneId, o.id);
+    saveStore();
+    renderExecutive();
+    renderOrchestration();
+  }
+
+  function applySameLaneReorder(laneId, o, beforeId) {
+    reorderWithinLane(laneId, o.id, beforeId);
+    saveStore();
+    renderExecutive();
+    renderOrchestration();
+  }
+
+  function compareInitDefault(a, b) {
+    var tr = tierRank(effectivePrdTier(a)) - tierRank(effectivePrdTier(b));
+    if (tr !== 0) return tr;
+    var pa = (effectivePriority(a) || a.priority || "").replace(/\D/g, "") || "99";
+    var pb = (effectivePriority(b) || b.priority || "").replace(/\D/g, "") || "99";
+    var pi = parseInt(pa, 10) - parseInt(pb, 10);
+    if (pi !== 0) return pi;
+    return effectiveTitle(a).localeCompare(effectiveTitle(b));
+  }
+
+  function initsForLane(laneId) {
+    return mergedInitiatives().filter(function (init) {
+      return effectiveLane(init) === laneId;
+    });
+  }
+
+  /** Order cards by tier + priority + title (source of truth). Ignores saved drag order so P1–P6 stay visible. */
+  function orderedIdsForLane(laneId, inits) {
+    var ids = inits.map(function (i) { return i.id; });
+    return ids.slice().sort(function (ida, idb) {
+      return compareInitDefault(getInit(ida), getInit(idb));
+    });
+  }
+
+  function setLaneOrder(laneId, orderedIds) {
+    state.store.cardOrder[laneId] = orderedIds;
+  }
+
+  function removeIdFromAllOrders(id) {
+    Object.keys(state.store.cardOrder).forEach(function (lane) {
+      var arr = state.store.cardOrder[lane];
+      if (!arr) return;
+      state.store.cardOrder[lane] = arr.filter(function (x) { return x !== id; });
+    });
+  }
+
+  function insertIdInLane(id, laneId, beforeId) {
+    removeIdFromAllOrders(id);
+    var inits = initsForLane(laneId);
+    var base = orderedIdsForLane(laneId, inits.filter(function (x) { return x.id !== id; }));
+    if (beforeId == null || beforeId === "") {
+      base.push(id);
+    } else {
+      var idx = base.indexOf(beforeId);
+      if (idx < 0) base.push(id);
+      else base.splice(idx, 0, id);
+    }
+    setLaneOrder(laneId, base);
+  }
+
+  function reorderWithinLane(laneId, dragId, beforeId) {
+    var inits = initsForLane(laneId);
+    var order = orderedIdsForLane(laneId, inits);
+    order = order.filter(function (x) { return x !== dragId; });
+    if (beforeId == null || beforeId === "") {
+      order.push(dragId);
+    } else {
+      var idx = order.indexOf(beforeId);
+      if (idx < 0) order.push(dragId);
+      else order.splice(idx, 0, dragId);
+    }
+    setLaneOrder(laneId, order);
+  }
+
+  function setTab(name) {
+    document.querySelectorAll(".tabs button").forEach(function (b) {
+      var on = b.getAttribute("data-tab") === name;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    document.getElementById("panel-exec").classList.toggle("active", name === "exec");
+    document.getElementById("panel-exec").hidden = name !== "exec";
+    document.getElementById("panel-orch").classList.toggle("active", name === "orch");
+    document.getElementById("panel-orch").hidden = name !== "orch";
+  }
+
+  document.querySelectorAll(".tabs button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setTab(btn.getAttribute("data-tab"));
+    });
+  });
+
+  document.getElementById("panel-exec").addEventListener("click", function (e) {
+    var chip = e.target.closest(".exec-focus-chip");
+    if (!chip) return;
+    e.preventDefault();
+    var id = chip.getAttribute("data-init-id");
+    if (!id) return;
+    var ini = getInit(id);
+    if (ini) openDetail(ini);
+  });
+
+  function renderExecFocus() {
+    var ctxLine = document.getElementById("exec-context-line");
+    var ctx = state.data && state.data.executiveContext ? String(state.data.executiveContext).trim() : "";
+    if (ctxLine) {
+      if (ctx) {
+        ctxLine.innerHTML = escapeHtml(ctx).replace(/\n/g, "<br/>");
+        ctxLine.hidden = false;
+      } else {
+        ctxLine.textContent = "";
+        ctxLine.hidden = true;
+      }
+    }
+    var el = document.getElementById("exec-focus");
+    if (!el) return;
+    var focus = mergedInitiatives().filter(function (i) {
+      return i.steeringFocus === true;
+    });
+    if (!focus.length) {
+      el.innerHTML =
+        "<span class=\"exec-empty-hint\">No <strong>Current focus</strong> chips — set <code>steeringFocus: true</code> on initiatives in JSON.</span>";
+      el.classList.add("empty");
+      return;
+    }
+    var chips = focus
+      .map(function (i) {
+        return (
+          '<button type="button" class="exec-focus-chip" data-init-id="' +
+          escapeAttr(i.id) +
+          '"><span class="exec-chip-title">' +
+          escapeHtml(effectiveTitle(i)) +
+          '</span><span class="exec-chip-lane">' +
+          escapeHtml(laneLabel(effectiveLane(i))) +
+          "</span></button>"
+        );
+      })
+      .join("");
+    el.innerHTML =
+      '<p class="exec-focus-label">Current focus</p><div class="exec-focus-chips" role="list">' + chips + "</div>";
+    el.classList.remove("empty");
+  }
+
+  function renderExecutive() {
+    renderExecFocus();
+    var tb = document.querySelector("#exec-table tbody");
+    tb.innerHTML = "";
+    var all = mergedInitiatives().slice();
+    all.sort(compareInitDefault);
+    all.forEach(function (init) {
+        var lane = effectiveLane(init);
+        var tr = document.createElement("tr");
+        tr.style.cursor = "pointer";
+        tr.addEventListener("click", function () {
+          openDetail(init);
+        });
+        var rag = (init.rag || "").toLowerCase();
+        var links = (init.links || []).map(function (L) {
+          return '<a href="#" data-href="' + encodeURIComponent(L.href) + '">' + escapeHtml(L.label) + "</a>";
+        }).join(" ");
+        var tier = effectivePrdTier(init);
+        var pr = effectivePriority(init) || "—";
+        var tierOnly =
+          '<span class="badge ' + tierClass(tier) + '">' + escapeHtml(tierBadgeLabel(tier)) + "</span>";
+        var et = effectiveTitle(init);
+        var ed = effectiveCardSummary(init);
+        var prdH = getPrdVaultHrefFromInit(init);
+        var uatPrdBlurb =
+          effectiveLane(init) === "test_uat" &&
+          prdH &&
+          state.store.prdCardBlurbByHref &&
+          state.store.prdCardBlurbByHref[prdH];
+        var ed100 = escapeHtml(ed.slice(0, 100)) + (ed.length > 100 ? "…" : "");
+        var subLine = uatPrdBlurb
+          ? "<strong class=\"exec-sum-prd\">" + ed100 + "</strong>"
+          : ed100;
+        tr.innerHTML =
+          "<td><strong>" +
+          escapeHtml(et) +
+          "</strong><br/><span style='color:var(--muted);font-size:0.75rem'>" +
+          subLine +
+          "</span></td>" +
+          "<td>" +
+          tierOnly +
+          "</td>" +
+          "<td>" +
+          escapeHtml(String(pr)) +
+          "</td>" +
+          "<td>" +
+          escapeHtml(laneLabel(lane)) +
+          "</td>" +
+          "<td>" +
+          escapeHtml(init.horizon || "—") +
+          "</td>" +
+          "<td>" +
+          progressCellHtml(init) +
+          "</td>" +
+          "<td>" +
+          escapeHtml(nextMilestoneLabel(init)) +
+          "</td>" +
+          "<td><span class='rag " +
+          rag +
+          "'>" +
+          escapeHtml(init.rag || "—") +
+          "</span></td>" +
+          "<td>" +
+          escapeHtml(init.owner || "—") +
+          "</td>" +
+          "<td>" +
+          escapeHtml(init.whatsNext || "—") +
+          "</td>" +
+          "<td>" +
+          links +
+          "</td>";
+        tr.querySelectorAll("a[data-href]").forEach(function (a) {
+          a.addEventListener("click", function (e) {
+            e.stopPropagation();
+            var href = decodeURIComponent(a.getAttribute("data-href"));
+            copyTextToClipboard(href, function () {
+              var st = document.getElementById("status");
+              st.textContent = "Copied path.";
+              setTimeout(function () {
+                st.textContent = "";
+              }, 2000);
+            });
+          });
+        });
+        tb.appendChild(tr);
+    });
+  }
+
+  function escapeHtml(s) {
+    if (!s) return "";
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function escapeAttr(s) {
+    return escapeHtml(s).replace(/'/g, "&#39;");
+  }
+
+  function syncTicketPaperSubhead(init) {
+    if (!init) return;
+    syncTierSelectForInit(init);
+    var lp = document.getElementById("dlg-lane-pill");
+    if (lp) {
+      lp.textContent = laneLabel(effectiveLane(init));
+    }
+    var lu = document.getElementById("dlg-last-updated");
+    if (lu) {
+      lu.textContent = state.ticketLastSavedLabel || "Last updated —";
+    }
+  }
+
+  function populateMoveLaneSelect(init) {
+    var sel = document.getElementById("dlg-move-lane");
+    if (!sel || !init) return;
+    var lanes = state.data && state.data.lanes ? state.data.lanes : [];
+    var cur = effectiveLane(init);
+    sel.innerHTML = lanes
+      .map(function (lid) {
+        return '<option value="' + escapeAttr(lid) + '">' + escapeHtml(laneLabel(lid)) + "</option>";
+      })
+      .join("");
+    sel.value = cur;
+  }
+
+  function renderOrchestration() {
+    var root = document.getElementById("orchestration-root");
+    root.innerHTML = "";
+    var lanes = (state.data && state.data.lanes) ? state.data.lanes : [];
+
+    lanes.forEach(function (laneId) {
+      var inits = initsForLane(laneId);
+      var ids = orderedIdsForLane(laneId, inits);
+      var col = document.createElement("div");
+      col.className = "lane";
+      col.dataset.lane = laneId;
+      col.innerHTML =
+        "<h3><span class='lane-title'>" +
+        escapeHtml(laneLabel(laneId)) +
+        "</span><span class='lane-count' aria-hidden='true'>" +
+        String(ids.length) +
+        "</span></h3><div class='lane-body'></div>";
+      var body = col.querySelector(".lane-body");
+
+      if (laneId === "idea") {
+        var addBtn = document.createElement("button");
+        addBtn.type = "button";
+        addBtn.className = "add-idea-btn";
+        addBtn.setAttribute("aria-label", "New idea");
+        addBtn.textContent = "+ New idea";
+        addBtn.addEventListener("click", function () {
+          resetAddIdeaForm();
+          document.getElementById("add-idea-dlg").showModal();
+        });
+        body.appendChild(addBtn);
+      }
+
+      ids.forEach(function (id) {
+        var init = getInit(id);
+        if (!init) return;
+        var card = document.createElement("div");
+        card.className = "card" + (init.steeringFocus === true ? " steering-focus" : "");
+        card.draggable = true;
+        card.dataset.id = init.id;
+        var tier = effectivePrdTier(init);
+        var pr = effectivePriority(init) || "";
+        var wf = effectiveWorkflowStatus(init);
+        var intake = effectiveIntakeSource(init);
+        var meta =
+          '<div class="meta">' +
+          (tier ? '<span class="badge ' + tierClass(tier) + '">' + escapeHtml(tierBadgeLabel(tier)) + "</span>" : "") +
+          (pr ? '<span class="badge">' + escapeHtml(String(pr)) + "</span>" : "") +
+          (wf ? '<span class="chip" title="Workflow">' + escapeHtml(wf) + "</span>" : "") +
+          (intake ? '<span class="chip" title="Intake">' + escapeHtml(intake) + "</span>" : "") +
+          "</div>";
+        var et = effectiveTitle(init);
+        var ed = effectiveCardSummary(init);
+        var prdH = getPrdVaultHrefFromInit(init);
+        var uatPrdBlurb =
+          laneId === "test_uat" &&
+          prdH &&
+          state.store.prdCardBlurbByHref &&
+          state.store.prdCardBlurbByHref[prdH];
+        var sumBlock = "";
+        if (ed) {
+          sumBlock = uatPrdBlurb
+            ? "<div class='sum sum--uat-prd'><strong>" + escapeHtml(ed) + "</strong></div>"
+            : "<div class='sum'>" + escapeHtml(ed) + "</div>";
+        }
+        var focusLabel = init.steeringFocus === true ? '<div class="card-focus-label">Focus</div>' : "";
+        card.innerHTML =
+          focusLabel +
+          "<strong>" +
+          escapeHtml(et) +
+          "</strong>" +
+          sumBlock +
+          meta;
+
+        card.addEventListener("click", function (e) {
+          e.stopPropagation();
+          openDetail(init);
+        });
+
+        card.addEventListener("dragstart", function (e) {
+          state.dragId = init.id;
+          e.dataTransfer.setData("application/json", JSON.stringify({ id: init.id }));
+          e.dataTransfer.effectAllowed = "move";
+        });
+
+        card.addEventListener("dragend", function () {
+          state.dragId = null;
+          root.querySelectorAll(".card.drag-target").forEach(function (c) {
+            c.classList.remove("drag-target");
+          });
+        });
+
+        card.addEventListener("dragover", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.dataTransfer.dropEffect = "move";
+          card.classList.add("drag-target");
+        });
+
+        card.addEventListener("dragleave", function () {
+          card.classList.remove("drag-target");
+        });
+
+        card.addEventListener("drop", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          card.classList.remove("drag-target");
+          var raw = e.dataTransfer.getData("application/json");
+          var o = {};
+          try { o = JSON.parse(raw || "{}"); } catch (err) {}
+          if (!o.id) return;
+          var dragInit = getInit(o.id);
+          if (!dragInit) return;
+          var prevLane = effectiveLane(dragInit);
+          var beforeId = init.id;
+          if (prevLane === laneId) {
+            applySameLaneReorder(laneId, o, beforeId);
+            return;
+          }
+          if (tryBeginDiscoveryMove(o, laneId, beforeId)) return;
+          applyCrossLaneDrop(o, laneId, beforeId);
+        });
+
+        body.appendChild(card);
+      });
+
+      body.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        body.classList.add("drag-over");
+        e.dataTransfer.dropEffect = "move";
+      });
+
+      body.addEventListener("dragleave", function (e) {
+        if (!body.contains(e.relatedTarget)) body.classList.remove("drag-over");
+      });
+
+      body.addEventListener("drop", function (e) {
+        if (e.target.closest && e.target.closest(".card")) return;
+        e.preventDefault();
+        body.classList.remove("drag-over");
+        var raw = e.dataTransfer.getData("application/json");
+        var o = {};
+        try { o = JSON.parse(raw || "{}"); } catch (err) {}
+        if (!o.id) return;
+        var dragInit = getInit(o.id);
+        if (!dragInit) return;
+        var prevLane = effectiveLane(dragInit);
+        if (prevLane === laneId) {
+          applySameLaneReorder(laneId, o, null);
+          return;
+        }
+        if (tryBeginDiscoveryMove(o, laneId, null)) return;
+        applyCrossLaneDrop(o, laneId, null);
+      });
+
+      root.appendChild(col);
+    });
+    scheduleEnsureUatPrdCardBlurbs();
+  }
+
+  function openDetail(init) {
+    state.currentDetailId = init.id;
+    state.ticketPrdStage = effectivePrdStage(init);
+    state.ticketPrdVaultPath = getPrdVaultHrefForModal(init);
+    state.ticketWsVaultPath = workspaceVaultPath(init);
+    var laneOpen = effectiveLane(init);
+    var prdStOpen = effectivePrdStage(init);
+    if (laneOpen === "idea") {
+      state.ticketMainTab = "brief";
+    } else if (laneOpen === "discovery") {
+      state.ticketMainTab = "discovery";
+    } else {
+      state.ticketMainTab = state.ticketPrdVaultPath ? "requirements" : "discovery";
+    }
+    state.ticketMainTab = normalizeTicketTabForLane(init, state.ticketMainTab);
+    var lr = document.getElementById("dlg-lane-row");
+    if (lr) {
+      lr.textContent =
+        "PDLC lane: " +
+        laneLabel(laneOpen) +
+        (prdStOpen && prdStOpen !== "none" ? " · PRD stage: " + prdStOpen : "");
+    }
+    document.getElementById("dlg-title-input").value = effectiveTitle(init);
+    document.getElementById("dlg-desc").value = effectiveDescription(init);
+    document.getElementById("dlg-figma").value = effectiveFigma(init);
+    var daEl = document.getElementById("dlg-design-artifact");
+    var drEl = document.getElementById("dlg-design-revision");
+    if (daEl) daEl.value = effectiveDesignArtifact(init);
+    if (drEl) drEl.value = effectiveDesignRevision(init);
+    var prdEl = document.getElementById("dlg-prd-paths");
+    var links = init.links || [];
+    var prdHref = getPrdVaultHrefFromInit(init);
+    if (state.ticketPrdStage === "none" && prdHref) {
+      prdEl.textContent =
+        "Idea / Discovery — use **Workspace notes** for research; the full vault PRD opens here after **Spec ready**. Not loaded yet: " +
+        prdHref;
+    } else if (links.length) {
+      prdEl.textContent = "Links: " + links.map(function (L) { return L.label + ": " + L.href; }).join(" · ");
+    } else {
+      prdEl.textContent = "";
+    }
+    var dr = document.getElementById("dlg-discovery-row");
+    if (effectiveLane(init) === "discovery") {
+      dr.hidden = false;
+      document.getElementById("dlg-discovery-path-short").textContent = workspaceVaultPath(init);
+    } else {
+      dr.hidden = true;
+    }
+    var wf = effectiveWorkflowStatus(init);
+    document.getElementById("dlg-workflow").value = wf || "";
+    var intake = effectiveIntakeSource(init);
+    document.getElementById("dlg-intake").value = intake || "";
+    applyBriefPanelMode(init);
+    syncTicketPaperSubhead(init);
+    populateMoveLaneSelect(init);
+    applyTicketDock(state.ticketDock);
+    applyTicketSize("lg");
+    updateTicketMainTabs(init);
+    document.getElementById("detail-dlg").showModal();
+    loadActiveTicketDocument();
+  }
+
+  document.querySelector("#detail-dlg .close").addEventListener("click", function () {
+    persistTicketEditorMarkdown();
+    saveStore();
+    document.getElementById("detail-dlg").close();
+  });
+
+  document.getElementById("ticket-dock-left").addEventListener("click", function () {
+    applyTicketDock("left");
+  });
+  document.getElementById("ticket-dock-center").addEventListener("click", function () {
+    applyTicketDock("center");
+  });
+  document.getElementById("ticket-dock-right").addEventListener("click", function () {
+    applyTicketDock("right");
+  });
+
+  document.getElementById("ticket-shrink").addEventListener("click", function () {
+    var order = ["sm", "md", "lg"];
+    var i = order.indexOf(state.ticketSize || "lg");
+    applyTicketSize(order[Math.max(0, i - 1)]);
+  });
+  document.getElementById("ticket-expand").addEventListener("click", function () {
+    var order = ["sm", "md", "lg"];
+    var i = order.indexOf(state.ticketSize || "lg");
+    applyTicketSize(order[Math.min(2, i + 1)]);
+  });
+
+  document.getElementById("dlg-tier-select").addEventListener("change", function () {
+    var st = getSelectedTierFromSelect();
+    var sel = document.getElementById("dlg-tier-select");
+    if (sel) sel.className = "ticket-pill ticket-pill-tier " + tierClass(st);
+  });
+
+  document.getElementById("dlg-move-lane").addEventListener("change", function () {
+    var id = state.currentDetailId;
+    if (!id) return;
+    var init = getInit(id);
+    if (!init) return;
+    var newLane = this.value;
+    var prev = effectiveLane(init);
+    if (newLane === prev) return;
+    if (newLane === "discovery" && prev !== "discovery") {
+      if (!(state.store.discoveryPassCompleteById && state.store.discoveryPassCompleteById[id])) {
+        this.value = prev;
+        state.pendingDiscovery = { id: id, prevLane: prev, beforeId: null };
+        openDiscoveryReviewModal();
+        return;
+      }
+    }
+    state.store.laneOverride[id] = newLane;
+    insertIdInLane(id, newLane, null);
+    markDiscoveryPassCompleteIfLeaving(prev, newLane, id);
+    saveStore();
+    renderExecutive();
+    renderOrchestration();
+    var fresh = getInit(id);
+    if (!fresh) return;
+    state.ticketPrdStage = effectivePrdStage(fresh);
+    state.ticketPrdVaultPath = getPrdVaultHrefForModal(fresh);
+    state.ticketWsVaultPath = workspaceVaultPath(fresh);
+    state.ticketMainTab = normalizeTicketTabForLane(fresh, state.ticketMainTab);
+    var lr = document.getElementById("dlg-lane-row");
+    if (lr) {
+      var prdStOpen = effectivePrdStage(fresh);
+      lr.textContent =
+        "PDLC lane: " +
+        laneLabel(effectiveLane(fresh)) +
+        (prdStOpen && prdStOpen !== "none" ? " · PRD stage: " + prdStOpen : "");
+    }
+    syncTicketPaperSubhead(fresh);
+    populateMoveLaneSelect(fresh);
+    updateTicketMainTabs(fresh);
+    applyBriefPanelMode(fresh);
+    loadActiveTicketDocument();
+  });
+
+  document.getElementById("btn-open-design-artifact").addEventListener("click", function () {
+    var fig = document.getElementById("dlg-figma");
+    var art = document.getElementById("dlg-design-artifact");
+    var url = ((art && art.value.trim()) || (fig && fig.value.trim()) || "").trim();
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
+  });
+
+  document.getElementById("btn-open-discovery-doc").addEventListener("click", function () {
+    var id = state.currentDetailId;
+    if (!id) return;
+    var init = getInit(id);
+    if (!init) return;
+    persistTicketEditorMarkdown();
+    saveStore();
+    document.getElementById("detail-dlg").close();
+    openDiscoveryDocViewer(init, false);
+  });
+
+  document.getElementById("detail-dlg").addEventListener("cancel", function () {
+    persistTicketEditorMarkdown();
+    saveStore();
+  });
+
+  function goTicketMainTab(name) {
+    var init = state.currentDetailId ? getInit(state.currentDetailId) : null;
+    if (!init) return;
+    if (!allowedTabsForLane(effectiveLane(init))[name]) return;
+    persistTicketEditorMarkdown();
+    state.ticketMainTab = name;
+    updateTicketMainTabs(init);
+    loadActiveTicketDocument();
+  }
+  ["brief", "discovery", "requirements", "design"].forEach(function (name) {
+    var btn = document.getElementById("tab-" + name);
+    if (btn) {
+      btn.addEventListener("click", function () {
+        goTicketMainTab(name);
+      });
+    }
+  });
+
+  document.querySelector("#detail-dlg .ticket-format-bar").addEventListener("mousedown", function (e) {
+    var b = e.target.closest("[data-fmt]");
+    if (!b || !document.getElementById("detail-dlg").contains(b)) return;
+    e.preventDefault();
+    var fmt = b.getAttribute("data-fmt");
+    var w = document.getElementById("md-wysiwyg");
+    w.focus();
+    if (fmt === "h2") {
+      document.execCommand("formatBlock", false, "h2");
+      return;
+    }
+    document.execCommand(fmt, false, null);
+  });
+
+  document.getElementById("btn-rerun-discovery").addEventListener("click", function () {
+    var id = state.currentDetailId;
+    if (!id) return;
+    var init = getInit(id);
+    if (!init) return;
+    loadActiveTicketDocument();
+    openDiscoveryDocViewer(init, true);
+  });
+
+  document.getElementById("btn-download-ticket-md").addEventListener("click", function () {
+    persistTicketEditorMarkdown();
+    saveStore();
+    var vp = state.ticketCurrentVaultPath;
+    var md = (vp && state.store.mdOverrideByVaultPath[vp]) || "";
+    var td = getTurndown();
+    var el = document.getElementById("md-wysiwyg");
+    if (td && el && !md) md = td.turndown(el.innerHTML);
+    var base = (vp || "document.md").replace(/^.*\//, "").replace(/\.md$/i, "") || "document";
+    var blob = new Blob([md || ""], { type: "text/markdown;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = base + ".md";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById("btn-save-card").addEventListener("click", function () {
+    var id = state.currentDetailId;
+    if (!id) return;
+    persistTicketEditorMarkdown();
+    var t = document.getElementById("dlg-title-input").value.trim();
+    var d = document.getElementById("dlg-desc").value;
+    var f = document.getElementById("dlg-figma").value.trim();
+    var dArtEl = document.getElementById("dlg-design-artifact");
+    var dRevEl = document.getElementById("dlg-design-revision");
+    var dArt = dArtEl ? dArtEl.value.trim() : "";
+    var dRev = dRevEl ? dRevEl.value.trim() : "";
+    if (t) state.store.titleById[id] = t;
+    else delete state.store.titleById[id];
+    state.store.descriptionById[id] = d;
+    state.store.figmaById[id] = f;
+    if (dArt) state.store.designArtifactUrlById[id] = dArt;
+    else delete state.store.designArtifactUrlById[id];
+    if (dRev) state.store.designRevisionById[id] = dRev;
+    else delete state.store.designRevisionById[id];
+    var stTier = getSelectedTierFromSelect();
+    var initRef = getInit(id);
+    var baseTier = initRef ? normalizePrdTierKey(initRef.prdTier) : "Backlog";
+    if (stTier === baseTier) delete state.store.prdTierById[id];
+    else state.store.prdTierById[id] = stTier;
+    var laneOpen = initRef ? effectiveLane(initRef) : "";
+    var wfSel = "";
+    var intakeSel = "";
+    var briefSaved = null;
+    if (laneOpen === "idea") {
+      briefSaved = collectIdeaBriefFromForm();
+      state.store.productBriefById[id] = briefSaved;
+      var prEl = document.getElementById("edit-priority");
+      var pv = prEl ? prEl.value.trim() : "P2";
+      var baseP =
+        initRef && initRef.priority != null && String(initRef.priority).trim() !== ""
+          ? String(initRef.priority).trim()
+          : null;
+      if (baseP === null) {
+        if (pv === "P2") delete state.store.priorityById[id];
+        else state.store.priorityById[id] = pv;
+      } else {
+        if (pv === baseP) delete state.store.priorityById[id];
+        else state.store.priorityById[id] = pv;
+      }
+      var inkEl = document.getElementById("edit-intake");
+      intakeSel = inkEl ? inkEl.value.trim() : "";
+      if (intakeSel) state.store.intakeSourceById[id] = intakeSel;
+      else delete state.store.intakeSourceById[id];
+    } else {
+      wfSel = document.getElementById("dlg-workflow").value.trim();
+      intakeSel = document.getElementById("dlg-intake").value.trim();
+      if (wfSel) state.store.workflowStatusById[id] = wfSel;
+      else delete state.store.workflowStatusById[id];
+      if (intakeSel) state.store.intakeSourceById[id] = intakeSel;
+      else delete state.store.intakeSourceById[id];
+    }
+    var custom = state.store.customInitiatives || [];
+    for (var i = 0; i < custom.length; i++) {
+      if (custom[i].id === id) {
+        custom[i].title = t || custom[i].title;
+        custom[i].summary = d;
+        custom[i].prdTier = stTier;
+        if (f) custom[i].figmaUrl = f;
+        if (dArt) custom[i].designArtifactUrl = dArt;
+        else delete custom[i].designArtifactUrl;
+        if (dRev) custom[i].designRevision = dRev;
+        else delete custom[i].designRevision;
+        if (laneOpen === "idea" && briefSaved) {
+          custom[i].productBrief = briefSaved;
+          var pvo = document.getElementById("edit-priority");
+          if (pvo && pvo.value.trim()) custom[i].priority = pvo.value.trim();
+          if (intakeSel) custom[i].intakeSource = intakeSel;
+          else delete custom[i].intakeSource;
+          delete custom[i].workflowStatus;
+        } else {
+          if (wfSel) custom[i].workflowStatus = wfSel;
+          else delete custom[i].workflowStatus;
+          if (intakeSel) custom[i].intakeSource = intakeSel;
+          else delete custom[i].intakeSource;
+        }
+        break;
+      }
+    }
+    saveStore();
+    try {
+      state.ticketLastSavedLabel =
+        "Last updated " +
+        new Date().toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+    } catch (e2) {
+      state.ticketLastSavedLabel = "Last updated " + new Date().toISOString().slice(0, 16);
+    }
+    var lu = document.getElementById("dlg-last-updated");
+    if (lu) lu.textContent = state.ticketLastSavedLabel;
+    document.getElementById("detail-dlg").close();
+    renderExecutive();
+    renderOrchestration();
+  });
+
+  document.getElementById("discovery-review-close").addEventListener("click", function () {
+    document.getElementById("discovery-review-dlg").close();
+    clearPendingDiscovery();
+  });
+  document.getElementById("discovery-review-cancel").addEventListener("click", function () {
+    document.getElementById("discovery-review-dlg").close();
+    clearPendingDiscovery();
+  });
+  document.getElementById("discovery-review-dlg").addEventListener("cancel", function () {
+    clearPendingDiscovery();
+  });
+  document.getElementById("discovery-review-accept").addEventListener("click", function () {
+    commitDiscoveryFromReview();
+  });
+
+  document.getElementById("discovery-run-close").addEventListener("click", function () {
+    document.getElementById("discovery-run-dlg").close();
+    state.discoveryRunInitId = null;
+  });
+  document.getElementById("discovery-run-dlg").addEventListener("cancel", function () {
+    state.discoveryRunInitId = null;
+  });
+  document.getElementById("discovery-copy-path").addEventListener("click", function () {
+    var t = document.getElementById("discovery-vault-path").textContent;
+    copyTextToClipboard(t, function () {
+      document.getElementById("status").textContent = "Path copied.";
+      setTimeout(function () { document.getElementById("status").textContent = ""; }, 2000);
+    });
+  });
+  document.getElementById("discovery-copy-prompt").addEventListener("click", function () {
+    copyTextToClipboard(state.lastDiscoveryPrompt || "", null);
+  });
+  document.getElementById("discovery-refresh-doc").addEventListener("click", function () {
+    var id = state.discoveryRunInitId;
+    if (!id) return;
+    var init = getInit(id);
+    if (init) loadDiscoveryDocPreview(init);
+  });
+
+  document.getElementById("add-idea-close").addEventListener("click", function () {
+    document.getElementById("add-idea-dlg").close();
+  });
+  document.getElementById("add-idea-save").addEventListener("click", function () {
+    var title = document.getElementById("add-title").value.trim();
+    var hintEl = document.getElementById("add-title-hint");
+    if (!title) {
+      if (hintEl) {
+        hintEl.textContent = "Add a title to create a draft.";
+        hintEl.classList.add("visible");
+      }
+      return;
+    }
+    if (hintEl) {
+      hintEl.textContent = "";
+      hintEl.classList.remove("visible");
+    }
+    var brief = {
+      problem: document.getElementById("add-problem").value.trim(),
+      targetUsers: document.getElementById("add-target-users").value.trim(),
+      success: document.getElementById("add-success").value.trim(),
+      constraints: document.getElementById("add-constraints").value.trim(),
+      uxDiscovery: document.getElementById("add-ux").value.trim(),
+      validation: document.getElementById("add-validation").value.trim(),
+      dependencies: document.getElementById("add-dependencies").value.trim()
+    };
+    var digestInput = document.getElementById("add-summary").value.trim();
+    var summary = synthesizeCardDigest(brief, digestInput);
+    var tier = document.getElementById("add-tier").value;
+    var prio = document.getElementById("add-prio").value;
+    var intakeVal = document.getElementById("add-intake");
+    var intakeSource = intakeVal ? intakeVal.value.trim() : "";
+    var nid = allocateIdeaId(title);
+    var cf = "06-Resources/Product_ideas/" + nid + ".md";
+    /* Do not seed mdOverrideByVaultPath — a browser-only template blocked fetch of the real vault file after discovery. Brief lives in productBriefById; Discovery tab loads from disk or builds fallback. */
+    if (!state.store.productBriefById) state.store.productBriefById = {};
+    state.store.productBriefById[nid] = brief;
+    var newI = {
+      id: nid,
+      kind: "feature_idea",
+      title: title,
+      summary: summary,
+      lane: "idea",
+      prdStage: "none",
+      prdTier: tier,
+      priority: prio,
+      owner: "",
+      horizon: "",
+      rag: "amber",
+      whatsNext: "",
+      figmaUrl: "",
+      links: [],
+      contextFile: cf,
+      source: "dashboard",
+      intakeSource: intakeSource,
+      progress: null,
+      progressLabel: "",
+      milestones: [],
+      steeringFocus: false,
+      workflowStatus: "",
+      productBrief: brief
+    };
+    state.store.customInitiatives.push(newI);
+    state.store.descriptionById[newI.id] = summary;
+    insertIdInLane(newI.id, "idea", null);
+    saveStore();
+    document.getElementById("add-idea-dlg").close();
+    renderExecutive();
+    renderOrchestration();
+  });
+
+  fetch("initiatives.json", { cache: "no-store" })
+    .then(function (r) {
+      if (!r.ok) throw new Error("initiatives.json: " + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      state.data = data;
+      var errEl = document.getElementById("orch-load-error");
+      if (errEl) {
+        errEl.hidden = true;
+        errEl.textContent = "";
+      }
+      renderExecutive();
+      renderOrchestration();
+    })
+    .catch(function (e) {
+      var errEl = document.getElementById("orch-load-error");
+      if (errEl) {
+        errEl.hidden = false;
+        errEl.textContent =
+          "Could not load initiatives.json. Start a local server in this folder (e.g. python3 -m http.server 8766). " +
+          e.message;
+      }
+    });
+})();
+  </script>
+</body>
+</html>
