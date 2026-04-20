@@ -27,7 +27,7 @@ You have an idea for a product or feature in your mind, but struggle to explain 
 
 ## Process Flow
 
-**Dex vault — binding PRD:** When the work reaches **`spec_ready`**, create or update **`06-Resources/PRDs/<Feature>.md`** (flat folder; no `Current/`/`Next/`). Use YAML frontmatter: `lifecycle`, `prd_id`, `source: product_brief`, optional `related_brief`, then run **`/agent-prd`** for the full template (work packages, technical blueprint, validation). While still in **brief** or **discovery**, you may keep `lifecycle` on that file or only on the orchestration board — see `06-Resources/PRDs/README.md`.
+**Dex vault — binding PRD:** In **`pdlc-ui`**, the **`/product-brief`** wizard runs when the user moves a card **`idea` → `discovery`** (stepwise popup with help text). Persist answers on the initiative; discovery (research, problem, solutions, open questions) continues in **`discovery`**. Later, at **`spec_ready`**, create or update **`06-Resources/PRDs/<Feature>.md`** and run **`/agent-prd`** for the full template — see `06-Resources/PRDs/README.md` and [lifecycle-transitions.md](../../plans/PDLC_UI/lifecycle-transitions.md). **Board wins** for `lifecycle` when both board and file exist.
 
 ### Phase 1: Capture Initial Idea
 

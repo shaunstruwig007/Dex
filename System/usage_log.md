@@ -66,7 +66,7 @@
 - [x] X-ray transparency (`/xray`)
 - [ ] What's new check (`/dex-whats-new`)
 - [ ] Backlog review (`/dex-backlog`)
-- [ ] Improvement workshop (`/dex-improve`)
+- [x] Improvement workshop (`/dex-improve`)
 - [ ] Idea captured (via MCP)
 - [ ] Dex updated (`/dex-update`)
 - [ ] Dex rolled back (`/dex-rollback`)

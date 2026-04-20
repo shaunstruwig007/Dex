@@ -8,6 +8,10 @@ This skill guides creation of distinctive, production-grade frontend interfaces 
 
 The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.
 
+### After Claude Design (PDLC handoff)
+
+When the user arrives from **Claude Design** (web) with a **handoff bundle**, **HTML export**, **`PROMPT.md`**, or pasted layout specs from Steerco’s PDLC flow: **treat that material as the primary visual and structural source of truth** — extend and production-harden it (routing, data, a11y, tests) rather than inventing a new layout. **Match** typography, spacing, and key components from the Design session unless the user explicitly requests a deviation. If anything in the handoff conflicts with the repo’s design system, **surface the conflict** and default to **repo + Figma** decisions after user confirmation.
+
 ## Design Thinking
 
 Before coding, understand the context and commit to a BOLD aesthetic direction:

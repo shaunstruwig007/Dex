@@ -10,9 +10,25 @@ Feature specs live as **flat markdown files** in this folder. Each feature PRD u
 
 ---
 
-## Lifecycle (Steerco)
+## Lifecycle (Steerco / PDLC board)
 
-Main path: `idea` → `brief` → `discovery` → `spec_ready` → `develop` → `uat` → `done` · Branch: `parked`
+**Board columns (canonical `lifecycle` for `pdlc-ui` + PRD frontmatter):**
+
+`idea` → `discovery` → `design` → **`spec_ready`** → `develop` → `uat` → `deployed` · Branch: **`parked`**
+
+- **Steerco** decides on the board; **`pdlc-ui` persistence wins** for stage. When a flat PRD exists, **sync `lifecycle` from the board** (never overwrite the board from stale YAML).
+- **Subflows (not separate columns):** **`/product-brief`** runs when the user moves **`idea` → `discovery`** (stepwise popup first). **`/agent-prd`** runs in **`spec_ready`** (MVP: export + Cursor; later in-app). **`develop`** starts after spec is complete and handoff is issued.
+- **Rewind / rework:** Cards may move **backward** (e.g. `spec_ready` → `discovery` or `design`) to absorb scope change; **only** a move **into `idea`** clears the card to **title + description** only. Detail: [plans/PDLC_UI/lifecycle-transitions.md](../../plans/PDLC_UI/lifecycle-transitions.md).
+- **`parked`:** Use intent **`revisit`** vs **`wont_consider`** (see lifecycle doc).
+- **Strategy (“golden thread”):** Link initiatives to **`System/pillars.yaml`** (and future company strategy); **warn** when an idea does not match declared strategy (e.g. loudest-client work outside A/B).
+
+**Migration from older frontmatter (retrofit over time):**
+
+| Previous `lifecycle` | Map to |
+|----------------------|--------|
+| `brief` | **`discovery`** (brief is the entry subflow) — **match board** |
+| `spec_ready` | **`spec_ready`** (unchanged) |
+| `done` | `deployed` |
 
 ---
 

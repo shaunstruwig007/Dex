@@ -1,17 +1,21 @@
 {
   "user": {
     "name": "Shaun",
-    "role": "Product Manager / Product Owner",
+    "role": "Product Manager",
     "company": "Wyzetalk",
     "companySize": "startup",
     "emailDomain": "wyzetalk.com",
     "pillars": [
-      "New product launch (MVP/skeleton — roadmap next)",
-      "Client migration",
-      "AI in the PDLC (adoption, efficiency)"
+      "AI adoption in processes",
+      "Streamlined product launch (lighter UI vs legacy product)"
     ],
-    "meetings": "Microsoft Teams + Copilot (not Granola)"
+    "meetings": "Granola not used (ICT). Teams / approved transcripts; manual /process-meetings if you provide exports."
   },
   "createdAt": "2026-03-19",
-  "setupRefreshedAt": "2026-03-19"
+  "setupRefreshedAt": "2026-04-17",
+  "publicContextConfirmed": true,
+  "publicContextSources": [
+    "https://www.wyzetalk.com/",
+    "https://www.linkedin.com/company/wyzetalk/"
+  ]
 }

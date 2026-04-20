@@ -7,6 +7,102 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.19.59] — PDLC pre-S0 sign-off: cadence, canonical case, kick-off decisions (2026-04-20)
+
+**Before:** Sprint cadence drifted (1w/2w mixed), **Phase 5 row #14 missing**, field case **snake vs camel** drift, and several decisions (human ID, audit events, attachments, backup cadence, timezone, git host, a11y, device scope) were implicit — would cause rework by S2.
+
+**Now:** [plan.md](plans/PDLC_UI/plan.md) Phase 5 adds **row #14** (release notes governance) and a new **“Sprint 0 kick-off decisions”** block (camelCase canonical, `handle` ID, `events[]`, attachments links-only, daily backup + 30-day retention, UTC stored / SAST displayed, git host + CI runner ADR, **WCAG 2.1 AA + keyboard**, desktop-only, PII note, JSON migration stub, no-undo, first real initiative TBC at S7). Schema list gains `handle`, `events[]`, `createdAt`, `updatedAt`. [sprint-backlog.md](plans/PDLC_UI/sprint-backlog.md) normalises cadence (S0 = 1–2w exception, others = 2w), adds **a11y baseline** to Implementation standard, updates **S0 deliverables** (ADRs for git host + timezone), **S1** adds `events[]` + `handle` to DoD, **S2** Plan seed switches to camelCase and appends to `events[]`.
+
+---
+
+## [1.19.58] — PDLC git: branch-per-cycle + green CI merge gate (2026-04-20)
+
+**Before:** [plan.md](plans/PDLC_UI/plan.md) **R16** did not explicitly forbid **developing on `main`** or require **green CI before merging** to default.
+
+**Now:** **R16** adds §7 (**dedicated branch per cycle**, `main` releasable, PR-only integration) and §8 (**no merge to default without green CI**, branch protection when ICT allows) + **hotfix** rule. [sprint-backlog.md](plans/PDLC_UI/sprint-backlog.md) guardrails table + **Definition of Ready** + **S0 OPERATIONS** deliverable; sprint ceremony line updated.
+
+---
+
+## [1.19.57] — PDLC R17 ops/DB baseline + S0/S1 split (2026-04-20)
+
+**Before:** [plan.md](plans/PDLC_UI/plan.md) lacked **DB + DevOps** depth (SQLite WAL/migrations, JSON atomicity, health/version, secrets, deploy/rollback, audit/CI security, R13 git conflicts); **Sprint 0** did not spell **what is in S0 vs deferred**.
+
+**Now:** **R17** + **§ Data, DevOps, and operability** (S0 seeds / S1 proves). Phase A adds **`schemaVersion`**, **`revision`**. Sprint **S0** deliverables: `.env.example`, **`OPERATIONS.md`**, **required CI** schema validate, **health + build version**, BACKUP_RUNBOOK **SQLite/JSON** specifics; **Out** lists deferred Docker/staging/gitleaks unless ICT requires. **S1** DoD includes **WAL/migrations or JSON atomic**, **`revision`** on save. Engineering guardrails table adds **R17 split** row.
+
+---
+
+## [1.19.56] — PDLC engineering governance R16 + ADR seed (2026-04-20)
+
+**Before:** [plan.md](plans/PDLC_UI/plan.md) and [sprint-backlog.md](plans/PDLC_UI/sprint-backlog.md) did not explicitly require **cross-sprint tech patterns** (anti-drift for solo/Plan-mode delivery).
+
+**Now:** Plan adds **R16** and **§ Engineering governance** (contracts+docs same PR, ADRs, CI/schema/tests, DS consumption after S6, PR sprint trace, lockfile policy). Sprint backlog adds **Engineering guardrails** table + **S0 DoD** / Plan seed for **`pdlc-ui/docs/adr/`** and first ADR.
+
+---
+
+## [1.19.55] — PDLC as-is clarifying answers captured (2026-04-20)
+
+**Before:** [plan.md](plans/PDLC_UI/plan.md) listed open clarifying questions without **WT-specific answers**.
+
+**Now:** Plan holds a **Q&A table**: duplicate briefs in **verbal 1:1 / Steerco**; **spec→build→retrofit design** norm; **discovery skipped for time** (core problem the flow solves); **post-Steerco fires + isolated conversations + word of mouth**; drivers **internal deadline + demo**; MVP success = **PRD+design conformance**, **Plan mode**-fed context, **~30% miss / Jira resistance** context. **Product implications** bullets for backlog. [company_strategy.md](plans/PDLC_UI/company_strategy.md) adds **pressure signals** for future R12 copy.
+
+---
+
+## [1.19.54] — PDLC clarifying questions + WT company_strategy draft (2026-04-20)
+
+**Before:** [plan.md](plans/PDLC_UI/plan.md) listed follow-up research in one line; there was no **short company strategy** file for future **R12** checks.
+
+**Now:** Plan includes an explicit **clarifying questions** list (duplicate briefs, design-without-spec, missed gates, Steerco→implementation drift, loud-client drivers, MVP success). New [company_strategy.md](plans/PDLC_UI/company_strategy.md) — working draft: **frontline / blue-collar engagement platform** thesis, in/out examples (e.g. budgeting tool off-strategy), usage notes for post-MVP R12. [lifecycle-transitions.md](plans/PDLC_UI/lifecycle-transitions.md) and [README](plans/PDLC_UI/README.md) link to it.
+
+---
+
+## [1.19.53] — PDLC UI governance: as-is/to-be, gates, solo cadence (2026-04-20)
+
+**Before:** [plan.md](plans/PDLC_UI/plan.md) and [sprint-backlog.md](plans/PDLC_UI/sprint-backlog.md) did not encode **Wyzetalk Steerco as-is** (reporting / broken telephone / feature-factory pain), **PM as record-of-truth mover**, **parked intent + reason in Sprint 2**, **product-brief before `idea→discovery` (S3 dependency)**, **develop/uat read-only + release notes**, **R6b via export template**, **structured spec wizard**, **vault continuity (R13)** and **deferred company-strategy (R12)** vs Dex pillars, **solo 2-week** cadence, or **wipe-to-idea** mitigation.
+
+**Now:** Plan adds **as-is vs to-be**, Phase 5 governance (**PO/Designer** waive, **Shaun** audit placeholder, **PM** rewind approval), Requirements **R12–R15** (strategy post-MVP, vault thread, release notes, agent phases), canonical **`claudeDesignHandoffPath` / `implementationPolishNote` / `parkedReason`**. [lifecycle-transitions.md](plans/PDLC_UI/lifecycle-transitions.md) updates **parked reason**, **all →`idea` wipes**, **accident mitigation**, **company strategy post-MVP**. Sprint backlog: **S2** blocks **`idea→discovery`** until **S3**, **S9 deferred**, **S8** develop rewind + wipe rules, default **`spec_complete`** checklist, **R13** in optional **S10+**.
+
+---
+
+## [1.19.52] — pdlc-ui build: anthropic-frontend-design + S5–S6 → DS (2026-04-23)
+
+**Before:** [sprint-backlog.md](plans/PDLC_UI/sprint-backlog.md) did not mandate **`/anthropic-frontend-design`** for orchestration UI or tie **S5–S6** to a **design-system** extract from **R6/R7** work.
+
+**Now:** Sprint backlog adds an **Implementation standard** (all `pdlc-ui` UI via **`anthropic-frontend-design`**, **BE+UI** vertical slices). **S5–S6** are framed as **dogfood** test cases for the Steerco design column + review gate, with **DoD** to add **`pdlc-ui/docs/design-system.md` v0.1** after S6 and **consume** it from **S7+**. [plan.md](plans/PDLC_UI/plan.md) Phase B links the same.
+
+---
+
+## [1.19.51] — PDLC UI sprint backlog for agile delivery (2026-04-23)
+
+**Before:** Implementation steps in [plan.md](plans/PDLC_UI/plan.md) listed stages but not **sprint-sized** goals with **Definition of Done** or **Cursor Plan** entry points.
+
+**Now:** [sprint-backlog.md](plans/PDLC_UI/sprint-backlog.md) defines **Sprints 0–9** (spike + shell through strategy thread), maps each to plan **R#**s, spells **how** technically, **explicitly out** scope, and includes a **Plan mode seed** per sprint. [plan.md](plans/PDLC_UI/plan.md) Phase B and [README](plans/PDLC_UI/README.md) link to it.
+
+---
+
+## [1.19.50] — PDLC `spec_ready` column, rewind rules, strategy thread (2026-04-23)
+
+**Before:** Swim lanes omitted **`spec_ready`**; **`/agent-prd`** was framed only as a gate immediately before **`develop`**; no single doc for **backward moves**, **`parked`** intent, or **strategy non-conformance**.
+
+**Now:** [lifecycle-transitions.md](plans/PDLC_UI/lifecycle-transitions.md) defines **`idea` → `discovery` → `design` → `spec_ready` → `develop` → `uat` → `deployed`**, **product-brief on `idea`→`discovery`**, **rewind** (retain data except **`→ idea`** = title+body only), **`parked_intent`**, and **pillar / strategy** warnings. [PRDs/README.md](06-Resources/PRDs/README.md), [plan.md](plans/PDLC_UI/plan.md), [PDLC_Orchestration_UI.md](04-Projects/PDLC_Orchestration_UI.md), [skill-agent-map.md](plans/PDLC_UI/skill-agent-map.md), **`/product-brief`** and **`/agent-prd`** skills updated. **Clarifying questions** default to **agent-prd wizard** for MVP.
+
+---
+
+## [1.19.49] — PDLC governance: board lifecycle, board wins, optional BDD (2026-04-23)
+
+**Before:** PRD `lifecycle` ladder used `brief`, `spec_ready`, and `done`; **`/agent-prd`** treated PDLC BDD as mandatory; swim-lane docs still described **Brief** / **Ready for spec** columns.
+
+**Now:** [PRDs/README.md](06-Resources/PRDs/README.md) documents **`idea` → `discovery` → `design` → `develop` → `uat` → `deployed`** (+ `parked`), **board wins** stage conflicts, **brief** and **spec** as **subflows**, and a **migration table** from legacy values. **`/agent-prd`** makes **Step 3b BDD optional** with plain-English guidance. **`plans/PDLC_UI/`**, **`04-Projects/PDLC_Orchestration_UI.md`**, and **`plans/PDLC_UI/README.md`** record **Shaun** as interim board owner, **no** MVP user-management, **R8 MVP** vs automated later, **R10 backups**, and **R8** as **spec gate before `develop`**.
+
+---
+
+## [1.19.48] — PDLC orchestration design handoff + agent-prd BDD (2026-04-23)
+
+**Before:** PDLC docs conflated **Claude Design (web)** with **`/anthropic-frontend-design`**, assumed optional **Figma MCP**, and **`/agent-prd`** did not spell out **BDD (Gherkin)** or **PDLC ingest** of design artefacts.
+
+**Now:** **`plans/PDLC_UI/`** and **`04-Projects/PDLC_Orchestration_UI.md`** describe **Claude Design** for visuals, **manual** Figma↔Design DS upkeep, **export `.md`** with **Design system instructions**, a **mandatory Cursor polish** step using **`/anthropic-frontend-design`** on Claude Design **outputs**, **`/agent-prd` starting when a card hits Ready for spec**, and PRDs that include **BDD** for tests and **Cursor Plan mode**. **`agent-prd`** adds **Step 3b**, a **BDD** PRD section, and validation alignment. **`anthropic-frontend-design`** documents the **post–Claude Design handoff** behaviour. **`plans/PDLC_UI/export-pack-template.md`** is the canonical **copy-paste export pack** for Claude Design + Cursor.
+
+---
+
 ## [1.19.47] — PRD renames: communication_service, merged messaging+WhatsApp, Smart HR, integrations (2026-04-17)
 
 **Before:** Separate **`Communication.md`**, **`WhatsApp_Channel.md`**, **`AI_Assistant_Conversational.md`**, **`Product_Dashboard_Paper_v1_UI.md`**, and older filenames for Smart HR, scheduled content, and Floatpays.

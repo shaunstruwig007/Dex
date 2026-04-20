@@ -70,7 +70,7 @@ Use this when you want **product judgment in the loop**, not a one-shot agent fi
 2. **Context pass (agent):** Read the full file + [PRD_Product_Map.md](./PRD_Product_Map.md) for overlaps; summarise conflicts and dependencies in chat.
 3. **Wizard-equivalent Q&A (you):** Resolve ambiguities that change scope or GA — e.g. tenancy model, which surfaces gate GA, whether the vendor is locked. Use structured questions (e.g. Cursor Ask) so answers are explicit.
 4. **Merge decisions into the PRD** — dated subsection (see **Collaborative pilot** in `AI_Assistant_FAQ.md`) and update Architecture Constraints / WPs / Open questions (strike resolved lines).
-5. **Optional four-pass review** — worth it before `spec_ready`; overkill for tiny wording tweaks.
+5. **Optional four-pass review** — worth it before the **spec gate** (`develop`); overkill for tiny wording tweaks.
 6. **Lock:** You confirm the file is the pattern for the next PRDs.
 
 **Keep:** Hybrid blueprint (TBD repos), BDD preservation, honest Metrics when no analytics tool, dated decision tables.  

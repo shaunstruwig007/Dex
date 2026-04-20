@@ -11,19 +11,34 @@ shipped_date: null
 metrics_checked_date: null
 follow_up_tasks:
   - Import field catalog ↔ Groups query builder
+  - When Product Analytics exists, add importer events (started, completed, file_rejected, rollback)
+target_metrics:
+  import_file_success_rate:
+    metric_type: funnel
+    target: ">95% of files processed without full rejection (leading — Success Metrics)"
+    timeframe: post_ship_review
+    tool_event: deferred_until_analytics_stack
+  row_error_rate:
+    metric_type: property_average
+    target: "<5% critical row errors per import (leading)"
+    timeframe: per_import
+    tool_event: deferred_until_analytics_stack
+  support_ticket_reduction:
+    metric_type: event_count
+    target: "-70% import-related support tickets within 3 months (lagging)"
+    timeframe: 90_days_post_ship
+    tool_event: manual_support_system
 ---
 
 # User Importer
 
 **Status:** Done (Essential) — agent-oriented retrofit  
 **Target:** Tenant admins importing and maintaining accurate rosters despite turnover and data quality issues  
-**Estimated Effort:** Ongoing; data-quality investment
+**Estimated Effort:** Multi-sprint core platform; ongoing data-quality investment
 
----
+> **Steerco:** Essential · **Phase 1:** Snapshot file import, manual trigger, UUID matching, protected fields, leaver handling, rollback, export — per Non-Goals (no delta API sync in Phase 1).
 
-> Lighter spec derived from the User Importer discovery document. Covers snapshot import, system-generated IDs, data cleaning, selective updates, and export functionality.
-
-**Related PRDs:** [Groups.md](./Groups.md) (query-builder keys/values come from imported attributes), [User_Management.md](./User_Management.md), [Login_Account_Activation.md](./Login_Account_Activation.md). **Integration map:** [PRD_Product_Map.md](./PRD_Product_Map.md).
+**Related PRDs:** [Groups.md](./Groups.md) (query-builder keys/values come from imported attributes), [User_Management.md](./User_Management.md), [Login_Account_Activation.md](./Login_Account_Activation.md), [Tenant_Management.md](./Tenant_Management.md). **Integration map:** [PRD_Product_Map.md](./PRD_Product_Map.md) (build order: Tenant Management → communication minimal → **User Importer** → User Management / Profile).
 
 ---
 
@@ -31,62 +46,169 @@ follow_up_tasks:
 
 Admins **import**, **clean**, and **incrementally update** employee data with stable identifiers — feeding **Groups**, **User Management**, and **activation** without duplicate or stale users.
 
-**User value:** Foundation for targeting and login; reduces comms misfires.
+**User value:** Foundation for targeting and login; reduces comms misfires and support load from bad rosters.
 
 ---
 
 ## Work Packages
 
-### WP-Import: Snapshot & validation (P0)
+### WP-1: Snapshot ingest, template & file-level validation (P0 — No dependencies)
 
 **Priority:** P0  
-**Dependencies:** File format / connector  
-**Files:** Import pipeline TBD  
+**Dependencies:** No dependencies (tenant + identifier configuration from [Tenant_Management.md](./Tenant_Management.md))  
+**Files:** Import pipeline, template parser — **implementation repos TBD** (see Technical Blueprint)  
 **VPS-eligible:** Yes
 
-### WP-IDs: System IDs & dedupe (P0)
+| # | Behavior | Observable |
+|---|----------|-------------|
+| 1a | Admin uploads a populated import template | File accepted or rejected with parse/mapping error |
+| 1b | Template structure validated (required columns, no duplicate column names, compatible mapping) | Incorrect template → **entire import rejected** (IMP-06) |
+| 1c | Row-level critical errors counted; **≥20%** critical rows → **entire file rejected** | Import stops before commit; admin sees file-level message (IMP-07) |
+| 1d | Valid rows proceed when file passes gates | Row outcomes feed WP-2 |
+
+**Maps to BDD:** IMP-06, IMP-07; template rules under Requirements.
+
+---
+
+### WP-2: System UUID & row matching / dedupe (P0 — Depends on WP-1)
 
 **Priority:** P0  
-**Dependencies:** WP-Import  
-**Files:** TBD  
+**Dependencies:** WP-1  
+**Files:** User identity service — **TBD**  
 **VPS-eligible:** Yes
 
-### WP-Update: Selective updates (P0)
+| # | Behavior | Observable |
+|---|----------|-------------|
+| 2a | New user creation assigns a permanent platform-unique UUID | UUID present on record; never changes (IMP-01) |
+| 2b | Match order: **UUID first**, else tenant **identifier pair**; multiple matches → **row blocked** | Row in report as blocked; no silent merge (IMP-02) |
+| 2c | UUID match with changed employee number → **trust UUID**, update number | Single updated user; audit trail in report (IMP-03) |
+
+**Maps to BDD:** IMP-01, IMP-02, IMP-03.
+
+---
+
+### WP-3: Leavers, role guards & selective field updates (P0 — Depends on WP-2)
 
 **Priority:** P0  
-**Dependencies:** WP-Import  
-**Files:** TBD  
+**Dependencies:** WP-2  
+**Files:** User profile write model — **TBD**  
 **VPS-eligible:** Yes
 
-### WP-Export: Export (P1)
+| # | Behavior | Observable |
+|---|----------|-------------|
+| 3a | Users missing from snapshot → leaver candidates; permanent → delete, contractor/seasonal → disable per policy | Counts in import report; no wrongful delete of owners/admins without extra checks (IMP-04, IMP-05) |
+| 3b | **Protected fields** (activated mobile, email per PRD) **never** overwritten by file | Report lists protected-field skips (IMP-08) |
+| 3c | Listed updatable fields apply; blank clears prior imported value where applicable; invalid formats → row reject | Row-level errors with messages (IMP-09) |
+| 3d | Mobile normalisation + duplicate activated mobile in tenant → row reject | IMP-10 |
+| 3e | Invalid dates/emails → row-level reject | IMP-11 |
+
+**Maps to BDD:** IMP-04 through IMP-11.
+
+---
+
+### WP-4: Import report, history & rollback (P0 — Depends on WP-3)
+
+**Priority:** P0  
+**Dependencies:** WP-3  
+**Files:** Admin dashboard / API — **TBD**  
+**VPS-eligible:** Yes (API); admin UI may need web toolchain
+
+| # | Behavior | Observable |
+|---|----------|-------------|
+| 4a | Report shows new, updated, leavers, protected skips, failures, unchanged, totals | Admin-visible summary (IMP-12) |
+| 4b | Rollback restores **previous snapshot** state | Post-rollback data matches prior snapshot per implementation (IMP-13) |
+| 4c | **Flesh:** Import history — file name, imported by, timestamp, counts; downloadable original file | History entries auditable |
+
+**Maps to BDD:** IMP-12, IMP-13; Flesh requirements.
+
+---
+
+### WP-5: Export snapshot (P1 — Depends on WP-1)
 
 **Priority:** P1  
-**Dependencies:** WP-Import  
-**Files:** TBD  
+**Dependencies:** WP-1 (read path of current roster)  
+**Files:** Export job / download — **TBD**  
 **VPS-eligible:** Yes
+
+| # | Behavior | Observable |
+|---|----------|-------------|
+| 5a | Admin exports current user list before import | File includes active/disabled users, template fields, UUID, status; export **logged** (IMP-14) |
+| 5b | Optional filters: tenant, operator, location | Filtered export matches selection |
+
+**Maps to BDD:** IMP-14.
+
+**Dependency graph:**
+
+```text
+WP-1 (P0) ──> WP-2 (P0) ──> WP-3 (P0) ──> WP-4 (P0)
+   │
+   └──> WP-5 (P1)   (parallel after WP-1 for export-only workstreams)
+```
+
+**Cross-PRD:** Imported attribute keys feed [Groups.md](./Groups.md) query builder — if import removes a key used in a saved group, surface invalid query to admin (Edge cases table).
 
 ---
 
 ## Success Scenarios
 
-- Import dry-run catches duplicates per BDD.  
-- Joiner/leaver correctness in test tenants.
+### Scenario 1: Happy path — clean snapshot
+
+**Setup:** Valid template; &lt;20% critical row errors; tenant identifier config set.  
+**Action:** Admin uploads snapshot; confirms import.  
+**Observable Outcome:** Report shows expected new/updated counts; no full-file rejection; Groups-capable attributes available for segments.  
+**Success Criteria:** All rows either applied or skipped with row-level non-blocking messages; **BDD IMP-01–IMP-14** satisfied in automated QA suite (target **≥95%** suite pass rate — Satisfaction Metric).
+
+### Scenario 2: Error — multimatch row
+
+**Setup:** Two existing users match identifier pair.  
+**Action:** Row processed.  
+**Observable Outcome:** Row **blocked**; no duplicate merge; message in report (IMP-02).  
+**Success Criteria:** Zero duplicate users created from that row (assert in test DB).
+
+### Scenario 3: Error — file-level rejection (20% critical)
+
+**Setup:** Synthetic file with ≥20% critical row errors.  
+**Action:** Import run.  
+**Observable Outcome:** **Entire file rejected**; no partial commit (IMP-07).  
+**Success Criteria:** User count unchanged vs pre-import state.
+
+### Scenario 4: Recovery — rollback
+
+**Setup:** Successful import followed by detected admin error.  
+**Action:** Admin triggers rollback from import dashboard.  
+**Observable Outcome:** Tenant user data matches **previous snapshot** boundary per implementation (IMP-13).  
+**Success Criteria:** Automated test compares checksum or row counts pre/post rollback (implementation-defined binary pass).
+
+### Scenario 5: Guardrail — owner missing from snapshot
+
+**Setup:** Owner account absent from file.  
+**Action:** Leaver logic runs.  
+**Observable Outcome:** **No delete** without extra checks (IMP-05).  
+**Success Criteria:** Owner record still exists and active after import.
 
 ---
 
 ## Satisfaction Metric
 
-**Overall Success:** BDD Importer suite pass **≥ 95%** (target).
+**Overall Success:** **≥95%** of BDD importer suite runs pass (all IMP-xx criteria covered by automation where technically feasible; remainder explicitly **manual QA**-signed).
 
-**Measured by:** QA + data-quality audits.
+**Measured by:** CI test suite against IMP-xx + periodic QA audit on edge cases (duplicate mobiles, international formats, rollback).
 
 ---
 
 ## Metrics Strategy
 
-### Events to Track (none)
+### Events to Track (none — deferred)
 
-`analytics_tool: none`.
+`analytics_tool: none`. When [Product_Analytics.md](./Product_Analytics.md) lands, add events such as `import_started`, `import_completed`, `import_file_rejected`, `import_rollback_invoked` (names TBD with analytics owner). **Do not block GA on analytics.**
+
+### Success Targets
+
+Leading/lagging targets are defined under **# Success Metrics** (file success rate, row error rate, time to complete, support tickets, duplicate mobiles, rollback usage as quality signal).
+
+### Business Outcome Mapping
+
+This feature ladders to **accurate targeting** ([Groups.md](./Groups.md)), **reliable activation** ([Login_Account_Activation.md](./Login_Account_Activation.md)), and **lower support cost** from roster errors. Expected impact: import-related ticket reduction target **−70% within 3 months** (lagging — requires support analytics).
 
 ---
 
@@ -94,50 +216,201 @@ Admins **import**, **clean**, and **incrementally update** employee data with st
 
 **Non-Negotiable Decisions:**
 
-- Imported **keys** drive **Groups** query builder.  
-- Handle **high turnover** scenarios per Problem Statement research.
+- Imported **attribute keys** drive **[Groups.md](./Groups.md)** query builder — field catalog must stay aligned.  
+- **Phase 1:** **Snapshot** file import only; **manual** trigger — no scheduled automation, no real-time HRIS API (see Non-Goals).  
+- **Protected contact fields** (activated mobile, verified email) are **never** overwritten by import file.  
+- **UUID** is the canonical stable key; matching hierarchy **UUID → tenant identifier pair**; multimatch rows **block**.  
+- **High-turnover / mixed workforce** behaviours (leavers by worker type, owner/admin guards) per Problem Statement and stakeholder research.  
+- **Rollback** must restore to **previous snapshot** semantics (exact mechanism — transaction vs snapshot store — **Open Questions**).
 
 ---
 
 ## Technical Blueprint
 
+### System Integration Map
+
+```text
+Admin --> Import_UI --> Import_worker --> User_store --> Groups_engine (recalc segments)
+                |              |
+                v              v
+         File_template    Communication_service (invites post-import — dependency)
+Tenant_config (identifiers, worker types) --> Import_worker
+Import_history / Export <---> User_store
+```
+
+Cross-PRD: [Tenant_Management.md](./Tenant_Management.md) (tenant + identifier configuration); [communication_service.md](./communication_service.md) (minimal dependency for post-import comms per Timeline).
+
 ### Implementation repository paths (TBD)
 
-| Layer | Path |
-|-------|------|
-| Import workers | TBD |
+| Layer | Path / owner |
+|-------|----------------|
+| Import workers / parsers | TBD |
+| Admin UI (upload, report, rollback) | TBD |
+| Mobile | TBD if any admin surface is mobile |
+| User / identity API | TBD |
+
+### Config & Setup
+
+Concrete shapes belong in implementation repos. **Illustrative only** (not binding):
+
+```yaml
+# TBD — tenant-level importer config (illustrative)
+tenant_importer:
+  identifier_pair: ["employee_number", "national_id"]   # example
+  lock_employee_number_after_activation: true              # if tenant locks
+  critical_error_reject_threshold_percent: 20            # IMP-07 — product Q: tenant-configurable?
+```
+
+### Key Implementation Patterns
+
+- **Snapshot semantics:** File = complete active set; after row processing, **missing users** → leaver pipeline (IMP-04).  
+- **Row outcomes:** No match → create; single match → update; multiple matches → block row.  
+- **Validation layer:** Normalise mobile to international format; validate email TLD; dates → ISO storage; preserve employee number leading zeros.  
+- **Operator scope:** Operator ID column — users cannot modify users outside their operator (Flesh).
+
+### Dependencies (runtime)
+
+| Package / system | Version | Purpose |
+|------------------|---------|---------|
+| File parsing (CSV/XLSX TBD) | TBD | Snapshot ingest |
+| Identity / UUID issuance | Platform standard | IMP-01 |
+
+### Environment Variables
+
+| Variable | Example Value | Where Set | Purpose |
+|----------|---------------|-----------|---------|
+| *TBD with implementation* | — | Secrets / config service | Max file size, row limits, feature flags |
 
 ---
 
 ## Validation Protocol
 
+Vault-era checks: static proof the spec stays internally consistent and every **IMP-xx** ID remains present. **Product QA** executes full BDD against running software (not in this vault).
+
+### WP-1 checks
+
 ```bash
-grep -c "Acceptance criteria (BDD)" "06-Resources/PRDs/User_Importer.md"
+# Check 1.1: File-level reject criteria documented
+grep -c "IMP-06" "06-Resources/PRDs/User_Importer.md"
 # PASS: >= 1
 
-grep -c "Groups.md" "06-Resources/PRDs/User_Importer.md"
+# Check 1.2: 20% threshold for full file reject
+grep -c "IMP-07" "06-Resources/PRDs/User_Importer.md"
 # PASS: >= 1
 ```
+
+### WP-2 checks
+
+```bash
+grep -c "IMP-01" "06-Resources/PRDs/User_Importer.md"
+# PASS: >= 1
+grep -c "IMP-02" "06-Resources/PRDs/User_Importer.md"
+# PASS: >= 1
+grep -c "IMP-03" "06-Resources/PRDs/User_Importer.md"
+# PASS: >= 1
+```
+
+### WP-3 checks
+
+```bash
+for id in IMP-04 IMP-05 IMP-08 IMP-09 IMP-10 IMP-11; do
+  c=$(grep -c "$id" "06-Resources/PRDs/User_Importer.md" || true)
+  test "$c" -ge 1 || { echo "FAIL: $id"; exit 1; }
+done
+echo "PASS: WP-3 BDD IDs present"
+```
+
+### WP-4 checks
+
+```bash
+grep -c "IMP-12" "06-Resources/PRDs/User_Importer.md"
+# PASS: >= 1
+grep -c "IMP-13" "06-Resources/PRDs/User_Importer.md"
+# PASS: >= 1
+```
+
+### WP-5 checks
+
+```bash
+grep -c "IMP-14" "06-Resources/PRDs/User_Importer.md"
+# PASS: >= 1
+```
+
+### Cross-link checks
+
+```bash
+grep -c "Groups.md" "06-Resources/PRDs/User_Importer.md"
+# PASS: >= 1
+grep -c "PRD_Product_Map.md" "06-Resources/PRDs/User_Importer.md"
+# PASS: >= 1
+```
+
+**Manual (not counted in automated vault pass rate):** Full BDD UAT; destructive leaver tests; rollback integrity; max file size / row limits once engineering answers land.
+
+### Post-launch metrics (not agent-verifiable at vault build time)
+
+Adoption of export-before-import, import success rates from production, support ticket trends — require production data and/or analytics stack.
+
+---
+
+## Success Rate Target
+
+**14 of 14** BDD row IDs (**IMP-01** … **IMP-14**) must remain present in this file after each edit (`grep` coverage above).  
+**Plus 2** cross-link checks (**Groups.md**, **PRD_Product_Map.md**).  
+**Overall:** **16/16** automated string checks pass before merge.
 
 ---
 
 ## Notes for Agent Implementation
 
-**Scout priorities:** Duplicate employee numbers across sub-companies.
+**Scout priorities:**
+
+1. Resolve **Open Questions** (UUID version, max rows/size, rollback storage model, leaver content retention with Feed/Posts).  
+2. Align attribute catalog with [Groups.md](./Groups.md) query-builder keys.
+
+**Worker tasks:**
+
+1. Implement WP-1 → WP-4 in order; ship WP-5 in parallel once read model stable.  
+2. Build automated tests mapped **1:1** to IMP-xx rows.  
+3. Document admin runbook: template, error glossary, rollback procedure.
+
+**Soldier review focus:**
+
+- No silent multimatch merges.  
+- Protected fields never overwritten.  
+- Owner/admin leaver guards cannot regress.  
+- Import does not orphan Groups in undefined state — edge case surfaced to admin.
 
 ---
 
-## Files to Create / Modify
+## Files to Create
 
 ```
-# TBD
+# At implementation time (outside vault — examples)
+docs/runbooks/user-import-template.md
+test/importer/bdd_imp_01_14_suite.{ext}
+config/importer/tenant_defaults.yaml   # shape TBD
+```
+
+## Files to Modify
+
+```
+# Implementation repos — TBD paths
+User/identity service: UUID issuance, matching, leaver pipeline
+Admin console: upload, report, history, rollback, export
+Groups service: segment recalc hooks on attribute changes
 ```
 
 ---
 
 ## Out of Scope
 
-- Real-time HRIS sync (unless specified in discovery).
+- **Delta imports** (row-level create/update/delete column) — Phase 2.  
+- **Franchise/operator self-service import** — Phase 3 / multi-operator isolation.  
+- **Real-time API-based HRIS sync** — future; Phase 1 is file-based.  
+- **Import scheduling/automation** — Phase 1 manual trigger only.  
+- **Duplicate employee numbers across tenants** — out of scope; dedupe is **within** tenant.  
+- Full **content retention / anonymisation** policy for deleted leavers — legal/product; cross-cutting with Feed/Posts (see Open Questions and Edge cases).
 
 ---
 
@@ -176,7 +449,9 @@ The current import system cannot reliably maintain accurate, up-to-date employee
 - As an **admin/owner**, I want to export the current user list before importing so that I can reconcile my data.
 - As an **admin/owner**, I want protected fields (activated mobile, email) to never be overwritten during import so that verified employee contact details are preserved.
 - As a **system**, I want to detect users missing from a snapshot and handle them by worker type (delete permanent, disable contractor/seasonal) so that the user list stays accurate.
+
 **Edge Cases:**
+
 - As an **admin/owner**, I want rows with critical errors rejected individually (not the whole file) so that valid rows still process.
 - As a **system**, I want to reject the entire file if 20%+ rows have critical errors so that bad data doesn't corrupt the system.
 - As a **system**, I want to never delete owners or admins missing from a snapshot without additional checks.
@@ -254,7 +529,9 @@ The current import system cannot reliably maintain accurate, up-to-date employee
 - Import success rate (% of files processed without full rejection) (target: >95%)
 - Row-level error rate per import (target: <5%)
 - Time to complete an import cycle (upload → report) (target: <5 min for 5,000 users)
+
 **Lagging:**
+
 - Reduction in import-related support tickets (target: -70% within 3 months)
 - % of tenants with zero duplicate active mobile numbers (target: 100%)
 - Rollback usage rate (indicator of data quality issues — should trend down)
@@ -280,18 +557,18 @@ The current import system cannot reliably maintain accurate, up-to-date employee
 
 ---
 
+## Scope reminder
+
+- **Phase 1:** Snapshot import only; manual trigger; UUID matching hierarchy; protected fields; leaver handling by worker type; rollback; **20%** row error threshold for **full file** reject.
+
+---
+
 ## Acceptance criteria (BDD)
 
 **Source PRD:** [User_Importer.md](./User_Importer.md)  
 **Related:** [Groups.md](./Groups.md) (keys/values), [User_Management.md](./User_Management.md), [Login_Account_Activation.md](./Login_Account_Activation.md), [Tenant_Management.md](./Tenant_Management.md).  
 **Integration map:** [PRD_Product_Map.md](./PRD_Product_Map.md) §1  
 **Use:** Eng / QA — **human-owned**.
-
----
-
-## Scope reminder
-
-- **Phase 1:** Snapshot import only; manual trigger; UUID matching hierarchy; protected fields; leaver handling by worker type; rollback; **20%** row error threshold for **full file** reject.
 
 ---
 
@@ -370,3 +647,5 @@ The current import system cannot reliably maintain accurate, up-to-date employee
 ---
 
 *Import cadence drives Groups membership recalculation — align with Groups AC.*
+
+*Agent-prd retrofit — 2026-04-17 · review swarm (4 sequential passes) — 2026-04-17*

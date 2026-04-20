@@ -6,7 +6,7 @@ description: Write agent-oriented PRDs (observable behaviors, metrics, work pack
 ## Dex vault (this workspace)
 
 - **Pre-PRD / discovery:** `06-Resources/Product_ideas/` — intake from the product dashboard and `/product-brief`.
-- **Binding PRDs:** Flat markdown files under `06-Resources/PRDs/*.md` (no `Current/` / `Next/` / `Future/` subfolders). Each file carries **YAML frontmatter** with **`lifecycle`** aligned to Steerco: `idea` → `brief` → `discovery` → `spec_ready` → `develop` → `uat` → `done`, plus **`parked`** when set aside. See `06-Resources/PRDs/README.md`.
+- **Binding PRDs:** Flat markdown files under `06-Resources/PRDs/*.md` (no `Current/` / `Next/` / `Future/` subfolders). Each file carries **YAML frontmatter** with **`lifecycle`** aligned to Steerco / PDLC board: `idea` → `discovery` → `design` → **`spec_ready`** → `develop` → `uat` → `deployed`, plus **`parked`**. Older files may still show legacy values (`brief`, `done`) — migrate when touched; **board stage wins** when syncing from `pdlc-ui`. See `06-Resources/PRDs/README.md` and [lifecycle-transitions.md](../../plans/PDLC_UI/lifecycle-transitions.md).
 - **Cross-PRD rules:** [PRD_Product_Map.md](../../06-Resources/PRDs/PRD_Product_Map.md).
 - **Market evidence (`EV-*`):** [Market_and_competitive_signals.md](../../06-Resources/Market_and_competitive_signals.md).
 - **Search:** Use QMD semantic search (`qmd query` with the right collection) per `.cursor/rules/search-routing.mdc`; do not rely on `grep -r` for natural-language vault search.
@@ -65,11 +65,19 @@ I see you're at [Company] and use [Analytics Tool] + [PM Tool].
 I'll tailor metrics suggestions based on this.
 ```
 
+### 5. PDLC / design-forward handoff (when applicable)
+
+If the user is writing a PRD from the **`spec_ready`** column (or pastes an **export pack** from `pdlc-ui` / Steerco):
+
+1. **Ingest without asking twice:** brief summary, discovery conclusions, resolved open questions, **Claude Design** session or artefact URLs, **handoff bundle** / `PROMPT.md` path, **HTML export** links, and any notes from **`/anthropic-frontend-design`** (repo paths, branch).
+2. **Preserve design intent** in the PRD: reference those artefacts in **Architecture Constraints** or **Technical Blueprint** so implementers do not drift from approved UI.
+3. **BDD (Step 3b) is optional:** ask once: *“Do you want Given/When/Then (Gherkin) scenarios for automated tests and Cursor Plan mode, or stick with Success Scenarios prose only for this MVP?”* If they decline or are unsure, **skip Step 3b** and omit the **BDD** section from the generated PRD.
+
 ---
 
 ## Interactive PRD Wizard
 
-Guide user through 8 steps:
+Guide the user through **Steps 1–8** below. After **Step 3**, **offer Step 3b (BDD)** only if the user wants it; otherwise go straight to **Step 4**:
 
 ### Step 1: The Job to Be Done
 **Ask:** "What should users be able to DO with this feature? (One sentence)"
@@ -114,6 +122,42 @@ Action: [What user does]
 Observable Outcome: [How system handles it gracefully]
 Success Criteria: [Recovery success rate]
 ```
+
+### Step 3b (optional): BDD-style acceptance criteria (Gherkin)
+
+**Plain English:** BDD here means writing acceptance checks as **Given** (starting situation), **When** (action), **Then** (what must be true). That format maps cleanly to **automated tests** and to **Cursor Plan mode** (“implement this scenario next”). It adds ceremony; **MVP teams can skip it** and keep **Success Scenarios** from Step 3 only.
+
+**Purpose (when opted in):** Turn scenarios into **Given / When / Then** features that map 1:1 to **automated tests** (e.g. Cucumber, Playwright BDD layer, or pytest-bdd) and to **Cursor Plan mode** work items (“implement scenario X”).
+
+**Ask:** "I'll translate the success scenarios into BDD. Any domain nouns or roles I should fix in the wording?" — **If the user already said they do not want BDD, skip this entire step.**
+
+**Generate for each critical scenario:**
+
+```gherkin
+Feature: [Short name aligned to JTBD]
+
+  Scenario: [Happy path name]
+    Given [initial context — user state, data, feature flags]
+    When [user action or system event]
+    Then [observable outcome]
+    And [optional extra assertions]
+
+  Scenario: [Error or edge case name]
+    Given [context that triggers the edge]
+    When [action]
+    Then [expected handling — message, redirect, empty state, etc.]
+```
+
+**Rules:**
+
+- At least **one** `Scenario` per **happy path** from Step 3 and **at least one** for **errors/edge cases**.
+- **Given** sets up **testable state** (avoid vague "user is logged in" — specify role, tenant, or fixture).
+- **Then** must describe something an **automated test can assert** (DOM text, URL, API status, DB row), not subjective quality.
+- Keep **feature names stable** so file paths for tests can mirror them (e.g. `tests/bdd/<feature-slug>/`).
+
+**Plan mode hint for the user (say aloud once):**
+
+> Use these scenarios as **Plan mode** slices: one scenario (or one `Feature`) per plan chunk so implementation stays traceable to the PRD.
 
 ### Step 4: Metrics Strategy
 **Context-aware suggestions based on detected analytics tool:**
@@ -332,6 +376,29 @@ WP-4 (P2, no deps) ──> can run anytime in parallel
 
 ---
 
+## BDD / Executable acceptance criteria *(omit this section if Step 3b was skipped)*
+
+**Source:** Step 3b only (map 1:1 from success scenarios).
+
+```gherkin
+Feature: [name]
+
+  Scenario: [name]
+    Given ...
+    When ...
+    Then ...
+```
+
+**Test mapping (for implementers):**
+
+| Scenario | Suggested test file / suite | Automation notes |
+|----------|----------------------------|------------------|
+| [name]   | e.g. `tests/e2e/...`       | [Playwright / API / unit — pick based on observability] |
+
+**Cursor Plan mode:** Each `Feature` or `Scenario` can become a **plan step**; complete scenarios before starting unrelated refactors.
+
+---
+
 ## Satisfaction Metric
 
 **Overall Success:** [X]% of users [achieve outcome] without [friction]
@@ -403,9 +470,11 @@ Expected impact: [Quantified goal]
 
 Every check must be agent-executable — a single shell command that returns a numeric or boolean result. No manual browser interaction. No subjective judgment.
 
+**BDD alignment:** If the PRD includes **BDD / Executable acceptance criteria**, each `Then` (and critical `And`) should eventually have at least one **automated check** here or in the test suite table — if a scenario cannot be checked, tighten the scenario wording until it can. If there is **no** BDD section, rely on **Success Scenarios** + WP checks only.
+
 **Two validation layers:**
 1. **Static analysis** (grep, curl, test) — verifies code correctness without a browser
-2. **Runtime** (Playwright, if available) — verifies actual behaviour
+2. **Runtime** (Playwright, if available) — verifies actual behaviour; **prefer tagging** runtime checks to **Gherkin scenario names** when using BDD runners
 
 ### WP-N Checks
 

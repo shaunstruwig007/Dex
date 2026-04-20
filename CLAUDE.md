@@ -72,13 +72,16 @@ The system automatically suggests `/getting-started` at next session if vault < 
 
 ## User Profile
 
-<!-- Updated during onboarding -->
-**Name:** Not yet configured
-**Role:** Not yet configured
-**Company Size:** Not yet configured
-**Working Style:** Not yet configured
+<!-- Updated during onboarding + /setup refresh 2026-04-17 -->
+**Name:** Shaun
+**Role:** Product Manager (delivery & process improvement)
+**Company:** Wyzetalk
+**Company Size:** 1–100 (startup bucket in Dex; employer LinkedIn headcount may differ)
+**Working Style:** Direct; delivery- and evidence-oriented
 **Pillars:**
-- Not yet configured
+- AI adoption in processes
+- Streamlined product launch (lighter UI, successor to legacy product)
+**Meetings:** Granola not used (ICT policy). Teams / approved transcripts — manual processing if you attach exports.
 
 ---
 
