@@ -3,7 +3,7 @@
 **Branch:** `feat/s2-swim-lanes` → `main`
 **Bar:** A
 
-Cites: [plans/PDLC_UI/sprint-backlog.md § Sprint 2](../../plans/PDLC_UI/sprint-backlog.md#sprint-2--swim-lanes--forward-moves-2-weeks), [plans/PDLC_UI/seeds/s2-swim-lanes.md](../../plans/PDLC_UI/seeds/s2-swim-lanes.md), [plans/PDLC_UI/lifecycle-transitions.md](../../plans/PDLC_UI/lifecycle-transitions.md#cantransition--enforced-matrix-sprint-2), [plans/PDLC_UI/schema-initiative-v0.md](../../plans/PDLC_UI/schema-initiative-v0.md#6-events--append-only-audit), [ADR-0001](./adr/0001-stack-and-persistence.md). Gated by `/moneypenny-custom`.
+Cites: [plans/PDLC_UI/plan-mode-prelude.md](../../plans/PDLC_UI/plan-mode-prelude.md), [plans/PDLC_UI/sprint-backlog.md § Sprint 2](../../plans/PDLC_UI/sprint-backlog.md#sprint-2--swim-lanes--forward-moves-2-weeks), [plans/PDLC_UI/seeds/s2-swim-lanes.md](../../plans/PDLC_UI/seeds/s2-swim-lanes.md), [plans/PDLC_UI/lifecycle-transitions.md](../../plans/PDLC_UI/lifecycle-transitions.md#cantransition--enforced-matrix-sprint-2), [plans/PDLC_UI/schema-initiative-v0.md](../../plans/PDLC_UI/schema-initiative-v0.md#6-events--append-only-audit), [ADR-0001](./adr/0001-stack-and-persistence.md). Gated by `/moneypenny-custom`.
 
 ## What ships
 
