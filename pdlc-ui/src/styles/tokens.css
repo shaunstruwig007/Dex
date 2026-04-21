@@ -1,0 +1,198 @@
+/* ============================================================
+   CABIN PALETTE — Design Tokens (R18 light-only MVP)
+   Primary:   Ember  (burnt orange)
+   Secondary: River  (slate blue)
+   Tertiary:  Cedar  (warm earth / neutrals)
+
+   Contrast targets: WCAG 2.1 AA — measured ratios live in
+   pdlc-ui/docs/ui-notes.md. Dark mode intentionally deferred
+   (R18 § 1) and will land as a future ADR before re-enabling.
+   ============================================================ */
+
+:root {
+  /* ----------------------------------------------------------
+     EMBER — Primary ramp (CTAs, highlights, focus)
+  ---------------------------------------------------------- */
+  --color-ember-50: #fdf0e6;
+  --color-ember-100: #fad0a8;
+  --color-ember-200: #f5a865;
+  --color-ember-400: #d95f1a;
+  --color-ember-600: #a84110;
+  --color-ember-800: #6b280a;
+  --color-ember-900: #3a1304;
+
+  /* ----------------------------------------------------------
+     RIVER — Secondary ramp (links, info, secondary actions)
+  ---------------------------------------------------------- */
+  --color-river-50: #e0f0f8;
+  --color-river-100: #aacfe6;
+  --color-river-200: #6aaecf;
+  --color-river-400: #2278a8;
+  --color-river-600: #175272;
+  --color-river-800: #0e3349;
+  --color-river-900: #071e2c;
+
+  /* ----------------------------------------------------------
+     CEDAR — Tertiary / Neutrals (surfaces, borders, text)
+  ---------------------------------------------------------- */
+  --color-cedar-50: #f7f1e8;
+  --color-cedar-100: #ede0c8;
+  --color-cedar-200: #d4b98a;
+  --color-cedar-400: #a07840;
+  --color-cedar-600: #6e5028;
+  --color-cedar-800: #3e2c14;
+  --color-cedar-900: #201608;
+
+  /* ----------------------------------------------------------
+     CABIN SEMANTIC TOKENS
+     Wire components to these, never to the raw ramps.
+  ---------------------------------------------------------- */
+
+  /* Backgrounds */
+  --color-bg-base: var(--color-cedar-50);
+  --color-bg-surface: var(--color-cedar-100);
+  --color-bg-raised: #ffffff;
+  --color-bg-primary: var(--color-ember-50);
+  --color-bg-secondary: var(--color-river-50);
+
+  /* Text */
+  --color-text-heading: var(--color-cedar-800);
+  --color-text-body: var(--color-cedar-800);
+  /* cedar-400 fails AA on cedar-100 surfaces (3.0:1); cedar-600 passes (5.5:1). */
+  --color-text-muted: var(--color-cedar-600);
+  --color-text-inverse: var(--color-cedar-50);
+  --color-text-on-primary: var(--color-ember-50);
+  --color-text-on-secondary: var(--color-river-50);
+
+  /* Borders */
+  --color-border-default: var(--color-cedar-200);
+  --color-border-subtle: var(--color-cedar-100);
+  --color-border-strong: var(--color-cedar-400);
+
+  /* Primary (Ember) interactive — promoted one step darker for AA
+     text-on-primary ratio (ember-50 on ember-600) = 5.5:1. */
+  --color-primary-action: var(--color-ember-600);
+  --color-primary-hover: var(--color-ember-800);
+  --color-primary-active: var(--color-ember-900);
+  --color-primary-subtle: var(--color-ember-50);
+  --color-primary-border: var(--color-ember-200);
+  --color-primary-accent: var(
+    --color-ember-400
+  ); /* reserved for badges, not text bg */
+
+  /* Secondary (River) interactive — promoted one step darker for AA
+     text-on-secondary ratio (river-50 on river-600) = 7.2:1. */
+  --color-secondary-action: var(--color-river-600);
+  --color-secondary-hover: var(--color-river-800);
+  --color-secondary-active: var(--color-river-900);
+  --color-secondary-subtle: var(--color-river-50);
+  --color-secondary-border: var(--color-river-200);
+  --color-secondary-accent: var(--color-river-400);
+
+  /* Status */
+  --color-status-success: #2e6b1e; /* darkened from #3A8C2F for AA on cedar-50/white */
+  --color-status-success-subtle: #e6f5e0;
+  --color-status-warning: var(--color-ember-600);
+  --color-status-warning-subtle: var(--color-ember-50);
+  --color-status-danger: #b83a4a;
+  --color-status-danger-subtle: #fbeaf0;
+  --color-status-info: var(--color-river-600);
+  --color-status-info-subtle: var(--color-river-50);
+
+  /* ----------------------------------------------------------
+     R18 COMPATIBILITY ALIASES
+     Legacy names consumed by globals.css → shadcn theme bridge.
+     Keep these pointing at the AA-safe Cabin tokens above.
+  ---------------------------------------------------------- */
+
+  /* Surfaces */
+  --color-surface: var(--color-bg-base);
+  --color-surface-raised: var(--color-bg-raised);
+  --color-border: var(--color-border-default);
+
+  /* Text */
+  --color-text: var(--color-text-body);
+  /* NOTE: re-export so globals.css continues to resolve --color-text-muted. */
+
+  /* Links — river-600 on cedar-50 = 7.5:1 (AA AAA). */
+  --color-link: var(--color-river-600);
+  --color-link-hover: var(--color-river-800);
+
+  /* Focus ring — ember-400 on cedar-50 = 3.3:1 (meets WCAG 1.4.11 non-text 3:1). */
+  --color-focus-ring: var(--color-ember-400);
+
+  /* Primary action */
+  --color-primary: var(--color-primary-action);
+  --color-primary-text: var(--color-text-on-primary);
+
+  /* Semantic */
+  --color-danger: var(--color-status-danger);
+  --color-success: var(--color-status-success);
+  --color-warning: var(--color-status-warning);
+
+  /* ----------------------------------------------------------
+     TYPOGRAPHY
+     Font families come from next/font in layout.tsx
+     (--font-sans = Poppins, --font-mono = JetBrains Mono).
+  ---------------------------------------------------------- */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --leading-tight: 1.3;
+  --leading-normal: 1.6;
+  --line-height-body: 1.6;
+  --leading-loose: 1.8;
+
+  /* ----------------------------------------------------------
+     SPACING
+  ---------------------------------------------------------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* ----------------------------------------------------------
+     BORDER RADIUS
+  ---------------------------------------------------------- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ----------------------------------------------------------
+     BORDER WIDTH
+  ---------------------------------------------------------- */
+  --border-thin: 0.5px;
+  --border-default: 1px;
+  --border-thick: 2px;
+
+  /* ----------------------------------------------------------
+     SHADOWS — cabin-clean
+  ---------------------------------------------------------- */
+  --shadow-sm: 0 1px 3px rgba(32, 22, 8, 0.08);
+  --shadow-md: 0 4px 12px rgba(32, 22, 8, 0.1);
+  --shadow-lg: 0 8px 24px rgba(32, 22, 8, 0.12);
+
+  /* ----------------------------------------------------------
+     TRANSITIONS
+  ---------------------------------------------------------- */
+  --transition-fast: 100ms ease;
+  --transition-base: 180ms ease;
+  --transition-slow: 300ms ease;
+}

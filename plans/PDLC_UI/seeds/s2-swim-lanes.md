@@ -1,0 +1,7 @@
+Read plans/PDLC_UI/plan-mode-prelude.md first. Then execute Sprint S2 — Swim lanes + forward moves (Bar A). Branch: feat/s2-swim-lanes.
+
+Sprint 2: full swim lane UI per plans/PDLC_UI/sprint-backlog.md and PRDs/README lifecycle order. Column layout, card placement by lifecycle, forward-only moves except DISABLE idea→discovery until brief wizard complete in S3 (block in canTransition; UX message pointing to Sprint 3). Moving to parked REQUIRES parkedIntent plus non-empty parkedReason modal (camelCase per sprint-backlog canonical case). Every move appends to events[]. develop/uat/deployed columns are status-only forward moves (no Jira). Match schema-initiative-v0.md. anthropic-frontend-design for board UI; Implementation standard.
+
+**Carry-over decision from S1 (2026-04-21, see 04-Projects/PDLC_Orchestration_UI.md Slice log):** Kanban sort order is **user-generated priority via drag-to-reorder**, not a content-change heuristic. `updatedAt`-based bubble-up is explicitly rejected. Implementation: add a `sort_order` column (INTEGER, nullable, default NULL) to `initiatives` in a new migration + `schema.ts`; populate on drag-drop; order within each lifecycle column by `sort_order NULLS LAST, created_at DESC` so new cards land at the top of a column until someone reorders. Reorder fires a `field_edit` event on the card (kind already in the closed Zod enum). Any new column requires matching edits to `migrations/*.sql` AND `schema.ts` in the same PR (R16 guardrail 1).
+
+Post-merge: Slice log line + tick S2 Progress in plan.md.

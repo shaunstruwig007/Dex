@@ -1,0 +1,191 @@
+{
+  "$ref": "#/definitions/Initiative",
+  "definitions": {
+    "Initiative": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "handle": {
+          "type": "string",
+          "pattern": "^INIT-\\d{4}$"
+        },
+        "title": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "lifecycle": {
+          "type": "string",
+          "enum": [
+            "idea",
+            "discovery",
+            "design",
+            "spec_ready",
+            "develop",
+            "uat",
+            "deployed",
+            "parked"
+          ]
+        },
+        "parkedIntent": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "revisit",
+                "wont_consider"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parkedReason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "gate": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "brief": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "discovery": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "design": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "spec": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "release": {
+          "type": "object",
+          "additionalProperties": {}
+        },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "at": {
+                "type": "string"
+              },
+              "by": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "stage_transition",
+                  "field_edit",
+                  "skill_run",
+                  "review"
+                ]
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": {},
+                "default": {}
+              }
+            },
+            "required": [
+              "at",
+              "by",
+              "kind"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "linkedPrdPath": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "strategyPillarIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "strategyWarning": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "revision",
+        "id",
+        "handle",
+        "title",
+        "body",
+        "lifecycle",
+        "parkedIntent",
+        "parkedReason",
+        "createdAt",
+        "updatedAt",
+        "gate",
+        "brief",
+        "discovery",
+        "design",
+        "spec",
+        "release",
+        "sourceRefs",
+        "attachments",
+        "events",
+        "linkedPrdPath",
+        "strategyPillarIds",
+        "strategyWarning"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
