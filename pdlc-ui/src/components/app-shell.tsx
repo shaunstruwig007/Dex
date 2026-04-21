@@ -11,7 +11,7 @@ export function AppShell() {
             <h1 className="text-xl font-semibold tracking-tight">
               PDLC Orchestration
             </h1>
-            <Badge variant="secondary">Sprint 1 — idea capture</Badge>
+            <Badge variant="secondary">Sprint 2 — swim lanes</Badge>
           </div>
         </div>
       </header>

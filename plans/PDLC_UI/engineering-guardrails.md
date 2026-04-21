@@ -51,6 +51,7 @@
 - Any new magic string (colour, lifecycle value, event kind) introduced without a home?
 - ADR filed for every big choice this sprint?
 - `main` only advanced by **merged PR with green CI** (not direct sprint pushes)?
+- Sprint **smoke checklist** added or updated under `pdlc-ui/docs/smoke/` (`S<n>-<slug>.md`) so the next-you knows what to click — see [smoke/README.md](../../pdlc-ui/docs/smoke/README.md).
 - If the sprint shipped via PR, did **`/moneypenny-custom`** (or equivalent R16 audit) run before merge?
 
 ---

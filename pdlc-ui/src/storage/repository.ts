@@ -1,13 +1,23 @@
 import { randomUUID } from "node:crypto";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
 import {
   eventSchema,
+  type BriefState,
   type Initiative,
   type InitiativeEvent,
   type Lifecycle,
   emptyInitiativeStages,
   initiativeSchema,
 } from "@/schema/initiative";
+import {
+  canTransition,
+  type CanTransitionReason,
+  deriveHasBrief,
+} from "@/lib/can-transition";
+import {
+  validateBriefWizardAnswers,
+  type BriefWizardAnswersInput,
+} from "@/lib/brief-wizard-validation";
 import { type Drizzle, openDrizzle } from "./db";
 import { deletedInitiativeEvents, initiatives } from "./schema";
 
@@ -28,7 +38,7 @@ type DrizzleRow = typeof initiatives.$inferSelect;
 
 type ExtraFields = {
   gate: Record<string, unknown>;
-  brief: Record<string, unknown>;
+  brief: BriefState;
   discovery: Record<string, unknown>;
   design: Record<string, unknown>;
   spec: Record<string, unknown>;
@@ -66,6 +76,7 @@ function rowToInitiative(row: DrizzleRow): Initiative {
     lifecycle: row.lifecycle as Lifecycle,
     parkedIntent: row.parkedIntent as Initiative["parkedIntent"],
     parkedReason: row.parkedReason,
+    sortOrder: row.sortOrder,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     gate: base.gate,
@@ -102,13 +113,21 @@ export function listInitiatives(
   options: { lifecycle?: Lifecycle } = {},
   db: Drizzle = openDrizzle(),
 ): Initiative[] {
+  // Order: user-placed cards first by sort_order ASC, then un-reordered cards
+  // by created_at DESC (newest on top of a lane until someone drags them).
+  // SQLite sorts NULLs first by default; `sort_order IS NULL` inverts that.
+  const orderBy = [
+    sql`(${initiatives.sortOrder} IS NULL)`,
+    asc(initiatives.sortOrder),
+    desc(initiatives.createdAt),
+  ];
   const baseQuery = db.select().from(initiatives);
   const rows = options.lifecycle
     ? baseQuery
         .where(eq(initiatives.lifecycle, options.lifecycle))
-        .orderBy(desc(initiatives.createdAt))
+        .orderBy(...orderBy)
         .all()
-    : baseQuery.orderBy(desc(initiatives.createdAt)).all();
+    : baseQuery.orderBy(...orderBy).all();
   return rows.map(rowToInitiative);
 }
 
@@ -320,4 +339,585 @@ export function listDeletedEvents(
       payload: JSON.parse(r.payload),
     }),
   );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Sprint 2 — stage transitions + lane reordering
+// ────────────────────────────────────────────────────────────────────────────
+
+export type TransitionInput = {
+  id: string;
+  expectedRevision: number;
+  to: Lifecycle;
+  parkedIntent?: "revisit" | "wont_consider" | null;
+  parkedReason?: string | null;
+  note?: string;
+  by?: string;
+  now?: Date;
+};
+
+export type TransitionResult =
+  | { ok: true; initiative: Initiative }
+  | { ok: false; reason: "not_found" }
+  | { ok: false; reason: "revision_conflict"; current: Initiative }
+  | { ok: false; reason: CanTransitionReason; current: Initiative };
+
+/**
+ * Move an initiative forward through the lifecycle. Enforces `canTransition`
+ * (pure function in `@/lib/can-transition`) so the HTTP layer and UI menu
+ * logic agree on legality. Appends a `stage_transition` event; clears parked
+ * fields on `parked → idea`.
+ */
+export function transitionInitiative(
+  input: TransitionInput,
+  db: Drizzle = openDrizzle(),
+): TransitionResult {
+  const existing = getInitiative(input.id, db);
+  if (!existing) return { ok: false, reason: "not_found" };
+  if (existing.revision !== input.expectedRevision) {
+    return { ok: false, reason: "revision_conflict", current: existing };
+  }
+
+  const from = existing.lifecycle;
+  const gate = canTransition(from, input.to, {
+    hasBrief: deriveHasBrief(existing),
+    parkedIntent: input.parkedIntent ?? null,
+    parkedReason: input.parkedReason ?? null,
+  });
+  if (!gate.ok) {
+    return { ok: false, reason: gate.reason, current: existing };
+  }
+
+  const now = (input.now ?? new Date()).toISOString();
+  const by = input.by ?? "shaun";
+  const isParking = input.to === "parked";
+  const isUnParking = from === "parked" && input.to === "idea";
+
+  const payload: Record<string, unknown> = { from, to: input.to };
+  if (input.note) payload.note = input.note;
+  if (isParking) {
+    payload.parkedIntent = input.parkedIntent;
+    payload.parkedReason = (input.parkedReason ?? "").trim();
+  }
+  const event: InitiativeEvent = eventSchema.parse({
+    at: now,
+    by,
+    kind: "stage_transition",
+    payload,
+  });
+
+  const nextEvents = [...existing.events, event];
+  const nextParkedIntent = isParking
+    ? (input.parkedIntent ?? null)
+    : isUnParking
+      ? null
+      : existing.parkedIntent;
+  const nextParkedReason = isParking
+    ? (input.parkedReason ?? "").trim() || null
+    : isUnParking
+      ? null
+      : existing.parkedReason;
+
+  const nextData = JSON.stringify({
+    gate: existing.gate,
+    brief: existing.brief,
+    discovery: existing.discovery,
+    design: existing.design,
+    spec: existing.spec,
+    release: existing.release,
+    sourceRefs: existing.sourceRefs,
+    attachments: existing.attachments,
+    events: nextEvents,
+    linkedPrdPath: existing.linkedPrdPath,
+    strategyPillarIds: existing.strategyPillarIds,
+    strategyWarning: existing.strategyWarning,
+  });
+
+  const result = db
+    .update(initiatives)
+    .set({
+      lifecycle: input.to,
+      parkedIntent: nextParkedIntent,
+      parkedReason: nextParkedReason,
+      // New lane placement: clear sortOrder so the card lands at the top of
+      // the destination lane (NULLs are ordered last → newest by createdAt).
+      sortOrder: null,
+      revision: sql`${initiatives.revision} + 1`,
+      updatedAt: now,
+      data: nextData,
+    })
+    .where(
+      and(
+        eq(initiatives.id, input.id),
+        eq(initiatives.revision, input.expectedRevision),
+      ),
+    )
+    .run();
+
+  if (result.changes === 0) {
+    const current = getInitiative(input.id, db);
+    if (!current) return { ok: false, reason: "not_found" };
+    return { ok: false, reason: "revision_conflict", current };
+  }
+
+  const updated = getInitiative(input.id, db);
+  if (!updated) return { ok: false, reason: "not_found" };
+  return { ok: true, initiative: updated };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Sprint 3 — atomic brief save + idea → discovery (single revision bump)
+// ────────────────────────────────────────────────────────────────────────────
+
+export type { BriefWizardAnswersInput } from "@/lib/brief-wizard-validation";
+
+function textFromHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function envelopeString(value: string, at: string, by: string) {
+  return {
+    value,
+    confidence: "high" as const,
+    source: "user" as const,
+    reviewedBy: by,
+    reviewedAt: at,
+    updatedAt: at,
+  };
+}
+
+function envelopeStringList(values: string[], at: string, by: string) {
+  return {
+    value: values,
+    confidence: "high" as const,
+    source: "user" as const,
+    reviewedBy: by,
+    reviewedAt: at,
+    updatedAt: at,
+  };
+}
+
+function buildBriefStateFromAnswers(
+  answers: BriefWizardAnswersInput,
+  by: string,
+  at: string,
+): BriefState {
+  const scopeIn = answers.scopeIn.map((s) => s.trim()).filter(Boolean);
+  const scopeOut = answers.scopeOut.map((s) => s.trim()).filter(Boolean);
+  const assumptionsText = answers.assumptions
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const constraintsHtml =
+    textFromHtml(answers.constraints).length > 0
+      ? answers.constraints
+      : "<p></p>";
+  const summaryHtml =
+    textFromHtml(answers.understandingSummary).length > 0
+      ? answers.understandingSummary
+      : "<p></p>";
+  return {
+    problem: envelopeString(answers.problem, at, by),
+    targetUsers: envelopeString(answers.targetUsers, at, by),
+    coreValue: envelopeString(answers.coreValue, at, by),
+    successDefinition: envelopeString(answers.successDefinition, at, by),
+    constraints: envelopeString(constraintsHtml, at, by),
+    scopeIn: envelopeStringList(scopeIn, at, by),
+    scopeOut: envelopeStringList(scopeOut, at, by),
+    assumptions: assumptionsText.map((text) => ({
+      text,
+      validation: null,
+      confidence: "high" as const,
+      source: "user" as const,
+      reviewedBy: by,
+    })),
+    understandingSummary: envelopeString(summaryHtml, at, by),
+    complete: true,
+    reviewedAt: at,
+    reviewedBy: by,
+  };
+}
+
+function mergeDiscoveryDraftQuestions(
+  discovery: Record<string, unknown>,
+  lines: string[],
+  by: string,
+): Record<string, unknown> {
+  const prev = Array.isArray(discovery.openQuestions)
+    ? (discovery.openQuestions as unknown[])
+    : [];
+  const additions = lines
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .map((text) => ({
+      id: `oq-${randomUUID()}`,
+      text,
+      owner: by,
+      status: "open" as const,
+      answer: null,
+      answeredAt: null,
+      source: "user" as const,
+      sourceRef: null,
+    }));
+  return { ...discovery, openQuestions: [...prev, ...additions] };
+}
+
+function nextPdlcBriefIteration(events: InitiativeEvent[]): number {
+  let max = 0;
+  for (const e of events) {
+    if (e.kind === "skill_run" && e.payload.skill === "pdlc-brief-custom") {
+      max = Math.max(max, e.payload.iteration);
+    }
+  }
+  return max + 1;
+}
+
+export type SaveBriefAndTransitionInput = {
+  id: string;
+  expectedRevision: number;
+  answers: BriefWizardAnswersInput;
+  by?: string;
+  now?: Date;
+};
+
+export type SaveBriefAndTransitionResult =
+  | { ok: true; initiative: Initiative }
+  | { ok: false; reason: "not_found" }
+  | { ok: false; reason: "revision_conflict"; current: Initiative }
+  | {
+      ok: false;
+      reason: "missing_required_fields";
+      fields: string[];
+      current: Initiative;
+    }
+  | { ok: false; reason: CanTransitionReason; current: Initiative };
+
+/**
+ * Atomically writes `brief.*` (full envelope + `complete: true`), merges
+ * discovery open-question drafts, appends `skill_run` + `stage_transition`,
+ * moves `idea → discovery`, bumps `revision` once.
+ */
+export function saveBriefAndTransition(
+  input: SaveBriefAndTransitionInput,
+  db: Drizzle = openDrizzle(),
+): SaveBriefAndTransitionResult {
+  const existing = getInitiative(input.id, db);
+  if (!existing) return { ok: false, reason: "not_found" };
+  if (existing.revision !== input.expectedRevision) {
+    return { ok: false, reason: "revision_conflict", current: existing };
+  }
+  if (existing.lifecycle !== "idea") {
+    return {
+      ok: false,
+      reason: "illegal_transition",
+      current: existing,
+    };
+  }
+
+  const now = (input.now ?? new Date()).toISOString();
+  const by = input.by ?? "shaun";
+
+  const missing = validateBriefWizardAnswers(input.answers);
+  if (missing.length > 0) {
+    return {
+      ok: false,
+      reason: "missing_required_fields",
+      fields: missing,
+      current: existing,
+    };
+  }
+
+  const nextBrief = buildBriefStateFromAnswers(input.answers, by, now);
+  const existingDiscovery =
+    (existing.discovery as Record<string, unknown>) ?? {};
+  const nextDiscovery = mergeDiscoveryDraftQuestions(
+    existingDiscovery,
+    input.answers.openQuestions,
+    by,
+  );
+
+  const draftInitiative: Initiative = {
+    ...existing,
+    brief: nextBrief,
+    discovery: nextDiscovery,
+  };
+
+  const gate = canTransition("idea", "discovery", {
+    hasBrief: deriveHasBrief(draftInitiative),
+    parkedIntent: null,
+    parkedReason: null,
+  });
+  if (!gate.ok) {
+    return {
+      ok: false,
+      reason: gate.reason,
+      current: existing,
+    };
+  }
+
+  const iteration = nextPdlcBriefIteration(existing.events);
+  const skillRun: InitiativeEvent = eventSchema.parse({
+    at: now,
+    by,
+    kind: "skill_run",
+    payload: { skill: "pdlc-brief-custom", iteration },
+  });
+  const stageTx: InitiativeEvent = eventSchema.parse({
+    at: now,
+    by,
+    kind: "stage_transition",
+    payload: { from: "idea", to: "discovery" },
+  });
+
+  const nextEvents = [...existing.events, skillRun, stageTx];
+  const nextData = JSON.stringify({
+    gate: existing.gate,
+    brief: nextBrief,
+    discovery: nextDiscovery,
+    design: existing.design,
+    spec: existing.spec,
+    release: existing.release,
+    sourceRefs: existing.sourceRefs,
+    attachments: existing.attachments,
+    events: nextEvents,
+    linkedPrdPath: existing.linkedPrdPath,
+    strategyPillarIds: existing.strategyPillarIds,
+    strategyWarning: existing.strategyWarning,
+  });
+
+  const result = db
+    .update(initiatives)
+    .set({
+      lifecycle: "discovery",
+      sortOrder: null,
+      revision: sql`${initiatives.revision} + 1`,
+      updatedAt: now,
+      data: nextData,
+    })
+    .where(
+      and(
+        eq(initiatives.id, input.id),
+        eq(initiatives.revision, input.expectedRevision),
+      ),
+    )
+    .run();
+
+  if (result.changes === 0) {
+    const current = getInitiative(input.id, db);
+    if (!current) return { ok: false, reason: "not_found" };
+    return { ok: false, reason: "revision_conflict", current };
+  }
+
+  const updated = getInitiative(input.id, db);
+  if (!updated) return { ok: false, reason: "not_found" };
+  return { ok: true, initiative: updated };
+}
+
+export type ReorderInput = {
+  id: string;
+  expectedRevision: number;
+  sortOrder: number;
+  by?: string;
+  now?: Date;
+};
+
+export type ReorderResult =
+  | { ok: true; initiative: Initiative }
+  | { ok: false; reason: "not_found" }
+  | { ok: false; reason: "revision_conflict"; current: Initiative };
+
+/**
+ * Update a card's `sort_order` within its lane. Midpoint allocation is the
+ * caller's responsibility (the UI computes `(prev + next) / 2` on drop);
+ * the repository just persists the value, bumps the revision, and appends
+ * a `field_edit` event so the audit log shows who reordered when.
+ */
+export function reorderInitiative(
+  input: ReorderInput,
+  db: Drizzle = openDrizzle(),
+): ReorderResult {
+  if (!Number.isFinite(input.sortOrder)) {
+    throw new Error("sort_order_not_finite");
+  }
+  const nextSortOrder = Math.trunc(input.sortOrder);
+
+  const existing = getInitiative(input.id, db);
+  if (!existing) return { ok: false, reason: "not_found" };
+  if (existing.revision !== input.expectedRevision) {
+    return { ok: false, reason: "revision_conflict", current: existing };
+  }
+
+  const now = (input.now ?? new Date()).toISOString();
+  const by = input.by ?? "shaun";
+
+  const event: InitiativeEvent = eventSchema.parse({
+    at: now,
+    by,
+    kind: "field_edit",
+    payload: {
+      field: "sortOrder",
+      before: existing.sortOrder,
+      after: nextSortOrder,
+    },
+  });
+
+  const nextEvents = [...existing.events, event];
+  const nextData = JSON.stringify({
+    gate: existing.gate,
+    brief: existing.brief,
+    discovery: existing.discovery,
+    design: existing.design,
+    spec: existing.spec,
+    release: existing.release,
+    sourceRefs: existing.sourceRefs,
+    attachments: existing.attachments,
+    events: nextEvents,
+    linkedPrdPath: existing.linkedPrdPath,
+    strategyPillarIds: existing.strategyPillarIds,
+    strategyWarning: existing.strategyWarning,
+  });
+
+  const result = db
+    .update(initiatives)
+    .set({
+      sortOrder: nextSortOrder,
+      revision: sql`${initiatives.revision} + 1`,
+      updatedAt: now,
+      data: nextData,
+    })
+    .where(
+      and(
+        eq(initiatives.id, input.id),
+        eq(initiatives.revision, input.expectedRevision),
+      ),
+    )
+    .run();
+
+  if (result.changes === 0) {
+    const current = getInitiative(input.id, db);
+    if (!current) return { ok: false, reason: "not_found" };
+    return { ok: false, reason: "revision_conflict", current };
+  }
+
+  const updated = getInitiative(input.id, db);
+  if (!updated) return { ok: false, reason: "not_found" };
+  return { ok: true, initiative: updated };
+}
+
+/**
+ * Test / seeding helper: write a **minimum viable completed brief** so S2/S3
+ * gates pass without running the wizard. Not exposed via API; used in tests
+ * and Playwright e2e (`PDLC_ALLOW_TEST_HELPERS=1`).
+ */
+export function seedBriefForTesting(
+  id: string,
+  db: Drizzle = openDrizzle(),
+): Initiative | null {
+  const existing = getInitiative(id, db);
+  if (!existing) return null;
+  const at = new Date().toISOString();
+  const by = "shaun";
+  const seededBrief: BriefState = {
+    problem: {
+      value: "<p>seed problem</p>",
+      confidence: "high",
+      source: "user",
+      reviewedBy: by,
+      reviewedAt: at,
+      updatedAt: at,
+    },
+    targetUsers: {
+      value: "<p>seed users</p>",
+      confidence: "high",
+      source: "user",
+      reviewedBy: by,
+      reviewedAt: at,
+      updatedAt: at,
+    },
+    coreValue: {
+      value: "<p>seed value</p>",
+      confidence: "high",
+      source: "user",
+      reviewedBy: by,
+      reviewedAt: at,
+      updatedAt: at,
+    },
+    successDefinition: {
+      value: "<p>seed success</p>",
+      confidence: "high",
+      source: "user",
+      reviewedBy: by,
+      reviewedAt: at,
+      updatedAt: at,
+    },
+    constraints: {
+      value: "<p></p>",
+      confidence: "high",
+      source: "user",
+      reviewedBy: by,
+      reviewedAt: at,
+      updatedAt: at,
+    },
+    scopeIn: {
+      value: ["seed scope in"],
+      confidence: "high",
+      source: "user",
+      reviewedBy: by,
+      reviewedAt: at,
+      updatedAt: at,
+    },
+    scopeOut: {
+      value: [],
+      confidence: "high",
+      source: "user",
+      reviewedBy: by,
+      reviewedAt: at,
+      updatedAt: at,
+    },
+    assumptions: [
+      {
+        text: "seed assumption",
+        validation: null,
+        confidence: "high",
+        source: "user",
+        reviewedBy: by,
+      },
+    ],
+    understandingSummary: {
+      value: "<p></p>",
+      confidence: "high",
+      source: "user",
+      reviewedBy: by,
+      reviewedAt: at,
+      updatedAt: at,
+    },
+    complete: true,
+    reviewedAt: at,
+    reviewedBy: by,
+  };
+  const nextData = JSON.stringify({
+    gate: existing.gate,
+    brief: seededBrief,
+    discovery: existing.discovery,
+    design: existing.design,
+    spec: existing.spec,
+    release: existing.release,
+    sourceRefs: existing.sourceRefs,
+    attachments: existing.attachments,
+    events: existing.events,
+    linkedPrdPath: existing.linkedPrdPath,
+    strategyPillarIds: existing.strategyPillarIds,
+    strategyWarning: existing.strategyWarning,
+  });
+  db.update(initiatives)
+    .set({
+      data: nextData,
+      revision: sql`${initiatives.revision} + 1`,
+      updatedAt: new Date().toISOString(),
+    })
+    .where(eq(initiatives.id, id))
+    .run();
+  return getInitiative(id, db);
 }

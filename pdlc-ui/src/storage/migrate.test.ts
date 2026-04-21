@@ -21,7 +21,7 @@ afterEach(() => {
 describe("migrate", () => {
   it("applies all pending migrations on first call", () => {
     const applied = migrate(db);
-    expect(applied.length).toBeGreaterThanOrEqual(2);
+    expect(applied.length).toBeGreaterThanOrEqual(3);
     const status = migrationStatus(db);
     expect(status.pending).toEqual([]);
   });
@@ -43,5 +43,21 @@ describe("migrate", () => {
     expect(tables).toContain("initiatives");
     expect(tables).toContain("deleted_initiative_events");
     expect(tables).toContain("schema_migrations");
+  });
+
+  it("adds sort_order column + lifecycle/sort index (003)", () => {
+    migrate(db);
+    const columns = db
+      .prepare<[], { name: string }>("PRAGMA table_info(initiatives)")
+      .all()
+      .map((r) => r.name);
+    expect(columns).toContain("sort_order");
+    const indexes = db
+      .prepare<[], { name: string }>(
+        "SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = 'initiatives'",
+      )
+      .all()
+      .map((r) => r.name);
+    expect(indexes).toContain("idx_initiatives_lifecycle_sort");
   });
 });

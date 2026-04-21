@@ -22,6 +22,10 @@ export default defineConfig({
     env: {
       // Isolate e2e from local dev DB; wiped in globalSetup.
       PDLC_DB_PATH: TEST_DB,
+      // Unlock the `/api/test/seed-brief` helper so swim-lanes.spec.ts can
+      // simulate the S3 brief gate without a real wizard. The route 404s
+      // unless this is exactly "1" — see src/app/api/test/seed-brief/route.ts.
+      PDLC_ALLOW_TEST_HELPERS: "1",
     },
   },
   globalSetup: "./e2e/global-setup.ts",

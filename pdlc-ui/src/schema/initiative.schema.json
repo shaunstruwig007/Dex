@@ -59,6 +59,16 @@
             "null"
           ]
         },
+        "sortOrder": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "createdAt": {
           "type": "string"
         },
@@ -71,7 +81,501 @@
         },
         "brief": {
           "type": "object",
-          "additionalProperties": {}
+          "properties": {
+            "problem": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "confidence": {
+                  "type": "string",
+                  "enum": [
+                    "high",
+                    "med",
+                    "low"
+                  ],
+                  "default": "high"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "agent_draft",
+                    "meeting_cited",
+                    "signal_cited",
+                    "imported"
+                  ],
+                  "default": "user"
+                },
+                "sourceRef": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedBy": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedAt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "targetUsers": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "confidence": {
+                  "type": "string",
+                  "enum": [
+                    "high",
+                    "med",
+                    "low"
+                  ],
+                  "default": "high"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "agent_draft",
+                    "meeting_cited",
+                    "signal_cited",
+                    "imported"
+                  ],
+                  "default": "user"
+                },
+                "sourceRef": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedBy": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedAt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "coreValue": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "confidence": {
+                  "type": "string",
+                  "enum": [
+                    "high",
+                    "med",
+                    "low"
+                  ],
+                  "default": "high"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "agent_draft",
+                    "meeting_cited",
+                    "signal_cited",
+                    "imported"
+                  ],
+                  "default": "user"
+                },
+                "sourceRef": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedBy": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedAt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "scopeIn": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "confidence": {
+                  "type": "string",
+                  "enum": [
+                    "high",
+                    "med",
+                    "low"
+                  ],
+                  "default": "high"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "agent_draft",
+                    "meeting_cited",
+                    "signal_cited",
+                    "imported"
+                  ],
+                  "default": "user"
+                },
+                "sourceRef": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedBy": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedAt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "scopeOut": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "confidence": {
+                  "type": "string",
+                  "enum": [
+                    "high",
+                    "med",
+                    "low"
+                  ],
+                  "default": "high"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "agent_draft",
+                    "meeting_cited",
+                    "signal_cited",
+                    "imported"
+                  ],
+                  "default": "user"
+                },
+                "sourceRef": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedBy": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedAt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "validation": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "med",
+                      "low"
+                    ],
+                    "default": "high"
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "user",
+                      "agent_draft",
+                      "meeting_cited",
+                      "signal_cited",
+                      "imported"
+                    ],
+                    "default": "user"
+                  },
+                  "reviewedBy": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "text"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "constraints": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "confidence": {
+                  "type": "string",
+                  "enum": [
+                    "high",
+                    "med",
+                    "low"
+                  ],
+                  "default": "high"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "agent_draft",
+                    "meeting_cited",
+                    "signal_cited",
+                    "imported"
+                  ],
+                  "default": "user"
+                },
+                "sourceRef": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedBy": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedAt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "successDefinition": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "confidence": {
+                  "type": "string",
+                  "enum": [
+                    "high",
+                    "med",
+                    "low"
+                  ],
+                  "default": "high"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "agent_draft",
+                    "meeting_cited",
+                    "signal_cited",
+                    "imported"
+                  ],
+                  "default": "user"
+                },
+                "sourceRef": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedBy": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedAt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "understandingSummary": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "confidence": {
+                  "type": "string",
+                  "enum": [
+                    "high",
+                    "med",
+                    "low"
+                  ],
+                  "default": "high"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "agent_draft",
+                    "meeting_cited",
+                    "signal_cited",
+                    "imported"
+                  ],
+                  "default": "user"
+                },
+                "sourceRef": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedBy": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reviewedAt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "complete": {
+              "type": "boolean"
+            },
+            "reviewedAt": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reviewedBy": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
         },
         "discovery": {
           "type": "object",
@@ -106,38 +610,248 @@
         "events": {
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "at": {
-                "type": "string"
-              },
-              "by": {
-                "type": "string",
-                "minLength": 1
-              },
-              "kind": {
-                "type": "string",
-                "enum": [
-                  "create",
-                  "delete",
-                  "stage_transition",
-                  "field_edit",
-                  "skill_run",
-                  "review"
-                ]
-              },
-              "payload": {
+            "anyOf": [
+              {
                 "type": "object",
-                "additionalProperties": {},
-                "default": {}
+                "properties": {
+                  "at": {
+                    "type": "string"
+                  },
+                  "by": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "create"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "handle": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "handle"
+                    ],
+                    "additionalProperties": true
+                  }
+                },
+                "required": [
+                  "at",
+                  "by",
+                  "kind",
+                  "payload"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "at": {
+                    "type": "string"
+                  },
+                  "by": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "delete"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "handle": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "handle"
+                    ],
+                    "additionalProperties": true
+                  }
+                },
+                "required": [
+                  "at",
+                  "by",
+                  "kind",
+                  "payload"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "at": {
+                    "type": "string"
+                  },
+                  "by": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "stage_transition"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "string",
+                        "enum": [
+                          "idea",
+                          "discovery",
+                          "design",
+                          "spec_ready",
+                          "develop",
+                          "uat",
+                          "deployed",
+                          "parked"
+                        ]
+                      },
+                      "to": {
+                        "type": "string",
+                        "enum": [
+                          "idea",
+                          "discovery",
+                          "design",
+                          "spec_ready",
+                          "develop",
+                          "uat",
+                          "deployed",
+                          "parked"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "from",
+                      "to"
+                    ],
+                    "additionalProperties": true
+                  }
+                },
+                "required": [
+                  "at",
+                  "by",
+                  "kind",
+                  "payload"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "at": {
+                    "type": "string"
+                  },
+                  "by": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "field_edit"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "field": {
+                        "type": "string"
+                      },
+                      "before": {
+                        "anyOf": [
+                          {},
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "after": {}
+                    },
+                    "required": [
+                      "field"
+                    ],
+                    "additionalProperties": true
+                  }
+                },
+                "required": [
+                  "at",
+                  "by",
+                  "kind",
+                  "payload"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "at": {
+                    "type": "string"
+                  },
+                  "by": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "skill_run"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "properties": {
+                      "skill": {
+                        "type": "string"
+                      },
+                      "iteration": {
+                        "type": "integer",
+                        "minimum": 1
+                      }
+                    },
+                    "required": [
+                      "skill",
+                      "iteration"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "at",
+                  "by",
+                  "kind",
+                  "payload"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "at": {
+                    "type": "string"
+                  },
+                  "by": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "review"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                },
+                "required": [
+                  "at",
+                  "by",
+                  "kind",
+                  "payload"
+                ],
+                "additionalProperties": false
               }
-            },
-            "required": [
-              "at",
-              "by",
-              "kind"
-            ],
-            "additionalProperties": false
+            ]
           }
         },
         "linkedPrdPath": {
@@ -169,6 +883,7 @@
         "lifecycle",
         "parkedIntent",
         "parkedReason",
+        "sortOrder",
         "createdAt",
         "updatedAt",
         "gate",

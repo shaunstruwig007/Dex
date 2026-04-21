@@ -24,6 +24,13 @@ export function RichTextRenderer({
     content: html,
     editable: false,
     immediatelyRender: false,
+    editorProps: {
+      attributes: {
+        // TipTap keeps role="textbox" on the ProseMirror root; axe requires a
+        // name for ARIA inputs even when contenteditable=false (card previews).
+        "aria-label": "Initiative notes preview",
+      },
+    },
   });
 
   useEffect(() => {

@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "steps": [
+    {
+      "id": "problem",
+      "round": 1,
+      "field": "problem",
+      "type": "richtext",
+      "label": "What problem are we solving?",
+      "help": "Frame the pain or gap — customer-visible, not solution-shaped.",
+      "required": true
+    },
+    {
+      "id": "targetUsers",
+      "round": 1,
+      "field": "targetUsers",
+      "type": "richtext",
+      "label": "Who are the target users or beneficiaries?",
+      "help": "Segments, roles, or contexts — enough that discovery research can aim.",
+      "required": true
+    },
+    {
+      "id": "coreValue",
+      "round": 1,
+      "field": "coreValue",
+      "type": "richtext",
+      "label": "What is the core value proposition?",
+      "help": "Why this matters now — outcome-oriented, one sharp thesis.",
+      "required": true
+    },
+    {
+      "id": "successDefinition",
+      "round": 1,
+      "field": "successDefinition",
+      "type": "richtext",
+      "label": "How will we know this succeeded?",
+      "help": "Observable signals, adoption, or business metrics — not a feature list.",
+      "required": true
+    },
+    {
+      "id": "constraints",
+      "round": 2,
+      "field": "constraints",
+      "type": "richtext",
+      "label": "What constraints must we respect?",
+      "help": "Time, compliance, platform, dependencies, or non-negotiables.",
+      "required": false
+    },
+    {
+      "id": "scopeIn",
+      "round": 2,
+      "field": "scopeIn",
+      "type": "list",
+      "label": "What is explicitly in scope?",
+      "help": "Bullet-style lines — each line becomes a scope item.",
+      "required": true
+    },
+    {
+      "id": "scopeOut",
+      "round": 2,
+      "field": "scopeOut",
+      "type": "list",
+      "label": "What is explicitly out of scope?",
+      "help": "Prevents silent creep — name the tempting adjacent work we are not doing.",
+      "required": false
+    },
+    {
+      "id": "assumptions",
+      "round": 3,
+      "field": "assumptions",
+      "type": "list",
+      "label": "What assumptions are we making?",
+      "help": "Each line is one assumption to validate in discovery.",
+      "required": true
+    },
+    {
+      "id": "openQuestions",
+      "round": 3,
+      "field": "openQuestions",
+      "type": "list",
+      "label": "Open questions for discovery (drafts)",
+      "help": "Each line becomes a draft open question on the card for the discovery column.",
+      "required": false
+    },
+    {
+      "id": "understandingSummary",
+      "round": 3,
+      "field": "understandingSummary",
+      "type": "richtext",
+      "label": "Understanding summary",
+      "help": "Synthesise what you heard — this mirrors Phase 3 of `/pdlc-brief-custom`.",
+      "required": false
+    }
+  ]
+}

@@ -24,6 +24,8 @@ npm run dev
 
 Stop the app: in the terminal, press **Ctrl+C**.
 
+**Product brief (S3):** From an **Idea** card, **Move to… → Discovery** opens the wizard if `brief.complete` is not set. On **Finish**, data lives under `initiative.brief.*` (full envelope + `complete: true`) and `discovery.openQuestions[]` for wizard drafts. Smoke: [smoke/S3-brief-wizard.md](./smoke/S3-brief-wizard.md).
+
 ---
 
 ## Before you merge (if you use GitHub + pull requests)
@@ -37,6 +39,8 @@ cd pdlc-ui
 npm ci
 npm run lint && npm run format:check && npm run typecheck && npm run schema:validate && npm test
 ```
+
+After a sprint merges (or before a demo), optional human pass: [Sprint smoke checklists](./smoke/README.md) — short UX steps; CI still owns regression.
 
 ---
 
@@ -70,6 +74,7 @@ On a server you’d usually schedule that once a day (cron) — same runbook exp
 | -------------------------------- | ------------------------------------------------------------------------ |
 | Deploy / rollback / audit policy | [OPERATIONS.md](./OPERATIONS.md)                                         |
 | Backups + restore drill          | [BACKUP_RUNBOOK.md](./BACKUP_RUNBOOK.md)                                 |
+| Sprint-close smoke (manual UX)   | [smoke/README.md](./smoke/README.md)                                     |
 | All `npm run` scripts            | [README.md](../README.md) (Scripts table)                                |
 | Stack and persistence decisions  | [adr/0001-stack-and-persistence.md](./adr/0001-stack-and-persistence.md) |
 

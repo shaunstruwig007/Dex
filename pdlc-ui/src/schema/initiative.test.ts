@@ -16,6 +16,27 @@ describe("initiativeSchema", () => {
     const parsed = initiativeSchema.safeParse(raw);
     expect(parsed.success, JSON.stringify(parsed.error?.format())).toBe(true);
   });
+
+  it("accepts empty brief object on a fresh card", () => {
+    const raw = JSON.parse(readFileSync(fixturePath, "utf8")) as Record<
+      string,
+      unknown
+    >;
+    raw.brief = {};
+    raw.lifecycle = "idea";
+    raw.revision = 1;
+    raw.discovery = {};
+    raw.events = [
+      {
+        at: "2026-04-21T10:00:00.000Z",
+        by: "shaun",
+        kind: "create",
+        payload: { handle: "INIT-0001" },
+      },
+    ];
+    const parsed = initiativeSchema.safeParse(raw);
+    expect(parsed.success, JSON.stringify(parsed.error?.format())).toBe(true);
+  });
 });
 
 describe("eventSchema", () => {
@@ -26,7 +47,7 @@ describe("eventSchema", () => {
         at: now,
         by: "shaun",
         kind: "create",
-        payload: {},
+        payload: { handle: "INIT-0001" },
       }).success,
     ).toBe(true);
     expect(
@@ -34,7 +55,7 @@ describe("eventSchema", () => {
         at: now,
         by: "shaun",
         kind: "delete",
-        payload: {},
+        payload: { handle: "INIT-0001" },
       }).success,
     ).toBe(true);
   });
@@ -56,5 +77,23 @@ describe("eventSchema", () => {
       kind: "create",
     });
     expect(result.success).toBe(false);
+  });
+
+  it("enforces skill_run payload shape", () => {
+    const ok = eventSchema.safeParse({
+      at: "2026-04-21T10:00:00.000Z",
+      by: "shaun",
+      kind: "skill_run",
+      payload: { skill: "pdlc-brief-custom", iteration: 1 },
+    });
+    expect(ok.success).toBe(true);
+
+    const bad = eventSchema.safeParse({
+      at: "2026-04-21T10:00:00.000Z",
+      by: "shaun",
+      kind: "skill_run",
+      payload: { skill: "pdlc-brief-custom" },
+    });
+    expect(bad.success).toBe(false);
   });
 });

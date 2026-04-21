@@ -18,7 +18,7 @@
     "schema:validate": "npm run generate:schema && node scripts/validate-fixture.mjs",
     "db:migrate": "tsx scripts/db-migrate.ts",
     "test": "vitest run",
-    "test:e2e:a11y": "playwright test"
+    "test:e2e:a11y": "CI=1 playwright test"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
