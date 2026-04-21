@@ -103,6 +103,10 @@ eggs/
 .eggs/
 lib/
 lib64/
+# Keep pdlc-ui's app-code lib directory (shadcn `cn` helper etc.) — the
+# Python `lib/` rule above was swallowing it on fresh CI checkouts.
+!pdlc-ui/src/lib/
+!pdlc-ui/src/lib/**
 parts/
 sdist/
 var/
