@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
+import { JetBrains_Mono, Poppins } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
-const inter = Inter({
+const poppins = Poppins({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -28,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${geistMono.variable} min-h-screen antialiased`}
+        className={`${poppins.variable} ${jetbrainsMono.variable} min-h-screen antialiased`}
       >
         <ThemeProvider
           attribute="class"
