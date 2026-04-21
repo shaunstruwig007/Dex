@@ -38,6 +38,8 @@ npm ci
 npm run lint && npm run format:check && npm run typecheck && npm run schema:validate && npm test
 ```
 
+After a sprint merges (or before a demo), optional human pass: [Sprint smoke checklists](./smoke/README.md) — short UX steps; CI still owns regression.
+
 ---
 
 ## Rare: backups and restore
@@ -70,6 +72,7 @@ On a server you’d usually schedule that once a day (cron) — same runbook exp
 | -------------------------------- | ------------------------------------------------------------------------ |
 | Deploy / rollback / audit policy | [OPERATIONS.md](./OPERATIONS.md)                                         |
 | Backups + restore drill          | [BACKUP_RUNBOOK.md](./BACKUP_RUNBOOK.md)                                 |
+| Sprint-close smoke (manual UX)   | [smoke/README.md](./smoke/README.md)                                     |
 | All `npm run` scripts            | [README.md](../README.md) (Scripts table)                                |
 | Stack and persistence decisions  | [adr/0001-stack-and-persistence.md](./adr/0001-stack-and-persistence.md) |
 

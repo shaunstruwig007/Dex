@@ -42,6 +42,8 @@ npm run test:e2e:a11y       # axe + CRUD smoke (Playwright spins its own server)
 npm run dev                 # open http://localhost:3000 → create / edit / delete an idea
 ```
 
+**Sprint-close smoke (manual):** [docs/smoke/S1-idea-capture.md](./smoke/S1-idea-capture.md)
+
 ## What next sprint must preserve
 
 - `initiatives.data` JSON column owns all non-queryable nested fields (gate / brief / discovery / design / spec / release / sourceRefs / attachments / events / linkedPrdPath / strategyPillarIds / strategyWarning). Normalised columns: `id`, `handle`, `title`, `body`, `lifecycle`, `parked_intent`, `parked_reason`, `revision`, `created_at`, `updated_at`.

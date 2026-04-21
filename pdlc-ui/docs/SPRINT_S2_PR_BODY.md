@@ -45,6 +45,8 @@ npm run test:e2e:a11y           # 8 Playwright cases (board axe, parked modal ax
 npm run dev                     # http://localhost:3000 — create → try Move to Discovery (blocked tooltip) → Park… (reason required) → Show parked → Un-park
 ```
 
+**Sprint-close smoke (manual):** [docs/smoke/S2-swim-lanes.md](./smoke/S2-swim-lanes.md)
+
 ## What next sprint (S3) must preserve
 
 - **`canTransition` stays the single source of truth.** S3's `pdlc-brief-custom` wizard populates the brief and makes `deriveHasBrief(initiative)` return true; do **not** duplicate the gate inside the wizard. When the brief lands, `idea → discovery` unlocks through the existing path — no new transition code.
