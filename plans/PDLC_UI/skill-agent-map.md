@@ -6,6 +6,21 @@
 
 ---
 
+## Engineering / merge gate (`pdlc-ui` repo)
+
+Steerco-facing stages above are **product** skills. **`pdlc-ui/`** implementation PRs also use an **engineering gatekeeper** so R16 does not drift on merge:
+
+| Concern | Canonical skill | What it does |
+|---------|-----------------|--------------|
+| **Green CI + R16 audit + review triage + post-merge Slice log** | **[`/moneypenny-custom`](../../.claude/skills/moneypenny-custom/SKILL.md)** | Modes: (A) watch `gh pr checks` and fix failures with minimal commits; (B) pre-merge **same-PR** checklist (schema ↔ `migrations/*.sql` ↔ docs, closed `events` enum, ADR freeze, revision contract, etc.); (C) triage PR review comments; (D) after merge, append **Slice log** + tick **`plan.md` Progress** when you invoke close-out. **Requires** `gh auth login` once. |
+| **Generic PR babysit loop** | Cursor **`babysit`** (`.cursor/skills-cursor/babysit/SKILL.md`) | Comment triage + conflict + CI loop **without** PDLC-specific rules — use **under** MoneyPenny or when the change is not `pdlc-ui`. |
+
+**Invocation:** `/moneypenny-custom`, `/moneypenny-custom <PR#>`, `/moneypenny-custom audit <PR#>`, `/moneypenny-custom close <PR#>` — see the skill file for the full checklist and refusals.
+
+**Process tie-in:** [sprint-backlog.md](./sprint-backlog.md) **Engineering guardrails** + **Ceremony**; [plan.md § Engineering governance](./plan.md#engineering-governance-cto--tech-lead--anti-drift) item **9**.
+
+---
+
 ## Design system: **Figma (manual) → Claude Design (web)**
 
 - **Figma** is the **source of truth** for tokens, themes, and components.
@@ -65,3 +80,5 @@
 ---
 
 *Updated 2026-04-23 — **`spec_ready`** column; **`/agent-prd`** in **`spec_ready`**; rewind + **parked** + strategy in [lifecycle-transitions.md](./lifecycle-transitions.md).*
+
+*Updated 2026-04-21 — **MoneyPenny** (`/moneypenny-custom`): engineering / merge gate for **`pdlc-ui/`** PRs (R16 + CI + optional post-merge docs).*

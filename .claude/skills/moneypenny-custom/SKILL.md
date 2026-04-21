@@ -33,9 +33,10 @@ Invocation shapes:
 
 When invoked she opens these so every claim cites a rule, not an opinion:
 
-- `plans/PDLC_UI/engineering-guardrails.md` — R16 guardrail table + merge gate.
-- `plans/PDLC_UI/sprint-backlog.md` — sprint DoD, canonical camelCase, `INIT-NNNN`, events enum.
-- `plans/PDLC_UI/schema-initiative-v0.md` — initiative shape and §6 events contract.
+- `plans/PDLC_UI/plan.md` — **§ Engineering governance** (R16 items 1–9, including MoneyPenny).
+- `plans/PDLC_UI/skill-agent-map.md` — **§ Engineering / merge gate** — where this skill sits vs Steerco stage skills.
+- `plans/PDLC_UI/sprint-backlog.md` — **Engineering guardrails** table + **PR merge gate** ceremony line; sprint DoD, canonical camelCase, `INIT-NNNN`, events enum.
+- `plans/PDLC_UI/schema-initiative-v0.md` — initiative shape and §6 events contract (if present in workspace; otherwise the canonical schema doc path from the active sprint seed).
 - `plans/PDLC_UI/lifecycle-transitions.md` — `canTransition` matrix.
 - `pdlc-ui/docs/adr/` — ADRs (numbered, frozen once ratified).
 - `04-Projects/PDLC_Orchestration_UI.md` — Slice log (appends on merge).
