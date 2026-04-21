@@ -8,11 +8,11 @@ test.describe("ideas CRUD", () => {
   test("create, edit, delete an idea", async ({ page }) => {
     await page.goto("/");
     await expect(
-      page.getByRole("heading", { level: 2, name: "Ideas" }),
+      page.getByRole("heading", { level: 2, name: "Board" }),
     ).toBeVisible();
 
     const title = `S1 smoke ${Date.now()}`;
-    await page.getByRole("button", { name: "Create new idea" }).click();
+    await page.getByRole("button", { name: "Create new initiative" }).click();
 
     const titleInput = page.getByLabel(/^title/i);
     await titleInput.fill(title);

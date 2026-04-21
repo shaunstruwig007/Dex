@@ -1,15 +1,16 @@
 {
   "schemaVersion": 1,
-  "revision": 1,
+  "revision": 2,
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "handle": "INIT-0001",
   "title": "Example initiative",
   "body": "",
-  "lifecycle": "idea",
+  "lifecycle": "discovery",
   "parkedIntent": null,
   "parkedReason": null,
+  "sortOrder": 1000,
   "createdAt": "2026-04-21T10:00:00.000Z",
-  "updatedAt": "2026-04-21T10:00:00.000Z",
+  "updatedAt": "2026-04-21T10:05:00.000Z",
   "gate": {},
   "brief": {},
   "discovery": {},
@@ -24,6 +25,12 @@
       "by": "shaun",
       "kind": "create",
       "payload": { "handle": "INIT-0001" }
+    },
+    {
+      "at": "2026-04-21T10:05:00.000Z",
+      "by": "shaun",
+      "kind": "stage_transition",
+      "payload": { "from": "idea", "to": "discovery" }
     }
   ],
   "linkedPrdPath": null,

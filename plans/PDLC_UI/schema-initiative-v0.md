@@ -36,6 +36,7 @@ The long-term thesis of this plan is **Agent Flywheel** (plan Phase 2): hosted w
   "lifecycle": "idea",
   "parkedIntent": null,
   "parkedReason": null,
+  "sortOrder": null,
   "createdAt": "2026-04-21T09:15:00Z",
   "updatedAt": "2026-04-21T09:15:00Z",
 
@@ -61,6 +62,8 @@ The long-term thesis of this plan is **Agent Flywheel** (plan Phase 2): hosted w
 - **`lifecycle`** values: `idea` · `discovery` · `design` · `spec_ready` · `develop` · `uat` · `deployed` · `parked`.
 - **`revision`** increments on every write — enables optimistic locking (plan R17, end of S1).
 - **`handle`** is the human-readable id; **`id`** is the internal (uuid or generated slug).
+- **`sortOrder`** is an integer or `null` (nullable for fresh cards — they land at the top of a lane until a human reorders via drag-to-reorder). Added in S2 ([003_sort_order.sql](../../pdlc-ui/src/storage/migrations/003_sort_order.sql)). Transitioning a card to a new lane clears `sortOrder` back to `null` so it appears at the top of the destination lane.
+- **`parkedIntent`** + **`parkedReason`** are mutually required whenever `lifecycle === "parked"` (enforced via `canTransition` — see [`pdlc-ui/src/lib/can-transition.ts`](../../pdlc-ui/src/lib/can-transition.ts)). Un-parking (`parked → idea`) clears both back to `null`.
 - Each **stage sub-object** (`gate`, `brief`, `discovery`, `design`, `spec`, `release`) is **owned** by one skill; others may read but should not write.
 - **`events[]`** is append-only audit (stage transitions + key field edits).
 
@@ -261,7 +264,20 @@ Phase 3+ anchor (plan table, "Intelligence & meeting correlation").
 }
 ```
 
-**Minimum from S1:** `create` and `delete` (seeded by [`pdlc-ui` Sprint 1](../../pdlc-ui/src/storage/repository.ts)). `stage_transition` joins in S2. Extend to `field_edit`, `skill_run`, and `review` as the need arises.
+**Shipped kinds:**
+
+- **S1 —** `create`, `delete`.
+- **S2 —** `stage_transition` (lane moves) and `field_edit` (sortOrder reorders; see below).
+- **Reserved —** `skill_run`, `review` (extend as the need arises; closed enum in [`pdlc-ui/src/schema/initiative.ts`](../../pdlc-ui/src/schema/initiative.ts)).
+
+**Payload shapes (S2):**
+
+| `kind` | `payload` |
+|--------|-----------|
+| `create` | `{ "handle": "INIT-0042" }` |
+| `delete` | `{ "handle": "INIT-0042", "note"?: string }` (in `deleted_initiative_events`) |
+| `stage_transition` | `{ "from": Lifecycle, "to": Lifecycle, "note"?: string, "parkedIntent"?: "revisit" \| "wont_consider", "parkedReason"?: string }` — parked fields are included only on `→ parked` moves. |
+| `field_edit` | `{ "field": "sortOrder", "before": number \| null, "after": number }` — S2 scope limits `field_edit` to `sortOrder`. Expanding to other fields requires a schema-doc update + golden-fixture example in the same PR. |
 
 **Tombstone trail (S1):** Bar A ships **hard-delete**, so the per-initiative `events` array disappears with the row. The `delete` event is retained in the `deleted_initiative_events` SQLite table (see [`pdlc-ui/src/storage/migrations/002_deleted_events.sql`](../../pdlc-ui/src/storage/migrations/002_deleted_events.sql)).
 
@@ -324,8 +340,9 @@ interface Initiative {
   title: string;
   body: string;
   lifecycle: Lifecycle;
-  parkedIntent?: "revisit" | "wont_consider" | null;
-  parkedReason?: string | null;
+  parkedIntent: "revisit" | "wont_consider" | null;
+  parkedReason: string | null;
+  sortOrder: number | null;
   createdAt: string;
   updatedAt: string;
 

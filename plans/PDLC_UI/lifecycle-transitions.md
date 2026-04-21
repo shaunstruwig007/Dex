@@ -12,6 +12,34 @@
 
 **Board wins** for `lifecycle` vs PRD YAML — see [PRDs/README § Lifecycle](../../06-Resources/PRDs/README.md#lifecycle-steerco--pdlc-board).
 
+---
+
+## `canTransition` — enforced matrix (Sprint 2)
+
+The pure function [`canTransition`](../../pdlc-ui/src/lib/can-transition.ts) is the single source of truth for lane legality. The repository (`transitionInitiative`), the HTTP route (`POST /api/initiatives/[id]/transition`), and the `Move to…` submenu in the UI all call it with the same `(from, to, context)` arguments so users never see a menu item that the server would reject for a non-parked reason.
+
+**Scope (S2):** forward-only. Backward moves remain as described below but are **not yet wired in the UI / repository** — they land in Sprint 8 alongside the wipe-on-`→ idea` rule (see § "Backward moves").
+
+| From → To | S2 status | Reason when blocked |
+|-----------|-----------|---------------------|
+| `idea → discovery` | Allowed **only when** `hasBrief` is `true` | `brief_required` — "Complete the product brief in Sprint 3." S3 wires the real gate. |
+| `discovery → design` | Allowed | — |
+| `design → spec_ready` | Allowed | — |
+| `spec_ready → develop` | Allowed | — |
+| `develop → uat` | Allowed | — |
+| `uat → deployed` | Allowed | — |
+| `* → parked` (any forward lane) | Allowed **only with** `parkedIntent ∈ {revisit, wont_consider}` + trimmed non-empty `parkedReason` | `parked_requires_intent_and_reason` — UI enforces via a required modal before submitting. |
+| `parked → idea` | Allowed (un-park). Clears `parkedIntent` + `parkedReason`. | — |
+| `parked → anywhere else` | Blocked in S2 (rewind goes via idea first) | `illegal_transition` |
+| Any skip-forward (e.g. `idea → design`) | Blocked | `illegal_transition` |
+| Any backward move not listed above | Blocked in S2 | `illegal_transition` — lands in S8. |
+
+**`hasBrief` derivation (S2):** any key present on `initiative.brief` counts (helper: `deriveHasBrief`). S3 replaces this with the wizard-complete flag — update both the helper and any call-sites in the same PR (R16 guardrail 1).
+
+**Parked modal (UI contract):** moving to `parked` opens the `ParkedTransitionDialog` ([`parked-transition-dialog.tsx`](../../pdlc-ui/src/components/ideas/parked-transition-dialog.tsx)) with a required radio group (`revisit` / `wont_consider`) and a trimmed non-empty reason textarea. Cards never appear in a main lane while `lifecycle === "parked"`; a **"Show parked"** header toggle reveals a drawer of parked cards with an **Un-park → Idea** action.
+
+**Reorder (within lane only):** drag-to-reorder inside a lane writes a new `sortOrder` via `POST /api/initiatives/[id]/reorder` and appends a `field_edit` event. Cross-lane DnD is explicitly **not implemented** — use the `Move to…` menu to change lanes. Keyboard reorder falls back to `Alt + ↑/↓` or explicit "Move up/Move down" menu items on a focused card.
+
 ### Skill triggers on column moves (PDLC UI)
 
 **Authoritative table:** [skill-agent-map.md § Stage → skill](./skill-agent-map.md#stage--skill-v1-target---updated-2026-04-21) · **card contract:** [schema-initiative-v0.md](./schema-initiative-v0.md).
@@ -55,14 +83,14 @@ Power users in **Cursor** may still run canonical **`/product-brief`** outside t
 
 ## `parked`
 
-Use **`parked_intent`** (or equivalent) **and** **`parked_reason`** (short free text) on the card:
+Canonical case (R16): **`parkedIntent`** + **`parkedReason`** (camelCase on the wire and in code; the SQL columns use `parked_intent` / `parked_reason`). See [`schema-initiative-v0.md`](./schema-initiative-v0.md).
 
 | Value | Meaning |
 |-------|---------|
 | `revisit` | We intend to come back; not dead. |
-| `wont_consider` | Deprioritised / not doing for now (different from “done”). |
+| `wont_consider` | Deprioritised / not doing for now (different from "done"). |
 
-**UI:** moving to **Parked** requires **`parked_intent`** (default `revisit` if product allows) **and** a **non-empty reason** (e.g. “Waiting on client budget”, “Superseded by X”).
+**UI (S2):** moving to **Parked** opens the `ParkedTransitionDialog` and requires **`parkedIntent`** (radio; default `revisit`) **and** a **non-empty `parkedReason`** (e.g. "Waiting on client budget", "Superseded by X"). Un-parking (`parked → idea`) clears both fields. Cards with `lifecycle === "parked"` do not occupy a main lane — they live in a toggle-able drawer.
 
 ---
 
@@ -74,4 +102,4 @@ Use **`parked_intent`** (or equivalent) **and** **`parked_reason`** (short free 
 
 ---
 
-*Last updated: 2026-04-21 — skill triggers table (`pdlc-idea-gate-custom`, `pdlc-brief-custom`, `agent-prd`); forward-flow text aligned with [skill-agent-map.md](./skill-agent-map.md). Prior: 2026-04-20 — parked reason; all-into-idea wipe; strategy post-MVP; wipe mitigation.*
+*Last updated: 2026-04-21 — S2 `canTransition` matrix added (forward-only, `brief_required` gate on `idea → discovery`, parked modal contract, within-lane reorder). Prior: skill triggers table; forward-flow text aligned with [skill-agent-map.md](./skill-agent-map.md); parked reason; all-into-idea wipe; strategy post-MVP; wipe mitigation.*

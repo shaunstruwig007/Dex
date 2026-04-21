@@ -21,9 +21,10 @@ export const lifecycleSchema = z.enum([
 export type Lifecycle = z.infer<typeof lifecycleSchema>;
 
 /**
- * Event kinds — S1 ships "create" and "delete" (seed).
- * "stage_transition" joins in S2; "field_edit" / "skill_run" / "review" are
- * reserved per schema-initiative-v0.md §6.
+ * Event kinds — closed enum. S1 shipped "create" + "delete"; S2 activates
+ * "stage_transition" (lane moves) and "field_edit" (sortOrder reorders).
+ * "skill_run" / "review" are reserved per schema-initiative-v0.md §6.
+ * Adding a kind requires updating §6 + the golden fixture in the same PR.
  */
 export const eventKindSchema = z.enum([
   "create",
@@ -55,6 +56,7 @@ export const initiativeSchema = z.object({
   lifecycle: lifecycleSchema,
   parkedIntent: z.enum(["revisit", "wont_consider"]).nullable(),
   parkedReason: z.string().nullable(),
+  sortOrder: z.number().int().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
   gate: recordObject,

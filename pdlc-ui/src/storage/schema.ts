@@ -23,6 +23,9 @@ export const initiatives = sqliteTable(
     revision: integer("revision").notNull().default(1),
     createdAt: text("created_at").notNull(),
     updatedAt: text("updated_at").notNull(),
+    // Nullable — new cards land at the top of a lane (NULLS LAST) until a human
+    // reorders via drag-to-reorder. Populated by reorderInitiative().
+    sortOrder: integer("sort_order"),
     // JSON blob for non-queryable nested fields (gate/brief/discovery/design/
     // spec/release, sourceRefs, attachments, events, linkedPrdPath,
     // strategyPillarIds, strategyWarning). Repository serialises via
@@ -32,6 +35,11 @@ export const initiatives = sqliteTable(
   (t) => [
     index("idx_initiatives_lifecycle").on(t.lifecycle),
     index("idx_initiatives_created_at").on(t.createdAt),
+    index("idx_initiatives_lifecycle_sort").on(
+      t.lifecycle,
+      t.sortOrder,
+      t.createdAt,
+    ),
   ],
 );
 

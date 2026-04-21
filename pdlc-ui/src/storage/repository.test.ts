@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
+import type { Lifecycle } from "@/schema/initiative";
 import { migrate } from "./migrate";
 import * as schema from "./schema";
 import type { Drizzle } from "./db";
@@ -14,6 +15,9 @@ import {
   listDeletedEvents,
   listInitiatives,
   nextHandle,
+  reorderInitiative,
+  seedBriefForTesting,
+  transitionInitiative,
   updateInitiative,
 } from "./repository";
 
@@ -151,5 +155,192 @@ describe("repository", () => {
     );
     expect(result.ok).toBe(false);
     expect(getInitiative(created.id, db)).not.toBeNull();
+  });
+});
+
+describe("repository — transitionInitiative (S2)", () => {
+  it("blocks idea → discovery without a brief (brief_required)", () => {
+    const created = createInitiative({ title: "no brief" }, db);
+    const result = transitionInitiative(
+      { id: created.id, expectedRevision: 1, to: "discovery" },
+      db,
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toBe("brief_required");
+    const current = getInitiative(created.id, db);
+    expect(current?.lifecycle).toBe("idea");
+    expect(current?.revision).toBe(1);
+  });
+
+  it("advances idea → discovery once the brief is seeded", () => {
+    const created = createInitiative({ title: "ready" }, db);
+    const seeded = seedBriefForTesting(created.id, db);
+    expect(seeded?.revision).toBe(2);
+    const result = transitionInitiative(
+      { id: created.id, expectedRevision: seeded!.revision, to: "discovery" },
+      db,
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.initiative.lifecycle).toBe("discovery");
+    expect(result.initiative.revision).toBe(seeded!.revision + 1);
+    const txEvent = result.initiative.events.at(-1);
+    expect(txEvent?.kind).toBe("stage_transition");
+    expect(txEvent?.payload).toMatchObject({ from: "idea", to: "discovery" });
+  });
+
+  it("walks the full forward chain once seeded", () => {
+    const created = createInitiative({ title: "forward" }, db);
+    let rev = seedBriefForTesting(created.id, db)!.revision;
+    const chain: Lifecycle[] = [
+      "discovery",
+      "design",
+      "spec_ready",
+      "develop",
+      "uat",
+      "deployed",
+    ];
+    for (const to of chain) {
+      const result = transitionInitiative(
+        { id: created.id, expectedRevision: rev, to },
+        db,
+      );
+      expect(result.ok, `-> ${to}`).toBe(true);
+      if (!result.ok) return;
+      expect(result.initiative.lifecycle).toBe(to);
+      rev = result.initiative.revision;
+    }
+  });
+
+  it("rejects parked without intent/reason", () => {
+    const created = createInitiative({ title: "to-park" }, db);
+    const result = transitionInitiative(
+      { id: created.id, expectedRevision: 1, to: "parked" },
+      db,
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toBe("parked_requires_intent_and_reason");
+  });
+
+  it("parks with intent + reason and clears them on un-park", () => {
+    const created = createInitiative({ title: "park-me" }, db);
+    const parked = transitionInitiative(
+      {
+        id: created.id,
+        expectedRevision: 1,
+        to: "parked",
+        parkedIntent: "revisit",
+        parkedReason: "  waiting for Q3  ",
+      },
+      db,
+    );
+    expect(parked.ok).toBe(true);
+    if (!parked.ok) return;
+    expect(parked.initiative.lifecycle).toBe("parked");
+    expect(parked.initiative.parkedIntent).toBe("revisit");
+    expect(parked.initiative.parkedReason).toBe("waiting for Q3");
+
+    const unparked = transitionInitiative(
+      {
+        id: created.id,
+        expectedRevision: parked.initiative.revision,
+        to: "idea",
+      },
+      db,
+    );
+    expect(unparked.ok).toBe(true);
+    if (!unparked.ok) return;
+    expect(unparked.initiative.lifecycle).toBe("idea");
+    expect(unparked.initiative.parkedIntent).toBeNull();
+    expect(unparked.initiative.parkedReason).toBeNull();
+  });
+
+  it("rejects illegal skip transitions (idea → design)", () => {
+    const created = createInitiative({ title: "skipper" }, db);
+    seedBriefForTesting(created.id, db);
+    const result = transitionInitiative(
+      { id: created.id, expectedRevision: 2, to: "design" },
+      db,
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toBe("illegal_transition");
+  });
+
+  it("returns revision_conflict on stale transitions", () => {
+    const created = createInitiative({ title: "stale" }, db);
+    seedBriefForTesting(created.id, db);
+    const first = transitionInitiative(
+      { id: created.id, expectedRevision: 2, to: "discovery" },
+      db,
+    );
+    expect(first.ok).toBe(true);
+    const stale = transitionInitiative(
+      { id: created.id, expectedRevision: 2, to: "design" },
+      db,
+    );
+    expect(stale.ok).toBe(false);
+    if (stale.ok) return;
+    expect(stale.reason).toBe("revision_conflict");
+  });
+
+  it("returns not_found for unknown ids", () => {
+    const result = transitionInitiative(
+      { id: "missing", expectedRevision: 1, to: "discovery" },
+      db,
+    );
+    expect(result).toEqual({ ok: false, reason: "not_found" });
+  });
+});
+
+describe("repository — reorderInitiative (S2)", () => {
+  it("persists sortOrder, bumps revision, appends field_edit", () => {
+    const created = createInitiative({ title: "dragme" }, db);
+    const result = reorderInitiative(
+      { id: created.id, expectedRevision: 1, sortOrder: 1500 },
+      db,
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.initiative.sortOrder).toBe(1500);
+    expect(result.initiative.revision).toBe(2);
+    const last = result.initiative.events.at(-1);
+    expect(last?.kind).toBe("field_edit");
+    expect(last?.payload).toMatchObject({
+      field: "sortOrder",
+      before: null,
+      after: 1500,
+    });
+  });
+
+  it("rejects stale reorders with revision_conflict", () => {
+    const created = createInitiative({ title: "conflict" }, db);
+    reorderInitiative(
+      { id: created.id, expectedRevision: 1, sortOrder: 1000 },
+      db,
+    );
+    const stale = reorderInitiative(
+      { id: created.id, expectedRevision: 1, sortOrder: 2000 },
+      db,
+    );
+    expect(stale.ok).toBe(false);
+    if (stale.ok) return;
+    expect(stale.reason).toBe("revision_conflict");
+  });
+
+  it("orders lanes by sort_order ASC then created_at DESC", () => {
+    const t0 = new Date("2026-04-21T10:00:00.000Z");
+    const t1 = new Date("2026-04-21T10:00:01.000Z");
+    const t2 = new Date("2026-04-21T10:00:02.000Z");
+    const a = createInitiative({ title: "a", now: t0 }, db);
+    const b = createInitiative({ title: "b", now: t1 }, db);
+    const c = createInitiative({ title: "c", now: t2 }, db);
+    // Pin c at the top of the idea lane.
+    reorderInitiative({ id: c.id, expectedRevision: 1, sortOrder: 100 }, db);
+    const ideas = listInitiatives({ lifecycle: "idea" }, db);
+    // sort_order-first (c), then tied-null entries by created_at DESC (b before a).
+    expect(ideas.map((i) => i.id)).toEqual([c.id, b.id, a.id]);
   });
 });

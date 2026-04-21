@@ -59,6 +59,16 @@
             "null"
           ]
         },
+        "sortOrder": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "createdAt": {
           "type": "string"
         },
@@ -169,6 +179,7 @@
         "lifecycle",
         "parkedIntent",
         "parkedReason",
+        "sortOrder",
         "createdAt",
         "updatedAt",
         "gate",

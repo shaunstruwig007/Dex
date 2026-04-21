@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, sql } from "drizzle-orm";
 import {
   eventSchema,
   type Initiative,
@@ -8,6 +8,11 @@ import {
   emptyInitiativeStages,
   initiativeSchema,
 } from "@/schema/initiative";
+import {
+  canTransition,
+  type CanTransitionReason,
+  deriveHasBrief,
+} from "@/lib/can-transition";
 import { type Drizzle, openDrizzle } from "./db";
 import { deletedInitiativeEvents, initiatives } from "./schema";
 
@@ -66,6 +71,7 @@ function rowToInitiative(row: DrizzleRow): Initiative {
     lifecycle: row.lifecycle as Lifecycle,
     parkedIntent: row.parkedIntent as Initiative["parkedIntent"],
     parkedReason: row.parkedReason,
+    sortOrder: row.sortOrder,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     gate: base.gate,
@@ -102,13 +108,21 @@ export function listInitiatives(
   options: { lifecycle?: Lifecycle } = {},
   db: Drizzle = openDrizzle(),
 ): Initiative[] {
+  // Order: user-placed cards first by sort_order ASC, then un-reordered cards
+  // by created_at DESC (newest on top of a lane until someone drags them).
+  // SQLite sorts NULLs first by default; `sort_order IS NULL` inverts that.
+  const orderBy = [
+    sql`(${initiatives.sortOrder} IS NULL)`,
+    asc(initiatives.sortOrder),
+    desc(initiatives.createdAt),
+  ];
   const baseQuery = db.select().from(initiatives);
   const rows = options.lifecycle
     ? baseQuery
         .where(eq(initiatives.lifecycle, options.lifecycle))
-        .orderBy(desc(initiatives.createdAt))
+        .orderBy(...orderBy)
         .all()
-    : baseQuery.orderBy(desc(initiatives.createdAt)).all();
+    : baseQuery.orderBy(...orderBy).all();
   return rows.map(rowToInitiative);
 }
 
@@ -320,4 +334,255 @@ export function listDeletedEvents(
       payload: JSON.parse(r.payload),
     }),
   );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Sprint 2 — stage transitions + lane reordering
+// ────────────────────────────────────────────────────────────────────────────
+
+export type TransitionInput = {
+  id: string;
+  expectedRevision: number;
+  to: Lifecycle;
+  parkedIntent?: "revisit" | "wont_consider" | null;
+  parkedReason?: string | null;
+  note?: string;
+  by?: string;
+  now?: Date;
+};
+
+export type TransitionResult =
+  | { ok: true; initiative: Initiative }
+  | { ok: false; reason: "not_found" }
+  | { ok: false; reason: "revision_conflict"; current: Initiative }
+  | { ok: false; reason: CanTransitionReason; current: Initiative };
+
+/**
+ * Move an initiative forward through the lifecycle. Enforces `canTransition`
+ * (pure function in `@/lib/can-transition`) so the HTTP layer and UI menu
+ * logic agree on legality. Appends a `stage_transition` event; clears parked
+ * fields on `parked → idea`.
+ */
+export function transitionInitiative(
+  input: TransitionInput,
+  db: Drizzle = openDrizzle(),
+): TransitionResult {
+  const existing = getInitiative(input.id, db);
+  if (!existing) return { ok: false, reason: "not_found" };
+  if (existing.revision !== input.expectedRevision) {
+    return { ok: false, reason: "revision_conflict", current: existing };
+  }
+
+  const from = existing.lifecycle;
+  const gate = canTransition(from, input.to, {
+    hasBrief: deriveHasBrief(existing),
+    parkedIntent: input.parkedIntent ?? null,
+    parkedReason: input.parkedReason ?? null,
+  });
+  if (!gate.ok) {
+    return { ok: false, reason: gate.reason, current: existing };
+  }
+
+  const now = (input.now ?? new Date()).toISOString();
+  const by = input.by ?? "shaun";
+  const isParking = input.to === "parked";
+  const isUnParking = from === "parked" && input.to === "idea";
+
+  const payload: Record<string, unknown> = { from, to: input.to };
+  if (input.note) payload.note = input.note;
+  if (isParking) {
+    payload.parkedIntent = input.parkedIntent;
+    payload.parkedReason = (input.parkedReason ?? "").trim();
+  }
+  const event: InitiativeEvent = eventSchema.parse({
+    at: now,
+    by,
+    kind: "stage_transition",
+    payload,
+  });
+
+  const nextEvents = [...existing.events, event];
+  const nextParkedIntent = isParking
+    ? (input.parkedIntent ?? null)
+    : isUnParking
+      ? null
+      : existing.parkedIntent;
+  const nextParkedReason = isParking
+    ? (input.parkedReason ?? "").trim() || null
+    : isUnParking
+      ? null
+      : existing.parkedReason;
+
+  const nextData = JSON.stringify({
+    gate: existing.gate,
+    brief: existing.brief,
+    discovery: existing.discovery,
+    design: existing.design,
+    spec: existing.spec,
+    release: existing.release,
+    sourceRefs: existing.sourceRefs,
+    attachments: existing.attachments,
+    events: nextEvents,
+    linkedPrdPath: existing.linkedPrdPath,
+    strategyPillarIds: existing.strategyPillarIds,
+    strategyWarning: existing.strategyWarning,
+  });
+
+  const result = db
+    .update(initiatives)
+    .set({
+      lifecycle: input.to,
+      parkedIntent: nextParkedIntent,
+      parkedReason: nextParkedReason,
+      // New lane placement: clear sortOrder so the card lands at the top of
+      // the destination lane (NULLs are ordered last → newest by createdAt).
+      sortOrder: null,
+      revision: sql`${initiatives.revision} + 1`,
+      updatedAt: now,
+      data: nextData,
+    })
+    .where(
+      and(
+        eq(initiatives.id, input.id),
+        eq(initiatives.revision, input.expectedRevision),
+      ),
+    )
+    .run();
+
+  if (result.changes === 0) {
+    const current = getInitiative(input.id, db);
+    if (!current) return { ok: false, reason: "not_found" };
+    return { ok: false, reason: "revision_conflict", current };
+  }
+
+  const updated = getInitiative(input.id, db);
+  if (!updated) return { ok: false, reason: "not_found" };
+  return { ok: true, initiative: updated };
+}
+
+export type ReorderInput = {
+  id: string;
+  expectedRevision: number;
+  sortOrder: number;
+  by?: string;
+  now?: Date;
+};
+
+export type ReorderResult =
+  | { ok: true; initiative: Initiative }
+  | { ok: false; reason: "not_found" }
+  | { ok: false; reason: "revision_conflict"; current: Initiative };
+
+/**
+ * Update a card's `sort_order` within its lane. Midpoint allocation is the
+ * caller's responsibility (the UI computes `(prev + next) / 2` on drop);
+ * the repository just persists the value, bumps the revision, and appends
+ * a `field_edit` event so the audit log shows who reordered when.
+ */
+export function reorderInitiative(
+  input: ReorderInput,
+  db: Drizzle = openDrizzle(),
+): ReorderResult {
+  if (!Number.isFinite(input.sortOrder)) {
+    throw new Error("sort_order_not_finite");
+  }
+  const nextSortOrder = Math.trunc(input.sortOrder);
+
+  const existing = getInitiative(input.id, db);
+  if (!existing) return { ok: false, reason: "not_found" };
+  if (existing.revision !== input.expectedRevision) {
+    return { ok: false, reason: "revision_conflict", current: existing };
+  }
+
+  const now = (input.now ?? new Date()).toISOString();
+  const by = input.by ?? "shaun";
+
+  const event: InitiativeEvent = eventSchema.parse({
+    at: now,
+    by,
+    kind: "field_edit",
+    payload: {
+      field: "sortOrder",
+      before: existing.sortOrder,
+      after: nextSortOrder,
+    },
+  });
+
+  const nextEvents = [...existing.events, event];
+  const nextData = JSON.stringify({
+    gate: existing.gate,
+    brief: existing.brief,
+    discovery: existing.discovery,
+    design: existing.design,
+    spec: existing.spec,
+    release: existing.release,
+    sourceRefs: existing.sourceRefs,
+    attachments: existing.attachments,
+    events: nextEvents,
+    linkedPrdPath: existing.linkedPrdPath,
+    strategyPillarIds: existing.strategyPillarIds,
+    strategyWarning: existing.strategyWarning,
+  });
+
+  const result = db
+    .update(initiatives)
+    .set({
+      sortOrder: nextSortOrder,
+      revision: sql`${initiatives.revision} + 1`,
+      updatedAt: now,
+      data: nextData,
+    })
+    .where(
+      and(
+        eq(initiatives.id, input.id),
+        eq(initiatives.revision, input.expectedRevision),
+      ),
+    )
+    .run();
+
+  if (result.changes === 0) {
+    const current = getInitiative(input.id, db);
+    if (!current) return { ok: false, reason: "not_found" };
+    return { ok: false, reason: "revision_conflict", current };
+  }
+
+  const updated = getInitiative(input.id, db);
+  if (!updated) return { ok: false, reason: "not_found" };
+  return { ok: true, initiative: updated };
+}
+
+/**
+ * Test / seeding helper: mark the brief stage as populated so S2 flows can
+ * exercise forward moves without the S3 wizard. Not exposed via API; used
+ * only in tests and Playwright e2e global setup.
+ */
+export function seedBriefForTesting(
+  id: string,
+  db: Drizzle = openDrizzle(),
+): Initiative | null {
+  const existing = getInitiative(id, db);
+  if (!existing) return null;
+  const nextData = JSON.stringify({
+    gate: existing.gate,
+    brief: { problem: { value: "seed", source: "user" } },
+    discovery: existing.discovery,
+    design: existing.design,
+    spec: existing.spec,
+    release: existing.release,
+    sourceRefs: existing.sourceRefs,
+    attachments: existing.attachments,
+    events: existing.events,
+    linkedPrdPath: existing.linkedPrdPath,
+    strategyPillarIds: existing.strategyPillarIds,
+    strategyWarning: existing.strategyWarning,
+  });
+  db.update(initiatives)
+    .set({
+      data: nextData,
+      revision: sql`${initiatives.revision} + 1`,
+      updatedAt: new Date().toISOString(),
+    })
+    .where(eq(initiatives.id, id))
+    .run();
+  return getInitiative(id, db);
 }

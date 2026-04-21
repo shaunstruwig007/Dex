@@ -1,22 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import { RichTextRenderer } from "@/components/rich-text/rich-text-renderer";
-import type { Initiative } from "@/schema/initiative";
+import { Button } from "@/components/ui/button";
+import type { Initiative, Lifecycle } from "@/schema/initiative";
+import { deriveHasBrief } from "@/lib/can-transition";
+import { InitiativeCard } from "./initiative-card";
+import { SwimLane } from "./swim-lane";
+import { ParkedTransitionDialog } from "./parked-transition-dialog";
+import { ParkedFilterToggle } from "./parked-filter-toggle";
 import { InitiativeFormDialog } from "./initiative-form-dialog";
 import { DeleteConfirmDialog } from "./delete-confirm-dialog";
+import { LANE_LABELS, MAIN_LANES } from "./lanes";
+import { computeMidpointSortOrder, neighboursForSwap } from "./reorder";
 import type {
   CreateResponse,
   DeleteResponse,
@@ -29,6 +25,9 @@ type DialogState =
   | { kind: "closed" }
   | { kind: "create" }
   | { kind: "edit"; initiative: Initiative };
+
+type TransitionResponse = { initiative: Initiative };
+type ReorderResponse = { initiative: Initiative };
 
 async function parseResponse<T>(
   response: Response,
@@ -48,10 +47,22 @@ function humanError(err: IdeasApiError, status: number): string {
   if (status === 409 && err.error === "revision_conflict") {
     return "Someone else saved first. Reload to see the latest version.";
   }
+  if (err.error === "brief_required") {
+    return "Complete the product brief in Sprint 3 before moving to discovery.";
+  }
+  if (err.error === "parked_requires_intent_and_reason") {
+    return "Parking requires an intent and a non-empty reason.";
+  }
+  if (err.error === "illegal_transition") {
+    return "That move isn't allowed in Sprint 2 (forward-only).";
+  }
+  if (err.error === "same_lifecycle") {
+    return "The initiative is already in that lane.";
+  }
   if (err.error === "title_required") return "Title is required.";
   if (err.error === "invalid_body")
     return "Please check the form and try again.";
-  if (err.error === "not_found") return "That idea no longer exists.";
+  if (err.error === "not_found") return "That initiative no longer exists.";
   return `Could not complete the request (${err.error}).`;
 }
 
@@ -61,12 +72,18 @@ export function IdeasBoard() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [dialog, setDialog] = useState<DialogState>({ kind: "closed" });
   const [pendingDelete, setPendingDelete] = useState<Initiative | null>(null);
+  const [pendingPark, setPendingPark] = useState<Initiative | null>(null);
+  const [showParked, setShowParked] = useState(false);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<{
+    id: string;
+    position: "above" | "below";
+  } | null>(null);
+  const dragLaneRef = useRef<Lifecycle | null>(null);
 
   const refresh = useCallback(async () => {
     setLoadError(null);
-    const res = await fetch("/api/initiatives?lifecycle=idea", {
-      cache: "no-store",
-    });
+    const res = await fetch("/api/initiatives", { cache: "no-store" });
     const parsed = await parseResponse<ListResponse>(res);
     if (!parsed.ok) {
       setLoadError(humanError(parsed.error, parsed.status));
@@ -79,6 +96,25 @@ export function IdeasBoard() {
     setLoading(true);
     refresh().finally(() => setLoading(false));
   }, [refresh]);
+
+  const byLane = useMemo(() => {
+    const map: Record<Lifecycle, Initiative[]> = {
+      idea: [],
+      discovery: [],
+      design: [],
+      spec_ready: [],
+      develop: [],
+      uat: [],
+      deployed: [],
+      parked: [],
+    };
+    for (const item of initiatives) {
+      map[item.lifecycle].push(item);
+    }
+    return map;
+  }, [initiatives]);
+
+  const parkedCount = byLane.parked.length;
 
   const handleCreate = useCallback(
     async (values: { title: string; body: string }) => {
@@ -149,8 +185,159 @@ export function IdeasBoard() {
     [refresh],
   );
 
-  const editTarget = dialog.kind === "edit" ? dialog.initiative : null;
+  const handleTransition = useCallback(
+    async (
+      target: Initiative,
+      to: Lifecycle,
+      extras?: {
+        parkedIntent?: "revisit" | "wont_consider";
+        parkedReason?: string;
+      },
+    ) => {
+      const res = await fetch(`/api/initiatives/${target.id}/transition`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          expectedRevision: target.revision,
+          to,
+          ...extras,
+        }),
+      });
+      const parsed = await parseResponse<TransitionResponse>(res);
+      if (!parsed.ok) {
+        if (parsed.status === 409) await refresh();
+        return {
+          ok: false as const,
+          message: humanError(parsed.error, parsed.status),
+        };
+      }
+      toast.success(
+        `${parsed.data.initiative.handle} → ${LANE_LABELS[parsed.data.initiative.lifecycle]}`,
+      );
+      await refresh();
+      return { ok: true as const };
+    },
+    [refresh],
+  );
 
+  const handleReorder = useCallback(
+    async (target: Initiative, sortOrder: number) => {
+      const res = await fetch(`/api/initiatives/${target.id}/reorder`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          expectedRevision: target.revision,
+          sortOrder,
+        }),
+      });
+      const parsed = await parseResponse<ReorderResponse>(res);
+      if (!parsed.ok) {
+        if (parsed.status === 409) await refresh();
+        toast.error(humanError(parsed.error, parsed.status));
+        return;
+      }
+      await refresh();
+    },
+    [refresh],
+  );
+
+  // ── Drag handlers ──────────────────────────────────────────────────────
+  function buildDragHandlers(lifecycle: Lifecycle, card: Initiative) {
+    return {
+      onDragStart: (event: React.DragEvent<HTMLLIElement>) => {
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", card.id);
+        dragLaneRef.current = lifecycle;
+        setDraggingId(card.id);
+      },
+      onDragEnd: () => {
+        setDraggingId(null);
+        setDropTarget(null);
+        dragLaneRef.current = null;
+      },
+      onDragOver: (event: React.DragEvent<HTMLLIElement>) => {
+        if (dragLaneRef.current !== lifecycle) return;
+        if (draggingId === card.id) return;
+        event.preventDefault();
+        const rect = event.currentTarget.getBoundingClientRect();
+        const midpoint = rect.top + rect.height / 2;
+        const position = event.clientY < midpoint ? "above" : "below";
+        setDropTarget({ id: card.id, position });
+      },
+      onDragLeave: () => {
+        setDropTarget((prev) => (prev?.id === card.id ? null : prev));
+      },
+      onDrop: (event: React.DragEvent<HTMLLIElement>) => {
+        event.preventDefault();
+        const movedId = event.dataTransfer.getData("text/plain");
+        if (!movedId || dragLaneRef.current !== lifecycle) return;
+        if (movedId === card.id) return;
+        const lane = byLane[lifecycle];
+        const moved = lane.find((i) => i.id === movedId);
+        if (!moved) return;
+        const target = dropTarget ?? {
+          id: card.id,
+          position: "below" as const,
+        };
+        const targetIdx = lane.findIndex((i) => i.id === target.id);
+        if (targetIdx === -1) return;
+
+        // Build the new lane order and resolve neighbour cards for midpoint.
+        const withoutMoved = lane.filter((i) => i.id !== movedId);
+        const insertAt =
+          target.position === "above"
+            ? withoutMoved.findIndex((i) => i.id === target.id)
+            : withoutMoved.findIndex((i) => i.id === target.id) + 1;
+        const above = insertAt > 0 ? withoutMoved[insertAt - 1] : null;
+        const below =
+          insertAt < withoutMoved.length ? withoutMoved[insertAt] : null;
+        if (above?.id === movedId || below?.id === movedId) return;
+
+        const nextSort = computeMidpointSortOrder(
+          lane,
+          movedId,
+          above ?? null,
+          below ?? null,
+        );
+        setDraggingId(null);
+        setDropTarget(null);
+        dragLaneRef.current = null;
+        void handleReorder(moved, nextSort);
+      },
+    };
+  }
+
+  function buildArrowSwap(lifecycle: Lifecycle, card: Initiative) {
+    const lane = byLane[lifecycle];
+    return {
+      canReorderUp: lane[0]?.id !== card.id,
+      canReorderDown: lane[lane.length - 1]?.id !== card.id,
+      onReorderUp: () => {
+        const neighbours = neighboursForSwap(lane, card.id, "up");
+        if (!neighbours) return;
+        const sort = computeMidpointSortOrder(
+          lane,
+          card.id,
+          neighbours.above,
+          neighbours.below,
+        );
+        void handleReorder(card, sort);
+      },
+      onReorderDown: () => {
+        const neighbours = neighboursForSwap(lane, card.id, "down");
+        if (!neighbours) return;
+        const sort = computeMidpointSortOrder(
+          lane,
+          card.id,
+          neighbours.above,
+          neighbours.below,
+        );
+        void handleReorder(card, sort);
+      },
+    };
+  }
+
+  const editTarget = dialog.kind === "edit" ? dialog.initiative : null;
   const dialogOpen = dialog.kind !== "closed";
   const dialogMode = useMemo(
     () =>
@@ -161,25 +348,28 @@ export function IdeasBoard() {
   );
 
   return (
-    <section aria-label="Ideas" className="flex flex-col gap-6">
-      <header className="flex items-center justify-between gap-4">
+    <section aria-label="PDLC board" className="flex flex-col gap-4">
+      <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold tracking-tight">Ideas</h2>
+          <h2 className="text-lg font-semibold tracking-tight">Board</h2>
           <p className="text-sm text-muted-foreground">
-            Initiatives with lifecycle{" "}
-            <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-              idea
-            </code>
-            . Board lanes arrive in Sprint 2.
+            Forward-only moves. Parking requires an intent + reason.
           </p>
         </div>
-        <Button
-          type="button"
-          onClick={() => setDialog({ kind: "create" })}
-          aria-label="Create new idea"
-        >
-          New idea
-        </Button>
+        <div className="flex items-center gap-4">
+          <ParkedFilterToggle
+            showParked={showParked}
+            onChange={setShowParked}
+            parkedCount={parkedCount}
+          />
+          <Button
+            type="button"
+            onClick={() => setDialog({ kind: "create" })}
+            aria-label="Create new initiative"
+          >
+            New initiative
+          </Button>
+        </div>
       </header>
 
       {loading ? (
@@ -202,20 +392,99 @@ export function IdeasBoard() {
             Retry
           </Button>
         </div>
-      ) : initiatives.length === 0 ? (
-        <EmptyState onCreate={() => setDialog({ kind: "create" })} />
       ) : (
-        <ul className="flex flex-col gap-3" aria-label="Idea list">
-          {initiatives.map((i) => (
-            <li key={i.id}>
-              <IdeaCard
-                initiative={i}
-                onEdit={() => setDialog({ kind: "edit", initiative: i })}
-                onDelete={() => setPendingDelete(i)}
-              />
-            </li>
-          ))}
-        </ul>
+        <>
+          <div
+            role="region"
+            aria-label="Lifecycle lanes"
+            // axe's `scrollable-region-focusable` rule: a horizontally
+            // scrollable container must be keyboard-reachable so users who
+            // can't swipe or use a mouse can still pan the lanes.
+            tabIndex={0}
+            className="flex gap-3 overflow-x-auto pb-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            {MAIN_LANES.map((lifecycle) => {
+              const cards = byLane[lifecycle];
+              return (
+                <SwimLane
+                  key={lifecycle}
+                  lifecycle={lifecycle}
+                  count={cards.length}
+                >
+                  {cards.map((card) => {
+                    const hasBrief = deriveHasBrief(card);
+                    const drag = buildDragHandlers(lifecycle, card);
+                    const arrow = buildArrowSwap(lifecycle, card);
+                    const indicator =
+                      dropTarget?.id === card.id ? dropTarget.position : null;
+                    return (
+                      <InitiativeCard
+                        key={card.id}
+                        initiative={card}
+                        hasBrief={hasBrief}
+                        dragging={draggingId === card.id}
+                        dropIndicator={indicator}
+                        canReorderUp={arrow.canReorderUp}
+                        canReorderDown={arrow.canReorderDown}
+                        onEdit={() =>
+                          setDialog({ kind: "edit", initiative: card })
+                        }
+                        onDelete={() => setPendingDelete(card)}
+                        onTransition={(to) => {
+                          void handleTransition(card, to);
+                        }}
+                        onRequestPark={() => setPendingPark(card)}
+                        onReorderUp={arrow.onReorderUp}
+                        onReorderDown={arrow.onReorderDown}
+                        {...drag}
+                      />
+                    );
+                  })}
+                </SwimLane>
+              );
+            })}
+          </div>
+
+          {showParked && (
+            <section
+              aria-label="Parked initiatives"
+              className="flex flex-col gap-2 rounded-lg border border-dashed border-border bg-muted/30 p-3"
+            >
+              <header className="flex items-center justify-between gap-2">
+                <h3 className="text-sm font-semibold tracking-tight">Parked</h3>
+                <span className="text-[11px] text-muted-foreground">
+                  Paused with intent + reason. Un-park returns the card to Idea.
+                </span>
+              </header>
+              {byLane.parked.length === 0 ? (
+                <p className="rounded-md border border-dashed border-border px-2 py-6 text-center text-[11px] text-muted-foreground">
+                  Nothing parked.
+                </p>
+              ) : (
+                <ul
+                  aria-label="Parked initiatives"
+                  className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3"
+                >
+                  {byLane.parked.map((card) => (
+                    <InitiativeCard
+                      key={card.id}
+                      initiative={card}
+                      hasBrief={deriveHasBrief(card)}
+                      onEdit={() =>
+                        setDialog({ kind: "edit", initiative: card })
+                      }
+                      onDelete={() => setPendingDelete(card)}
+                      onTransition={(to) => {
+                        void handleTransition(card, to);
+                      }}
+                      onRequestPark={() => setPendingPark(card)}
+                    />
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
+        </>
       )}
 
       <InitiativeFormDialog
@@ -239,81 +508,20 @@ export function IdeasBoard() {
           return handleDelete(pendingDelete);
         }}
       />
+      <ParkedTransitionDialog
+        open={pendingPark !== null}
+        initiative={pendingPark}
+        onOpenChange={(next) => {
+          if (!next) setPendingPark(null);
+        }}
+        onSubmit={async ({ parkedIntent, parkedReason }) => {
+          if (!pendingPark) return { ok: true };
+          return handleTransition(pendingPark, "parked", {
+            parkedIntent,
+            parkedReason,
+          });
+        }}
+      />
     </section>
-  );
-}
-
-function EmptyState({ onCreate }: { onCreate: () => void }) {
-  return (
-    <Card className="border-dashed">
-      <CardHeader>
-        <CardTitle className="text-base">No ideas yet</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-3">
-        <p className="text-sm text-muted-foreground">
-          Capture the first idea. Title is required; body supports rich text.
-        </p>
-        <Button type="button" className="self-start" onClick={onCreate}>
-          Create the first idea
-        </Button>
-      </CardContent>
-    </Card>
-  );
-}
-
-function IdeaCard({
-  initiative,
-  onEdit,
-  onDelete,
-}: {
-  initiative: Initiative;
-  onEdit: () => void;
-  onDelete: () => void;
-}) {
-  const hasBody = initiative.body.trim().length > 0;
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0">
-        <div className="flex min-w-0 flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="font-mono text-xs">
-              {initiative.handle}
-            </Badge>
-            <Badge variant="outline" className="text-xs">
-              {initiative.lifecycle}
-            </Badge>
-            <span className="text-xs text-muted-foreground">
-              rev {initiative.revision}
-            </span>
-          </div>
-          <CardTitle className="truncate text-base">
-            {initiative.title}
-          </CardTitle>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            aria-label={`Actions for ${initiative.handle}`}
-            title="Actions"
-            className={cn(
-              buttonVariants({ variant: "ghost", size: "sm" }),
-              "h-8 w-8 p-0",
-            )}
-          >
-            <MoreHorizontal className="size-4" aria-hidden />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
-            <DropdownMenuItem onClick={onDelete} className="text-destructive">
-              Delete…
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </CardHeader>
-      {hasBody && (
-        <CardContent>
-          <RichTextRenderer html={initiative.body} />
-        </CardContent>
-      )}
-    </Card>
   );
 }
