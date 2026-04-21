@@ -7,6 +7,7 @@ import type { Initiative, Lifecycle } from "@/schema/initiative";
 import { deriveHasBrief } from "@/lib/can-transition";
 import { InitiativeCard } from "./initiative-card";
 import { SwimLane } from "./swim-lane";
+import { BriefWizardDialog } from "./brief-wizard-dialog";
 import { ParkedTransitionDialog } from "./parked-transition-dialog";
 import { ParkedFilterToggle } from "./parked-filter-toggle";
 import { InitiativeFormDialog } from "./initiative-form-dialog";
@@ -48,7 +49,7 @@ function humanError(err: IdeasApiError, status: number): string {
     return "Someone else saved first. Reload to see the latest version.";
   }
   if (err.error === "brief_required") {
-    return "Complete the product brief in Sprint 3 before moving to discovery.";
+    return "Complete the product brief before moving to discovery.";
   }
   if (err.error === "parked_requires_intent_and_reason") {
     return "Parking requires an intent and a non-empty reason.";
@@ -73,6 +74,9 @@ export function IdeasBoard() {
   const [dialog, setDialog] = useState<DialogState>({ kind: "closed" });
   const [pendingDelete, setPendingDelete] = useState<Initiative | null>(null);
   const [pendingPark, setPendingPark] = useState<Initiative | null>(null);
+  const [briefWizardTarget, setBriefWizardTarget] = useState<Initiative | null>(
+    null,
+  );
   const [showParked, setShowParked] = useState(false);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<{
@@ -216,6 +220,16 @@ export function IdeasBoard() {
       );
       await refresh();
       return { ok: true as const };
+    },
+    [refresh],
+  );
+
+  const handleBriefWizardCompleted = useCallback(
+    async (next: Initiative) => {
+      toast.success(
+        `${next.handle} → ${LANE_LABELS[next.lifecycle]} (brief saved)`,
+      );
+      await refresh();
     },
     [refresh],
   );
@@ -433,6 +447,7 @@ export function IdeasBoard() {
                         onTransition={(to) => {
                           void handleTransition(card, to);
                         }}
+                        onOpenBriefWizard={() => setBriefWizardTarget(card)}
                         onRequestPark={() => setPendingPark(card)}
                         onReorderUp={arrow.onReorderUp}
                         onReorderDown={arrow.onReorderDown}
@@ -477,6 +492,7 @@ export function IdeasBoard() {
                       onTransition={(to) => {
                         void handleTransition(card, to);
                       }}
+                      onOpenBriefWizard={() => setBriefWizardTarget(card)}
                       onRequestPark={() => setPendingPark(card)}
                     />
                   ))}
@@ -520,6 +536,17 @@ export function IdeasBoard() {
             parkedIntent,
             parkedReason,
           });
+        }}
+      />
+      <BriefWizardDialog
+        open={briefWizardTarget !== null}
+        initiative={briefWizardTarget}
+        onOpenChange={(next) => {
+          if (!next) setBriefWizardTarget(null);
+        }}
+        onCompleted={(next) => {
+          setBriefWizardTarget(null);
+          void handleBriefWizardCompleted(next);
         }}
       />
     </section>

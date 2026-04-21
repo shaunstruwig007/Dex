@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { briefWizardAnswersSchema } from "@/lib/brief-wizard-validation";
 import { lifecycleSchema } from "@/schema/initiative";
 
 export const createInitiativeBody = z.object({
@@ -39,3 +40,12 @@ export const reorderInitiativeBody = z.object({
   sortOrder: z.number().int(),
 });
 export type ReorderInitiativeBody = z.infer<typeof reorderInitiativeBody>;
+
+export const saveBriefAndTransitionBody = z.object({
+  expectedRevision: z.number().int().min(1),
+  answers: briefWizardAnswersSchema,
+  now: z.string().datetime().optional(),
+});
+export type SaveBriefAndTransitionBody = z.infer<
+  typeof saveBriefAndTransitionBody
+>;

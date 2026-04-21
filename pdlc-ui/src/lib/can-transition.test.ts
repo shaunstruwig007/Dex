@@ -47,7 +47,7 @@ describe("canTransition — forward matrix", () => {
     expect(blocked).toEqual({
       ok: false,
       reason: "brief_required",
-      message: "Complete the product brief in Sprint 3.",
+      message: "Complete the product brief.",
     });
 
     const allowed = canTransition("idea", "discovery", {
@@ -179,7 +179,18 @@ describe("deriveHasBrief", () => {
     expect(deriveHasBrief({ brief: {} })).toBe(false);
   });
 
-  it("is true once the brief has any key", () => {
-    expect(deriveHasBrief({ brief: { problem: { value: "x" } } })).toBe(true);
+  it("is false when complete is missing or false even if fields exist", () => {
+    expect(
+      deriveHasBrief({
+        brief: {
+          problem: { value: "<p>x</p>", confidence: "high", source: "user" },
+        },
+      }),
+    ).toBe(false);
+    expect(deriveHasBrief({ brief: { complete: false } })).toBe(false);
+  });
+
+  it("is true only when complete is true", () => {
+    expect(deriveHasBrief({ brief: { complete: true } })).toBe(true);
   });
 });

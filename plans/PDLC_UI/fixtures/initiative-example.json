@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 2,
+  "revision": 3,
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "handle": "INIT-0001",
   "title": "Example initiative",
@@ -12,8 +12,98 @@
   "createdAt": "2026-04-21T10:00:00.000Z",
   "updatedAt": "2026-04-21T10:05:00.000Z",
   "gate": {},
-  "brief": {},
-  "discovery": {},
+  "brief": {
+    "problem": {
+      "value": "<p>Example problem statement</p>",
+      "confidence": "high",
+      "source": "user",
+      "reviewedBy": "shaun",
+      "reviewedAt": "2026-04-21T10:04:00.000Z",
+      "updatedAt": "2026-04-21T10:04:00.000Z"
+    },
+    "targetUsers": {
+      "value": "<p>Example target users</p>",
+      "confidence": "high",
+      "source": "user",
+      "reviewedBy": "shaun",
+      "reviewedAt": "2026-04-21T10:04:00.000Z",
+      "updatedAt": "2026-04-21T10:04:00.000Z"
+    },
+    "coreValue": {
+      "value": "<p>Example core value</p>",
+      "confidence": "high",
+      "source": "user",
+      "reviewedBy": "shaun",
+      "reviewedAt": "2026-04-21T10:04:00.000Z",
+      "updatedAt": "2026-04-21T10:04:00.000Z"
+    },
+    "successDefinition": {
+      "value": "<p>Example success definition</p>",
+      "confidence": "high",
+      "source": "user",
+      "reviewedBy": "shaun",
+      "reviewedAt": "2026-04-21T10:04:00.000Z",
+      "updatedAt": "2026-04-21T10:04:00.000Z"
+    },
+    "constraints": {
+      "value": "<p></p>",
+      "confidence": "high",
+      "source": "user",
+      "reviewedBy": "shaun",
+      "reviewedAt": "2026-04-21T10:04:00.000Z",
+      "updatedAt": "2026-04-21T10:04:00.000Z"
+    },
+    "scopeIn": {
+      "value": ["In-scope example"],
+      "confidence": "high",
+      "source": "user",
+      "reviewedBy": "shaun",
+      "reviewedAt": "2026-04-21T10:04:00.000Z",
+      "updatedAt": "2026-04-21T10:04:00.000Z"
+    },
+    "scopeOut": {
+      "value": [],
+      "confidence": "high",
+      "source": "user",
+      "reviewedBy": "shaun",
+      "reviewedAt": "2026-04-21T10:04:00.000Z",
+      "updatedAt": "2026-04-21T10:04:00.000Z"
+    },
+    "assumptions": [
+      {
+        "text": "Example assumption",
+        "validation": null,
+        "confidence": "high",
+        "source": "user",
+        "reviewedBy": "shaun"
+      }
+    ],
+    "understandingSummary": {
+      "value": "<p>Example understanding summary</p>",
+      "confidence": "high",
+      "source": "user",
+      "reviewedBy": "shaun",
+      "reviewedAt": "2026-04-21T10:04:00.000Z",
+      "updatedAt": "2026-04-21T10:04:00.000Z"
+    },
+    "complete": true,
+    "reviewedAt": "2026-04-21T10:04:30.000Z",
+    "reviewedBy": "shaun"
+  },
+  "discovery": {
+    "openQuestions": [
+      {
+        "id": "oq-example-1",
+        "text": "Example open question",
+        "owner": "shaun",
+        "status": "open",
+        "answer": null,
+        "answeredAt": null,
+        "source": "user",
+        "sourceRef": null
+      }
+    ]
+  },
   "design": {},
   "spec": {},
   "release": {},
@@ -25,6 +115,12 @@
       "by": "shaun",
       "kind": "create",
       "payload": { "handle": "INIT-0001" }
+    },
+    {
+      "at": "2026-04-21T10:04:15.000Z",
+      "by": "shaun",
+      "kind": "skill_run",
+      "payload": { "skill": "pdlc-brief-custom", "iteration": 1 }
     },
     {
       "at": "2026-04-21T10:05:00.000Z",

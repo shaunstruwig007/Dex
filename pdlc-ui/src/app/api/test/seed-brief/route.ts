@@ -8,10 +8,10 @@ export const dynamic = "force-dynamic";
 const body = z.object({ id: z.string().min(1) });
 
 /**
- * Test-only helper: mark an initiative's brief as populated so S2 Playwright
- * flows can exercise `idea → discovery` without the S3 wizard. Gated by the
- * `PDLC_ALLOW_TEST_HELPERS` env var so it is impossible to hit in dev / prod
- * by accident. Remove once S3 wires the real brief.
+ * Test-only helper: writes a **minimum viable completed brief** (`brief.complete
+ * === true`) so Playwright can exercise `idea → discovery` via the normal
+ * transition endpoint without running the full wizard. Still used post-S3 for
+ * the forward-chain swim test. Gated by `PDLC_ALLOW_TEST_HELPERS=1`.
  */
 export async function POST(request: Request) {
   if (process.env.PDLC_ALLOW_TEST_HELPERS !== "1") {

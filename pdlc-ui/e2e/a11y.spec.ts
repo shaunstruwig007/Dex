@@ -46,6 +46,32 @@ test.describe("a11y — S1 + S2 surfaces", () => {
     ).toEqual([]);
   });
 
+  test("product brief wizard has no critical/serious violations", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await expect(
+      page.getByRole("heading", { level: 2, name: "Board" }),
+    ).toBeVisible();
+    const title = `A11y brief ${Date.now()}`;
+    await page.getByRole("button", { name: "Create new initiative" }).click();
+    await page.getByLabel(/^title/i).fill(title);
+    await page.getByRole("button", { name: "Create idea" }).click();
+    const card = page.getByRole("listitem").filter({ hasText: title });
+    await expect(card).toBeVisible();
+    await card.getByRole("button", { name: /Actions for INIT-/ }).click();
+    await page.getByRole("menuitem", { name: "Move to…" }).hover();
+    await page.getByRole("menuitem", { name: "Discovery" }).click();
+    await expect(
+      page.getByRole("dialog", { name: "Product brief" }),
+    ).toBeVisible();
+    const blocking = await runAxe(page);
+    expect(
+      blocking,
+      blocking.map((v) => `${v.id}: ${v.description}`).join("\n"),
+    ).toEqual([]);
+  });
+
   test("parked-transition dialog has no critical/serious violations", async ({
     page,
   }) => {

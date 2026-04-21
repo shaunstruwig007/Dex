@@ -16,6 +16,7 @@ import {
   listInitiatives,
   nextHandle,
   reorderInitiative,
+  saveBriefAndTransition,
   seedBriefForTesting,
   transitionInitiative,
   updateInitiative,
@@ -292,6 +293,95 @@ describe("repository — transitionInitiative (S2)", () => {
       db,
     );
     expect(result).toEqual({ ok: false, reason: "not_found" });
+  });
+});
+
+function completeBriefAnswers() {
+  return {
+    problem: "<p>Problem text</p>",
+    targetUsers: "<p>Users</p>",
+    coreValue: "<p>Value</p>",
+    successDefinition: "<p>Success</p>",
+    constraints: "<p></p>",
+    scopeIn: ["alpha"],
+    scopeOut: [],
+    assumptions: ["assume one"],
+    understandingSummary: "<p></p>",
+    openQuestions: [],
+  };
+}
+
+describe("repository — saveBriefAndTransition (S3)", () => {
+  it("rejects missing required fields with missing_required_fields", () => {
+    const created = createInitiative({ title: "brief-missing" }, db);
+    const answers = { ...completeBriefAnswers(), problem: "<p></p>" };
+    const result = saveBriefAndTransition(
+      { id: created.id, expectedRevision: 1, answers },
+      db,
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toBe("missing_required_fields");
+    if (result.reason !== "missing_required_fields") return;
+    expect(result.fields).toContain("problem");
+    expect(getInitiative(created.id, db)?.revision).toBe(1);
+  });
+
+  it("bumps revision once, moves to discovery, appends skill_run then stage_transition", () => {
+    const created = createInitiative({ title: "brief-ok" }, db);
+    const result = saveBriefAndTransition(
+      { id: created.id, expectedRevision: 1, answers: completeBriefAnswers() },
+      db,
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.initiative.revision).toBe(2);
+    expect(result.initiative.lifecycle).toBe("discovery");
+    expect(result.initiative.brief.complete).toBe(true);
+    const tail = result.initiative.events.slice(-2);
+    expect(tail.map((e) => e.kind)).toEqual(["skill_run", "stage_transition"]);
+    if (tail[0]?.kind === "skill_run") {
+      expect(tail[0].payload).toEqual({
+        skill: "pdlc-brief-custom",
+        iteration: 1,
+      });
+    }
+  });
+
+  it("returns revision_conflict when revision is stale", () => {
+    const created = createInitiative({ title: "brief-stale" }, db);
+    updateInitiative(
+      { id: created.id, expectedRevision: 1, title: "bumped" },
+      db,
+    );
+    const result = saveBriefAndTransition(
+      { id: created.id, expectedRevision: 1, answers: completeBriefAnswers() },
+      db,
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toBe("revision_conflict");
+  });
+
+  it("rejects when not in idea lane", () => {
+    const created = createInitiative({ title: "not-idea" }, db);
+    saveBriefAndTransition(
+      { id: created.id, expectedRevision: 1, answers: completeBriefAnswers() },
+      db,
+    );
+    const inDiscovery = getInitiative(created.id, db);
+    expect(inDiscovery?.lifecycle).toBe("discovery");
+    const again = saveBriefAndTransition(
+      {
+        id: created.id,
+        expectedRevision: inDiscovery!.revision,
+        answers: completeBriefAnswers(),
+      },
+      db,
+    );
+    expect(again.ok).toBe(false);
+    if (again.ok) return;
+    expect(again.reason).toBe("illegal_transition");
   });
 });
 

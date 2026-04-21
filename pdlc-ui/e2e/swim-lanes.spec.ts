@@ -67,7 +67,9 @@ test.describe("S2 swim lanes", () => {
     ).toHaveCount(0);
   });
 
-  test("idea → discovery is blocked until a brief exists", async ({ page }) => {
+  test("idea → discovery opens the product brief wizard (S3)", async ({
+    page,
+  }) => {
     await page.goto("/");
     const title = `Brief gate ${Date.now()}`;
     const card = await createInitiative(page, title);
@@ -75,14 +77,14 @@ test.describe("S2 swim lanes", () => {
     await openActions(card);
     await page.getByRole("menuitem", { name: "Move to…" }).hover();
     const discovery = page.getByRole("menuitem", { name: "Discovery" });
-    await expect(discovery).toBeDisabled();
-    // Tooltip (`title` attribute) carries the S3 pointer.
-    await expect(discovery).toHaveAttribute("title", /brief/i);
-    // Close the menu without moving.
-    await page.keyboard.press("Escape");
-    await page.keyboard.press("Escape");
+    await expect(discovery).toBeEnabled();
+    await discovery.click();
 
-    // Card is still in Idea.
+    const dialog = page.getByRole("dialog", { name: "Product brief" });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole("button", { name: "Cancel" }).click();
+    await expect(dialog).toBeHidden();
+
     const ideaLane = page.locator('section[data-lane="idea"]');
     await expect(
       ideaLane.getByRole("listitem").filter({ hasText: title }),

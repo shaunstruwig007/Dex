@@ -36,15 +36,125 @@ export const eventKindSchema = z.enum([
 ]);
 export type EventKind = z.infer<typeof eventKindSchema>;
 
-export const eventSchema = z.object({
-  at: z.string(),
-  by: z.string().min(1),
-  kind: eventKindSchema,
-  payload: z.record(z.string(), z.unknown()).default({}),
-});
+const atSchema = z.string();
+const bySchema = z.string().min(1);
+
+/**
+ * Discriminated union — `skill_run` payload is enforced (S3).
+ * Other kinds use structured cores + passthrough for forward-compatible extras.
+ */
+export const eventSchema = z.discriminatedUnion("kind", [
+  z.object({
+    at: atSchema,
+    by: bySchema,
+    kind: z.literal("create"),
+    payload: z.object({ handle: z.string() }).passthrough(),
+  }),
+  z.object({
+    at: atSchema,
+    by: bySchema,
+    kind: z.literal("delete"),
+    payload: z.object({ handle: z.string() }).passthrough(),
+  }),
+  z.object({
+    at: atSchema,
+    by: bySchema,
+    kind: z.literal("stage_transition"),
+    payload: z
+      .object({
+        from: lifecycleSchema,
+        to: lifecycleSchema,
+      })
+      .passthrough(),
+  }),
+  z.object({
+    at: atSchema,
+    by: bySchema,
+    kind: z.literal("field_edit"),
+    payload: z
+      .object({
+        field: z.string(),
+        before: z.unknown().nullable(),
+        after: z.unknown(),
+      })
+      .passthrough(),
+  }),
+  z.object({
+    at: atSchema,
+    by: bySchema,
+    kind: z.literal("skill_run"),
+    payload: z.object({
+      skill: z.string(),
+      iteration: z.number().int().min(1),
+    }),
+  }),
+  z.object({
+    at: atSchema,
+    by: bySchema,
+    kind: z.literal("review"),
+    payload: z.record(z.string(), z.unknown()),
+  }),
+]);
 export type InitiativeEvent = z.infer<typeof eventSchema>;
 
 const recordObject = z.record(z.string(), z.unknown());
+
+const confidenceSchema = z.enum(["high", "med", "low"]).default("high");
+const sourceSchema = z
+  .enum(["user", "agent_draft", "meeting_cited", "signal_cited", "imported"])
+  .default("user");
+
+/** HTML or plain string in `value` — UI renders via RichTextRenderer when HTML. */
+const stringFieldEnvelopeSchema = z.object({
+  value: z.string(),
+  confidence: confidenceSchema,
+  source: sourceSchema,
+  sourceRef: z.string().nullable().optional(),
+  reviewedBy: z.string().nullable().optional(),
+  reviewedAt: z.string().nullable().optional(),
+  updatedAt: z.string().optional(),
+});
+
+const stringListFieldEnvelopeSchema = z.object({
+  value: z.array(z.string()),
+  confidence: confidenceSchema,
+  source: sourceSchema,
+  sourceRef: z.string().nullable().optional(),
+  reviewedBy: z.string().nullable().optional(),
+  reviewedAt: z.string().nullable().optional(),
+  updatedAt: z.string().optional(),
+});
+
+const assumptionRowSchema = z.object({
+  text: z.string(),
+  validation: z.string().nullable().optional(),
+  confidence: confidenceSchema,
+  source: sourceSchema,
+  reviewedBy: z.string().nullable().optional(),
+});
+
+/**
+ * `brief` — S3 tightened shape (was `recordObject`). Empty `{}` remains valid
+ * for fresh initiatives. Per-field envelopes match schema-initiative-v0 §4.2.
+ */
+export const briefSchema = z
+  .object({
+    problem: stringFieldEnvelopeSchema.optional(),
+    targetUsers: stringFieldEnvelopeSchema.optional(),
+    coreValue: stringFieldEnvelopeSchema.optional(),
+    scopeIn: stringListFieldEnvelopeSchema.optional(),
+    scopeOut: stringListFieldEnvelopeSchema.optional(),
+    assumptions: z.array(assumptionRowSchema).optional(),
+    constraints: stringFieldEnvelopeSchema.optional(),
+    successDefinition: stringFieldEnvelopeSchema.optional(),
+    understandingSummary: stringFieldEnvelopeSchema.optional(),
+    complete: z.boolean().optional(),
+    reviewedAt: z.string().nullable().optional(),
+    reviewedBy: z.string().nullable().optional(),
+  })
+  .strict();
+
+export type BriefState = z.infer<typeof briefSchema>;
 
 export const initiativeSchema = z.object({
   schemaVersion: z.literal(1),
@@ -60,7 +170,7 @@ export const initiativeSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   gate: recordObject,
-  brief: recordObject,
+  brief: briefSchema,
   discovery: recordObject,
   design: recordObject,
   spec: recordObject,

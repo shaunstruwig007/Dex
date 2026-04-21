@@ -24,6 +24,8 @@ npm run dev
 
 Stop the app: in the terminal, press **Ctrl+C**.
 
+**Product brief (S3):** From an **Idea** card, **Move to… → Discovery** opens the wizard if `brief.complete` is not set. On **Finish**, data lives under `initiative.brief.*` (full envelope + `complete: true`) and `discovery.openQuestions[]` for wizard drafts. Smoke: [smoke/S3-brief-wizard.md](./smoke/S3-brief-wizard.md).
+
 ---
 
 ## Before you merge (if you use GitHub + pull requests)

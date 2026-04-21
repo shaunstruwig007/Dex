@@ -30,6 +30,9 @@ Switch to **Build mode** only after Plan produces a task list that closes every 
 | **S1** | **A** | Write path: atomic JSON + `schemaVersion` + `handle` + `events[]`. SQLite-path items defer to Bar B. |
 | **S2** | **A** | Swim lanes; forward moves only; parked intent + reason. |
 | **S3** | **A** | **`pdlc-brief-custom`**-aligned wizard on `idea → discovery`; unlocks S2's blocked transition. |
+| **S3A.1** | **A** | Interaction + layout polish on the `idea → discovery` journey **and** brief shrink to **three questions** (why / who / what): **`REQUIRED_BRIEF_FIELDS` narrows** to `problem` + `targetUsers` + `coreValue` (legacy fields stay optional in `briefSchema` — backward compat; S3B writes equivalents to `discovery.*`); **drag-and-drop** card moves (menu retained as a11y fallback); **mandatory-field indicators** in wizard; **summary-step composite** (3 fields + synthesis) with two actions (primary "Save brief & start discovery" / secondary "Save brief only" — identical server behaviour this sprint); **one-line `problem.value`** preview on card face; **chrome-light board shell** + **elastic columns** + **parked rail** + **density toggle** per [board-layout.md](../../pdlc-ui/docs/design/board-layout.md) §1–§4. No new server processes, no new skills, `briefSchema` narrows (not widens). |
+| **S3A.2** | **A** | Automation surface + side panel on top of S3A.1: **pre-filled brief drafts** for the **three required brief fields** (`coreValue` + `targetUsers` + `problem`; feature-flagged OFF in prod), **tick-driven discovery kickoff** with client-polled progress bar behind a **swappable `DiscoveryResearchProvider` interface** (deterministic stub this sprint; **S3B replaces the advance function with `/pdlc-discovery-research-custom` without touching route / job / UI**), new **`initiative_jobs` table** + startup reconciler, **non-modal resizable side panel** (Idea / Brief / Discovery / Activity) per [board-layout.md](../../pdlc-ui/docs/design/board-layout.md) §5–§6, **edit-existing-brief** from panel, **focused-column mode**. |
+| **S3B** | **A** | `/pdlc-discovery-research-custom` — real discovery research skill. Replaces the S3A.2 kickoff stub behind the same `DiscoveryResearchProvider` interface; reads `brief.*` + `gate.*` + `Market_intelligence/*` + `Market_and_deal_signals.md` + `People/External/*` + (when it exists) `System/icp.md`; writes `discovery.researchNotes` + `discovery.competitorSnapshot` + `discovery.customerEvidence[]` + `discovery.openQuestions[]` (draft). Designed to re-run on a **weekly sweep** against all `discovery`-column cards. **Deep-dive 2026-04-22+** — this row reserves the slot; full scope is defined in [seeds/s3b-discovery-research.md](./seeds/s3b-discovery-research.md). |
 | **S4** | **A (minimal)** / **B (full)** | **Bar A:** export pack download + open-questions persistence. **Bar B:** full re-run audit, workshop export polish. |
 | **S5** | **B** | Design artefact fields — board becomes Steerco-readable. |
 | **S6** | **B** | Design review **hard gate**. In Bar A this is a **warning nudge**, not a block. |
@@ -294,6 +297,230 @@ Then read in order, and adapt the plan to S2 actual outcomes:
 5. plans/PDLC_UI/skill-agent-map.md — stage ↔ skill mapping (brief.* field targets).
 
 Output: task list closing every DoD checkbox. List scope conflicts before Build.
+```
+
+---
+
+## Sprint 3A.1 — Brief shrink + board interaction polish *(~2 weeks)*
+
+**Bar:** **A** — first of a **two-slice 3A pass**. Craft + cohesion pass on the S3 journey **plus** the board layout shell per [`pdlc-ui/docs/design/board-layout.md`](../../pdlc-ui/docs/design/board-layout.md) **plus** the CPO-approved brief shrink to three questions. No new server processes, no new skills; `briefSchema` narrows (does not widen).
+
+**Goal:** Make the S3 journey feel designed **and honest** — the brief asks only what the PM can answer at `idea → discovery` (*why / who / what*); you can drag a card into discovery; the wizard clearly marks required fields and lets you jump to any step from the summary; the summary step commits via two clearly-labelled actions; the card face gains a one-line brief preview; the board uses the viewport properly.
+
+**Maps to:** S3 follow-through + Chief Designer layout pass (board-layout.md §1–§4) + 2026-04-21 CPO brief shrink. No S4+ scope.
+
+**CPO decision 2026-04-21 (reverses earlier deferral):** `/pdlc-brief-custom` question copy / order / workflow **is** changed in S3A.1 — narrows to three questions. Scope / assumptions / success metrics move to discovery (S3B) and spec (`/agent-prd`). Legacy fields remain in the schema as optional (no data migration).
+
+**Deliverables**
+
+- **Brief shrink (CPO pass):** `REQUIRED_BRIEF_FIELDS` narrows to `["problem", "targetUsers", "coreValue"]`. `pdlc-brief-steps.json` reduces to **3 content steps + 1 summary step** (order: *why* → *who* → *what* → summary). Legacy `scopeIn` / `scopeOut` / `assumptions` / `constraints` / `successDefinition` remain optional in `briefSchema` for backward compat and are not rendered by the wizard. `schema-initiative-v0.md §4.2` and `.claude/skills/pdlc-brief-custom/SKILL.md` are already staged and must ship same-PR.
+- **Drag-and-drop** card moves (accessible): `canTransition` imported client-side and evaluated on drag-over; illegal targets dim with the existing `humanError` tooltip; drops on illegal targets are a no-op. `@dnd-kit/core` is the default (confirm in Plan mode). **Keyboard DnD mandatory** (`KeyboardSensor` + `sortableKeyboardCoordinates`).
+- **Ellipsis "Move to…" menu retained** as canonical keyboard / screen-reader path. Drag is additive.
+- **Mandatory indicators** on every required wizard step (asterisk + "Required" header + step-rail red dot + "* Required" legend). Driven by the shrunk `REQUIRED_BRIEF_FIELDS`.
+- **Summary step** renders idea + the three confirmed brief fields + auto-synthesised `understandingSummary` as a composite; **clicking any block jumps to that step with focus**. Two buttons: primary **"Save brief & start discovery"** and secondary **"Save brief only"** — **identical server behaviour in 3A.1** (same atomic endpoint, same lane move). 3A.2 wires the kickoff under the primary.
+- **One-line `problem.value` preview** on the card face when `brief.complete === true`. Inline `<details>` BriefPanel on the card face is **not** removed in 3A.1 (replaced in 3A.2 by the side panel).
+- **Board layout shell** per [`pdlc-ui/docs/design/board-layout.md`](../../pdlc-ui/docs/design/board-layout.md) §1–§4: chrome-light 48px sticky header; board as scroll container (`height: calc(100vh - 48px)`); **elastic main lanes** (`repeat(auto-fit, minmax(280px, 1fr))`); **parked right-edge rail** (collapsed 40px / expanded 280px); **density toggle** (Compact / Comfortable / Detailed) persisted per user via `localStorage`.
+- **Focused-column mode** is **documented** in board-layout.md but **not implemented** this sprint — it lands in 3A.2.
+
+**Technical — how**
+
+- **Client `canTransition`:** import the pure function from `pdlc-ui/src/lib/can-transition.ts`; audit imports to confirm no server-only deps leak in.
+- **Density toggle:** `useBoardDensity` hook + `localStorage`; applies a data-attr on the board root and swaps CSS variables (`--card-py`, `--card-gap`, `--card-lines`) defined in `tokens.css`.
+- **Parked rail:** not a new lifecycle value; render after the main 7 lanes; absorb the S2 "Show parked" toggle into the rail header.
+- **Reuse, don't fork:** `BriefWizardDialog`, `canTransition`, `saveBriefAndTransition`, `briefWizardAnswersSchema`, `REQUIRED_BRIEF_FIELDS`, `ParkedTransitionDialog`, `RichTextRenderer` — all unchanged.
+- **UI** via `/anthropic-frontend-design` for drag affordances, mandatory indicators, summary composite, density toggle, and rail. R18 baseline preserved.
+
+**DoD**
+
+- [ ] **Brief shrink:** `REQUIRED_BRIEF_FIELDS = ["problem","targetUsers","coreValue"]`. `pdlc-brief-steps.json` = 3 content steps + 1 summary step (order: why → who → what → summary). Legacy brief fields remain optional in `briefSchema`, not rendered. Vitest + Playwright updated to the 3-field shape; legacy "complete" fixture still passes (backward compat).
+- [ ] `schema-initiative-v0.md §4.2` + `.claude/skills/pdlc-brief-custom/SKILL.md` land in the same PR (already staged 2026-04-21).
+- [ ] Drag between legal columns; illegal targets dim + existing `humanError` tooltip; drop on illegal = no-op.
+- [ ] Drag `idea → discovery` opens the S3 brief wizard (gate not regressed).
+- [ ] Drag-to-reorder within a column still writes `sortOrder` + `field_edit`.
+- [ ] "Move to…" menu unchanged (a11y fallback); both paths one API.
+- [ ] Keyboard-only DnD (Space + arrows + Enter; Esc cancels) covered by a Playwright test.
+- [ ] Required wizard steps marked (asterisk + "Required" header + step-rail dot); top "* Required" legend visible from step 1.
+- [ ] Summary step composite renders idea + the 3 brief fields + auto-synthesised summary; clicking any block jumps to that step with focus.
+- [ ] Summary step has **two** buttons (primary "Save brief & start discovery" / secondary "Save brief only"); **both** save + move the lane in 3A.1 (identical server call).
+- [ ] When `brief.complete === true`, card face shows a single truncated `problem.value` line.
+- [ ] Sticky 48px board header; board is the scroll container; 16–24px gutters; elastic main lanes via `minmax(280px, 1fr)`; parked rail collapsed/expanded (40/280); density toggle persists; axe-clean in each density.
+- [ ] `eventSchema`, `canTransition`, `saveBriefAndTransition`, atomic `POST .../brief` shape — **unchanged**. `briefSchema` required-set **narrows**; legacy fields stay optional. 422 `missing_required_fields` contract preserved (same shape, smaller list).
+- [ ] Board layout design doc landed same-PR at `pdlc-ui/docs/design/board-layout.md`.
+
+**Out:** Prefill, kickoff, job record, side panel, edit-existing-brief, focused-column implementation — all deferred to **S3A.2**. Removal of legacy brief fields from the schema or data migration. No S3B / `/pdlc-discovery-research-custom` work. No S4+ scope.
+
+**Dependencies:** S3 (brief wizard, atomic brief route, `brief.complete` gate, `skill_run` event kind).
+
+**Risks:**
+- **DnD a11y regression** → keyboard-only Playwright + menu retained + axe on each density.
+- **Density toggle drift** → CSS variables only, no per-component branches.
+- **Scope creep into 3A.2** → any prefill/side-panel/runner work rejected in review.
+
+**Plan mode seed** (copy this block into Cursor Plan mode):
+
+```
+Execute Sprint S3A.1 — Brief wizard + board interaction polish. Branch: feat/s3a1-brief-wizard-interactions. Bar: A.
+
+Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
+
+Then read in order, and adapt the plan to S3 actual outcomes:
+1. plans/PDLC_UI/seeds/s3a1-brief-wizard-interactions.md.
+2. plans/PDLC_UI/sprint-backlog.md § Sprint 3A.1.
+3. pdlc-ui/docs/design/board-layout.md — implements §1–§4 this sprint; §5–§6 deferred to S3A.2.
+4. 04-Projects/PDLC_Orchestration_UI.md Slice log — S3 actual outcomes (atomic POST .../brief, brief.complete gate, skill_run event payload, BriefPanel, tightened briefSchema/eventSchema). Flag any S3A.1 DoD item invalidated.
+5. .claude/skills/pdlc-brief-custom/SKILL.md — already reshaped to 3 questions (2026-04-21 CPO pass); audit + ship same-PR as the wizard / schema / content updates.
+6. plans/PDLC_UI/schema-initiative-v0.md §4.2 — already updated for the 3-field required set; audit matches runtime briefSchema before merge.
+7. plans/PDLC_UI/lifecycle-transitions.md — update "Cross-lane DnD explicitly not implemented" note same-PR to reflect DnD landing in 3A.1.
+
+Resolve Open Questions in seed § "Open questions to resolve in Plan mode" (DnD library, density CSS values, parked rail default) before Build. Output: task list closing every DoD checkbox. List scope conflicts before Build. Do NOT pull any S3A.2 item into scope (prefill, kickoff, job record, side panel, edit-existing-brief, focused-column). Do NOT modify S4+ sprint blocks or any S3 contract.
+```
+
+---
+
+## Sprint 3A.2 — Discovery automation surface + side panel + prefill *(~2 weeks)*
+
+**Bar:** **A** — second of the two-slice 3A pass. Adds the **automation surface** on top of S3A.1: pre-filled brief drafts, tick-driven discovery kickoff with visible progress, non-modal resizable side panel, edit-existing-brief, focused-column mode. Research runner is a deterministic stub — real LLM wiring is later. **Requires S3A.1 merged.**
+
+**Goal:** Close the Chief-Designer-approved journey — drag in, open a wizard that's already part-drafted, save, watch research tick forward on the card, then open a side panel to read idea + brief + discovery + activity in one place without losing the board.
+
+**Maps to:** S3A.1 follow-through (automation surface) + board-layout.md §5–§6. Still no S4 scope.
+
+**Explicitly deferred (PO):** `pdlc-brief-custom` **question copy / order / workflow** — later PO-owned pass.
+
+**Deliverables**
+
+- **`POST /api/initiatives/:id/brief/prefill`** — server-gated to fire at most once per `(initiativeId, skill)` unless "Regenerate" is invoked; feature-flagged (default **ON in dev / OFF in prod**); **scoped to the three required brief fields** (`coreValue`, `targetUsers`, `problem`) — every field the S3A.1 wizard asks for. Response = envelope drafts; server does not write the brief. Per-field Regenerate + Clear + "Draft from idea" badge + confidence chip. **User-typing wins** — a field the user already typed in is not overwritten by a late draft response. Skeleton placeholders while in flight; amber inline notice on failure.
+- **`POST /api/initiatives/:id/discovery/kickoff`** — fires **only** on the primary "Save brief & start discovery" button. Creates a row in the new `initiative_jobs` table; appends `skill_run` event with `{ skill: "discovery-kickoff-custom", iteration }`. **Runner is behind a swappable `DiscoveryResearchProvider` interface** — S3B replaces the provider with `/pdlc-discovery-research-custom` without changing the route, job table, or client polling.
+- **Runner = tick-driven, client-polled, server-advanced.** Client polls `POST /api/initiatives/:id/discovery/jobs/:jobId/tick` every 2s while `status === "running"`; each tick advances one step + updates `heartbeat_at`; terminal tick writes `discovery.research.summary` (envelope) to the initiative (bumps initiative `revision +1`, emits `skill_run`). **No background process, no setInterval in route handlers, no `after()`.**
+- **`GET /api/initiatives/:id/discovery/jobs/latest`** — returns `{ jobId, status, progress, startedAt, updatedAt, heartbeatAt, error }` for UI polling.
+- **`initiative_jobs` table (locked columns):** `id`, `initiative_id`, `kind CHECK IN ('discovery-research')`, `status CHECK IN ('running','succeeded','failed')`, `progress` (0–100), `started_at`, `updated_at`, `heartbeat_at`, `error`, `payload` (JSON). Index on `(initiative_id, kind, started_at DESC)`. Cascade delete on initiative delete. **Jobs are ephemera, not initiative state.**
+- **Startup reconciler** flips stale `running` jobs (heartbeat > 30s) to `failed` with `error = "server_restart"`.
+- **Card UI in `discovery`:** linear progress bar + status text while running; "Research drafted" chip on success; amber "Retry research" chip on failure (new job row on retry; lane does not roll back). In-flight tick on a deleted initiative returns 410 Gone.
+- **Right-rail side panel** per [`pdlc-ui/docs/design/board-layout.md`](../../pdlc-ui/docs/design/board-layout.md) §5: **`role="complementary"`** (not `dialog`); no focus trap; Esc closes. Resizable (default 420px / min 320px / max 600px) with width persisted per user. **Drag auto-collapse to 80px rail** while a card-drag is in progress. Tabs: **Idea / Brief / Discovery / Activity**. Replaces the inline `<details>` BriefPanel on the card face (keeps the S3A.1 one-liner + adds "Open details ›" link).
+- **Edit existing brief** — "Edit brief" button on the Brief tab re-opens `BriefWizardDialog` with saved values; prefill skipped; save uses the existing atomic endpoint; **does NOT re-fire the discovery kickoff** (kickoff is tied to the initial `idea → discovery` lane move — S4's "Re-run discovery" owns re-triggering research).
+- **Focused-column mode** per board-layout.md §6: double-click or Enter-on-focused column header collapses sibling main lanes to 48px rails; parked rail unaffected; Esc returns; ephemeral (not persisted).
+
+**Technical — how**
+
+- **Prefill helper** is a server-side module behind a swappable interface (deterministic stub this sprint; real LLM later). No model keys in the browser.
+- **Prefill idempotence** is server-gated: check `events[]` for a prior `pdlc-brief-prefill-custom` `skill_run`; return cached draft on re-request unless "Regenerate".
+- **`discovery.research.summary`** envelope added to `schema-initiative-v0.md §4.3` and the runtime Zod `discoverySchema` same-PR (R16 guardrail 1).
+- **Side panel is NOT a shadcn `Dialog`** — bespoke slide-over or a drawer primitive that supports `role="complementary"` + no focus trap.
+- **Tests:** unit (`initiative_jobs` repo, prefill idempotence, `discovery.research.summary` Zod round-trip), Playwright happy path (drag → prefilled wizard → kickoff → progress → summary → side panel), Playwright recovery (tick fail → retry, reconciler on stale running), Playwright side-panel (non-modal, drag auto-collapse, Esc, axe), Playwright edit-brief (prefill skipped, revision bumped, no kickoff re-fire).
+- **UI** via `/anthropic-frontend-design` for progress bar, draft badges, regenerate, panel tabs, focused-column rails.
+
+**DoD**
+
+- [ ] Prefill endpoint gated server-side to fire once per `(initiativeId, skill)` unless Regenerate; feature flag defaults as specified; scope = `coreValue` + `targetUsers` + `problem` (the three required brief fields).
+- [ ] User-typing-wins covered by Playwright; failure shows amber notice (no toast storm).
+- [ ] Regenerate + Clear per drafted field; editing a drafted field flips `source` to `user` at save.
+- [ ] Primary "Save brief & start discovery" fires kickoff; secondary "Save brief only" does not.
+- [ ] Kickoff creates `initiative_jobs` row + `skill_run` event; responses + `GET .../discovery/jobs/latest` return the locked shape.
+- [ ] Client polls `/tick`; progress ticks; terminal tick writes `discovery.research.summary` (+ `revision +1` + `skill_run`).
+- [ ] Failure path: amber "Retry research" chip; retry creates a new job row; lane does not roll back; deletion → 410 Gone; startup reconciler flips stale `running` → `failed`.
+- [ ] Side panel is `role="complementary"` (no focus trap); resizable 320/420/600; drag auto-collapse to 80px + restore; tabs Idea / Brief / Discovery / Activity; axe-clean.
+- [ ] Edit-existing-brief re-opens wizard with saved values; prefill skipped; save bumps `revision` and does NOT fire kickoff.
+- [ ] Focused-column mode (double-click or Enter) collapses sibling lanes to 48px; parked rail unchanged; Esc returns; ephemeral.
+- [ ] Inline `<details>` BriefPanel replaced by one-liner + "Open details ›" link.
+- [ ] `briefSchema`, `REQUIRED_BRIEF_FIELDS`, `canTransition`, `saveBriefAndTransition`, atomic `POST .../brief`, `eventSchema` — **unchanged**. `schema-initiative-v0.md §4.3` updated same-PR with `discovery.research.summary`.
+
+**Out:** Real LLM / agent wiring (deterministic stubs). Re-run discovery on brief edit (S4). S4 deliverables (open-questions CRUD, export pack, re-run audit). S5–S8 scope. Changes to `/pdlc-brief-custom` question copy. Widening any S3 contract.
+
+**Dependencies:** S3A.1 merged (drag, mandatory indicators, summary composite with two buttons, board shell, density toggle, parked rail).
+
+**Risks:**
+- **Prefill quality too low** → scoped to 2 fields, feature-flag off in prod, Regenerate + Clear per field.
+- **Runner model re-opens** → tick-driven is **locked** by the seed; background process requires an ADR.
+- **Side-panel a11y regression** → explicit `role="complementary"` + axe tests on open / each tab.
+- **Edit-brief accidentally re-fires kickoff** → server fires kickoff only when lane actually transitions `idea → discovery`.
+
+**Plan mode seed** (copy this block into Cursor Plan mode):
+
+```
+Execute Sprint S3A.2 — Discovery automation surface + side panel + prefill. Branch: feat/s3a2-discovery-automation. Bar: A.
+
+Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
+
+Then read in order, and adapt the plan to S3A.1 actual outcomes:
+1. plans/PDLC_UI/seeds/s3a2-discovery-automation.md.
+2. plans/PDLC_UI/sprint-backlog.md § Sprint 3A.2.
+3. pdlc-ui/docs/design/board-layout.md — implements §5 (side panel) + §6 (focused-column) this sprint.
+4. 04-Projects/PDLC_Orchestration_UI.md Slice log — S3A.1 actual outcomes (drag + menu converge on one API; mandatory indicators; summary-step click-to-edit; two buttons identical in 3A.1; one-liner preview; board shell + elastic lanes + parked rail + density). Flag any S3A.2 DoD item invalidated.
+5. .claude/skills/pdlc-brief-custom/SKILL.md — already reshaped to 3 questions (S3A.1 pre-stage); confirm prefill draft fields map cleanly to coreValue + targetUsers + problem envelopes.
+6. plans/PDLC_UI/schema-initiative-v0.md — add discovery.research.summary envelope to §4.3 + note initiative_jobs table.
+7. plans/PDLC_UI/skill-agent-map.md — decide prefill skill naming (default: pdlc-brief-prefill-custom sibling).
+8. plans/PDLC_UI/seeds/s3b-discovery-research.md — lock the DiscoveryResearchProvider interface so S3B can swap in without touching route / job / UI.
+
+Resolve Open Questions in seed § "Open questions to resolve in Plan mode" (prefill skill name, prod flag default, side-panel primitive, stub step count N) before Build. Output: task list closing every DoD checkbox. List scope conflicts before Build. Do NOT modify S4+ sprint blocks or any S3 contract.
+```
+
+---
+
+## Sprint 3B — `/pdlc-discovery-research-custom` (real research) *(~2 weeks; deep-dive first)*
+
+**Bar:** **A** — replaces the S3A.2 kickoff stub behind the same `DiscoveryResearchProvider` interface. Real discovery research: market intelligence, competitor snapshots, customer evidence, strategic-fit scoring against ICP. Runs on kickoff + a **weekly sweep** across all `discovery`-column cards.
+
+**Goal:** Make discovery actually discover. Replace the deterministic stub with a skill that composes existing Dex intelligence (`/customer-intel`, `/intelligence-scanning`, `/weekly-exec-intel`, `/meeting-prep`) into a per-initiative research pass that writes `discovery.*` and **accumulates context weekly**. The runner model, job table, route handlers, and UI from S3A.2 stay untouched — S3B is a provider swap plus a new skill file.
+
+**⚠ Open sprint — deep-dive 2026-04-22+ with Shaun + PO before Build.** See [`seeds/s3b-discovery-research.md`](./seeds/s3b-discovery-research.md) § "Deep-dive open questions" (Q1–Q10). `System/icp.md` is a **blocker for the weekly sweep** and is authored by Shaun as part of this deep-dive.
+
+**Maps to:** [plan.md § Phase 3+](./plan.md) "Intelligence & meeting correlation" + product philosophy ("UI steers what Dex already does") + schema-initiative-v0 §4.3 / §8 discovery contract + S3A.2 `DiscoveryResearchProvider` interface.
+
+**Deliverables (outline — fleshed out in deep-dive)**
+
+- **New skill** `.claude/skills/pdlc-discovery-research-custom/SKILL.md` — I/O contract per `schema-initiative-v0 §8`; cadence (kickoff + manual re-run + weekly sweep); composition with existing Dex intel skills.
+- **Provider swap** — implement `DiscoveryResearchProvider.advance(...)` with real vault reads + LLM synthesis; replace the S3A.2 stub import. Route handler, `initiative_jobs` table, client polling, progress bar, side-panel Discovery tab **unchanged**.
+- **Weekly sweep entrypoint** — manual `/weekly-discovery-sweep` chat command + optional cron hook via existing Dex cadence scripts. Refreshes every `discovery`-column card; preserves `user` / `reviewedBy != null` fields; appends `openQuestion` drafts when new evidence contradicts a reviewed field.
+- **ICP artefact** `System/icp.md` (authored by Shaun 2026-04-22; co-ships with S3B).
+- **Discovery source list** (TBC Q2) — shared `System/discovery-sources.yaml` seeded by ICP segment, or per-initiative `discovery.sources[]`. Default: shared YAML.
+- **Schema doc delta** — `/pdlc-discovery-research-custom` row in `schema-initiative-v0 §8` (pre-staged 2026-04-21); `skill_run` known-ids list includes the id.
+- **Tests** — unit fixtures for the provider (brief + mocked vault → expected `discovery.*` diff); Playwright smoke (kickoff → tick → terminal → non-empty `research.summary`).
+
+**DoD (outline)**
+
+- [ ] Deep-dive questions Q1–Q10 in the seed closed in Plan mode before Build.
+- [ ] `System/icp.md` exists and is read by the provider.
+- [ ] Provider swap: S3A.2 stub replaced with **zero** changes to route handler / `initiative_jobs` table / polling client / side-panel Discovery tab.
+- [ ] Kickoff writes the full `discovery.*` set (see `seeds/s3b-discovery-research.md` Outputs table).
+- [ ] Weekly sweep refreshes all `discovery`-column cards; preserves reviewed fields; surfaces contradictions as draft `openQuestion`s.
+- [ ] LLM calls server-side only; cost ceiling defined + enforced; one `skill_run` event per card per run + one Slice log weekly roll-up.
+- [ ] `schema-initiative-v0 §4.3` + `§8` match the provider's actual reads/writes.
+- [ ] Playwright smoke: seed brief → kickoff → tick-to-terminal → side-panel Discovery tab shows non-empty synthesis.
+
+**Out**
+
+- Widening `brief.*` (frozen by S3A.1), changes to `canTransition` / `saveBriefAndTransition` / atomic brief API / `eventSchema` / `initiative_jobs` schema / runner model.
+- Auto-re-run on brief edit (PM-triggered only).
+- Hosted / headless execution beyond existing Dex cadence + `pdlc-ui` tick runner (R15 Phase 2 territory).
+- Client-side LLM calls / browser-exposed model keys.
+
+**Dependencies:** S3A.1 merged (shrunk brief), S3A.2 merged (`DiscoveryResearchProvider` interface, `initiative_jobs` table, kickoff route, side-panel Discovery tab, staleness plumbing), `System/icp.md` authored.
+
+**Risks**
+
+- **ICP authoring slippage** → weekly sweep cannot score strategic fit without it; the kickoff path can still run (scored as `gate.strategicFit` only) but the sweep's "still a fit?" check is disabled. Start the skill shipping with kickoff only; add the sweep in a follow-up commit once ICP lands.
+- **LLM cost spiral on the weekly sweep** → define per-run + per-sweep cost ceilings in the deep-dive; emit cost in the `skill_run` event payload (new optional field) if the runtime supports it.
+- **Partial-failure semantics** → commit-partial + emit `openQuestion` noting the gap (default per seed Q8) — confirm in Plan mode.
+- **Runner-model pressure** → a research pass longer than a few minutes pushes on the tick-driven invariant. If the deep-dive concludes this is needed, lift it to an ADR (not a sprint-convenience override).
+
+**Plan mode seed** (copy this block into Cursor Plan mode):
+
+```
+Execute Sprint S3B — /pdlc-discovery-research-custom. Branch: feat/s3b-discovery-research. Bar: A.
+
+Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
+
+Then read in order, and adapt the plan to S3A.1 + S3A.2 actual outcomes:
+1. plans/PDLC_UI/seeds/s3b-discovery-research.md — close Q1–Q10 in the Deep-dive block BEFORE any Build task is written.
+2. plans/PDLC_UI/sprint-backlog.md § Sprint 3B.
+3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S3A.2 actual outcomes (DiscoveryResearchProvider interface, initiative_jobs columns, kickoff route, side-panel Discovery tab, staleness plumbing). Flag any S3B DoD item invalidated.
+4. plans/PDLC_UI/schema-initiative-v0.md §4.3 + §8 — confirm discovery.* write list + /pdlc-discovery-research-custom I/O row match the provider design.
+5. .claude/skills/pdlc-brief-custom/SKILL.md — confirm the 3-question brief contract S3B reads; do NOT mutate it.
+6. .claude/skills/{customer-intel,intelligence-scanning,weekly-exec-intel,meeting-prep}/SKILL.md — S3B composes these.
+7. System/icp.md — blocker for the weekly sweep; confirm it exists (Shaun authors 2026-04-22).
+8. plans/PDLC_UI/skill-agent-map.md — add a row for /pdlc-discovery-research-custom.
+
+Output: (a) deep-dive resolutions for Q1–Q10, (b) task list closing every DoD checkbox, (c) cost ceilings + LLM-provider decision. List scope conflicts before Build. Do NOT widen brief.* or any S3 / S3A contract; do NOT change the runner model / initiative_jobs schema / route handlers.
 ```
 
 ---

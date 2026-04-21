@@ -22,7 +22,7 @@ The pure function [`canTransition`](../../pdlc-ui/src/lib/can-transition.ts) is 
 
 | From → To | S2 status | Reason when blocked |
 |-----------|-----------|---------------------|
-| `idea → discovery` | Allowed **only when** `hasBrief` is `true` | `brief_required` — "Complete the product brief in Sprint 3." S3 wires the real gate. |
+| `idea → discovery` | Allowed **only when** `hasBrief` is `true` (`brief.complete === true`) | `brief_required` — "Complete the product brief." |
 | `discovery → design` | Allowed | — |
 | `design → spec_ready` | Allowed | — |
 | `spec_ready → develop` | Allowed | — |
@@ -34,11 +34,15 @@ The pure function [`canTransition`](../../pdlc-ui/src/lib/can-transition.ts) is 
 | Any skip-forward (e.g. `idea → design`) | Blocked | `illegal_transition` |
 | Any backward move not listed above | Blocked in S2 | `illegal_transition` — lands in S8. |
 
-**`hasBrief` derivation (S2):** any key present on `initiative.brief` counts (helper: `deriveHasBrief`). S3 replaces this with the wizard-complete flag — update both the helper and any call-sites in the same PR (R16 guardrail 1).
+**`hasBrief` derivation (S3):** `deriveHasBrief` returns `initiative.brief?.complete === true` (wizard-complete). ~~S2 heuristic (any key on `brief`)~~ — superseded.
+
+**Atomic brief + move (S3):** `POST /api/initiatives/:id/brief` writes the full `brief.*` envelope, appends `skill_run` then `stage_transition` (`idea` → `discovery`), bumps `revision` **once**. The client does **not** call `POST .../transition` for this path after the wizard.
 
 **Parked modal (UI contract):** moving to `parked` opens the `ParkedTransitionDialog` ([`parked-transition-dialog.tsx`](../../pdlc-ui/src/components/ideas/parked-transition-dialog.tsx)) with a required radio group (`revisit` / `wont_consider`) and a trimmed non-empty reason textarea. Cards never appear in a main lane while `lifecycle === "parked"`; a **"Show parked"** header toggle reveals a drawer of parked cards with an **Un-park → Idea** action.
 
-**Reorder (within lane only):** drag-to-reorder inside a lane writes a new `sortOrder` via `POST /api/initiatives/[id]/reorder` and appends a `field_edit` event. Cross-lane DnD is explicitly **not implemented** — use the `Move to…` menu to change lanes. Keyboard reorder falls back to `Alt + ↑/↓` or explicit "Move up/Move down" menu items on a focused card.
+**Reorder (within lane):** drag-to-reorder inside a lane writes a new `sortOrder` via `POST /api/initiatives/[id]/reorder` and appends a `field_edit` event. Keyboard reorder falls back to `Alt + ↑/↓` or explicit "Move up/Move down" menu items on a focused card.
+
+**Cross-lane DnD (S3A.1):** cross-lane drag-and-drop is **added in S3A.1** (see [sprint-backlog § Sprint 3A.1](./sprint-backlog.md#sprint-3a1--brief-wizard--board-interaction-polish-2-weeks) and [seeds/s3a1-brief-wizard-interactions.md](./seeds/s3a1-brief-wizard-interactions.md)). It is **additive** to the `Move to…` menu — both paths call the same API; the menu remains the canonical keyboard / screen-reader fallback. Drop targets evaluate the **same pure `canTransition`** function (imported client-side on drag-over); illegal targets dim and render the existing `humanError` tooltip; drops there are no-ops. Dragging `idea → discovery` opens the S3 brief wizard (not a direct transition) — the `brief.complete` gate is preserved. Dragging `→ parked` opens the existing `ParkedTransitionDialog` (intent + reason) unchanged.
 
 ### Skill triggers on column moves (PDLC UI)
 
@@ -102,4 +106,4 @@ Canonical case (R16): **`parkedIntent`** + **`parkedReason`** (camelCase on the 
 
 ---
 
-*Last updated: 2026-04-21 — S2 `canTransition` matrix added (forward-only, `brief_required` gate on `idea → discovery`, parked modal contract, within-lane reorder). Prior: skill triggers table; forward-flow text aligned with [skill-agent-map.md](./skill-agent-map.md); parked reason; all-into-idea wipe; strategy post-MVP; wipe mitigation.*
+*Last updated: 2026-04-21 — S3A.1 note for **cross-lane DnD** (additive to `Move to…` menu; same `canTransition`; gate preserved on `idea → discovery`). Prior: S3 atomic brief + move (`deriveHasBrief` = `brief.complete === true`); S2 `canTransition` matrix (forward-only, `brief_required` gate, parked modal, within-lane reorder); skill triggers table; all-into-idea wipe; strategy post-MVP.*

@@ -14,15 +14,12 @@ import type { Initiative, Lifecycle } from "@/schema/initiative";
  * - Forward edges only (backward moves are Sprint 8 — they are rejected here
  *   with `illegal_transition`).
  * - `idea → discovery` is blocked until the product brief gate is satisfied
- *   (Sprint 3 wires the real wizard; S2 uses `hasBrief` as a derived flag).
+ *   (`deriveHasBrief` — completed brief with `brief.complete === true`).
  * - Any `* → parked` requires both `parkedIntent ∈ {revisit, wont_consider}`
  *   and a non-empty trimmed `parkedReason`.
  * - `parked → idea` is the only un-park path; it clears parked fields
  *   (the repository handles the actual clear on a successful transition).
  *
- * TODO(S3): replace `hasBrief` with a stronger gate when the product-brief
- *   wizard lands. Any change to the derivation must also update any UI call
- *   sites in the same PR (R16 guardrail 1).
  */
 
 export type CanTransitionContext = {
@@ -132,7 +129,7 @@ export function canTransition(
     return {
       ok: false,
       reason: "brief_required",
-      message: "Complete the product brief in Sprint 3.",
+      message: "Complete the product brief.",
     };
   }
 
@@ -140,15 +137,11 @@ export function canTransition(
 }
 
 /**
- * Derive `hasBrief` from an initiative. Sprint 2 uses a permissive heuristic:
- * the brief stage object has at least one populated key. Sprint 3 replaces
- * this with the wizard-complete flag; keep this call shape stable so S3
- * touches one site (R16 guardrail 1).
+ * Derive `hasBrief` from an initiative — `true` only when the brief wizard (or
+ * equivalent) set `brief.complete === true`. Single mutation site (R16).
  */
 export function deriveHasBrief(initiative: Pick<Initiative, "brief">): boolean {
-  const brief = initiative.brief as Record<string, unknown> | undefined;
-  if (!brief) return false;
-  return Object.keys(brief).length > 0;
+  return initiative.brief?.complete === true;
 }
 
 export const FORWARD_TARGETS: ReadonlyMap<
