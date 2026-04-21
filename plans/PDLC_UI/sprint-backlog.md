@@ -162,12 +162,12 @@ No prior slice log (S0 is first). Output: task list closing every DoD checkbox i
 
 **DoD**
 
-- [ ] Create → appears after refresh; edit → persists; delete → gone.
-- [ ] **R17:** Write path meets **SQLite WAL + migrations** or **JSON atomic + schemaVersion**; **`revision`** present and bumped on update (optimistic lock ready for S2+).
-- [ ] **`events[]`** recorded for create / delete (stage transitions added in S2).
-- [ ] **`handle`** shown on card and in list; unique across initiatives.
-- [ ] No other columns required yet (can show stage badge `idea` only).
-- [ ] Modal and list meet **anthropic-frontend-design** bar (focus states, spacing, not default “AI slop”).
+- [x] Create → appears after refresh; edit → persists; delete → gone. *(Playwright `e2e/ideas-crud.spec.ts` covers create/edit/delete + reload persistence.)*
+- [x] **R17:** Write path meets **SQLite WAL + migrations**; `better-sqlite3` with `journal_mode=WAL` + `busy_timeout=5000`; **Drizzle ORM** query surface (`pdlc-ui/src/storage/schema.ts` + `repository.ts`) over the shared handle; raw-SQL migrations in `pdlc-ui/src/storage/migrations/*.sql` applied by `pdlc-ui/src/storage/migrate.ts` + `schema_migrations` table; **`revision`** bumped on update with **409 on stale** (Drizzle `update(...).set({ revision: sql\`revision + 1\` }).where(and(eq(id),eq(revision)))` + `Repository.updateInitiative`).
+- [x] **`events[]`** recorded for create / delete. `create` lives on the row; `delete` written to `deleted_initiative_events` tombstone (Bar A = hard delete). Kinds closed to `create` \| `delete` \| `stage_transition` \| `field_edit` \| `skill_run` \| `review` via Zod.
+- [x] **`handle`** (`INIT-NNNN`) shown on card (Badge) and in list; DB `UNIQUE` + monotonic allocator (`nextHandle`).
+- [x] No other columns required; stage badge = `idea`.
+- [x] Modal and list meet **anthropic-frontend-design** bar: tokens.css only, 2 px focus ring, keyboard-complete flows, TipTap toolbar with full R18 minimum, paste hygiene, axe green on list + open-create-dialog.
 
 **Out:** Column moves, **`pdlc-brief-custom`** brief wizard.
 

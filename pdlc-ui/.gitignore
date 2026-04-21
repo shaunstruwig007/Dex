@@ -42,3 +42,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# pdlc-ui data store (SQLite; WAL + SHM side files)
+/data/*
+!/data/.gitkeep

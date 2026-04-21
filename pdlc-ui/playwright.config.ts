@@ -1,8 +1,15 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const TEST_DB = "./data/test-pdlc.db";
+
 export default defineConfig({
   testDir: "./e2e",
   retries: process.env.CI ? 1 : 0,
+  // One SQLite file + one Next.js server are shared across specs — parallel
+  // workers race on mutations (e.g. CRUD test leaves rows that flip the axe
+  // spec's EmptyState → List path mid-run). Keep serial until S2 introduces
+  // per-worker DB isolation.
+  workers: 1,
   use: {
     baseURL: "http://127.0.0.1:3000",
     trace: "on-first-retry",
@@ -12,6 +19,11 @@ export default defineConfig({
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
+    env: {
+      // Isolate e2e from local dev DB; wiped in globalSetup.
+      PDLC_DB_PATH: TEST_DB,
+    },
   },
+  globalSetup: "./e2e/global-setup.ts",
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });

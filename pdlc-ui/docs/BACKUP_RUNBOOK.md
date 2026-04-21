@@ -17,18 +17,21 @@
 
 ## What is backed up
 
-- **`pdlc-ui/data/`** — SQLite files, JSON store, or attachments metadata (Sprint 1+).
-- Sprint 0: directory may be empty except `.gitkeep`; script still runs to prove the path.
+- **`pdlc-ui/data/pdlc.db`** (plus `*-wal` and `*-shm` side files while the process is running) — primary SQLite store from Sprint 1. Path may be overridden via `PDLC_DB_PATH`; back up whatever the running process points at.
+- Attachments metadata joins here when S4+ ships link-only attachments.
 
-## SQLite path (Sprint 1+)
+## SQLite backup (Sprint 1+)
 
-- Enable **WAL** + set **`busy_timeout`** on connections.
-- **Hot backup:** quiesce writes, then `VACUUM INTO 'backups/manual/backup.db'` (or file copy when DB idle).
+- **Online backup (preferred):** with the process running, `sqlite3 data/pdlc.db ".backup 'backups/<ts>/pdlc.db'"` or open a second `better-sqlite3` connection and call `db.backup(path)`. Safe with WAL + concurrent readers.
+- **Hot vacuum (periodic compaction):** quiesce writes, then `VACUUM INTO 'backups/manual/backup.db'`.
+- **File copy (last resort):** only when the process is stopped — WAL mode means a raw copy of `pdlc.db` alone without `*-wal`/`*-shm` may be inconsistent.
 
-## JSON file path (fallback)
+## Restore (Sprint 1+)
 
-- Writes use **atomic rename** (write temp + `rename`).
-- Restore: stop app → replace active JSON from `backups/<timestamp>/` → start app.
+1. Stop the Node process.
+2. Replace `data/pdlc.db` (and remove any `pdlc.db-wal` / `pdlc.db-shm` side files) with the chosen backup.
+3. Start the app; `/api/ready` will re-apply any new migrations on boot.
+4. Spot-check with `npm run schema:validate` and the **Restore drill log** below.
 
 ## Restore drill log
 

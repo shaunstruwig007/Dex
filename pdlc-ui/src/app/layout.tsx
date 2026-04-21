@@ -29,10 +29,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${poppins.variable} ${jetbrainsMono.variable} min-h-screen antialiased`}
-      >
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${poppins.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="min-h-screen antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

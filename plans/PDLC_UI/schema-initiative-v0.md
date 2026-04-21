@@ -261,7 +261,9 @@ Phase 3+ anchor (plan table, "Intelligence & meeting correlation").
 }
 ```
 
-**Minimum from S1:** stage transitions. Extend to key field edits and skill runs as the need arises.
+**Minimum from S1:** `create` and `delete` (seeded by [`pdlc-ui` Sprint 1](../../pdlc-ui/src/storage/repository.ts)). `stage_transition` joins in S2. Extend to `field_edit`, `skill_run`, and `review` as the need arises.
+
+**Tombstone trail (S1):** Bar A ships **hard-delete**, so the per-initiative `events` array disappears with the row. The `delete` event is retained in the `deleted_initiative_events` SQLite table (see [`pdlc-ui/src/storage/migrations/002_deleted_events.sql`](../../pdlc-ui/src/storage/migrations/002_deleted_events.sql)).
 
 ---
 

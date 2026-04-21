@@ -25,16 +25,17 @@ npm run start
 
 ## Where data lives
 
-- **Sprint 0:** `data/` exists for backups discipline; persistence ships **Sprint 1** (SQLite or JSON — see [docs/adr/0001-stack-and-persistence.md](./docs/adr/0001-stack-and-persistence.md)).
-- **Backups:** `backups/` (gitignored contents; created by `scripts/backup-daily.sh`).
+- **Sprint 1:** `data/pdlc.db` — SQLite (WAL) via `better-sqlite3`, with a Drizzle ORM query surface on top (`src/storage/schema.ts` + `src/storage/repository.ts`) per [ADR-0001](./docs/adr/0001-stack-and-persistence.md). Override with `PDLC_DB_PATH`. Migrations are raw SQL under `src/storage/migrations/`; run `npm run db:migrate` to apply pending ones (also applied lazily on first API request via `/api/ready`).
+- **Backups:** `backups/` (gitignored contents; created by `scripts/backup-daily.sh`). See [docs/BACKUP_RUNBOOK.md](./docs/BACKUP_RUNBOOK.md).
 
 ## Environment variables
 
 See [`.env.example`](./.env.example). **No secrets in git** — real keys live in an ICT-approved store.
 
-| Variable  | Purpose                                                                        |
-| --------- | ------------------------------------------------------------------------------ |
-| `GIT_SHA` | Optional build identifier (footer + `/api/health`). CI sets from `github.sha`. |
+| Variable       | Purpose                                                                        |
+| -------------- | ------------------------------------------------------------------------------ |
+| `GIT_SHA`      | Optional build identifier (footer + `/api/health`). CI sets from `github.sha`. |
+| `PDLC_DB_PATH` | SQLite file path (default `./data/pdlc.db`). Used by local + CI.               |
 
 ## Dependency upgrade policy
 
@@ -47,12 +48,12 @@ Captured from [plans/PDLC_UI/plan.md § Sprint 0 kick-off decisions](../plans/PD
 
 - **Canonical JSON field case:** **camelCase** (e.g. `parkedIntent`, `parkedReason`). Legacy snake_case in prose is deprecated — update when touched.
 - **Initiative human ID:** `handle` format **`INIT-NNNN`** (zero-padded, monotonic) in addition to internal `id`.
-- **Event / audit log:** `events[]` on each initiative — **seeded in Sprint 1** (stage transitions `{ at, by, from, to, note? }` + create/delete).
+- **Event / audit log:** `events[]` on each initiative, typed `{ at, by, kind, payload }` per [schema-initiative-v0 §6](../plans/PDLC_UI/schema-initiative-v0.md#6-events--append-only-audit). **S1 kinds: `create`, `delete`**; `stage_transition` in S2. Hard-deleted initiatives write a tombstone to `deleted_initiative_events`.
 - **Attachments — MVP:** **links only** (Figma, Claude Design, SharePoint). No binary uploads; approved hosts documented in [docs/OPERATIONS.md](./docs/OPERATIONS.md).
 - **Backup cadence:** daily automated snapshot + ad-hoc before demos; **30-day** retention — [docs/BACKUP_RUNBOOK.md](./docs/BACKUP_RUNBOOK.md).
 - **Time zone:** **UTC** stored, **SAST** displayed (README line; full UX in Sprint 1+).
 - **Git host + CI runner:** **GitHub + GitHub Actions** — [docs/adr/0002-git-host-ci-runner.md](./docs/adr/0002-git-host-ci-runner.md).
-- **Accessibility:** **WCAG 2.1 AA** + full keyboard navigation; measured ratios in [docs/ui-notes.md](./docs/ui-notes.md); **axe-core Playwright** in CI (Bar B extension, wired Sprint 0).
+- **Accessibility:** **WCAG 2.1 AA** + full keyboard navigation; measured ratios in [docs/ui-notes.md](./docs/ui-notes.md); **axe-core Playwright** wired in Sprint 0 and **required for every shipped user-visible surface from Sprint 1 onward** (critical + serious violations fail CI).
 - **Devices:** **desktop** browsers only (Chrome / Edge / Safari current). Mobile deferred.
 - **PII:** initiative text may include staff + client names; retention policy deferred until data owner named; delete path = CRUD (Sprint 1).
 - **Schema evolution (JSON path):** `schemaVersion` + one-shot scripts under `scripts/migrations/` (see README there).
@@ -67,8 +68,9 @@ Captured from [plans/PDLC_UI/plan.md § Sprint 0 kick-off decisions](../plans/PD
 | `npm run format:check`    | Prettier                                                                              |
 | `npm run typecheck`       | `tsc --noEmit`                                                                        |
 | `npm run schema:validate` | Regenerate JSON Schema + validate `../plans/PDLC_UI/fixtures/initiative-example.json` |
+| `npm run db:migrate`      | Apply pending SQLite migrations under `src/storage/migrations/`                       |
 | `npm test`                | Vitest                                                                                |
-| `npm run test:e2e:a11y`   | Playwright + axe smoke on `/`                                                         |
+| `npm run test:e2e:a11y`   | Playwright + axe smoke (ideas list, create dialog) + ideas CRUD smoke                 |
 
 ## Related docs
 
@@ -78,6 +80,9 @@ Captured from [plans/PDLC_UI/plan.md § Sprint 0 kick-off decisions](../plans/PD
 - [docs/adr/README.md](./docs/adr/README.md) — ADR index
 - [plans/PDLC_UI/plan-mode-prelude.md](../plans/PDLC_UI/plan-mode-prelude.md) — Plan-mode preamble
 
-## Opening a PR (Sprint S0 traceability)
+## Opening a PR (sprint traceability)
 
-Paste the body from [docs/SPRINT_S0_PR_BODY.md](./docs/SPRINT_S0_PR_BODY.md) into the GitHub PR description.
+| Sprint | PR body                                                  |
+| ------ | -------------------------------------------------------- |
+| S0     | [docs/SPRINT_S0_PR_BODY.md](./docs/SPRINT_S0_PR_BODY.md) |
+| S1     | [docs/SPRINT_S1_PR_BODY.md](./docs/SPRINT_S1_PR_BODY.md) |

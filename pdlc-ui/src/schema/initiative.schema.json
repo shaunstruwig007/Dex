@@ -107,7 +107,37 @@
           "type": "array",
           "items": {
             "type": "object",
-            "additionalProperties": {}
+            "properties": {
+              "at": {
+                "type": "string"
+              },
+              "by": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "create",
+                  "delete",
+                  "stage_transition",
+                  "field_edit",
+                  "skill_run",
+                  "review"
+                ]
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": {},
+                "default": {}
+              }
+            },
+            "required": [
+              "at",
+              "by",
+              "kind"
+            ],
+            "additionalProperties": false
           }
         },
         "linkedPrdPath": {
