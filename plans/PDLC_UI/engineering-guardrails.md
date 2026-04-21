@@ -24,6 +24,7 @@
 | **R17 split (S0 vs S1)** | **S0:** `.env.example`, **`/health`** (+ **`/ready`** stub), **version/build id** wired or documented, **OPERATIONS.md** (deploy/rollback outline), CI **required** (not optional) for lint + schema validate, **audit policy** documented. **S1:** persistence **write path** meets SQLite **WAL / busy_timeout / migrations** or JSON **atomic + schemaVersion**; **`revision`** on initiative; extend runbook for **live** data. |
 | **Branch per cycle** | **No feature work committed directly on `main`** (repo default). Each sprint / shippable increment uses a **named branch** (`feat/s<N>-<slug>` or `sprint/<N>-<slug>`); integrate via **PR** only. Solo developer: same rule — protects `main` as always-integratable. |
 | **Merge gate** | **No merge to default** until **CI is green**. Enable **branch protection** (require status checks before merge) on the host when ICT / repo policy allows; document in **OPERATIONS.md** (S0). |
+| **MoneyPenny (PR gatekeeper)** | Before declaring a **`pdlc-ui/`** PR merge-ready, run **`/moneypenny-custom`** (see [`skill-agent-map.md` § Engineering](./skill-agent-map.md#engineering--merge-gate-pdlc-ui-repo) and [`../../.claude/skills/moneypenny-custom/SKILL.md`](../../.claude/skills/moneypenny-custom/SKILL.md)). Modes: (A) CI green loop, (B) R16 same-PR audit, (C) review-comment triage, (D) post-merge Slice-log close-out. **Not** a substitute for human judgment on product trade-offs. |
 
 ## 2. Hotfix — only exception to branch-per-cycle
 
@@ -50,6 +51,7 @@
 - Any new magic string (colour, lifecycle value, event kind) introduced without a home?
 - ADR filed for every big choice this sprint?
 - `main` only advanced by **merged PR with green CI** (not direct sprint pushes)?
+- If the sprint shipped via PR, did **`/moneypenny-custom`** (or equivalent R16 audit) run before merge?
 
 ---
 

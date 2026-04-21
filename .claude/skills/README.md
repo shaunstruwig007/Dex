@@ -290,6 +290,12 @@ Provided by Anthropic for broad productivity tasks (prefixed with `anthropic-`):
 **Meta:**
 - `/anthropic-skill-creator` - Guide for creating new skills
 
+### Repo-specific (PDLC Orchestration UI)
+
+Skills that govern **this** vault’s **`pdlc-ui/`** delivery process (not general PKM):
+
+- **`/moneypenny-custom`** — PR gatekeeper: green CI (`gh`), R16 same-PR audit, review triage, optional post-merge Slice log. Full workflow: [moneypenny-custom/SKILL.md](./moneypenny-custom/SKILL.md). Process docs: [plans/PDLC_UI/skill-agent-map.md](../../plans/PDLC_UI/skill-agent-map.md#engineering--merge-gate-pdlc-ui-repo) · [plans/PDLC_UI/sprint-backlog.md](../../plans/PDLC_UI/sprint-backlog.md).
+
 ## Related
 
 - **Commands** (`.claude/commands/`) - Legacy location (deprecated)

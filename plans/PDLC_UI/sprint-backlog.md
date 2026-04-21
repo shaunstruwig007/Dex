@@ -16,6 +16,8 @@ Switch to **Build mode** only after Plan produces a task list that closes every 
 
 **Ceremony:** At sprint end, append one line to **Slice log** in `04-Projects/PDLC_Orchestration_UI.md` and tick **Progress** in `plan.md`.
 
+**PR merge gate (engineering):** For every open PR that touches **`pdlc-ui/`**, invoke **`/moneypenny-custom`** ([`.claude/skills/moneypenny-custom/SKILL.md`](../../.claude/skills/moneypenny-custom/SKILL.md)) — she watches **`gh pr checks`**, fixes CI with minimal commits, runs the **R16 pre-merge audit** (schema ↔ migration ↔ docs in one PR, closed `events` enum, ADR freeze, etc.), triages review comments, and on merge can run **close-out** (Slice log + `plan.md` Progress). Complements generic PR babysitting (Cursor **`babysit`** skill) with **PDLC-UI-specific** guardrails. Requires **`gh auth login`** once.
+
 ---
 
 ## Bar alignment (2026-04-21)
@@ -47,7 +49,7 @@ The backlog focuses on **what each sprint covers**. Cross-sprint rules, the UI s
 | Reference | Covers |
 |-----------|--------|
 | [`plan-mode-prelude.md`](./plan-mode-prelude.md) | **Mandatory preamble** — every sprint Plan-mode run reads this first. Lists all cross-sprint references below, enforces R16 / R18 non-negotiables, and describes the expected backlog sprint shape + Plan-mode output contract. |
-| [`engineering-guardrails.md`](./engineering-guardrails.md) | R16 guardrail table, hotfix rule, branch-per-cycle, merge gate, S0 vs S1 split, end-of-sprint ceremony. |
+| [`engineering-guardrails.md`](./engineering-guardrails.md) | R16 guardrail table (incl. **MoneyPenny** merge gate), hotfix rule, branch-per-cycle, merge gate, S0 vs S1 split, end-of-sprint ceremony. |
 | [`implementation-standard.md`](./implementation-standard.md) | UI-building rule (read `/anthropic-frontend-design` before styling), a11y baseline, vertical-slice shape (BE + UI together), R18 inheritance pointers, S5–S6 design-system dogfood loop. |
 | [`tech-stack.md`](./tech-stack.md) | Recommended stack (ADR-0001 ratifies) + **UI primitives § 3** (tokens, typography, focus/keyboard/motion, TipTap toolbar minimum, shadcn primitives, forbidden "AI slop" patterns). |
 | [`schema-initiative-v0.md`](./schema-initiative-v0.md) | Typed initiative contract — camelCase canonical. |
