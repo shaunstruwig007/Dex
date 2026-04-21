@@ -1,0 +1,42 @@
+/**
+ * R18 semantic design tokens — single source for colour on user-visible UI.
+ * Contrast targets: WCAG 2.1 AA (see pdlc-ui/docs/ui-notes.md for measured ratios).
+ */
+:root {
+  /* Surfaces */
+  --color-surface: #f1f5f9;
+  --color-surface-raised: #ffffff;
+  --color-border: #94a3b8;
+
+  /* Text */
+  --color-text: #0f172a;
+  --color-text-muted: #475569;
+
+  /* Links */
+  --color-link: #1d4ed8;
+  --color-link-hover: #1e40af;
+
+  /* Focus ring (≥3:1 on surface) */
+  --color-focus-ring: #2563eb;
+
+  /* Primary action */
+  --color-primary: #1e3a5f;
+  --color-primary-text: #f8fafc;
+
+  /* Semantic */
+  --color-danger: #b91c1c;
+  --color-success: #166534;
+  --color-warning: #a16207;
+
+  /* Typography scale */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --line-height-body: 1.5;
+}

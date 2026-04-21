@@ -1,0 +1,58 @@
+name: pdlc-ui CI
+
+on:
+  pull_request:
+    paths:
+      - "pdlc-ui/**"
+      - "plans/PDLC_UI/fixtures/**"
+      - ".github/workflows/pdlc-ui-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "pdlc-ui/**"
+      - "plans/PDLC_UI/fixtures/**"
+      - ".github/workflows/pdlc-ui-ci.yml"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: pdlc-ui
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: pdlc-ui/.nvmrc
+          cache: npm
+          cache-dependency-path: pdlc-ui/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Prettier
+        run: npm run format:check
+
+      - name: TypeScript
+        run: npm run typecheck
+
+      - name: JSON schema + golden fixture
+        run: npm run schema:validate
+        env:
+          GIT_SHA: ${{ github.sha }}
+
+      - name: Vitest
+        run: npm test
+        env:
+          GIT_SHA: ${{ github.sha }}
+
+      - name: Playwright (Chromium)
+        run: npx playwright install chromium --with-deps && npm run test:e2e:a11y
+        env:
+          GIT_SHA: ${{ github.sha }}
