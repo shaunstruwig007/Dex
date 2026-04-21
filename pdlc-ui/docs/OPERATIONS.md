@@ -1,5 +1,7 @@
 # OPERATIONS — `pdlc-ui` (MVP)
 
+**Local browser URLs & “when do I run scripts?”** → [OPERATOR_CHEATSHEET.md](./OPERATOR_CHEATSHEET.md)
+
 ## Deploy (localhost / internal VM)
 
 1. `cd pdlc-ui && npm ci && npm run build`

@@ -2,6 +2,8 @@
 
 Steerco-facing **orchestration shell** for the Wyzetalk PDLC — separate from Dex day-to-day editing. Spec: [plans/PDLC_UI/plan.md](../plans/PDLC_UI/plan.md).
 
+**Start here (non-technical / vibe-coding):** [Operator cheatsheet — what to open in the browser & when to run scripts](./docs/OPERATOR_CHEATSHEET.md)
+
 ## How to run locally
 
 **Requirements:** Node **22** (see `.nvmrc`), npm 10+.
@@ -70,6 +72,7 @@ Captured from [plans/PDLC_UI/plan.md § Sprint 0 kick-off decisions](../plans/PD
 
 ## Related docs
 
+- [docs/OPERATOR_CHEATSHEET.md](./docs/OPERATOR_CHEATSHEET.md) — **what to open in the browser**; when you run scripts vs when CI does
 - [docs/OPERATIONS.md](./docs/OPERATIONS.md) — deploy, rollback, audit policy
 - [docs/BACKUP_RUNBOOK.md](./docs/BACKUP_RUNBOOK.md) — backup + restore
 - [docs/adr/README.md](./docs/adr/README.md) — ADR index

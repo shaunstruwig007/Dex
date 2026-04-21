@@ -8,6 +8,8 @@
 | [company_strategy.md](./company_strategy.md) | **WT company strategy** (working draft for future **R12**; not Dex `pillars.yaml`) |
 | [lifecycle-transitions.md](./lifecycle-transitions.md) | **`spec_ready`**, forward/backward moves, **`parked`**, post-MVP **company strategy** |
 | [sprint-backlog.md](./sprint-backlog.md) | **Sprints S0–S8** (+ **S9 deferred** for R12 company strategy) — agile goals, **R#** mapping, **DoD**, **Plan mode** seeds |
+| [plan-mode-prelude.md](./plan-mode-prelude.md) | **Shared preamble** every sprint Plan-mode run reads first (R16 + R18 non-negotiables) — referenced by seeds, never pasted |
+| [tech-stack.md](./tech-stack.md) | **Recommended stack + UI primitives + a11y baseline** — ADR-0001 ratifies or overrides in S0 (R18) |
 | [skill-agent-map.md](./skill-agent-map.md) | **Stages ↔ Dex skills**; preview vs prompt library; **agent-config** overrides (future) |
 | [../../04-Projects/PDLC_Orchestration_UI.md](../../04-Projects/PDLC_Orchestration_UI.md) | **North star** — §0 architecture (WT UI separate from Dex), stages 0–7, slice log |
 

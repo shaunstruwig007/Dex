@@ -6,66 +6,87 @@
 
 **Canonical field case:** **camelCase** for all JSON / schema fields (`parkedIntent`, `parkedReason`, `specComplete`, `userReleaseNotes`, `claudeDesignHandoffPath`, `implementationPolishNote`). Snake_case references in older prose are legacy — update when touched ([plan R16](./plan.md#engineering-governance-cto--tech-lead--anti-drift)).
 
-**Governance (aligned with [plan.md](./plan.md)):** **PM** moves the **record of truth**; Steerco **decides**. **PO** owns **product-brief / spec question** copy vs skills. **Design review waive:** **PO or Designer** (policy). Audit **`by`** = **Shaun** placeholder until v2 auth. **Handoff to engineering:** **nudge** not hard-block in MVP. **R6b** satisfied by **export-pack-template** from **S4**; extra UI CTA = polish only.
+**Governance (aligned with [plan.md](./plan.md)):** **PM** moves the **record of truth**; Steerco **decides**. **PO** owns **`pdlc-brief-custom` / `pdlc-idea-gate-custom` / `agent-prd`** question copy vs shipped skills ([skill-agent-map.md](./skill-agent-map.md)). **Design review waive:** **PO or Designer** (policy). Audit **`by`** = **Shaun** placeholder until v2 auth. **Handoff to engineering:** **nudge** not hard-block in MVP. **R6b** satisfied by **export-pack-template** from **S4**; extra UI CTA = polish only.
 
-**Rule:** After **sprint planning**, paste the sprint’s **Plan mode seed** (bottom of each sprint) into Cursor **Plan** so implementation tasks trace to **Definition of Done**.
+**Rule — one paste, read-then-plan:** Every sprint has a short **Plan mode seed** at the bottom of its block — a **compact** prompt (~6–8 lines) that tells Cursor which **sprint-specific** files to read plus the **previous-sprint Slice log** for reality, and to adapt the plan before Build. Copy that prompt from this backlog, paste into Cursor **Plan mode**. Cross-sprint references (prelude, guardrails, implementation standard, tech-stack, schema, lifecycle) apply automatically via [`plan-mode-prelude.md`](./plan-mode-prelude.md) — per-sprint prompts do **not** re-list them.
+
+Switch to **Build mode** only after Plan produces a task list that closes every DoD checkbox **and** lists any scope conflicts found by diffing the previous sprint's plan vs reality.
+
+**Why this shape:** each sprint's scope drifts based on the one before it (ADR-0001 choice decides S1's write path; S5–S6 produce the design-system the rest of the app consumes). Hard-coding context in the paste means rework every sprint. Referencing files means Cursor picks up the current state each run.
 
 **Ceremony:** At sprint end, append one line to **Slice log** in `04-Projects/PDLC_Orchestration_UI.md` and tick **Progress** in `plan.md`.
 
 ---
 
-## Implementation standard — UI for `pdlc-ui` (all sprints)
+## Bar alignment (2026-04-21)
 
-**Rule:** Every **user-visible** surface of the orchestration app (layout, modals, lanes, forms, checklists, empty states) is built with **[`/anthropic-frontend-design`](../../.claude/skills/anthropic-frontend-design/SKILL.md)** in Cursor: read the skill, then implement or refine components so the product is **cohesive, accessible, and non-generic** — not one-off inline styles per screen.
+**Context:** MVP is split into **Bar A** (solo / localhost / one real initiative) and **Bar B** (Steerco-authentic, internal host). See [plan.md § MVP bars](./plan.md#mvp-bars--bar-a-solo--bar-b-steerco--phase-2-automation--phase-3-intel) for scope, exit gate, and measurable success.
 
-**Accessibility baseline:** target **WCAG 2.1 AA** + **full keyboard navigation** + visible focus states; manual a11y spot-check per PR (axe DevTools or equivalent) until automated checks exist. **Scope:** desktop browsers (Chrome/Edge/Safari current); mobile deferred.
+| Sprint | Bar | Notes |
+|--------|-----|-------|
+| **S0** | **A (minimum)** + **B (extensions)** | See Sprint 0 — the existing DoD covers both; Bar A ships with minimums only, Bar B items land before internal-host rollout. |
+| **S1** | **A** | Write path: atomic JSON + `schemaVersion` + `handle` + `events[]`. SQLite-path items defer to Bar B. |
+| **S2** | **A** | Swim lanes; forward moves only; parked intent + reason. |
+| **S3** | **A** | **`pdlc-brief-custom`**-aligned wizard on `idea → discovery`; unlocks S2's blocked transition. |
+| **S4** | **A (minimal)** / **B (full)** | **Bar A:** export pack download + open-questions persistence. **Bar B:** full re-run audit, workshop export polish. |
+| **S5** | **B** | Design artefact fields — board becomes Steerco-readable. |
+| **S6** | **B** | Design review **hard gate**. In Bar A this is a **warning nudge**, not a block. |
+| **S7** | **B** | Full spec wizard + handoff bundle + release notes. Bar A path = export-only (use the S4 export pack). |
+| **S8** | **B** | Backward moves + wipe-to-idea + `canTransition` matrix tests. |
+| **S9** | **Phase 2+** | **R12** company-strategy conformance — deferred until strategy artefact exists. |
+| **S10+** | **B / Phase 2+** | R13 full vault reconciliation, R6b UI polish, catalogue, headless agents (Agent Flywheel). |
 
-**Backend + UI together:** In each sprint, **ship vertical slices** where sensible — e.g. persistence/API (or file-store writes) **and** the components that call them in the **same** PR or Plan batch, so behaviour and visuals stay aligned.
-
-**S5 (R6) + S6 (R7) as design-process dogfood:** Those sprints are the **canonical test** of the same pipeline Steerco will use for **product** initiatives (design artefacts + review gate). After S5–S6 ship, **extract or document** a **`pdlc-ui` design system** from the implemented UI (tokens, spacing, form patterns, checklist row component) — e.g. `pdlc-ui/docs/design-system.md` + shared CSS variables or component primitives — and **refactor S7+** screens to consume it so R6 “feeds” the DS for the rest of the app.
-
----
-
-## Engineering guardrails (cross-sprint — tech lead / CTO hat)
-
-**Purpose:** Prevent **pattern drift**, **schema silos**, and **one-off** implementations between sprints. Complements Steerco **product** governance in [plan.md](./plan.md) **R16**.
-
-| Guardrail | Rule |
-|-----------|------|
-| **Lifecycle & schema** | Code changes to **`lifecycle`** values, transition matrix, or initiative **shape** ship **with** updates to [schema-initiative-v0.md](./schema-initiative-v0.md) and [lifecycle-transitions.md](./lifecycle-transitions.md) in the **same PR** (default). |
-| **ADRs** | **`pdlc-ui/docs/adr/`** — numbered markdown (`0001-store-sqlite.md`); **title + context + decision + consequences**. Required for: persistence choice, framework, auth, hosting, anything costly to reverse. |
-| **CI** | From **S0**: lint + format + typecheck; **JSON schema validate** golden fixture. From **S8**: **`canTransition`** unit tests in CI (already DoD). |
-| **Plan mode traceability** | PR description states **Sprint S#** and pastes or links the **Plan mode seed** used. |
-| **Design system after S6** | New UI **consumes** `design-system.md` / shared primitives; exception = **ADR or PR note** with reason. |
-| **Sprint handoff** | Slice log +1 line: **“Tech: next sprint must preserve X (API Y, component Z)”** — reduces context loss for solo you. |
-| **R17 split (S0 vs S1)** | **S0:** `.env.example`, **`/health`** (+ **`/ready`** stub), **version/build id** wired or documented, **OPERATIONS.md** (deploy/rollback outline), CI **required** (not optional) for lint + schema validate, **audit policy** documented. **S1:** persistence **write path** meets SQLite **WAL/busy_timeout/migrations** or JSON **atomic + schemaVersion**; **`revision`** on initiative; extend runbook for **live** data. |
-| **Branch per cycle** | **No feature work committed directly on `main`** (repo default). Each sprint/shippable increment uses a **named branch**; integrate via **PR** only. Solo developer: same rule — protects **`main`** as always integratable. |
-| **Merge gate** | **No merge to default** until **CI is green**. Enable **branch protection** (require status checks before merge) on the host when ICT/repo policy allows; document in **OPERATIONS.md** (S0). |
-
-**Ceremony (5 min, end of sprint):** Schema still matches app? Any new magic string? ADR for big choices? **`main`** only advanced by **merged PR** with **green CI** (not direct sprint pushes).
+**Bar A exit gate:** one **real** initiative completes `idea → discovery → design → spec_ready → develop` on the board with [plan.md § Bar A success](./plan.md#bar-a--solo-dogfood-localhost-one-operator-one-real-initiative) measurable outcomes. **Bar B sprints do not start** until Bar A exit lands on a real initiative.
 
 ---
 
-## Structure (every sprint)
+## Cross-sprint references (read before any sprint Plan-mode run)
 
-| Block | Contents |
-|-------|----------|
-| **Goal** | Outcome + why it matters now |
-| **Maps to** | Plan **R#** / north-star **Stage** |
-| **Deliverables** | Product-facing “what” |
-| **Technical — how** | Stack-agnostic steps (adjust after **Sprint 0 spike**) |
-| **Definition of Done (DoD)** | Observable proof |
-| **Explicitly out** | Prevents scope creep |
-| **Dependencies / risks** | |
-| **Plan mode seed** | Copy into Cursor Plan to generate tasks |
+The backlog focuses on **what each sprint covers**. Cross-sprint rules, the UI spec, and governance live in their own reference files so they can grow independently:
+
+| Reference | Covers |
+|-----------|--------|
+| [`plan-mode-prelude.md`](./plan-mode-prelude.md) | **Mandatory preamble** — every sprint Plan-mode run reads this first. Lists all cross-sprint references below, enforces R16 / R18 non-negotiables, and describes the expected backlog sprint shape + Plan-mode output contract. |
+| [`engineering-guardrails.md`](./engineering-guardrails.md) | R16 guardrail table, hotfix rule, branch-per-cycle, merge gate, S0 vs S1 split, end-of-sprint ceremony. |
+| [`implementation-standard.md`](./implementation-standard.md) | UI-building rule (read `/anthropic-frontend-design` before styling), a11y baseline, vertical-slice shape (BE + UI together), R18 inheritance pointers, S5–S6 design-system dogfood loop. |
+| [`tech-stack.md`](./tech-stack.md) | Recommended stack (ADR-0001 ratifies) + **UI primitives § 3** (tokens, typography, focus/keyboard/motion, TipTap toolbar minimum, shadcn primitives, forbidden "AI slop" patterns). |
+| [`schema-initiative-v0.md`](./schema-initiative-v0.md) | Typed initiative contract — camelCase canonical. |
+| [`lifecycle-transitions.md`](./lifecycle-transitions.md) | Forward / backward rules, parked intent + reason, skill triggers on column moves. |
+| [`seeds/`](./seeds/) | One detailed seed per sprint — read by Cursor via the backlog's inline Plan-mode seed prompt. Not the paste target. |
+
+**Paste target for Plan mode:** the short **Plan mode seed** code block inline at the bottom of each sprint below. It references the detailed seed file, the backlog § Sprint # block, the 04-Projects Slice log (previous-sprint reality), and any sprint-specific skill / template. The prelude's cross-sprint refs apply automatically; per-sprint prompts do **not** re-list them.
 
 ---
 
 ## Sprint 0 — Spike + shell + contracts *(~1–2 weeks; 1 week OK per cadence exception)*
 
+**Bar:** **A (minimum)** + **B (extensions)** — see Bar split below.
+
 **Goal:** De-risk **hosting + stack + persistence shape** so later sprints do not thrash; ship an empty **orchestration shell**, **written contracts**, and the **guardrail machinery** (R16 + **R17 seed**) — **not** full production DevOps (see **Out**).
 
 **Maps to:** **R1** (Stage 0), **R10** (runbook doc), **R16**, **R17** (seed), Phase A **schema**; [export-pack-template](./export-pack-template.md) unchanged but referenced.
+
+### Bar split (what must ship for Bar A vs. Bar B)
+
+**Bar A minimum — required to start Sprint 1 on localhost:**
+
+- Runnable `pdlc-ui/` shell with one route (no console errors).
+- [schema-initiative-v0.md](./schema-initiative-v0.md) — schema + one example; committed.
+- `pdlc-ui/README.md` — how to run locally; where data lives.
+- **ADR-001** — stack + persistence choice (one file is enough).
+- Atomic-write helper + a ten-line daily snapshot script (`cp -r data/ backups/$(date)`, 30-day retention).
+
+**Bar B extension — required before internal-host rollout (can land anytime before Bar B sprints begin):**
+
+- `pdlc-ui/docs/OPERATIONS.md` — deploy + rollback outline.
+- `pdlc-ui/docs/BACKUP_RUNBOOK.md` — owner + frequency + retention + **restore drill** run.
+- `.env.example`; secrets in ICT-approved store.
+- `/health` + `/ready` stub + build `GIT_SHA` (or `package.json` version) exposed in UI footer / `/health`.
+- CI: lint + format + typecheck + **schema-validate** required on PR; branch protection on default branch.
+- `npm audit` / `gitleaks` policy documented.
+- WCAG 2.1 AA baseline + audit tooling hooked up.
+
+**Interpretation:** the existing Sprint 0 DoD below covers **both bars**. For solo / localhost (Bar A) you only need the **Bar A minimum** block to close Sprint 0 and start S1. **Bar B extensions** stay in Sprint 0 *conceptually* — land them incrementally as you approach the internal-host rollout, not upfront.
 
 **Deliverables**
 
@@ -83,7 +104,7 @@
 
 - **Spike (≤1 day):** choose **static+API** vs **full-stack** one framework; **JSON file** vs **SQLite** for v1 persistence (document decision in **first ADR**).
 - Scaffold repo: lint, format, **`/health`** (and **`/ready`** stub if applicable); **build-time version** (`GIT_SHA` or `package.json` version) exposed via small **API or static JSON** for “what am I running?”
-- **Shell UI:** apply **`/anthropic-frontend-design`** for app chrome (nav, layout shell, typography baseline) per **Implementation standard** above.
+- **Shell UI:** apply **`/anthropic-frontend-design`** for app chrome (nav, layout shell, typography baseline) per [implementation-standard.md § 1](./implementation-standard.md) + [tech-stack.md § 3](./tech-stack.md#3-ui-primitives-r18).
 - No initiative CRUD yet beyond optional **mock** fixture for layout.
 
 **DoD**
@@ -95,20 +116,30 @@
 - [ ] **`pdlc-ui/docs/adr/README.md`** exists; **first ADR** filed for persistence + stack choice (**R16**).
 - [ ] **`.env.example`** + **`OPERATIONS.md`** + **health** route live (**R17** seed).
 
-**Out:** Product-brief wizard, swim lanes, PRD generation, **full SQLite migration chain**, **production Docker**, **staging environment**, **gitleaks** in CI — unless ICT mandates, **defer to S1+** and track in slice log.
+**Out:** **`pdlc-brief-custom`** wizard, swim lanes, PRD generation, **full SQLite migration chain**, **production Docker**, **staging environment**, **gitleaks** in CI — unless ICT mandates, **defer to S1+** and track in slice log.
 
 **Risks:** ICT blocks local SQLite → fall back to JSON early (**ADR**).
 
-**Plan mode seed**
+**Plan mode seed** (copy this block into Cursor Plan mode):
 
 ```
-Read plans/PDLC_UI/plan.md Phase A, R16–R17, and plans/PDLC_UI/lifecycle-transitions.md.
-Implement Sprint 0: scaffold pdlc-ui/ with chosen stack from spike, empty shell page, schema-initiative-v0.md (include schemaVersion + revision per plan Phase A), README + .env.example, pdlc-ui/docs/BACKUP_RUNBOOK.md (R10), pdlc-ui/docs/OPERATIONS.md (deploy/rollback/health), pdlc-ui/docs/adr/README.md + first ADR for stack+persistence (R16). CI: lint, format, typecheck, validate golden initiative JSON against schema — required on PR. /health + build version. Do not implement brief wizard or board moves. anthropic-frontend-design for shell. plans/PDLC_UI/sprint-backlog.md Sprint 0; defer full migrations/Docker/staging unless ICT requires.
+Execute Sprint S0 — Spike + shell + contracts. Branch: feat/s0-foundation. Bar: A (minimum) + B (extensions).
+
+Read plans/PDLC_UI/plan-mode-prelude.md first — it pulls in all cross-sprint references (guardrails, implementation standard, tech-stack, schema, lifecycle).
+
+Then read in order:
+1. plans/PDLC_UI/seeds/s0-foundation.md — detailed seed (Bar split, ADR list, kick-off decisions, DoD, Explicitly OUT).
+2. plans/PDLC_UI/sprint-backlog.md § Sprint 0 — Goal / DoD / Out / Dependencies / Risks (backlog DoD is source of truth).
+3. plans/PDLC_UI/plan.md § Sprint 0 kick-off decisions — Day-1 decisions for README + ADRs.
+
+No prior slice log (S0 is first). Output: task list closing every DoD checkbox in backlog § Sprint 0 AND seeds/s0-foundation.md. Flag any conflict between seed and backlog before Build.
 ```
 
 ---
 
 ## Sprint 1 — Idea capture + persistence *(~2 weeks)*
+
+**Bar:** **A**.
 
 **Goal:** Steerco can **create, edit, delete** initiatives with **title + description** and see them stored durably — **R17 persistence path** is real (not only docs).
 
@@ -138,21 +169,33 @@ Implement Sprint 0: scaffold pdlc-ui/ with chosen stack from spike, empty shell 
 - [ ] No other columns required yet (can show stage badge `idea` only).
 - [ ] Modal and list meet **anthropic-frontend-design** bar (focus states, spacing, not default “AI slop”).
 
-**Out:** Column moves, product-brief.
+**Out:** Column moves, **`pdlc-brief-custom`** brief wizard.
 
 **Dependencies:** Sprint 0 complete.
 
-**Plan mode seed**
+**Plan mode seed** (copy this block into Cursor Plan mode):
 
 ```
-Sprint 1 per plans/PDLC_UI/sprint-backlog.md: Create Idea modal (title + body), persistence with plan R17 — SQLite: WAL, busy_timeout, initial migration; JSON: atomic rename + schemaVersion on file; initiative includes revision (optimistic lock, bump on save). List view idea-stage; update/delete with confirm. schema-initiative-v0.md. No swim lanes unless trivial. anthropic-frontend-design; pair BE and UI. Implementation standard.
+Execute Sprint S1 — Idea capture + persistence. Branch: feat/s1-idea-capture. Bar: A.
+
+Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
+
+Then read in order, and adapt the plan to S0 actual outcomes (not what S0 planned):
+1. plans/PDLC_UI/seeds/s1-idea-capture.md — detailed seed (persistence per ADR-0001, CRUD scope, audit log, R18 TipTap rules, DoD).
+2. plans/PDLC_UI/sprint-backlog.md § Sprint 1.
+3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S0 actual outcomes (which persistence store did ADR-0001 pick? did tokens.css + shadcn/ui + TipTap land? did CI schema-validate go green?). Flag any S1 DoD item invalidated.
+4. pdlc-ui/docs/adr/0001-*.md — stack + persistence decision (do NOT re-open).
+
+Output: task list closing every DoD checkbox. List scope conflicts before Build.
 ```
 
 ---
 
 ## Sprint 2 — Swim lanes + forward moves *(~2 weeks)*
 
-**Goal:** **Board is visible** — all lifecycle columns + **parked**; user can **move cards forward** with **guardrails**: no **`idea` → `discovery`** until **S3** (product brief is **required**); **parked** always captures **intent + reason**.
+**Bar:** **A**.
+
+**Goal:** **Board is visible** — all lifecycle columns + **parked**; user can **move cards forward** with **guardrails**: no **`idea` → `discovery`** until **S3** (typed **`brief`** via **`pdlc-brief-custom`** flow is **required**); **parked** always captures **intent + reason**.
 
 **Maps to:** **R3** (Stage 2 scaffold), partial **R11** (forward only; backward in Sprint 8); plan Phase 5 **`parked`**.
 
@@ -161,7 +204,7 @@ Sprint 1 per plans/PDLC_UI/sprint-backlog.md: Create Idea modal (title + body), 
 - Horizontal **swim lanes**: `idea` | `discovery` | `design` | `spec_ready` | `develop` | `uat` | `deployed` + **parked** (lane or toggle).
 - **Move** control: drag-drop **or** “Move to…” menu (pick one in sprint planning).
 - Cards render **title + snippet** in correct column from `lifecycle`.
-- **`idea` → `discovery`:** transition **disabled** or shows **“Complete product brief (Sprint 3)”** — card **cannot** land in `discovery` without brief (see **S3 dependency**).
+- **`idea` → `discovery`:** transition **disabled** or shows **“Complete discovery brief (Sprint 3)”** — card **cannot** land in `discovery` without **`brief`** payload (see **S3 dependency**; [lifecycle skill triggers](./lifecycle-transitions.md#skill-triggers-on-column-moves-pdlc-ui)).
 - **→ `parked`:** modal requires **`parked_intent`** (`revisit` \| `wont_consider`) **and** **`parked_reason`** (non-empty free text).
 
 **Technical — how**
@@ -178,27 +221,39 @@ Sprint 1 per plans/PDLC_UI/sprint-backlog.md: Create Idea modal (title + body), 
 - [ ] **Parked** requires intent + reason; card leaves main flow visually (lane or filter).
 - [ ] Board UI passes **anthropic-frontend-design** cohesion check (document in PR).
 
-**Out:** Product-brief wizard (S3), gates (design review, spec), backward moves.
+**Out:** **`pdlc-brief-custom`** wizard (S3), gates (design review, spec), backward moves.
 
 **Dependencies:** Sprint 1; **S3** must ship before enabling `idea→discovery` (or ship **S2+S3** in sequence without releasing board-only between them).
 
-**Plan mode seed**
+**Plan mode seed** (copy this block into Cursor Plan mode):
 
 ```
-Sprint 2: full swim lane UI per plans/PDLC_UI/sprint-backlog.md and PRDs/README lifecycle order. Column layout, card placement by lifecycle, forward-only moves except DISABLE idea→discovery until product-brief exists (block in canTransition; UX message pointing to Sprint 3). Moving to parked REQUIRES parkedIntent plus non-empty parkedReason modal (camelCase per sprint-backlog canonical case). Every move appends to events[]. develop/uat/deployed columns are status-only forward moves (no Jira). Match schema-initiative-v0.md. anthropic-frontend-design for board UI; Implementation standard.
+Execute Sprint S2 — Swim lanes + forward moves. Branch: feat/s2-swim-lanes. Bar: A.
+
+Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply; note lifecycle-transitions.md arrives via prelude — idea→discovery stays blocked until S3).
+
+Then read in order, and adapt the plan to S1 actual outcomes:
+1. plans/PDLC_UI/seeds/s2-swim-lanes.md.
+2. plans/PDLC_UI/sprint-backlog.md § Sprint 2.
+3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S1 actual outcomes (CRUD API shape, handle format, revision contract, events[] payload kinds, TipTap wiring). Flag any S2 DoD item invalidated.
+4. 06-Resources/PRDs/README.md — canonical lifecycle column order.
+
+Output: task list closing every DoD checkbox. List scope conflicts before Build.
 ```
 
 ---
 
-## Sprint 3 — Product-brief on `idea` → `discovery` *(~2 weeks)*
+## Sprint 3 — **`pdlc-brief-custom`** on `idea` → `discovery` *(~2 weeks)*
 
-**Goal:** First **skill-shaped** behaviour: moving **`idea` → `discovery`** opens **stepwise** questions aligned to **`/product-brief`**, with **help text**, persist answers — **unlocks** the transition blocked in **S2**.
+**Bar:** **A** — closes Bar A's core loop (brief answers persist against a specific initiative; R13 writes are live).
 
-**Maps to:** **R4**, Stage 3 north star. **PO** owns question copy alignment with [product-brief skill](../../.claude/skills/product-brief/SKILL.md); **iterate** questions as usage data arrives.
+**Goal:** First **skill-shaped** behaviour: moving **`idea` → `discovery`** opens **stepwise** questions aligned to **[`/pdlc-brief-custom`](../../.claude/skills/pdlc-brief-custom/SKILL.md)** (typed **`brief.*`** + discovery drafts — **not** full **`/product-brief`** PRD), with **help text**, persist answers — **unlocks** the transition blocked in **S2**.
+
+**Maps to:** **R4**, Stage 3 north star. **PO** owns question copy alignment with **`pdlc-brief-custom`** (primary) and tracks canonical [`/product-brief`](../../.claude/skills/product-brief/SKILL.md) only for **non-PDLC** drift you intentionally do **not** mirror; **iterate** as usage data arrives.
 
 **Deliverables**
 
-- On transition **`idea` → `discovery`**: **modal/stepper** (externalise question copy from `.claude/skills/product-brief/SKILL.md` into `pdlc-ui/content/product-brief-steps.json` or similar — **do not fork** skill logic in duplicate prose long-term).
+- On transition **`idea` → `discovery`**: **modal/stepper** (externalise question copy from [`.claude/skills/pdlc-brief-custom/SKILL.md`](../../.claude/skills/pdlc-brief-custom/SKILL.md) into `pdlc-ui/content/pdlc-brief-steps.json` or similar — **single source** alongside schema [schema-initiative-v0.md](./schema-initiative-v0.md)).
 - **Save** writes `brief` payload on initiative; **minimum required** fields enforced.
 - **Cancel** behaviour defined (stay in `idea` — document in UI).
 - **Enable** `idea→discovery` in `canTransition` only when brief meets minimum (on wizard **complete**).
@@ -222,15 +277,28 @@ Sprint 2: full swim lane UI per plans/PDLC_UI/sprint-backlog.md and PRDs/README 
 
 **Risks:** Question count too large for one sprint → ship **first N steps + “continue next sprint”** only if unavoidable (prefer thin vertical slice: **all** steps read-only except 2–3 editable first).
 
-**Plan mode seed**
+**Plan mode seed** (copy this block into Cursor Plan mode):
 
 ```
-Sprint 3: enable idea→discovery only via product-brief wizard completion. Multi-step wizard on transition; source questions from product-brief skill into pdlc-ui/content JSON; PO owns copy drift vs skill. Persist brief on initiative per schema-initiative-v0.md. Remove or gate the S2 hard-block once brief complete path exists. Document cancel UX. anthropic-frontend-design for wizard UI; Implementation standard. plans/PDLC_UI/sprint-backlog.md Sprint 3.
+Execute Sprint S3 — pdlc-brief-custom on idea → discovery. Branch: feat/s3-brief-wizard. Bar: A (closes Bar A core loop).
+
+Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
+
+Then read in order, and adapt the plan to S2 actual outcomes:
+1. plans/PDLC_UI/seeds/s3-brief-wizard.md.
+2. plans/PDLC_UI/sprint-backlog.md § Sprint 3.
+3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S2 actual outcomes (canTransition block on idea→discovery, parked modal, events[] stage_transition payload). Flag any S3 DoD item invalidated.
+4. .claude/skills/pdlc-brief-custom/SKILL.md — source of truth for wizard question copy (PO owns copy drift).
+5. plans/PDLC_UI/skill-agent-map.md — stage ↔ skill mapping (brief.* field targets).
+
+Output: task list closing every DoD checkbox. List scope conflicts before Build.
 ```
 
 ---
 
 ## Sprint 4 — Discovery: questions, export, re-run, design pack *(~2 weeks)*
+
+**Bar:** **A (minimal)** / **B (full)**. **Bar A ships:** open-questions CRUD on card + **export pack download** (template merge). **Bar B adds:** re-run audit UX, workshop export polish, CSV export ergonomics.
 
 **Goal:** **Discovery** is usable in workshops and feeds **Claude Design** via **export pack**.
 
@@ -259,15 +327,27 @@ Sprint 3: enable idea→discovery only via product-brief wizard completion. Mult
 
 **Dependencies:** Sprint 3.
 
-**Plan mode seed**
+**Plan mode seed** (copy this block into Cursor Plan mode):
 
 ```
-Sprint 4: discovery open questions list on initiative, workshop export MD/CSV, re-run discovery action with iteration audit, and export pack download using plans/PDLC_UI/export-pack-template.md placeholders. See sprint-backlog Sprint 4 and schema-initiative-v0.md. anthropic-frontend-design for UI; Implementation standard.
+Execute Sprint S4 — Discovery: questions, export, re-run, design pack. Branch: feat/s4-discovery. Bar: A (minimal) / B (full).
+
+Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
+
+Then read in order, and adapt the plan to S3 actual outcomes:
+1. plans/PDLC_UI/seeds/s4-discovery.md.
+2. plans/PDLC_UI/sprint-backlog.md § Sprint 4.
+3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S3 actual outcomes (brief.* payload shape, wizard step JSON location, cancel UX). Flag any S4 DoD item invalidated.
+4. plans/PDLC_UI/export-pack-template.md — placeholders for the pack download (R6b "Implementation polish" block lives here).
+
+Decide Bar A (export pack + open questions) vs Bar B (full re-run audit + workshop export polish) scope based on whether Bar A exit is imminent. Output: task list closing every DoD checkbox. List scope conflicts before Build.
 ```
 
 ---
 
 ## Sprint 5 — Design column: artefacts + hi-fi gate *(~2 weeks)*
+
+**Bar:** **B** — starts after Bar A exit. First Steerco-readable surface.
 
 **Goal:** Card in **design** holds **Figma** + **Claude Design** links and **lo-fi / optional hi-fi** metadata; aligns with **R6** (manual DS).
 
@@ -297,15 +377,30 @@ Sprint 4: discovery open questions list on initiative, workshop export MD/CSV, r
 
 **Dependencies:** Sprint 4.
 
-**Plan mode seed**
+**Plan mode seed** (copy this block into Cursor Plan mode):
 
 ```
-Sprint 5: design column artefact fields per plan R6 and schema-initiative-v0.md — figmaLibraryUrl, claudeDesignSessionUrl, loFiArtifactUrl, hiFiArtifactUrl, hiFiRequired+rationale, claudeDesignHandoffPath, implementationPolishNote (canonical names). Persist and show on card detail. No design-review gate yet unless already trivial to add. anthropic-frontend-design. Dogfood Steerco design-column process; slice log learnings. Implementation standard + Sprint 5 dogfood.
+Execute Sprint S5 — Design column: artefacts + hi-fi gate. Branch: feat/s5-design-artefacts. Bar: B (first post-Bar-A sprint).
+
+Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
+
+GATE: Do not start unless Bar A exit is confirmed per plan.md § Bar A success (real initiative completed idea → spec_ready on the board; zero retro-written PRD sections; at least one Re-run discovery event; no → idea wipes used in anger). If the gate is not met, stop and report the gap.
+
+Then read in order, and adapt the plan to S4 actual outcomes:
+1. plans/PDLC_UI/seeds/s5-design-artefacts.md.
+2. plans/PDLC_UI/sprint-backlog.md § Sprint 5.
+3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S4 actual outcomes (export pack fields wired, openQuestions schema, discoveryIteration audit). Flag any S5 DoD item invalidated.
+4. plans/PDLC_UI/plan.md R6 — Claude Design + Figma DS contract.
+5. plans/PDLC_UI/export-pack-template.md — design section merge target.
+
+Output: task list closing every DoD checkbox. Include the dogfood slice-log entry (what Steerco would upload to Claude Design vs what the orchestration UI itself required). List scope conflicts before Build.
 ```
 
 ---
 
 ## Sprint 6 — Design review gate *(~2 weeks)*
+
+**Bar:** **B** — hard gate. **Bar A** surfaces the same checklist as a **warning nudge** only (no block).
 
 **Goal:** **Cannot** enter **`spec_ready`** from **`design`** without **pass or waiver** on checklist.
 
@@ -336,15 +431,28 @@ Sprint 5: design column artefact fields per plan R6 and schema-initiative-v0.md 
 
 **Dependencies:** Sprint 5.
 
-**Plan mode seed**
+**Plan mode seed** (copy this block into Cursor Plan mode):
 
 ```
-Sprint 6: design review gate blocking transition design→spec_ready. Checklist UI, pass or waive with reason, persisted audit on initiative. See plans/PDLC_UI/sprint-backlog.md Sprint 6 and north star Stage 6. Use anthropic-frontend-design for all checklist UI. After implementation, add pdlc-ui/docs/design-system.md v0.1 extracting tokens/patterns from S5–S6 UI for reuse (R6 → DS). Dogfood: log checklist UX learnings in slice log.
+Execute Sprint S6 — Design review gate. Branch: feat/s6-design-review. Bar: B (hard gate; Bar A path surfaces same checklist as warning nudge only).
+
+Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
+
+Then read in order, and adapt the plan to S5 actual outcomes:
+1. plans/PDLC_UI/seeds/s6-design-review.md.
+2. plans/PDLC_UI/sprint-backlog.md § Sprint 6.
+3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S5 actual outcomes (design artefact fields + hi-fi gate wiring). Flag any S6 DoD item invalidated.
+4. plans/PDLC_UI/plan.md R7 — design → spec_ready gate behaviour + waive policy (PO or Designer; audit by=shaun placeholder).
+5. pdlc-ui/docs/design-system.md (read if present — seeded later this sprint if absent; v0.1 extract from S5–S6 UI per implementation-standard.md § 5).
+
+Output: task list closing every DoD checkbox INCLUDING design-system.md v0.1 draft. Design-system.md draft must list tokens + patterns extracted from S5–S6 UI so S7+ can consume them. List scope conflicts before Build.
 ```
 
 ---
 
 ## Sprint 7 — `spec_ready`: handoff + `/agent-prd` MVP *(~2 weeks)*
+
+**Bar:** **B**. **Bar A uses the export-only path** (S4 export pack → paste into chat → run `/agent-prd` manually) and does not ship the wizard. Bar B makes the wizard first-class.
 
 **Goal:** **`spec_ready`** produces a **reviewable spec handoff** for engineering (**MD + design pointers**) via **export + Cursor**, and unlocks **`develop`**. **Structured spec-wizard questions are required** (not optional placeholders) so PRDs are complete; **iterate** questions with PO as usage proves gaps.
 
@@ -384,15 +492,30 @@ Sprint 6: design review gate blocking transition design→spec_ready. Checklist 
 
 **Risks:** Scope creep into full agent-prd parity or R13 → **timebox**; ship **export + required wizard + release notes** first; R13 tabs/history as next epic.
 
-**Plan mode seed**
+**Plan mode seed** (copy this block into Cursor Plan mode):
 
 ```
-Sprint 7: spec_ready per R8+R14 — required structured spec wizard (clarifying questions), handoff MD bundle including R6b block from export-pack-template, specComplete nudge checklist, userReleaseNotes for develop. spec_ready→develop gated. Copy-for-Cursor. R13 vault continuous save is OPTIONAL in this sprint if timeboxed; else document follow-up. anthropic-frontend-design + design-system.md. sprint-backlog Sprint 7.
+Execute Sprint S7 — spec_ready: handoff + /agent-prd MVP. Branch: feat/s7-spec-ready. Bar: B (Bar A uses export-only path via S4 export pack + manual /agent-prd in chat).
+
+Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
+
+Then read in order, and adapt the plan to S6 actual outcomes:
+1. plans/PDLC_UI/seeds/s7-spec-ready.md.
+2. plans/PDLC_UI/sprint-backlog.md § Sprint 7 — includes the default spec_complete checklist (MVP nudge, PO-adjustable).
+3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S6 actual outcomes (designReview gate wired + waive flow + design-system.md v0.1 tokens). Flag any S7 DoD item invalidated.
+4. .claude/skills/agent-prd/SKILL.md — spec wizard + PRD generation contract (BDD Step 3b optional in MVP).
+5. plans/PDLC_UI/plan.md R8 + R14 — spec_ready semantics + userReleaseNotes (plain-language, end-user focused).
+6. plans/PDLC_UI/export-pack-template.md — R6b "Implementation polish" block (do NOT duplicate; reuse).
+7. pdlc-ui/docs/design-system.md — v0.1 patterns S7+ MUST consume (no visual regression vs S5–S6 unless intentional; see implementation-standard.md § 5).
+
+R13 vault continuous save is OPTIONAL this sprint if timebox bites — if deferred, document "R13 phase 2" in README follow-up. Output: task list closing every DoD checkbox. List scope conflicts before Build.
 ```
 
 ---
 
 ## Sprint 8 — Backward moves, wipe-to-idea, develop rewind *(~2 weeks)*
+
+**Bar:** **B** — harden rewind after Bar A has exercised forward flow on a real initiative.
 
 **Goal:** **Rework** without losing history; **`develop` / `uat` → earlier columns** (MVP: **PM approves**); **hard reset** to `idea` per governance with **accident mitigation**.
 
@@ -419,29 +542,39 @@ Sprint 7: spec_ready per R8+R14 — required structured spec wizard (clarifying 
 
 **Dependencies:** Sprint **6**+ (needs design gate in matrix); **after Sprint 7** preferred so rewind is tested on full flow.
 
-**Plan mode seed**
+**Plan mode seed** (copy this block into Cursor Plan mode):
 
 ```
-Sprint 8: canTransition matrix per lifecycle-transitions.md — backward from spec_ready and design; develop/uat backward with PM confirm; wipe-to-idea for ALL transitions into idea with title-confirm and optional JSON snapshot; integrate S6 design→spec_ready rule. Parked intent+reason already from Sprint 2. Unit tests. anthropic-frontend-design + design-system.md.
+Execute Sprint S8 — Backward moves, wipe-to-idea, develop rewind. Branch: feat/s8-backward-moves. Bar: B.
+
+Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply — lifecycle-transitions.md arrives via prelude with full rewind + wipe rules).
+
+Then read in order, and adapt the plan to S2–S7 cumulative outcomes:
+1. plans/PDLC_UI/seeds/s8-backward-moves.md.
+2. plans/PDLC_UI/sprint-backlog.md § Sprint 8.
+3. 04-Projects/PDLC_Orchestration_UI.md Slice log — cumulative outcomes of S2 (parked), S3 (brief complete gate), S6 (design gate), S7 (specComplete nudge). The canTransition matrix generalises these scattered rules; reconcile all of them without breaking existing DoD.
+4. plans/PDLC_UI/plan.md R11 — backward moves contract; PM approves develop/uat rewind in MVP.
+
+Output: task list closing every DoD checkbox INCLUDING unit tests covering the full canTransition(from,to,initiative) matrix. Wipe confirm must be high-friction (type title or similar) and snapshot JSON to pdlc-ui/data/snapshots/ before wipe. List scope conflicts before Build.
 ```
 
 ---
 
 ## Sprint 9 — **DEFERRED** — Company strategy “golden thread” *(TBD)*
 
+**Bar:** **Phase 2+** (post Bar B, concurrent with Agent Flywheel research).
+
 **Status:** **Not MVP.** [plan.md](./plan.md) **R12** requires a **Wyzetalk company strategy** source (e.g. `company_strategy.md`) and rules / optional ML — **not** Dex `System/pillars.yaml`.
 
 **When un-deferred:** Multi-select strategy tracks, non-conformance warnings (e.g. engagement platform vs budgeting tool), documented heuristics.
 
-**Placeholder Plan mode seed** *(do not run until R12 scoped)*
-
-```
-Deferred: company strategy conformance per plan R12 — NOT Dex pillars.yaml; needs company_strategy artefact and PO-approved rules. Revisit after MVP adoption.
-```
+**Plan mode seed (deferred — do not run until R12 scoped):** [`seeds/s9-company-strategy.md`](./seeds/s9-company-strategy.md).
 
 ---
 
 ## Optional Sprint 10+ — Hardening & catalogue
+
+**Bar:** **B / Phase 2+**. Headless agents are **Phase 2 (Agent Flywheel)** per [plan R15](./plan.md). Phase 3+ intelligence threads are **captured-only** in [phase3-research.md](./phase3-research.md).
 
 - **R13 — Vault continuity:** tabs (Idea · Brief · Discovery · Spec/PRD · Design), **history**, **save-on-sync** to `06-Resources/PRDs/` (no “promote to vault” copy), **re-run discovery** / **re-run spec** flows wired to files.
 - **R6b** UI polish: one-click **copy “Implementation polish”** block from pack (template already satisfies R6b from **S4**).
