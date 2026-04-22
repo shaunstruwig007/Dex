@@ -17,7 +17,7 @@ async function setDensity(
 ) {
   await page
     .getByRole("group", { name: "Card density" })
-    .getByRole("button", { name: new RegExp(`^${mode}$`, "i") })
+    .getByRole("button", { name: new RegExp(`^${mode} density$`, "i") })
     .click();
 }
 

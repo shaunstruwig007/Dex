@@ -176,6 +176,7 @@ export function InitiativeCard({
       ref={setNodeRef}
       {...(!isParked ? attributes : {})}
       {...(!isParked ? listeners : {})}
+      role="listitem"
       data-initiative-id={initiative.id}
       data-initiative-handle={initiative.handle}
       data-lifecycle={initiative.lifecycle}
