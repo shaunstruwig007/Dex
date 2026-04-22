@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { Button } from "@/components/ui/button";
@@ -86,13 +86,7 @@ export function IdeasBoard() {
   const [briefWizardTarget, setBriefWizardTarget] = useState<Initiative | null>(
     null,
   );
-  const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [dropTarget, setDropTarget] = useState<{
-    id: string;
-    position: "above" | "below";
-  } | null>(null);
   const [activeDrag, setActiveDrag] = useState<DragData | null>(null);
-  const dragLaneRef = useRef<Lifecycle | null>(null);
   const { density, setDensity } = useBoardDensity();
   const parkedRail = useParkedRail();
 
@@ -266,71 +260,12 @@ export function IdeasBoard() {
     [refresh],
   );
 
-  // ── Within-lane drag (HTML5, unchanged from S2) ────────────────────────
-  function buildDragHandlers(lifecycle: Lifecycle, card: Initiative) {
-    return {
-      onDragStart: (event: React.DragEvent<HTMLLIElement>) => {
-        event.dataTransfer.effectAllowed = "move";
-        event.dataTransfer.setData("text/plain", card.id);
-        dragLaneRef.current = lifecycle;
-        setDraggingId(card.id);
-      },
-      onDragEnd: () => {
-        setDraggingId(null);
-        setDropTarget(null);
-        dragLaneRef.current = null;
-      },
-      onDragOver: (event: React.DragEvent<HTMLLIElement>) => {
-        if (dragLaneRef.current !== lifecycle) return;
-        if (draggingId === card.id) return;
-        event.preventDefault();
-        const rect = event.currentTarget.getBoundingClientRect();
-        const midpoint = rect.top + rect.height / 2;
-        const position = event.clientY < midpoint ? "above" : "below";
-        setDropTarget({ id: card.id, position });
-      },
-      onDragLeave: () => {
-        setDropTarget((prev) => (prev?.id === card.id ? null : prev));
-      },
-      onDrop: (event: React.DragEvent<HTMLLIElement>) => {
-        event.preventDefault();
-        const movedId = event.dataTransfer.getData("text/plain");
-        if (!movedId || dragLaneRef.current !== lifecycle) return;
-        if (movedId === card.id) return;
-        const lane = byLane[lifecycle];
-        const moved = lane.find((i) => i.id === movedId);
-        if (!moved) return;
-        const target = dropTarget ?? {
-          id: card.id,
-          position: "below" as const,
-        };
-        const targetIdx = lane.findIndex((i) => i.id === target.id);
-        if (targetIdx === -1) return;
-
-        const withoutMoved = lane.filter((i) => i.id !== movedId);
-        const insertAt =
-          target.position === "above"
-            ? withoutMoved.findIndex((i) => i.id === target.id)
-            : withoutMoved.findIndex((i) => i.id === target.id) + 1;
-        const above = insertAt > 0 ? withoutMoved[insertAt - 1] : null;
-        const below =
-          insertAt < withoutMoved.length ? withoutMoved[insertAt] : null;
-        if (above?.id === movedId || below?.id === movedId) return;
-
-        const nextSort = computeMidpointSortOrder(
-          lane,
-          movedId,
-          above ?? null,
-          below ?? null,
-        );
-        setDraggingId(null);
-        setDropTarget(null);
-        dragLaneRef.current = null;
-        void handleReorder(moved, nextSort);
-      },
-    };
-  }
-
+  // Within-lane pointer reorder was HTML5-driven in S2; it was removed in
+  // S3A.1 because `draggable` on the card <li> preempted dnd-kit's
+  // PointerSensor and blocked real-user cross-lane DnD (e2e blind spot:
+  // Playwright synthesises pointer*/mouse* events but not HTML5 drag*).
+  // Keyboard Alt+↑/↓ reorder and the card Actions menu cover the gap this
+  // sprint; S3A.2 restores pointer within-lane reorder via dnd-kit.
   function buildArrowSwap(lifecycle: Lifecycle, card: Initiative) {
     const lane = byLane[lifecycle];
     return {
@@ -569,19 +504,12 @@ export function IdeasBoard() {
                     >
                       {cards.map((card) => {
                         const hasBrief = deriveHasBrief(card);
-                        const drag = buildDragHandlers(lifecycle, card);
                         const arrow = buildArrowSwap(lifecycle, card);
-                        const indicator =
-                          dropTarget?.id === card.id
-                            ? dropTarget.position
-                            : null;
                         return (
                           <InitiativeCard
                             key={card.id}
                             initiative={card}
                             hasBrief={hasBrief}
-                            dragging={draggingId === card.id}
-                            dropIndicator={indicator}
                             canReorderUp={arrow.canReorderUp}
                             canReorderDown={arrow.canReorderDown}
                             onEdit={() =>
@@ -595,7 +523,6 @@ export function IdeasBoard() {
                             onRequestPark={() => setPendingPark(card)}
                             onReorderUp={arrow.onReorderUp}
                             onReorderDown={arrow.onReorderDown}
-                            {...drag}
                           />
                         );
                       })}

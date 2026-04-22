@@ -77,6 +77,25 @@ async function pointerDrag(page: Page, source: Locator, target: Locator) {
 }
 
 test.describe("S3A.1 cross-lane DnD", () => {
+  test("initiative cards do not advertise native HTML5 `draggable` (regression guard)", async ({
+    page,
+  }) => {
+    // S3A.1 defect: the <li> carried `draggable={!isParked}` alongside
+    // dnd-kit's PointerSensor listeners. On a real user mousedown the
+    // browser fires `dragstart` (HTML5) immediately, which suppresses
+    // subsequent pointermove events — so dnd-kit never crosses its 6px
+    // activation and cross-lane drag silently fails. Playwright's
+    // page.mouse.down/move/up synthesises pointer*/mouse* events but NOT
+    // HTML5 drag*, so this escaped the e2e suite. Lock the DOM invariant
+    // directly until S3A.2 reintroduces within-lane reorder via dnd-kit.
+    await page.goto("/");
+    await createInitiative(page, `HTML5 guard ${Date.now()}`);
+    const draggableCount = await page
+      .locator('li[data-initiative-id][draggable="true"]')
+      .count();
+    expect(draggableCount).toBe(0);
+  });
+
   test("pointer drag idea → develop is a no-op (illegal forward edge)", async ({
     page,
   }) => {

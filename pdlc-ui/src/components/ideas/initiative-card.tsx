@@ -34,8 +34,6 @@ export type MoveTarget = Exclude<Lifecycle, "parked">;
 export type InitiativeCardProps = {
   initiative: Initiative;
   hasBrief: boolean;
-  dragging?: boolean;
-  dropIndicator?: "above" | "below" | null;
   canReorderUp?: boolean;
   canReorderDown?: boolean;
   onEdit: () => void;
@@ -44,11 +42,6 @@ export type InitiativeCardProps = {
   onRequestPark: () => void;
   onReorderUp?: () => void;
   onReorderDown?: () => void;
-  onDragStart?: (event: React.DragEvent<HTMLLIElement>) => void;
-  onDragEnd?: () => void;
-  onDragOver?: (event: React.DragEvent<HTMLLIElement>) => void;
-  onDrop?: (event: React.DragEvent<HTMLLIElement>) => void;
-  onDragLeave?: () => void;
   /** When set, `idea → discovery` without a completed brief opens the wizard instead of transitioning. */
   onOpenBriefWizard?: () => void;
 };
@@ -75,8 +68,6 @@ function gateFor(
 export function InitiativeCard({
   initiative,
   hasBrief,
-  dragging,
-  dropIndicator,
   canReorderUp,
   canReorderDown,
   onEdit,
@@ -85,11 +76,6 @@ export function InitiativeCard({
   onRequestPark,
   onReorderUp,
   onReorderDown,
-  onDragStart,
-  onDragEnd,
-  onDragOver,
-  onDrop,
-  onDragLeave,
   onOpenBriefWizard,
 }: InitiativeCardProps) {
   const hasBody = initiative.body.trim().length > 0;
@@ -115,9 +101,12 @@ export function InitiativeCard({
   const [briefOpen, setBriefOpen] = useState(false);
   const [exportFeedback, setExportFeedback] = useState<string | null>(null);
 
-  // Cross-lane DnD (S3A.1) — additive to native HTML5 within-lane reorder.
-  // The dnd-kit draggable is disabled for parked cards (parking is intentful;
-  // un-parking goes through the menu so the wipe rule stays explicit).
+  // Cross-lane DnD (S3A.1) — dnd-kit's PointerSensor + KeyboardSensor own
+  // the pointer drag surface end-to-end. Native HTML5 `draggable` was removed
+  // in this sprint because it preempted pointer events and blocked dnd-kit's
+  // 6px activation (real-user drag would never cross). Within-lane pointer
+  // reorder is deferred to S3A.2 (dnd-kit over-events + neighboursForSwap);
+  // `Alt+↑/↓` keyboard reorder and the `Actions → Move to…` menu still work.
   const { setNodeRef, attributes, listeners, isDragging } = useCardDraggable({
     initiativeId: initiative.id,
     fromLifecycle: initiative.lifecycle,
@@ -180,22 +169,15 @@ export function InitiativeCard({
       data-initiative-id={initiative.id}
       data-initiative-handle={initiative.handle}
       data-lifecycle={initiative.lifecycle}
-      draggable={!isParked}
       tabIndex={0}
       aria-label={`${initiative.handle} ${initiative.title}`}
       className={cn(
         "group/initiative relative rounded-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        (dragging || isDragging) && "opacity-60",
+        isDragging && "opacity-60",
       )}
       style={{ paddingBlock: "var(--card-py)" }}
       onKeyDown={handleKeyDown}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-      onDragLeave={onDragLeave}
     >
-      {dropIndicator === "above" && <DropIndicator position="above" />}
       <Card className="py-3 gap-2">
         <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 px-3">
           <div className="flex min-w-0 flex-col gap-1">
@@ -342,7 +324,6 @@ export function InitiativeCard({
           />
         )}
       </Card>
-      {dropIndicator === "below" && <DropIndicator position="below" />}
     </li>
   );
 }
@@ -566,17 +547,5 @@ function MoveMenuItem({
     >
       {label}
     </DropdownMenuItem>
-  );
-}
-
-function DropIndicator({ position }: { position: "above" | "below" }) {
-  return (
-    <div
-      aria-hidden
-      className={cn(
-        "absolute left-0 right-0 h-0.5 bg-primary",
-        position === "above" ? "-top-1" : "-bottom-1",
-      )}
-    />
   );
 }
