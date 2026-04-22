@@ -191,6 +191,25 @@ describe("repository — transitionInitiative (S2)", () => {
     expect(txEvent?.payload).toMatchObject({ from: "idea", to: "discovery" });
   });
 
+  it("persists optional sortOrder on transition (DnD placement)", () => {
+    const created = createInitiative({ title: "placed" }, db);
+    const seeded = seedBriefForTesting(created.id, db);
+    expect(seeded?.revision).toBe(2);
+    const result = transitionInitiative(
+      {
+        id: created.id,
+        expectedRevision: seeded!.revision,
+        to: "discovery",
+        sortOrder: 4242,
+      },
+      db,
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.initiative.lifecycle).toBe("discovery");
+    expect(result.initiative.sortOrder).toBe(4242);
+  });
+
   it("walks the full forward chain once seeded", () => {
     const created = createInitiative({ title: "forward" }, db);
     let rev = seedBriefForTesting(created.id, db)!.revision;

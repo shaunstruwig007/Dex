@@ -350,6 +350,8 @@ export type TransitionInput = {
   id: string;
   expectedRevision: number;
   to: Lifecycle;
+  /** Optional list position in the destination lane (omit → null in DB). */
+  sortOrder?: number;
   parkedIntent?: "revisit" | "wont_consider" | null;
   parkedReason?: string | null;
   note?: string;
@@ -434,15 +436,22 @@ export function transitionInitiative(
     strategyWarning: existing.strategyWarning,
   });
 
+  const nextSortOrder =
+    typeof input.sortOrder === "number" && Number.isFinite(input.sortOrder)
+      ? Math.trunc(input.sortOrder)
+      : null;
+
   const result = db
     .update(initiatives)
     .set({
       lifecycle: input.to,
       parkedIntent: nextParkedIntent,
       parkedReason: nextParkedReason,
-      // New lane placement: clear sortOrder so the card lands at the top of
-      // the destination lane (NULLs are ordered last → newest by createdAt).
-      sortOrder: null,
+      // Explicit `sortOrder` from the client (DnD / menu placement). When
+      // omitted, clear to null so `listInitiatives` orders by createdAt among
+      // null rows — which no longer matches "where I dropped" once lanes mix
+      // explicit reorder keys with nulls; callers that care pass `sortOrder`.
+      sortOrder: nextSortOrder,
       revision: sql`${initiatives.revision} + 1`,
       updatedAt: now,
       data: nextData,

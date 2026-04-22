@@ -145,6 +145,23 @@ test.describe("S3A.1 cross-lane DnD", () => {
     ).toHaveCount(0);
   });
 
+  test("pointer drag idea → discovery without brief opens the product brief wizard", async ({
+    page,
+  }) => {
+    // S3 gate: `canTransition` returns `brief_required` for this edge, but
+    // the UI must still open the wizard on pointer drop (same as Actions →
+    // Move to… → Discovery). Regression: dispatchCrossLaneDrop used to call
+    // `canTransition` first and no-op before the wizard branch ever ran.
+    await page.goto("/");
+    const title = `Brief gate drag ${Date.now()}`;
+    const card = await createInitiative(page, title);
+    const discoveryLane = page.locator('section[data-lane="discovery"]');
+    await pointerDrag(page, card, discoveryLane);
+    await expect(
+      page.getByRole("dialog", { name: "Product brief" }),
+    ).toBeVisible();
+  });
+
   test("pointer drag discovery → design moves the card and bumps revision", async ({
     page,
   }) => {

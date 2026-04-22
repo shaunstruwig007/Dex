@@ -36,6 +36,8 @@ The Pass-3 `user-select: none` regression guard in `e2e/dnd.spec.ts` was inverte
 
 **Duplicate droppable id (2026-04-22, user `Dragging but not dropping.mov`):** `SortableContext` was given `id={\`lane-${lifecycle}\`}` while `useLaneDroppable` registered the **same** string as its `useDroppable` id. dnd-kit requires unique droppable ids; the collision engine often resolved `over` to the sortable container, whose `data.current` is **not** `LaneDropData`. `handleDragEnd` then skipped Branch A (`isLaneDropData` false) and Branch B (`over.id` does not start with `card-`), so cross-lane drops onto lane chrome snapped back while within-lane reorder (always `over` = `card-*`) still worked. Fix: rename the swim-lane body droppable to `board-lane-drop-${laneId}` and add Branch A′ in `handleDragEnd` that maps `lane-*` over ids to the same `dispatchCrossLaneDrop` path.
 
+**Idea → Discovery + placement (2026-04-22, user screen recording):** (1) `dispatchCrossLaneDrop` called `canTransition` *before* the brief-wizard branch, so `brief_required` returned early and **idea → discovery** drag never opened the wizard — reorder in-idea still worked. Fix: run the wizard branch first. (2) Drag highlight dimmed Discovery without a brief because `dragLegalityByLane` used raw `canTransition`; the Actions menu treats that edge as allowed — aligned drag legality with the menu. (3) Cross-lane transitions cleared `sortOrder` to null, so new cards sorted after every explicitly reordered card (often the visual “bottom”). Fix: optional `sortOrder` on `POST …/transition` + midpoint placement from drop target (lane top vs before/after hovered card using drag center vs card mid-Y).
+
 ## Decision
 
 **1. `@dnd-kit/core` + `@dnd-kit/sortable` own all pointer drag.**

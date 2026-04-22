@@ -29,6 +29,8 @@ export type DeleteInitiativeBody = z.infer<typeof deleteInitiativeBody>;
 export const transitionInitiativeBody = z.object({
   expectedRevision: z.number().int().min(1),
   to: lifecycleSchema,
+  /** When set, card lands at this position in the target lane (drag / menu). */
+  sortOrder: z.number().int().optional(),
   parkedIntent: z.enum(["revisit", "wont_consider"]).optional(),
   parkedReason: z.string().optional(),
   note: z.string().optional(),

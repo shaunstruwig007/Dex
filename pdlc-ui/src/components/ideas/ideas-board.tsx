@@ -24,7 +24,12 @@ import { BoardDensityToggle } from "./board-density-toggle";
 import { InitiativeFormDialog } from "./initiative-form-dialog";
 import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 import { LANE_LABELS, MAIN_LANES } from "./lanes";
-import { computeMidpointSortOrder, neighboursForSwap } from "./reorder";
+import {
+  computeMidpointSortOrder,
+  neighboursForSwap,
+  sortOrderForCrossLaneLaneTop,
+  sortOrderForCrossLaneNearCard,
+} from "./reorder";
 import {
   BoardDndProvider,
   isDragData,
@@ -83,6 +88,16 @@ function humanError(err: IdeasApiError, status: number): string {
     return "Please check the form and try again.";
   if (err.error === "not_found") return "That initiative no longer exists.";
   return `Could not complete the request (${err.error}).`;
+}
+
+/** Cross-lane: compare drag ghost center vs hovered card to pick insert slot. */
+function dragCenterIntendsInsertBeforeOverCard(event: DragEndEvent): boolean {
+  const overRect = event.over?.rect;
+  const translated = event.active.rect.current.translated;
+  if (!overRect || !translated) return true;
+  const dragCenterY = translated.top + translated.height / 2;
+  const overMidY = overRect.top + overRect.height / 2;
+  return dragCenterY < overMidY;
 }
 
 export function IdeasBoard() {
@@ -210,6 +225,7 @@ export function IdeasBoard() {
       extras?: {
         parkedIntent?: "revisit" | "wont_consider";
         parkedReason?: string;
+        sortOrder?: number;
       },
     ) => {
       const res = await fetch(`/api/initiatives/${target.id}/transition`, {
@@ -322,6 +338,19 @@ export function IdeasBoard() {
         map.set(lane, { ok: false, reason: null });
         continue;
       }
+      // Match `InitiativeCard` Move menu: `idea → discovery` without a
+      // completed brief is still a valid drop target — it opens the brief
+      // wizard instead of calling the transition API. `canTransition` alone
+      // returns `brief_required` and would dim Discovery during drag, which
+      // reads as "you can't go here" even though the menu allows it.
+      if (
+        card.lifecycle === "idea" &&
+        lane === "discovery" &&
+        !hasBrief
+      ) {
+        map.set(lane, { ok: true, reason: null });
+        continue;
+      }
       const result = canTransition(card.lifecycle, lane, {
         hasBrief,
         // Satisfy the parked branch with valid placeholders so non-parked
@@ -390,7 +419,7 @@ export function IdeasBoard() {
         // instead (Branch B).
         if (targetLifecycle === card.lifecycle) return;
 
-        dispatchCrossLaneDrop(card, targetLifecycle);
+        dispatchCrossLaneDrop(event, card, targetLifecycle, null);
         return;
       }
 
@@ -404,7 +433,7 @@ export function IdeasBoard() {
       );
       if (sortableLane !== null) {
         if (sortableLane === card.lifecycle) return;
-        dispatchCrossLaneDrop(card, sortableLane);
+        dispatchCrossLaneDrop(event, card, sortableLane, null);
         return;
       }
 
@@ -459,7 +488,7 @@ export function IdeasBoard() {
       // Cross-lane drop onto a sibling card — treat the sibling's lane as
       // the transition target, then apply the same gate/wizard/park rules
       // as a drop on the lane container.
-      dispatchCrossLaneDrop(card, overCard.lifecycle);
+      dispatchCrossLaneDrop(event, card, overCard.lifecycle, overCard);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [handleTransition, handleReorder, initiatives, byLane],
@@ -468,20 +497,22 @@ export function IdeasBoard() {
   /**
    * Apply the cross-lane transition rules that were Branch A of Pass-3:
    * - same-lane → silent no-op (caller already filtered but double-check)
+   * - `idea → discovery` without a complete brief → open wizard **before**
+   *   `canTransition` — that function returns `brief_required` for this edge,
+   *   which would otherwise no-op and make drag-to-Discovery look broken.
    * - illegal gate → silent no-op (lane was dimmed during drag)
-   * - `idea → discovery` without a complete brief → open wizard
    * - `→ parked` → open the parked intent + reason modal
-   * - otherwise → straight transition API call
+   * - otherwise → transition API with optional `sortOrder` from drop geometry
    */
-  function dispatchCrossLaneDrop(card: Initiative, targetLifecycle: Lifecycle) {
+  function dispatchCrossLaneDrop(
+    event: DragEndEvent,
+    card: Initiative,
+    targetLifecycle: Lifecycle,
+    overCardInTarget: Initiative | null,
+  ) {
     if (targetLifecycle === card.lifecycle) return;
     const hasBrief = deriveHasBrief(card);
-    const gate = canTransition(card.lifecycle, targetLifecycle, {
-      hasBrief,
-      parkedIntent: "revisit",
-      parkedReason: "__menu",
-    });
-    if (!gate.ok) return;
+
     if (
       card.lifecycle === "idea" &&
       targetLifecycle === "discovery" &&
@@ -490,11 +521,33 @@ export function IdeasBoard() {
       setBriefWizardTarget(card);
       return;
     }
+
+    const gate = canTransition(card.lifecycle, targetLifecycle, {
+      hasBrief,
+      parkedIntent: "revisit",
+      parkedReason: "__menu",
+    });
+    if (!gate.ok) return;
+
     if (targetLifecycle === "parked") {
       setPendingPark(card);
       return;
     }
-    void handleTransition(card, targetLifecycle);
+
+    const targetLane = byLane[targetLifecycle];
+    const sortOrder =
+      overCardInTarget &&
+      overCardInTarget.lifecycle === targetLifecycle &&
+      overCardInTarget.id !== card.id
+        ? sortOrderForCrossLaneNearCard(
+            targetLane,
+            card.id,
+            overCardInTarget,
+            dragCenterIntendsInsertBeforeOverCard(event),
+          )
+        : sortOrderForCrossLaneLaneTop(targetLane, card.id);
+
+    void handleTransition(card, targetLifecycle, { sortOrder });
   }
 
   const editTarget = dialog.kind === "edit" ? dialog.initiative : null;

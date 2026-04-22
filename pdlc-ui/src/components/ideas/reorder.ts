@@ -9,7 +9,8 @@ import { SORT_ORDER_STEP } from "./lanes";
  * S2's fixture-sized board).
  *
  * Rules:
- * - Same-lane only (cross-lane DnD is explicitly OUT of S2 scope).
+ * - Same-lane reorder and cross-lane drop placement both use this helper
+ *   (see `ideas-board.tsx` → `handleDragEnd` / `dispatchCrossLaneDrop`).
  * - `above` / `below` may be null (dropping at the start / end of a lane).
  * - Any non-null neighbour's `sortOrder === null` is treated as its position
  *   in lane order × SORT_ORDER_STEP so the first drag assigns sensible values.
@@ -45,6 +46,44 @@ export function computeMidpointSortOrder(
   if (midpoint === next) return next - 1;
   void movedId;
   return midpoint;
+}
+
+/**
+ * Cross-lane drop: place at the **top** of the target lane (first list slot).
+ * Uses the same midpoint math as within-lane reorder so the moved card sorts
+ * before every card that currently has only implicit `sortOrder: null` rows.
+ */
+export function sortOrderForCrossLaneLaneTop(
+  targetLane: Initiative[],
+  movedId: string,
+): number {
+  const below = targetLane[0] ?? null;
+  return computeMidpointSortOrder(targetLane, movedId, null, below);
+}
+
+/**
+ * Cross-lane drop onto a card in the target lane — insert **before** or
+ * **after** that card using the same midpoint strategy as within-lane reorder.
+ */
+export function sortOrderForCrossLaneNearCard(
+  targetLane: Initiative[],
+  movedId: string,
+  overCard: Initiative,
+  insertBefore: boolean,
+): number {
+  const toIndex = targetLane.findIndex((i) => i.id === overCard.id);
+  if (toIndex === -1) {
+    return sortOrderForCrossLaneLaneTop(targetLane, movedId);
+  }
+  if (insertBefore) {
+    const above = toIndex > 0 ? targetLane[toIndex - 1] : null;
+    const below = targetLane[toIndex];
+    return computeMidpointSortOrder(targetLane, movedId, above, below);
+  }
+  const above = targetLane[toIndex];
+  const below =
+    toIndex + 1 < targetLane.length ? targetLane[toIndex + 1] : null;
+  return computeMidpointSortOrder(targetLane, movedId, above, below);
 }
 
 /**
