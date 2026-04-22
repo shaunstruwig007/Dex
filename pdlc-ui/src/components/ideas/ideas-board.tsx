@@ -29,6 +29,7 @@ import {
   BoardDndProvider,
   isDragData,
   isLaneDropData,
+  lifecycleFromSortableContainerOverId,
   type DragData,
 } from "./board-dnd";
 import type {
@@ -390,6 +391,20 @@ export function IdeasBoard() {
         if (targetLifecycle === card.lifecycle) return;
 
         dispatchCrossLaneDrop(card, targetLifecycle);
+        return;
+      }
+
+      // Branch A′ — pointer released over lane chrome where collision picked
+      // the `SortableContext` container (`id={\`lane-${lifecycle}\`}`) instead
+      // of `board-lane-drop-*` (see ADR-0003 / `board-dnd.tsx` duplicate-id
+      // fix). Without this branch, cross-lane drops "stick" visually then snap
+      // back because `handleDragEnd` no-ops when `over` is not `card-*`.
+      const sortableLane = lifecycleFromSortableContainerOverId(
+        overId == null ? undefined : String(overId),
+      );
+      if (sortableLane !== null) {
+        if (sortableLane === card.lifecycle) return;
+        dispatchCrossLaneDrop(card, sortableLane);
         return;
       }
 

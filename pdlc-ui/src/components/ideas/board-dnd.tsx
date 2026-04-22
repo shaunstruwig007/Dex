@@ -116,6 +116,32 @@ export function isLaneDropData(value: unknown): value is LaneDropData {
   );
 }
 
+/**
+ * Each `SortableContext` uses `id={\`lane-${lifecycle}\`}` (see `ideas-board.tsx`).
+ * That id is ALSO registered as a droppable by `@dnd-kit/sortable`. When the
+ * pointer releases over lane chrome (header, empty list padding, gaps
+ * between cards), collision often resolves to **this** id — not the
+ * `board-lane-drop-*` body from `useLaneDroppable`. `handleDragEnd` must treat
+ * `lane-*` the same as an explicit lane drop so cross-lane transitions fire.
+ *
+ * IMPORTANT: `useLaneDroppable` must NEVER reuse the `lane-*` string as its
+ * droppable id — duplicate ids break dnd-kit's registry and were the root
+ * cause of "drags but never drops" across columns while within-lane reorder
+ * (always `card-*` over) still worked.
+ */
+export function lifecycleFromSortableContainerOverId(
+  overId: string | null | undefined,
+): Lifecycle | null {
+  if (!overId || typeof overId !== "string") return null;
+  const prefix = "lane-";
+  if (!overId.startsWith(prefix)) return null;
+  const key = overId.slice(prefix.length);
+  if ((LIFECYCLE_ORDER as readonly string[]).includes(key)) {
+    return key as Lifecycle;
+  }
+  return null;
+}
+
 export function isDragData(value: unknown): value is DragData {
   if (!value || typeof value !== "object") return false;
   const v = value as { initiativeId?: unknown; fromLifecycle?: unknown };
@@ -156,7 +182,9 @@ export function useLaneDroppable(
   ref?: RefObject<HTMLElement | null>,
 ) {
   const data: LaneDropData = { laneId };
-  const droppable = useDroppable({ id: `lane-${laneId}`, data });
+  // Must NOT be `lane-${laneId}` — that string is reserved by each lane's
+  // `SortableContext` id (see `lifecycleFromSortableContainerOverId`).
+  const droppable = useDroppable({ id: `board-lane-drop-${laneId}`, data });
   // The droppable hook already sets a ref on its node; consumers can layer
   // their own ref via the returned `setNodeRef`. The `ref` arg is here to
   // document intent — most consumers will not pass it.

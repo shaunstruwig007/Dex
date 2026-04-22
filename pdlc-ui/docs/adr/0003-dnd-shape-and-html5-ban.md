@@ -34,6 +34,8 @@ The sortable primitive + `<DragOverlay>` introduced during Pass-4a are kept: the
 
 The Pass-3 `user-select: none` regression guard in `e2e/dnd.spec.ts` was inverted to the Pass-4 invariant: non-parked cards MUST allow text selection.
 
+**Duplicate droppable id (2026-04-22, user `Dragging but not dropping.mov`):** `SortableContext` was given `id={\`lane-${lifecycle}\`}` while `useLaneDroppable` registered the **same** string as its `useDroppable` id. dnd-kit requires unique droppable ids; the collision engine often resolved `over` to the sortable container, whose `data.current` is **not** `LaneDropData`. `handleDragEnd` then skipped Branch A (`isLaneDropData` false) and Branch B (`over.id` does not start with `card-`), so cross-lane drops onto lane chrome snapped back while within-lane reorder (always `over` = `card-*`) still worked. Fix: rename the swim-lane body droppable to `board-lane-drop-${laneId}` and add Branch A′ in `handleDragEnd` that maps `lane-*` over ids to the same `dispatchCrossLaneDrop` path.
+
 ## Decision
 
 **1. `@dnd-kit/core` + `@dnd-kit/sortable` own all pointer drag.**
