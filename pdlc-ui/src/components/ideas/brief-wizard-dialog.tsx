@@ -38,7 +38,9 @@ import type { Initiative } from "@/schema/initiative";
  * are server-identical in S3A.1; the kickoff side-effect lands in S3A.2.
  */
 
-type ContentStep = BriefStep & { field: "coreValue" | "targetUsers" | "problem" };
+type ContentStep = BriefStep & {
+  field: "coreValue" | "targetUsers" | "problem";
+};
 type SummaryStep = BriefStep & { field: "understandingSummary" };
 
 const REQUIRED_SET = new Set<string>(REQUIRED_BRIEF_FIELDS);
@@ -61,7 +63,9 @@ function textFromHtml(html: string): string {
 function isContentField(
   field: string,
 ): field is "coreValue" | "targetUsers" | "problem" {
-  return field === "coreValue" || field === "targetUsers" || field === "problem";
+  return (
+    field === "coreValue" || field === "targetUsers" || field === "problem"
+  );
 }
 
 function isDirtyAnswers(a: BriefWizardAnswersInput): boolean {
@@ -258,7 +262,12 @@ export function BriefWizardDialog({
           }
         }
 
-        if (res.ok && json && typeof json === "object" && "initiative" in json) {
+        if (
+          res.ok &&
+          json &&
+          typeof json === "object" &&
+          "initiative" in json
+        ) {
           onCompleted((json as { initiative: Initiative }).initiative);
           onOpenChange(false);
           return;

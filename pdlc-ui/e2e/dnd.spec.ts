@@ -41,9 +41,7 @@ async function seedBriefForHandle(page: Page, handle: string) {
 }
 
 async function moveViaMenu(page: Page, handle: string, label: string) {
-  const card = page
-    .locator(`li[data-initiative-handle="${handle}"]`)
-    .first();
+  const card = page.locator(`li[data-initiative-handle="${handle}"]`).first();
   await card.getByRole("button", { name: /Actions for INIT-/ }).click();
   await page.getByRole("menuitem", { name: "Move to…" }).hover();
   await page.getByRole("menuitem", { name: label }).click();

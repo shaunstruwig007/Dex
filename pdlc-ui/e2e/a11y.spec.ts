@@ -11,7 +11,10 @@ async function runAxe(page: Page) {
   );
 }
 
-async function setDensity(page: Page, mode: "compact" | "comfortable" | "detailed") {
+async function setDensity(
+  page: Page,
+  mode: "compact" | "comfortable" | "detailed",
+) {
   await page
     .getByRole("group", { name: "Card density" })
     .getByRole("button", { name: new RegExp(`^${mode}$`, "i") })

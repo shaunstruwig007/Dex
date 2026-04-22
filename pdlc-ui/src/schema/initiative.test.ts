@@ -149,4 +149,3 @@ describe("briefSchema — completeness invariant (S3A.1)", () => {
     ).toEqual(["coreValue"]);
   });
 });
-

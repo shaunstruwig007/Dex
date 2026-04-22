@@ -69,9 +69,7 @@ test.describe("S3A.1 brief wizard", () => {
       ),
     ).toBeVisible();
 
-    await dialog
-      .getByTestId("brief-wizard-save-and-start")
-      .click();
+    await dialog.getByTestId("brief-wizard-save-and-start").click();
     await expect(dialog).toBeHidden();
 
     const discoveryLane = page.locator('section[data-lane="discovery"]');
@@ -85,9 +83,9 @@ test.describe("S3A.1 brief wizard", () => {
     expect(nextRev, "revision bumps once").not.toEqual(initialRev);
 
     // Card preview surfaces the truncated problem statement at a glance.
-    await expect(
-      moved.getByTestId("card-problem-preview"),
-    ).toContainText(/Pricing decisions/);
+    await expect(moved.getByTestId("card-problem-preview")).toContainText(
+      /Pricing decisions/,
+    );
   });
 
   test('"Save brief only" persists answers without leaving idea (S3A.1 demo honesty)', async ({
@@ -146,9 +144,7 @@ test.describe("S3A.1 brief wizard", () => {
     // Press Next without typing anything — should surface a required alert
     // and remain on step 1.
     await dialog.getByRole("button", { name: "Next" }).click();
-    await expect(dialog.getByRole("alert").first()).toContainText(
-      /required/i,
-    );
+    await expect(dialog.getByRole("alert").first()).toContainText(/required/i);
     await expect(
       dialog.getByRole("textbox", { name: /Why does this matter/i }),
     ).toBeVisible();

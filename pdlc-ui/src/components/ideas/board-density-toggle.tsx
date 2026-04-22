@@ -7,12 +7,14 @@ import {
   type BoardDensity,
 } from "@/lib/use-board-density";
 
-const ICONS: Record<BoardDensity, React.ComponentType<{ className?: string }>> =
-  {
-    compact: Rows4,
-    comfortable: Rows3,
-    detailed: Rows2,
-  };
+const ICONS: Record<
+  BoardDensity,
+  React.ComponentType<{ className?: string }>
+> = {
+  compact: Rows4,
+  comfortable: Rows3,
+  detailed: Rows2,
+};
 
 const LABELS: Record<BoardDensity, string> = {
   compact: "Compact density",

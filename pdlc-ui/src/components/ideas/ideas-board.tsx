@@ -591,9 +591,7 @@ export function IdeasBoard() {
                             onTransition={(to) => {
                               void handleTransition(card, to);
                             }}
-                            onOpenBriefWizard={() =>
-                              setBriefWizardTarget(card)
-                            }
+                            onOpenBriefWizard={() => setBriefWizardTarget(card)}
                             onRequestPark={() => setPendingPark(card)}
                             onReorderUp={arrow.onReorderUp}
                             onReorderDown={arrow.onReorderDown}
