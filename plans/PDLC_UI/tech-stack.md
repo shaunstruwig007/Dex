@@ -123,6 +123,8 @@ Single scale (Inter or system stack fallback):
 
 `Button`, `Input`, `Textarea` (single-line/short only), `Dialog` (modal), `DropdownMenu`, `Toast`, `Tabs`, `Checkbox`, `RadioGroup`, `Label`, `Separator`, `Badge`, `Card`, `Tooltip`. Any new primitive needs a PR-note ADR.
 
+**Drag-and-drop (added S3A.1):** `@dnd-kit/core` only — `PointerSensor` + `KeyboardSensor` with a hand-rolled keyboard coordinate getter. `@dnd-kit/sortable` was deliberately **not** installed (Q-alt.1, [`/agent-q-cto-custom`](../../.claude/skills/agent-q-cto-custom/SKILL.md) verdict on S3A.1) — within-lane reorder keeps the existing pointer + `Alt+↑/↓` keyboard fallback. Re-evaluate if a sortable arrow-key contract becomes a product requirement.
+
 ### 3.6 Forbidden "AI slop" patterns
 
 These regress consistency and violate `/anthropic-frontend-design` direction:

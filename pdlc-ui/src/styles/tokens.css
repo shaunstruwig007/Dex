@@ -195,4 +195,44 @@
   --transition-fast: 100ms ease;
   --transition-base: 180ms ease;
   --transition-slow: 300ms ease;
+
+  /* ----------------------------------------------------------
+     BOARD LAYOUT — S3A.1 (board-layout.md §1, §3)
+     `--board-header-height` drives the chrome-light shell;
+     `--board-rail-collapsed` / `--board-rail-expanded` size the
+     parked rail; `--board-gutter-x` keeps the grid off the edges.
+  ---------------------------------------------------------- */
+  --board-header-height: 48px;
+  --board-rail-collapsed: 40px;
+  --board-rail-expanded: 280px;
+  --board-gutter-x: 20px;
+  --board-lane-min: 280px;
+
+  /* ----------------------------------------------------------
+     CARD DENSITY — S3A.1 (board-layout.md §4)
+     Defaults match the "comfortable" mode below; the
+     [data-board-density="…"] selectors override per mode so a
+     single attribute swap re-shapes every card.
+  ---------------------------------------------------------- */
+  --card-py: 10px;
+  --card-gap: 12px;
+  --card-lines: 2;
+}
+
+:root[data-board-density="compact"] {
+  --card-py: 6px;
+  --card-gap: 8px;
+  --card-lines: 1;
+}
+
+:root[data-board-density="comfortable"] {
+  --card-py: 10px;
+  --card-gap: 12px;
+  --card-lines: 2;
+}
+
+:root[data-board-density="detailed"] {
+  --card-py: 14px;
+  --card-gap: 16px;
+  --card-lines: 4;
 }

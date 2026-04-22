@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 import {
   eventSchema,
+  missingForCompleteBrief,
   type BriefState,
   type Initiative,
   type InitiativeEvent,
@@ -505,24 +506,31 @@ function buildBriefStateFromAnswers(
   by: string,
   at: string,
 ): BriefState {
-  const scopeIn = answers.scopeIn.map((s) => s.trim()).filter(Boolean);
-  const scopeOut = answers.scopeOut.map((s) => s.trim()).filter(Boolean);
-  const assumptionsText = answers.assumptions
+  // Wizard now ships only the 3 required content fields + a summary.
+  // Legacy optional fields are still accepted on the wire (S3A.1 Q1 option b)
+  // and re-emitted as empty envelopes when present so downstream consumers
+  // (export pack, BriefPanel) keep their stable read shape.
+  const scopeIn = (answers.scopeIn ?? []).map((s) => s.trim()).filter(Boolean);
+  const scopeOut = (answers.scopeOut ?? [])
     .map((s) => s.trim())
     .filter(Boolean);
+  const assumptionsText = (answers.assumptions ?? [])
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const constraintsValue = answers.constraints ?? "<p></p>";
   const constraintsHtml =
-    textFromHtml(answers.constraints).length > 0
-      ? answers.constraints
-      : "<p></p>";
+    textFromHtml(constraintsValue).length > 0 ? constraintsValue : "<p></p>";
+  const successValue = answers.successDefinition ?? "<p></p>";
+  const successHtml =
+    textFromHtml(successValue).length > 0 ? successValue : "<p></p>";
+  const summaryValue = answers.understandingSummary ?? "<p></p>";
   const summaryHtml =
-    textFromHtml(answers.understandingSummary).length > 0
-      ? answers.understandingSummary
-      : "<p></p>";
+    textFromHtml(summaryValue).length > 0 ? summaryValue : "<p></p>";
   return {
     problem: envelopeString(answers.problem, at, by),
     targetUsers: envelopeString(answers.targetUsers, at, by),
     coreValue: envelopeString(answers.coreValue, at, by),
-    successDefinition: envelopeString(answers.successDefinition, at, by),
+    successDefinition: envelopeString(successHtml, at, by),
     constraints: envelopeString(constraintsHtml, at, by),
     scopeIn: envelopeStringList(scopeIn, at, by),
     scopeOut: envelopeStringList(scopeOut, at, by),
@@ -540,14 +548,19 @@ function buildBriefStateFromAnswers(
   };
 }
 
+/**
+ * Merge any wizard-supplied open-question drafts into `discovery.openQuestions`.
+ * Tolerates `lines === undefined` (Q1 option b — the S3A.1 wizard no longer
+ * surfaces an open-questions step). When undefined or empty, returns the
+ * discovery object unchanged so no `openQuestions` field is invented and no
+ * spurious `field_edit` shape leaks downstream.
+ */
 function mergeDiscoveryDraftQuestions(
   discovery: Record<string, unknown>,
-  lines: string[],
+  lines: string[] | undefined,
   by: string,
 ): Record<string, unknown> {
-  const prev = Array.isArray(discovery.openQuestions)
-    ? (discovery.openQuestions as unknown[])
-    : [];
+  if (!lines || lines.length === 0) return discovery;
   const additions = lines
     .map((t) => t.trim())
     .filter(Boolean)
@@ -561,6 +574,10 @@ function mergeDiscoveryDraftQuestions(
       source: "user" as const,
       sourceRef: null,
     }));
+  if (additions.length === 0) return discovery;
+  const prev = Array.isArray(discovery.openQuestions)
+    ? (discovery.openQuestions as unknown[])
+    : [];
   return { ...discovery, openQuestions: [...prev, ...additions] };
 }
 
@@ -630,6 +647,20 @@ export function saveBriefAndTransition(
   }
 
   const nextBrief = buildBriefStateFromAnswers(input.answers, by, now);
+
+  // Server-side belt-and-braces: even if a malformed payload slips past the
+  // wizard validator, never persist `complete: true` with a missing required
+  // envelope. Mirrors `briefSchema.superRefine` (single source of truth).
+  const refineMissing = missingForCompleteBrief(nextBrief);
+  if (refineMissing.length > 0) {
+    return {
+      ok: false,
+      reason: "missing_required_fields",
+      fields: refineMissing,
+      current: existing,
+    };
+  }
+
   const existingDiscovery =
     (existing.discovery as Record<string, unknown>) ?? {};
   const nextDiscovery = mergeDiscoveryDraftQuestions(

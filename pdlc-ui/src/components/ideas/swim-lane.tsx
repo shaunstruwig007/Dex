@@ -3,7 +3,10 @@
 import type { ReactNode } from "react";
 import type { Lifecycle } from "@/schema/initiative";
 import { cn } from "@/lib/utils";
+import { useLaneDroppable } from "./board-dnd";
 import { LANE_DESCRIPTIONS, LANE_LABELS } from "./lanes";
+
+export type SwimLaneDropState = "idle" | "legal" | "illegal";
 
 export type SwimLaneProps = {
   lifecycle: Lifecycle;
@@ -11,9 +14,11 @@ export type SwimLaneProps = {
   children: ReactNode;
   /** Rendered when `count === 0`. */
   emptyHint?: ReactNode;
-  /** Drop target for cross-lane DnD is out-of-scope (S2) — we only accept
-   *  within-lane drops. Consumers wire onDragOver/onDrop on the <ul> that
-   *  hosts the cards; we expose a prop here so layout stays cohesive. */
+  /** Cross-lane drop highlight — driven by the parent's dragOver gate. */
+  dropState?: SwimLaneDropState;
+  /** Tooltip shown on illegal cross-lane targets while a drag is in flight. */
+  illegalReason?: string | null;
+  /** Within-lane HTML5 drag (existing behaviour) — host pointer reorder UI. */
   onListDragOver?: (event: React.DragEvent<HTMLUListElement>) => void;
   onListDrop?: (event: React.DragEvent<HTMLUListElement>) => void;
 };
@@ -23,20 +28,29 @@ export function SwimLane({
   count,
   children,
   emptyHint,
+  dropState = "idle",
+  illegalReason,
   onListDragOver,
   onListDrop,
 }: SwimLaneProps) {
   const label = LANE_LABELS[lifecycle];
   const hint = LANE_DESCRIPTIONS[lifecycle];
+  const { setNodeRef, isOver } = useLaneDroppable(lifecycle);
+
   return (
     <section
+      ref={setNodeRef}
       aria-labelledby={`lane-${lifecycle}-heading`}
       data-lane={lifecycle}
+      data-drop-state={dropState}
+      title={dropState === "illegal" ? (illegalReason ?? undefined) : undefined}
       className={cn(
-        "flex w-72 shrink-0 flex-col gap-3 rounded-lg border border-border bg-card p-3",
+        "flex h-full min-w-0 flex-col gap-3 rounded-lg border border-border bg-card p-3 transition-opacity",
+        dropState === "illegal" && "opacity-50",
+        dropState === "legal" && isOver && "ring-2 ring-primary ring-offset-1",
       )}
     >
-      <header className="flex flex-col gap-1">
+      <header className="sticky top-0 z-10 flex flex-col gap-1 bg-card pb-1">
         <div className="flex items-center justify-between gap-2">
           <h3
             id={`lane-${lifecycle}-heading`}
@@ -55,7 +69,8 @@ export function SwimLane({
       </header>
       <ul
         aria-label={`${label} initiatives`}
-        className="flex min-h-16 flex-col gap-2"
+        className="flex min-h-16 flex-col"
+        style={{ gap: "var(--card-gap)" }}
         onDragOver={onListDragOver}
         onDrop={onListDrop}
       >

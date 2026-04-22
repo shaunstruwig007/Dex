@@ -27,6 +27,7 @@ import { RichTextRenderer } from "@/components/rich-text/rich-text-renderer";
 import { canTransition, type CanTransitionResult } from "@/lib/can-transition";
 import type { Initiative, Lifecycle } from "@/schema/initiative";
 import { LANE_LABELS, LIFECYCLE_ORDER, NON_PARKED_LANES } from "./lanes";
+import { useCardDraggable } from "./board-dnd";
 
 export type MoveTarget = Exclude<Lifecycle, "parked">;
 
@@ -104,8 +105,24 @@ export function InitiativeCard({
       initiative.lifecycle === "deployed" ||
       initiative.lifecycle === "parked");
 
+  // S3A.1 card preview: when the brief is complete, surface a one-line
+  // truncated `problem.value` so the lane can be scanned at a glance.
+  // The full BriefPanel `<details>` accordion still renders below.
+  const problemPreview = briefComplete
+    ? plainFromHtml(initiative.brief?.problem?.value ?? "")
+    : "";
+
   const [briefOpen, setBriefOpen] = useState(false);
   const [exportFeedback, setExportFeedback] = useState<string | null>(null);
+
+  // Cross-lane DnD (S3A.1) — additive to native HTML5 within-lane reorder.
+  // The dnd-kit draggable is disabled for parked cards (parking is intentful;
+  // un-parking goes through the menu so the wipe rule stays explicit).
+  const { setNodeRef, attributes, listeners, isDragging } = useCardDraggable({
+    initiativeId: initiative.id,
+    fromLifecycle: initiative.lifecycle,
+    disabled: isParked,
+  });
 
   const moveTargets = useMemo(() => {
     const from = initiative.lifecycle;
@@ -156,6 +173,9 @@ export function InitiativeCard({
 
   return (
     <li
+      ref={setNodeRef}
+      {...(!isParked ? attributes : {})}
+      {...(!isParked ? listeners : {})}
       data-initiative-id={initiative.id}
       data-initiative-handle={initiative.handle}
       data-lifecycle={initiative.lifecycle}
@@ -164,8 +184,9 @@ export function InitiativeCard({
       aria-label={`${initiative.handle} ${initiative.title}`}
       className={cn(
         "group/initiative relative rounded-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        dragging && "opacity-60",
+        (dragging || isDragging) && "opacity-60",
       )}
+      style={{ paddingBlock: "var(--card-py)" }}
       onKeyDown={handleKeyDown}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
@@ -287,6 +308,18 @@ export function InitiativeCard({
             </DropdownMenu>
           </div>
         </CardHeader>
+        {problemPreview ? (
+          <CardContent className="px-3 pb-1 text-xs">
+            <p
+              className="line-clamp-1 text-muted-foreground"
+              data-testid="card-problem-preview"
+              title={problemPreview}
+            >
+              <span className="font-medium text-foreground">Problem: </span>
+              {truncate(problemPreview, 80)}
+            </p>
+          </CardContent>
+        ) : null}
         {hasBody && (
           <CardContent className="px-3 pb-2 text-xs">
             <RichTextRenderer html={initiative.body} />
@@ -318,6 +351,11 @@ function plainFromHtml(html: string): string {
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function truncate(text: string, max: number): string {
+  if (text.length <= max) return text;
+  return `${text.slice(0, Math.max(0, max - 1)).trimEnd()}…`;
 }
 
 function buildCursorExportPrompt(initiative: Initiative): string {

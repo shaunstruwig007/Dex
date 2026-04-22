@@ -134,27 +134,83 @@ const assumptionRowSchema = z.object({
 });
 
 /**
- * `brief` — S3 tightened shape (was `recordObject`). Empty `{}` remains valid
- * for fresh initiatives. Per-field envelopes match schema-initiative-v0 §4.2.
+ * `brief` — S3A.1 narrows the **required-for-complete** set to three fields
+ * (`problem`, `targetUsers`, `coreValue`). Legacy keys (`scopeIn`, `scopeOut`,
+ * `assumptions`, `constraints`, `successDefinition`, `understandingSummary`)
+ * stay optional on the object so existing rows still parse — see
+ * schema-initiative-v0 §4.2.
+ *
+ * Empty `{}` remains valid for fresh initiatives. The `briefCompleteRefine`
+ * below enforces the parse-time invariant on cards whose `complete === true`.
  */
-export const briefSchema = z
-  .object({
-    problem: stringFieldEnvelopeSchema.optional(),
-    targetUsers: stringFieldEnvelopeSchema.optional(),
-    coreValue: stringFieldEnvelopeSchema.optional(),
-    scopeIn: stringListFieldEnvelopeSchema.optional(),
-    scopeOut: stringListFieldEnvelopeSchema.optional(),
-    assumptions: z.array(assumptionRowSchema).optional(),
-    constraints: stringFieldEnvelopeSchema.optional(),
-    successDefinition: stringFieldEnvelopeSchema.optional(),
-    understandingSummary: stringFieldEnvelopeSchema.optional(),
-    complete: z.boolean().optional(),
-    reviewedAt: z.string().nullable().optional(),
-    reviewedBy: z.string().nullable().optional(),
-  })
-  .strict();
+const REQUIRED_FOR_COMPLETE = ["problem", "targetUsers", "coreValue"] as const;
+type RequiredForComplete = (typeof REQUIRED_FOR_COMPLETE)[number];
+
+function envelopeHasText(
+  envelope: z.infer<typeof stringFieldEnvelopeSchema> | undefined,
+): boolean {
+  if (!envelope) return false;
+  const text = envelope.value
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return text.length > 0;
+}
+
+/**
+ * Shared `brief.complete === true` ⇒ all 3 required envelopes present + non-empty
+ * invariant. Called from both `briefSchema.superRefine` (parse-time) and
+ * `saveBriefAndTransition` in the repository (server-side guard) so the
+ * contract is enforced in exactly one place.
+ *
+ * Returns the list of missing field names (empty array means "complete is OK").
+ */
+export function missingForCompleteBrief(
+  brief: Pick<
+    z.infer<ReturnType<typeof briefObject>>,
+    RequiredForComplete | "complete"
+  >,
+): RequiredForComplete[] {
+  const missing: RequiredForComplete[] = [];
+  for (const f of REQUIRED_FOR_COMPLETE) {
+    if (!envelopeHasText(brief[f])) missing.push(f);
+  }
+  return missing;
+}
+
+function briefObject() {
+  return z
+    .object({
+      problem: stringFieldEnvelopeSchema.optional(),
+      targetUsers: stringFieldEnvelopeSchema.optional(),
+      coreValue: stringFieldEnvelopeSchema.optional(),
+      scopeIn: stringListFieldEnvelopeSchema.optional(),
+      scopeOut: stringListFieldEnvelopeSchema.optional(),
+      assumptions: z.array(assumptionRowSchema).optional(),
+      constraints: stringFieldEnvelopeSchema.optional(),
+      successDefinition: stringFieldEnvelopeSchema.optional(),
+      understandingSummary: stringFieldEnvelopeSchema.optional(),
+      complete: z.boolean().optional(),
+      reviewedAt: z.string().nullable().optional(),
+      reviewedBy: z.string().nullable().optional(),
+    })
+    .strict();
+}
+
+export const briefSchema = briefObject().superRefine((brief, ctx) => {
+  if (brief.complete !== true) return;
+  const missing = missingForCompleteBrief(brief);
+  for (const field of missing) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `brief.${field} is required when brief.complete is true`,
+      path: [field],
+    });
+  }
+});
 
 export type BriefState = z.infer<typeof briefSchema>;
+export const REQUIRED_FOR_COMPLETE_BRIEF = REQUIRED_FOR_COMPLETE;
 
 export const initiativeSchema = z.object({
   schemaVersion: z.literal(1),

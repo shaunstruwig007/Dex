@@ -2,7 +2,12 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { eventSchema, initiativeSchema } from "./initiative";
+import {
+  briefSchema,
+  eventSchema,
+  initiativeSchema,
+  missingForCompleteBrief,
+} from "./initiative";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const fixturePath = join(
@@ -97,3 +102,51 @@ describe("eventSchema", () => {
     expect(bad.success).toBe(false);
   });
 });
+
+// S3A.1 — briefCompleteRefine (Q2): brief.complete === true must imply
+// problem + targetUsers + coreValue envelopes are populated.
+describe("briefSchema — completeness invariant (S3A.1)", () => {
+  const env = (value: string) => ({
+    value,
+    confidence: "high" as const,
+    source: "user" as const,
+  });
+  const completeBrief = {
+    problem: env("<p>p</p>"),
+    targetUsers: env("<p>u</p>"),
+    coreValue: env("<p>v</p>"),
+    complete: true,
+  };
+
+  it("accepts an empty brief object", () => {
+    expect(briefSchema.safeParse({}).success).toBe(true);
+  });
+
+  it("accepts a brief with only the 3 required envelopes when complete", () => {
+    expect(briefSchema.safeParse(completeBrief).success).toBe(true);
+  });
+
+  it("rejects complete=true when any required envelope is empty", () => {
+    const r1 = briefSchema.safeParse({
+      ...completeBrief,
+      problem: env("<p></p>"),
+    });
+    expect(r1.success).toBe(false);
+    const r2 = briefSchema.safeParse({
+      ...completeBrief,
+      targetUsers: undefined,
+    });
+    expect(r2.success).toBe(false);
+  });
+
+  it("missingForCompleteBrief lists the empty fields", () => {
+    expect(missingForCompleteBrief({ ...completeBrief })).toEqual([]);
+    expect(
+      missingForCompleteBrief({
+        ...completeBrief,
+        coreValue: env("<p></p>"),
+      }),
+    ).toEqual(["coreValue"]);
+  });
+});
+

@@ -36,14 +36,18 @@ export const briefStepsFileSchema = z
 export type BriefStep = z.infer<typeof briefStepSchema>;
 export type BriefStepsFile = z.infer<typeof briefStepsFileSchema>;
 
-/** Required-for-complete fields (wizard + server + schema doc). */
+/**
+ * Required-for-complete fields (wizard + server + schema doc).
+ *
+ * S3A.1 narrows the wizard to **why → who → what** — `coreValue`,
+ * `targetUsers`, `problem` — plus a summary step. Legacy fields stay optional
+ * on the JSON (no longer rendered by the wizard) and on the runtime
+ * `briefSchema`. See `pdlc-ui/content/pdlc-brief-steps.json` for ordering.
+ */
 export const REQUIRED_BRIEF_FIELDS = [
   "problem",
   "targetUsers",
   "coreValue",
-  "successDefinition",
-  "scopeIn",
-  "assumptions",
 ] as const satisfies readonly BriefStep["field"][];
 
 export function loadBriefSteps(): BriefStepsFile {

@@ -92,6 +92,7 @@ Plan mode must produce:
 4. **Docs to update in the same PR** — [`schema-initiative-v0.md`](./schema-initiative-v0.md), [`lifecycle-transitions.md`](./lifecycle-transitions.md), `OPERATIONS.md`, `BACKUP_RUNBOOK.md`, `README` kick-off decisions block, `design-system.md` (after S6), etc.
 5. **Explicitly OUT reminder** copied from the sprint section so Build does not drift.
 6. **UI primitives audit** — list every new user-visible surface and confirm (a) `/anthropic-frontend-design` was read, (b) content renders via the renderer, (c) tokens used for every colour, (d) visible focus ring, (e) keyboard-completable.
+7. **M + Q critique pass** (mandatory before handoff to Build) — invoke [`/agent-m-cpo-custom`](../../.claude/skills/agent-m-cpo-custom/SKILL.md) **first** (CPO / outcome / first-demo risk) and [`/agent-q-cto-custom`](../../.claude/skills/agent-q-cto-custom/SKILL.md) **second** (CTO / feasibility / contracts / cheaper path). Fold every must-fix into the plan in a single edit under a heading **"Net M + Q recommendations applied"**. Do not move to Build with an unresolved M or Q **GAP**. Either agent's verdict can return the plan; neither has veto over the other (plan author resolves conflicts and notes trade-offs).
 
 ---
 
