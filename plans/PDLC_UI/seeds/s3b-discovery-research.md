@@ -1,6 +1,8 @@
 Read plans/PDLC_UI/plan-mode-prelude.md first. Then execute Sprint S3B — `/pdlc-discovery-research-custom` (Bar A). Branch: feat/s3b-discovery-research.
 
 > **⚠ Open seed — deep-dive scheduled 2026-04-22+ with Shaun.** This file **reserves the slot** and pins the **shape** (interface, inputs, outputs, cadence) so S3A.1 / S3A.2 can build to it without guessing. The full field-by-field behaviour, research taxonomy, and LLM wiring are resolved in Plan mode **with the PO** before Build. **Do not start Build from this seed alone** — the "Deep-dive open questions" block below must close first.
+>
+> **2026-04-22 upstream pivot note.** S3A.2 no longer ships the automation surface (prefill + kickoff + `initiative_jobs` + the provider interface). S3A.2 now ships the URL-addressable **Initiative Modal** + chat-style brief wizard + within-lane reorder restore. The automation-surface work — including the `DiscoveryResearchProvider` interface this S3B replaces — moved to **S3A.3**. In the body below, treat every "S3A.2" reference as "S3A.3" for the parts that describe kickoff / jobs / provider swap / discovery progress, and every "side panel" reference as "Initiative Modal's Discovery tab". See [`../../pdlc-ui/docs/design-log/2026-04-22-pivot-to-modal.md`](../../../pdlc-ui/docs/design-log/2026-04-22-pivot-to-modal.md) and the current [`sprint-backlog.md § Sprint 3A.2` + `§ Sprint 3A.3`](../sprint-backlog.md). A full re-author of this seed is scheduled for the deep-dive.
 
 ---
 
@@ -23,7 +25,7 @@ interface DiscoveryResearchProvider {
 }
 ```
 
-S3B ships a new provider module implementing the same shape — the route handler, `initiative_jobs` table, client polling, card progress bar, side-panel Discovery tab, and terminal-write path stay untouched.
+S3B ships a new provider module implementing the same shape — the route handler, `initiative_jobs` table, client polling, card progress bar, Initiative Modal's Discovery tab, and terminal-write path stay untouched.
 
 **Invariants S3B preserves from S3A.2:**
 
@@ -64,7 +66,7 @@ All writes go to `discovery.*` — **not** `brief.*`. The brief is frozen at the
 | `discovery.competitorSnapshot` | list envelope (`{ name, url, positioningNote, lastSeen }[]`) | `signal_cited` where sourceRef exists; `agent_draft` otherwise |
 | `discovery.customerEvidence[]` | existing shape from §4.3 | `meeting_cited` (with `sourceRef` → meeting path) |
 | `discovery.openQuestions[]` | existing shape; `status: "open"`, `owner: "pm"`, `source: "agent_draft"` | All drafted questions start as drafts — PM confirms in the UI |
-| `discovery.research.summary` | `stringFieldEnvelope` (already added in S3A.2) | Synthesis of the above — this is what the card side-panel's Discovery tab renders |
+| `discovery.research.summary` | `stringFieldEnvelope` (already added in S3A.2) | Synthesis of the above — this is what the Initiative Modal's Discovery tab renders |
 | `discovery.iteration` | `number` (monotonic, server-computed) | Incremented on every successful run |
 | `discovery.lastRerunAt` | ISO-8601 | Set on every successful run |
 
@@ -77,7 +79,7 @@ All writes go to `discovery.*` — **not** `brief.*`. The brief is frozen at the
 **Three triggers:**
 
 1. **Kickoff on `idea → discovery` lane move** — the S3A.2 flow invokes S3B once; iteration `1`.
-2. **Manual "Re-run discovery"** from the side panel's Discovery tab (staleness rule in schema §7: any `brief.*.updatedAt` newer than `discovery.lastRerunAt` offers the re-run). Incremental iteration; previous `discovery.researchNotes` with `source: user` or `reviewedBy != null` are preserved; only `agent_draft` fields are overwritten.
+2. **Manual "Re-run discovery"** from the Initiative Modal's Discovery tab (staleness rule in schema §7: any `brief.*.updatedAt` newer than `discovery.lastRerunAt` offers the re-run). Incremental iteration; previous `discovery.researchNotes` with `source: user` or `reviewedBy != null` are preserved; only `agent_draft` fields are overwritten.
 3. **Weekly sweep (Bar A cadence)** — a scheduled pass across **all cards in the `discovery` column**. Refreshes competitor snapshots, pulls new signals, surfaces any new open questions as drafts. Does **not** touch user-reviewed fields. Designed to **accumulate context** over time — every week the discovery tab has more signal than the week before (this is the compound-loop the plan's Phase 3+ pins to Dex-native habits).
 
 **Scheduler for the weekly sweep:** TBC 2026-04-22. Options are (a) a `cron`-style entry in the Dex daily/weekly runner, (b) a cursor-friendly manual `/weekly-discovery-sweep` chat command, or (c) a UI button in the board header. Default this seed = **(b) manual + (a) cron via existing Dex cadence scripts** — do not add a server-side scheduler to `pdlc-ui` just for this. Revisit after 2 cycles.
@@ -113,7 +115,7 @@ The weekly sweep needs fresh market data to re-score against. **`/pdlc-discovery
 
 **Q9 — Scope boundary with `/agent-prd`.** When the card moves `discovery → design` (and later `design → spec_ready`), what does `/agent-prd` read from `discovery.*` vs `brief.*`? Minor doc update in `schema-initiative-v0 §8` — confirm the I/O contract table line for `/agent-prd`.
 
-**Q10 — Re-run on brief edit.** S3A.2 explicitly does **not** re-fire kickoff on brief edit. With S3B live, the staleness rule in schema §7 becomes real: any `brief.*` update makes `discovery.*` stale. Confirm the side-panel UX offers "Re-run discovery" exactly when the staleness rule fires — and never auto-runs it (PM decides).
+**Q10 — Re-run on brief edit.** S3A.2 explicitly does **not** re-fire kickoff on brief edit. With S3B live, the staleness rule in schema §7 becomes real: any `brief.*` update makes `discovery.*` stale. Confirm the Initiative Modal's Discovery tab UX offers "Re-run discovery" exactly when the staleness rule fires — and never auto-runs it (PM decides).
 
 ---
 
@@ -124,21 +126,21 @@ The weekly sweep needs fresh market data to re-score against. **`/pdlc-discovery
 - **Weekly sweep entrypoint** — manual `/weekly-discovery-sweep` chat command + optional cron hook (TBC Q2 above).
 - **ICP artefact** `System/icp.md` authored by Shaun 2026-04-22 (co-shipped with S3B; it is a blocker for the weekly sweep).
 - **Schema doc updates** — add `/pdlc-discovery-research-custom` row to `schema-initiative-v0 §8` (already pre-staged 2026-04-21); confirm `discovery.*` write list matches provider output.
-- **Side panel Discovery tab copy** — no shape change from S3A.2; just copy that reflects real research vs stub.
+- **Initiative Modal Discovery tab copy** — no shape change from S3A.2; just copy that reflects real research vs stub.
 - **Tests** — unit-test the provider against golden fixtures (brief shape + mocked vault reads → expected `discovery.*` diff); Playwright smoke that a full kickoff → tick → terminal produces a non-empty `research.summary` on a card with a seeded brief.
 
 ---
 
 ### DoD (outline)
 
-- [ ] `DiscoveryResearchProvider` swap: S3A.2 stub replaced by the real provider with **zero** changes to the route handler, `initiative_jobs` table, polling client, or side-panel Discovery tab.
+- [ ] `DiscoveryResearchProvider` swap: S3A.2 stub replaced by the real provider with **zero** changes to the route handler, `initiative_jobs` table, polling client, or Initiative Modal's Discovery tab.
 - [ ] Deep-dive questions Q1–Q10 closed in Plan mode before Build.
 - [ ] `System/icp.md` exists and is read by the provider to score strategic fit.
 - [ ] Kickoff writes `discovery.researchNotes` + `discovery.competitorSnapshot` + `discovery.customerEvidence[]` + `discovery.openQuestions[]` + `discovery.research.summary` + `discovery.iteration` + `discovery.lastRerunAt`.
 - [ ] Weekly sweep command refreshes all `discovery`-column cards; preserves `user` / `reviewedBy != null` fields; appends an `openQuestion` draft when new evidence contradicts a PM-reviewed field.
 - [ ] `/pdlc-discovery-research-custom` row in `schema-initiative-v0 §8` matches provider behaviour; `skill_run` known-ids list includes the id.
 - [ ] LLM calls are server-side only; cost ceiling defined + enforced; observable per run (one `skill_run` event + Slice log weekly roll-up).
-- [ ] Playwright smoke: seed a card with brief → kickoff → tick-to-terminal → side-panel Discovery tab shows a non-empty synthesis.
+- [ ] Playwright smoke: seed a card with brief → kickoff → tick-to-terminal → Initiative Modal's Discovery tab shows a non-empty synthesis.
 
 ---
 
@@ -155,7 +157,7 @@ The weekly sweep needs fresh market data to re-score against. **`/pdlc-discovery
 ### Dependencies
 
 - **S3A.1 merged** (shrunk brief — the three questions the skill reads).
-- **S3A.2 merged** (`DiscoveryResearchProvider` interface, `initiative_jobs` table, kickoff endpoint, side-panel Discovery tab, staleness rule plumbing).
+- **S3A.2 merged** (Initiative Modal + tabs shell) **and S3A.3 merged** (`DiscoveryResearchProvider` interface, `initiative_jobs` table, kickoff endpoint, Initiative Modal's Discovery tab progress surface, staleness rule plumbing).
 - **`System/icp.md` exists** (Shaun, 2026-04-22) — blocker for the weekly sweep.
 - Existing Dex skills: `/customer-intel`, `/intelligence-scanning`, `/meeting-prep`, `/weekly-exec-intel` — consumed as-is.
 

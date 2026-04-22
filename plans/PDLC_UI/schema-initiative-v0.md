@@ -155,7 +155,7 @@ Runs at **`idea → discovery`** as a stepwise popup (plan R4). **Ends at the un
 **Design rationale (2026-04-21):** see the S3A.1 Progress log entry and the [pdlc-brief-custom SKILL.md](../../.claude/skills/pdlc-brief-custom/SKILL.md) "Design rationale" note. TL;DR: the brief is a **thesis gate**, not a PRD; asking for scope / assumptions / hard success metrics at brief-time produced low-confidence drafts the PM had to unpick.
 
 **Writeable by:** `/pdlc-brief-custom` (UI wizard + server prefill endpoint).
-**Read by:** `/pdlc-discovery-research-custom` (reads brief + gate to scope discovery research), `/agent-prd` (mandatory ingest at `spec_ready`), UI card **Brief** tab in the side panel, discovery export pack.
+**Read by:** `/pdlc-discovery-research-custom` (reads brief + gate to scope discovery research), `/agent-prd` (mandatory ingest at `spec_ready`), UI card **Brief** tab in the Initiative Modal, discovery export pack.
 
 ### 4.3 `discovery` — open questions + research
 
@@ -318,7 +318,7 @@ Each PDLC skill declares what it reads and what it writes. Full detail lives in 
 |-------|-------|--------|--------------|
 | `/pdlc-idea-gate-custom` | `title`, `body`, `strategyPillarIds`, recent `sourceRefs` | `gate.*` | `idea` card open (optional) |
 | `/pdlc-brief-custom` | `title`, `body`, `gate.*`, `sourceRefs` | `brief.problem`, `brief.targetUsers`, `brief.coreValue`, `brief.understandingSummary`, `brief.complete` | `idea → discovery` column move |
-| `/pdlc-discovery-research-custom` *(S3B)* | `brief.*`, `gate.*`, `title`, `body`, `sourceRefs[]`, `06-Resources/Market_intelligence/*`, `Market_and_deal_signals.md`, `company_strategy.md`, `System/icp.md` (once it exists), `People/External/*` meetings | `discovery.researchNotes`, `discovery.competitorSnapshot`, `discovery.customerEvidence[]`, `discovery.openQuestions[]` (draft), `discovery.research.summary`, `discovery.iteration`, `discovery.lastRerunAt` | Kickoff on `idea → discovery` lane move (replaces S3A.2 `discovery-kickoff-custom` stub); weekly re-run sweep against all `discovery`-column cards; manual "Re-run discovery" from the side panel. |
+| `/pdlc-discovery-research-custom` *(S3B)* | `brief.*`, `gate.*`, `title`, `body`, `sourceRefs[]`, `06-Resources/Market_intelligence/*`, `Market_and_deal_signals.md`, `company_strategy.md`, `System/icp.md` (once it exists), `People/External/*` meetings | `discovery.researchNotes`, `discovery.competitorSnapshot`, `discovery.customerEvidence[]`, `discovery.openQuestions[]` (draft), `discovery.research.summary`, `discovery.iteration`, `discovery.lastRerunAt` | Kickoff on `idea → discovery` lane move (replaces the S3A.3 `discovery-kickoff-custom` stub); weekly re-run sweep against all `discovery`-column cards; manual "Re-run discovery" from the Initiative Modal's Discovery tab. |
 | `/agent-prd` | `brief.*`, `discovery.*`, `design.*`, `strategyPillarIds` | `spec.*`, `linkedPrdPath` | `spec_ready` column entry |
 | `/anthropic-frontend-design` | `design.loFiArtifactUrl`, `design.claudeDesignHandoffPath`, brief problem | `design.implementationPolishNote` | Cursor session after Claude Design |
 | `/design-review-custom` *(future)* | `design.*` | `design.review.*` | Stage 6 gate |

@@ -101,11 +101,13 @@ export function InitiativeCard({
   const [briefOpen, setBriefOpen] = useState(false);
   const [exportFeedback, setExportFeedback] = useState<string | null>(null);
 
-  // Cross-lane DnD (S3A.1) — dnd-kit's PointerSensor + KeyboardSensor own
-  // the pointer drag surface end-to-end. Native HTML5 `draggable` was removed
-  // in this sprint because it preempted pointer events and blocked dnd-kit's
-  // 6px activation (real-user drag would never cross). Within-lane pointer
-  // reorder is deferred to S3A.2 (dnd-kit over-events + neighboursForSwap);
+  // Cross-lane DnD (S3A.1) — dnd-kit's PointerSensor owns the pointer drag
+  // surface end-to-end. Native HTML5 `draggable` was removed in this sprint
+  // because it preempted pointer events and blocked dnd-kit's 6px activation
+  // (real-user drag would never cross). Keyboard cross-lane ships via the
+  // `Actions → Move to…` submenu; dnd-kit `KeyboardSensor` is deferred to
+  // S3A.3 (ADR-0003 — translate3d clamping). Within-lane pointer reorder is
+  // deferred to S3A.2 (dnd-kit `useDroppable` per slot + grip-handle drag);
   // `Alt+↑/↓` keyboard reorder and the `Actions → Move to…` menu still work.
   const { setNodeRef, attributes, listeners, isDragging } = useCardDraggable({
     initiativeId: initiative.id,
