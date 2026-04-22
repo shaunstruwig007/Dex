@@ -1,3 +1,17 @@
+> **SUPERSEDED 2026-04-22.**
+>
+> This seed originally scoped **S3A.2** as "Discovery automation surface + non-modal side panel + prefill". After S3A.1 merged and real-user feedback asked for a single housing surface for every per-initiative artefact, S3A.2 pivoted to the **URL-addressable Initiative Modal + chat-style brief wizard + within-lane reorder restore** — see [`../s3a2-initiative-modal-tabs-chat-wizard.md`](../s3a2-initiative-modal-tabs-chat-wizard.md).
+>
+> The scope below (prefill, tick-driven discovery kickoff, `initiative_jobs` table, edit-existing-brief, focused-column mode, `KeyboardSensor` revival) moved forward to **S3A.3** — see [`plans/PDLC_UI/sprint-backlog.md § Sprint 3A.3`](../../sprint-backlog.md) for the current row and the trimmed deliverable list. A new seed (`s3a3-discovery-automation.md`) will be authored when S3A.2 merges; this file is preserved verbatim for the original reasoning, field scope, and runner-model contract — all of which carry forward unchanged. The only structural difference: the progress surface moves from the side panel into the **Initiative Modal's Discovery tab**; "non-modal side panel" is dropped.
+>
+> Reasoning for the pivot: [`pdlc-ui/docs/design-log/2026-04-22-pivot-to-modal.md`](../../../../pdlc-ui/docs/design-log/2026-04-22-pivot-to-modal.md).
+>
+> ADR on the DnD shape (relevant to `KeyboardSensor` revival here): [`pdlc-ui/docs/adr/0003-dnd-shape-and-html5-ban.md`](../../../../pdlc-ui/docs/adr/0003-dnd-shape-and-html5-ban.md).
+>
+> **Do not execute this seed as S3A.2.** Execute [`../s3a2-initiative-modal-tabs-chat-wizard.md`](../s3a2-initiative-modal-tabs-chat-wizard.md) for S3A.2; author a new S3A.3 seed when S3A.2 merges.
+
+---
+
 Read plans/PDLC_UI/plan-mode-prelude.md first. Then execute Sprint S3A.2 — Discovery automation surface + side panel + prefill (Bar A). Branch: feat/s3a2-discovery-automation.
 
 Sprint 3A.2 is the **second of the two-slice 3A pass** (3A.1 interactions shipped first). It adds the **automation surface** on top of the polished S3+3A.1 journey: a **pre-filled** brief draft when the wizard opens, a **discovery research kickoff** with a **visible in-progress surface** on the card, an **edit-existing-brief** path, and a **non-modal resizable side panel** that preserves board context. The research runner itself is a **deterministic stub** this sprint — the real agent is wired in S4. 3A.2 proves the **surface**, not the intelligence.

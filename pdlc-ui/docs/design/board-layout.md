@@ -1,7 +1,8 @@
 # Board layout — Chief Designer spec v0.1
 
-**Status:** Draft for S3A.1 / S3A.2 implementation (2026-04-21).
-**Owner:** PM (interim) · [`plans/PDLC_UI/seeds/s3a1-brief-wizard-interactions.md`](../../../plans/PDLC_UI/seeds/s3a1-brief-wizard-interactions.md) + [`plans/PDLC_UI/seeds/s3a2-discovery-automation.md`](../../../plans/PDLC_UI/seeds/s3a2-discovery-automation.md).
+**Status:** Draft for S3A.1 / S3A.2 implementation (2026-04-21; revised 2026-04-22 — §5 pivoted from side panel to URL-addressable Initiative Modal, §6 deferred to S3A.3).
+**Owner:** PM (interim) · [`plans/PDLC_UI/seeds/s3a1-brief-wizard-interactions.md`](../../../plans/PDLC_UI/seeds/s3a1-brief-wizard-interactions.md) + [`plans/PDLC_UI/seeds/s3a2-initiative-modal-tabs-chat-wizard.md`](../../../plans/PDLC_UI/seeds/s3a2-initiative-modal-tabs-chat-wizard.md).
+**Design-log:** [`pdlc-ui/docs/design-log/2026-04-22-pivot-to-modal.md`](../design-log/2026-04-22-pivot-to-modal.md) preserves the original §5 side-panel reasoning and the trade-off that led to the modal.
 **Companion:** [`plans/PDLC_UI/tech-stack.md § 3`](../../../plans/PDLC_UI/tech-stack.md#3-ui-primitives-r18) UI primitives · [`pdlc-ui/src/styles/tokens.css`](../../src/styles/tokens.css) · [`pdlc-ui/docs/ui-notes.md`](../ui-notes.md).
 
 **Read before implementing:** [`.claude/skills/anthropic-frontend-design/SKILL.md`](../../../.claude/skills/anthropic-frontend-design/SKILL.md).
@@ -94,30 +95,32 @@ Exact values belong in `tokens.css` (R18) — this spec sets the shape, not the 
 
 ---
 
-## 5. Side panel — non-modal, resizable, drag-aware
+## 5. Initiative Modal — URL-addressable, tabbed, ~70vw × ~85vh
 
-Details open in a **right-rail drawer**, not a dialog. Board stays alive behind it.
+Details open in a **URL-addressable modal** over the live board. Sourced from S3A.1 real-user feedback (2026-04-22): the card face was losing context under expand-and-scroll, and users wanted a single housing surface for every per-initiative artefact. The original §5 "non-modal side panel" design is preserved in the design-log (link at top) for historical reference; the trade-off that led to the modal pivot is recorded there.
 
-- **ARIA:** `role="complementary"` with `aria-label="Initiative details"`. **Not** `role="dialog"`. **No focus trap.** Esc closes via a keyboard listener.
-- **Default width: 420px.** **Min 320px. Max 600px.** Drag the **left edge** to resize; width persists per user.
-- **Drag auto-collapse:** while any card-drag is in progress on the board, the panel collapses to an **80px tab-icons-only rail**; restores to the previous width on drag end. The board gets the width back exactly when the user reaches for a column.
-- **Content:** four tabs — **Idea** · **Brief** · **Discovery** · **Activity**. Pin-last-tab per user.
-- **Open behaviour:** clicking anywhere on a card (outside drag handle / ellipsis) opens the panel on its last tab; clicking another card swaps content in place; Esc / ✕ closes and preserves horizontal scroll position of the board.
-- **Replaces the inline `<details>` BriefPanel** on the card face. The card face keeps a single truncated `problem.value` line + "Open details ›" link.
+- **Route shape (Next.js parallel + intercepting):** `/ideas/@modal/(.)initiative/[id]` intercepts over the board; `/initiative/[id]` is the paired full-page route. Modal URLs are refresh-safe and shareable (Slack, Granola, meeting prep).
+- **Chrome:** the shadcn `Dialog` wrapper — which in this repo wraps [`@base-ui/react/dialog`](../../src/components/ui/dialog.tsx) (not Radix). Overlay `bg-black/70 backdrop-blur-sm`; content `w-[min(1200px,70vw)] h-[85vh] max-w-none p-0` with a compact header + tab strip.
+- **Active tab** is a query param (`?tab=brief`); persists across refresh/back; default-tab logic picks the most actionable tab for the initiative's current lifecycle.
+- **Six tabs, lifecycle-gated** (`live` / `pending` grey dot / `locked`): Idea · Brief · Discovery · Spec · Design · Activity. Exact availability matrix lives in the S3A.2 seed; the pure function ships as `pdlc-ui/src/lib/tab-availability.ts`.
+- **Open behaviour:** clicking anywhere on a card (outside the ellipsis / grip handle / interactive child) opens the modal on its default tab; Enter on a focused card does the same. Close via ESC, overlay click, back button, or explicit close — board scroll position preserved.
+- **Replaces** the inline `<details>` BriefPanel accordion (removed in S3A.2). The card face keeps a single truncated `problem.value` line when `brief.complete === true`.
 
-**Why not a modal:** a modal blocks the board. The user explicitly asked to keep columns interactive while reading card context. A `complementary` landmark is the honest semantic — and the drag auto-collapse resolves the column-stealing tension at the exact moment it would bite.
+**Honest trade-off:** the modal blocks the board while open, which the original side-panel design tried to avoid. The trade is intentional — the modal is the content hub for all per-initiative artefacts (idea text, brief, discovery output, spec, design attachments, activity feed) and needs the room. ESC / back / deep-link make dismissal fast, and the URL makes state shareable. Full reasoning: [`design-log/2026-04-22-pivot-to-modal.md`](../design-log/2026-04-22-pivot-to-modal.md).
+
+See [`plans/PDLC_UI/seeds/s3a2-initiative-modal-tabs-chat-wizard.md`](../../../plans/PDLC_UI/seeds/s3a2-initiative-modal-tabs-chat-wizard.md) for the full S3A.2 deliverables — modal chrome, tab shell, chat-style brief wizard, card UX changes, within-lane pointer reorder via dnd-kit, and the read-only Activity feed.
 
 ---
 
-## 6. Focused-column mode
+## 6. Focused-column mode — deferred to S3A.3
 
-Deep-work escape hatch. Double-click a column header (or Enter on a focused header) to enter focused mode:
+Deep-work escape hatch (double-click / Enter on a column header → siblings collapse to 48px rails, parked rail unaffected, Esc returns, ephemeral state). **Deferred to S3A.3** to keep S3A.2 scoped around the modal + chat wizard + within-lane reorder restore (three non-trivial surfaces already). The design intent below stands; implementation waits.
 
-- The focused column expands to fill the visible board width (minus panel if open).
+- The focused column expands to fill the visible board width.
 - Sibling **main** lanes collapse to **48px rails** showing only the stage icon + card count. Click a rail to swap focus.
 - The **parked rail is unaffected** — it retains its current width (collapsed or expanded).
 - Esc returns to the default layout.
-- State is **ephemeral** — not persisted. Focused mode is an "I'm triaging discovery right now" tool, not a view setting.
+- State is **ephemeral** — not persisted.
 
 **Why not persisted:** the default should work; focused mode solves the edge case where you're living in one column for 20 minutes. Persisting it means a new user lands in an expanded view they don't understand.
 
@@ -136,25 +139,25 @@ Deep-work escape hatch. Double-click a column header (or Enter on a focused head
 
 ## 8. Implementation sequencing
 
-| Spec section              | Sprint    | Notes                                                         |
-| ------------------------- | --------- | ------------------------------------------------------------- |
-| §1 Chrome-light shell     | **S3A.1** | Sticky 48px header + board-as-scroll-container                |
-| §2 Elastic main lanes     | **S3A.1** | `repeat(auto-fit, minmax(280px, 1fr))` + natural-floor scroll |
-| §3 Parked right-edge rail | **S3A.1** | Replace in-grid parked lane with rail                         |
-| §4 Density toggle         | **S3A.1** | Three modes + CSS-var swap + `localStorage`                   |
-| §5 Side panel             | **S3A.2** | Non-modal, resizable, drag auto-collapse — see S3A.2 seed     |
-| §6 Focused column         | **S3A.2** | Double-click header → siblings collapse to rails              |
-| §7 Guardrails             | ongoing   | Enforced in PR review + axe smoke                             |
+| Spec section              | Sprint    | Notes                                                                 |
+| ------------------------- | --------- | --------------------------------------------------------------------- |
+| §1 Chrome-light shell     | **S3A.1** | Sticky 48px header + board-as-scroll-container                        |
+| §2 Elastic main lanes     | **S3A.1** | `repeat(auto-fit, minmax(280px, 1fr))` + natural-floor scroll         |
+| §3 Parked right-edge rail | **S3A.1** | Replace in-grid parked lane with rail                                 |
+| §4 Density toggle         | **S3A.1** | Three modes + CSS-var swap + `localStorage`                           |
+| §5 Initiative Modal       | **S3A.2** | URL-addressable modal + six tabs + chat wizard — see S3A.2 seed       |
+| §6 Focused column         | **S3A.3** | Deferred from S3A.2; double-click header → siblings collapse to rails |
+| §7 Guardrails             | ongoing   | Enforced in PR review + axe smoke                                     |
 
 ---
 
 ## 9. Accessibility acceptance (must hold across sections)
 
 - axe-clean in every density mode and in focused mode.
-- Keyboard reaches every interactive (headers, density toggle, rail toggle, cards, panel tabs, panel resize handle); 2px focus ring visible everywhere.
-- DnD has a first-class keyboard path (Space + arrows + Enter + Esc) — see S3A.1 seed DoD.
-- Side panel does not trap focus; Tab moves into and out of it naturally; Esc closes.
-- Reduced-motion respected: drag auto-collapse and focused-mode transitions honour `prefers-reduced-motion`.
+- Keyboard reaches every interactive (headers, density toggle, rail toggle, cards, modal tabs, modal close); 2px focus ring visible everywhere.
+- Cross-lane DnD has a keyboard path via the card's **Actions → Move to…** submenu (S3A.1 shipped). A pointer-sensor-only dnd-kit surface owns pointer drag; the dnd-kit `KeyboardSensor` is deferred to S3A.3 (see ADR-0003 and `design-log/2026-04-22-pivot-to-modal.md`).
+- Modal uses a standard focus trap while open; ESC + overlay click + back button all dismiss.
+- Reduced-motion respected: modal fade/scale and focused-mode transitions honour `prefers-reduced-motion`.
 
 ---
 

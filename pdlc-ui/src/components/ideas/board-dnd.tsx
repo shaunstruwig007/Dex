@@ -2,15 +2,12 @@
 
 import {
   DndContext,
-  KeyboardCode,
-  KeyboardSensor,
   PointerSensor,
   useDraggable,
   useDroppable,
   useSensor,
   useSensors,
   type DndContextProps,
-  type KeyboardCoordinateGetter,
 } from "@dnd-kit/core";
 import type { ReactNode, RefObject } from "react";
 import type { Lifecycle } from "@/schema/initiative";
@@ -19,47 +16,24 @@ import { LIFECYCLE_ORDER } from "./lanes";
 /**
  * Board DnD plumbing — `@dnd-kit/core` only (Q-alt.1, S3A.1 plan).
  *
- * `@dnd-kit/sortable` is intentionally NOT installed: within-lane reorder
- * keeps its existing pointer + `Alt+↑/↓` keyboard fallback (initiative-card)
- * so the only thing this DnD layer adds is **cross-lane** moves (the menu's
- * "Move to…" path made interactive). See [tech-stack.md §3.5] note.
+ * `@dnd-kit/sortable` is intentionally NOT installed. Cross-lane moves are the
+ * only flow this DnD layer handles today: pointer drag via `PointerSensor`
+ * (6px activation so card clicks still register), with the card menu's
+ * "Actions → Move to…" submenu as the shipped keyboard path.
  *
- * Keyboard coordinate getter is hand-rolled: arrow keys snap to the next
- * lane in the canonical lifecycle order so a screen-reader user can drive
- * the same legality matrix that the menu's submenu surfaces.
+ * Keyboard DnD deferred (M1 honesty): a dnd-kit `KeyboardSensor` with a
+ * hand-rolled lane-step coordinate getter shipped in S3A.1 pass-1 but could
+ * not actually move a card — the default modifiers clamp `translate3d` to the
+ * source lane's bounds, so Space → Arrow → Space dropped back into origin.
+ * Fixing it requires either a `DragOverlay` with an unbounded surface or a
+ * custom modifier that widens the bounds to the board. Neither is in S3A.2
+ * scope — tracked as an S3A.3 carry-over. Until then, the submenu IS the
+ * keyboard cross-lane path and the only one we claim to ship. See ADR-0003.
+ *
+ * Within-lane pointer reorder is also deferred to S3A.2 (restored via
+ * `useDroppable` per slot + grip-handle `useDraggable`) — HTML5 `draggable`
+ * is banned on card `<li>`s (ADR-0003, regression guard in `e2e/dnd.spec.ts`).
  */
-
-const KEY_LANE_STEP = 320;
-
-const laneKeyboardCoordinateGetter: KeyboardCoordinateGetter = (
-  event,
-  { currentCoordinates },
-) => {
-  switch (event.code) {
-    case KeyboardCode.Right:
-      return {
-        x: currentCoordinates.x + KEY_LANE_STEP,
-        y: currentCoordinates.y,
-      };
-    case KeyboardCode.Left:
-      return {
-        x: currentCoordinates.x - KEY_LANE_STEP,
-        y: currentCoordinates.y,
-      };
-    case KeyboardCode.Down:
-      return {
-        x: currentCoordinates.x,
-        y: currentCoordinates.y + 24,
-      };
-    case KeyboardCode.Up:
-      return {
-        x: currentCoordinates.x,
-        y: currentCoordinates.y - 24,
-      };
-    default:
-      return undefined;
-  }
-};
 
 export function BoardDndProvider({
   children,
@@ -69,9 +43,6 @@ export function BoardDndProvider({
     useSensor(PointerSensor, {
       // Avoid hijacking interactions on dropdown menus / buttons inside cards.
       activationConstraint: { distance: 6 },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: laneKeyboardCoordinateGetter,
     }),
   );
 
@@ -110,14 +81,10 @@ export function isDragData(value: unknown): value is DragData {
 }
 
 /**
- * Draggable card wrapper — exposes the dnd-kit ref + listeners so the
- * existing `<InitiativeCard>` LI keeps its native HTML drag handlers for
- * within-lane reorder while we wire dnd-kit for cross-lane moves on top.
- *
- * The two systems do not collide: native HTMl5 drag is the within-lane
- * reorder mechanism; dnd-kit owns the keyboard sensor + the cross-lane
- * pointer drag (with a 6px activation distance so a click on the card
- * still registers as a click).
+ * Draggable card wrapper — exposes the dnd-kit ref + listeners + attributes
+ * that `<InitiativeCard>` spreads onto its `<li>`. Cross-lane pointer drag
+ * is the ONLY flow this hook owns; within-lane reorder is deferred to
+ * S3A.2 (see top-of-file comment and ADR-0003).
  */
 export function useCardDraggable(args: {
   initiativeId: string;

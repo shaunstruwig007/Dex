@@ -7,8 +7,8 @@ Sprint 3A.1 is the **first of a two-slice pass** (3A.1 interactions + 3A.2 autom
 **What moved to S3A.2 (so this sprint stays tight):**
 - Pre-filled brief drafts from the idea description (prefill endpoint, "Draft from idea" badges, regenerate per field).
 - Discovery research kickoff + in-progress surface on the card (job record, tick-driven runner, progress bar).
-- Right-rail side panel (Idea / Brief / Discovery / Activity tabs).
-- Edit-existing-brief path from the side panel.
+- URL-addressable Initiative Modal (Idea / Brief / Discovery / Spec / Design / Activity tabs). _(Originally scoped as a non-modal right-rail side panel; pivoted 2026-04-22 — see [`../../pdlc-ui/docs/design-log/2026-04-22-pivot-to-modal.md`](../../../pdlc-ui/docs/design-log/2026-04-22-pivot-to-modal.md).)_
+- Edit-existing-brief path from the Initiative Modal's Brief tab (deferred to S3A.3 with the other automation-surface work).
 
 **Carry-over from S3 Slice log (2026-04-21) that S3A.1 must respect:**
 - Atomic `POST /api/initiatives/:id/brief` saves the brief + moves the lane in one transaction with `revision +1`, emitting `skill_run` then `stage_transition`. **Reuse unchanged** (no contract change — only the required-fields list and the steps content shrink).
@@ -57,7 +57,7 @@ Sprint 3A.1 is the **first of a two-slice pass** (3A.1 interactions + 3A.2 autom
 
 **4. One-line brief preview on the card face**
 - When `brief.complete === true`, the card face shows a single **truncated `problem.value`** line (max ~80 chars, ellipsis) under the card title, before the existing handle + stage badges.
-- The existing inline `<details>` BriefPanel on the card face **remains in S3A.1** (it is replaced by the side panel in S3A.2 — don't move it yet, one change at a time).
+- The existing inline `<details>` BriefPanel on the card face **remains in S3A.1** (it is replaced by the Initiative Modal in S3A.2 — don't move it yet, one change at a time).
 
 **5. Board layout polish (from the Chief Designer pass)**
 - Implement the **board layout spec** at [`pdlc-ui/docs/design/board-layout.md`](../../pdlc-ui/docs/design/board-layout.md) (added same-PR — see Schema/docs discipline). Scope this sprint:
@@ -126,7 +126,7 @@ Sprint 3A.1 is the **first of a two-slice pass** (3A.1 interactions + 3A.2 autom
 
 ### Explicitly OUT
 
-- Anything in the **S3A.2** scope (prefill, kickoff, job record, side panel, edit-existing-brief, focused-column implementation).
+- Anything in the **S3A.2** / **S3A.3** scope (S3A.2 = Initiative Modal + chat wizard + within-lane reorder; S3A.3 = prefill, kickoff, job record, edit-existing-brief, focused-column — both out of S3A.1).
 - **Removal** of legacy brief fields from the schema (`scopeIn`, `scopeOut`, `assumptions`, `constraints`, `successDefinition`). They **stay** in `briefSchema` as optional for backward compat; removing them is a later cleanup sprint after S3B ships and migrates equivalent data to `discovery.*`.
 - Data migration of existing cards. Pre-2026-04-21 cards keep whatever brief values they were saved with; the schema treats their legacy fields as optional.
 - Changes to `eventSchema`, `canTransition`, or the atomic brief API shape. `briefSchema` required-set narrowing and `REQUIRED_BRIEF_FIELDS` shrink **are** in scope (Deliverable 0).
@@ -139,10 +139,10 @@ Sprint 3A.1 is the **first of a two-slice pass** (3A.1 interactions + 3A.2 autom
 ### Risks
 
 - **DnD a11y regression** → keyboard-only Playwright test + keep menu path + axe in each density mode.
-- **Elastic columns create layout jank when combined with side panel (3A.2)** → 3A.2 addresses via non-modal resizable drawer + drag auto-collapse; 3A.1 proves the column behaviour in isolation so 3A.2 has a clean baseline.
+- **Elastic columns create layout jank when combined with Initiative Modal (3A.2)** → 3A.2 opens the modal over the board with a blurred overlay (board context is dimmed, not resized), so column widths stay stable; 3A.1 proves the elastic column behaviour in isolation so 3A.2 has a clean baseline. _(Original 2026-04-21 design was a non-modal drawer with drag auto-collapse; pivoted 2026-04-22.)_
 - **Density toggle drift with card content** → define CSS variables in tokens, not per-component; density changes a data-attr only.
 - **Keyboard DnD correctness** → easy to forget `KeyboardSensor` setup; DoD includes an explicit keyboard test to catch it before merge.
-- **Scope creep into 3A.2** → any "while we're here" prefill/side-panel/runner work is rejected in PR review; 3A.2 has its own branch.
+- **Scope creep into 3A.2 / 3A.3** → any "while we're here" modal / prefill / runner work is rejected in PR review; 3A.2 + 3A.3 each have their own branches.
 
 ---
 

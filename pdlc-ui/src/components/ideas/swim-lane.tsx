@@ -18,9 +18,6 @@ export type SwimLaneProps = {
   dropState?: SwimLaneDropState;
   /** Tooltip shown on illegal cross-lane targets while a drag is in flight. */
   illegalReason?: string | null;
-  /** Within-lane HTML5 drag (existing behaviour) — host pointer reorder UI. */
-  onListDragOver?: (event: React.DragEvent<HTMLUListElement>) => void;
-  onListDrop?: (event: React.DragEvent<HTMLUListElement>) => void;
 };
 
 export function SwimLane({
@@ -30,8 +27,6 @@ export function SwimLane({
   emptyHint,
   dropState = "idle",
   illegalReason,
-  onListDragOver,
-  onListDrop,
 }: SwimLaneProps) {
   const label = LANE_LABELS[lifecycle];
   const hint = LANE_DESCRIPTIONS[lifecycle];
@@ -71,8 +66,6 @@ export function SwimLane({
         aria-label={`${label} initiatives`}
         className="flex min-h-16 flex-col"
         style={{ gap: "var(--card-gap)" }}
-        onDragOver={onListDragOver}
-        onDrop={onListDrop}
       >
         {count === 0 ? (
           <li className="rounded-md border border-dashed border-border px-2 py-6 text-center text-[11px] text-muted-foreground">
