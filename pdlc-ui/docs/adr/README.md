@@ -8,10 +8,10 @@
 
 **Index**
 
-| ADR                                     | Title                                          |
-| --------------------------------------- | ---------------------------------------------- |
-| [0001](./0001-stack-and-persistence.md)      | Stack + persistence (Next.js + SQLite vs JSON)                      |
-| [0002](./0002-git-host-ci-runner.md)         | Git host + CI runner + branch protection                            |
-| [0003](./0003-dnd-shape-and-html5-ban.md)    | DnD shape (`@dnd-kit/core` only) + HTML5 `draggable` ban + keyboard sensor deferred |
+| ADR                                       | Title                                                                               |
+| ----------------------------------------- | ----------------------------------------------------------------------------------- |
+| [0001](./0001-stack-and-persistence.md)   | Stack + persistence (Next.js + SQLite vs JSON)                                      |
+| [0002](./0002-git-host-ci-runner.md)      | Git host + CI runner + branch protection                                            |
+| [0003](./0003-dnd-shape-and-html5-ban.md) | DnD shape (`@dnd-kit/core` only) + HTML5 `draggable` ban + keyboard sensor deferred |
 
 Governance: [plans/PDLC_UI/plan.md § R16](../../../../plans/PDLC_UI/plan.md).

@@ -7,7 +7,7 @@
 
 The board-layout spec drafted 2026-04-21 (before S3A.1 shipped) specified a **non-modal right-rail drawer** (`role="complementary"`, 320/420/600px resizable, drag auto-collapse to 80px rail) as the S3A.2 surface for per-initiative details. Its explicit reasoning was:
 
-> *"A modal blocks the board. The user explicitly asked to keep columns interactive while reading card context. A `complementary` landmark is the honest semantic — and the drag auto-collapse resolves the column-stealing tension at the exact moment it would bite."*
+> _"A modal blocks the board. The user explicitly asked to keep columns interactive while reading card context. A `complementary` landmark is the honest semantic — and the drag auto-collapse resolves the column-stealing tension at the exact moment it would bite."_
 
 Two things changed between the draft and S3A.1's merge:
 
@@ -30,14 +30,14 @@ Full deliverable list in the S3A.2 seed.
 
 ## Trade-off we accepted
 
-| Side panel (original §5)                                       | Modal (new §5)                                                  |
-| -------------------------------------------------------------- | --------------------------------------------------------------- |
-| Board stays live and interactive while reading card details.   | Board is blocked while the modal is open.                       |
-| `role="complementary"` — honest non-modal semantic.            | `role="dialog"` — standard focus trap, ESC + overlay dismissal. |
-| 320–600px surface — tight for multi-artefact content.          | ~70vw × ~85vh — room for six tabs' worth of content.            |
-| Not URL-addressable without bespoke state plumbing.            | URL-addressable for free via intercepting routes.               |
-| Drag auto-collapse needed to avoid stealing columns on drag.   | No drag conflict — the modal closes on ESC or overlay click.    |
-| Unique implementation — no off-the-shelf primitive.            | Existing shadcn `Dialog` wrapper + Next.js routing primitives.  |
+| Side panel (original §5)                                     | Modal (new §5)                                                  |
+| ------------------------------------------------------------ | --------------------------------------------------------------- |
+| Board stays live and interactive while reading card details. | Board is blocked while the modal is open.                       |
+| `role="complementary"` — honest non-modal semantic.          | `role="dialog"` — standard focus trap, ESC + overlay dismissal. |
+| 320–600px surface — tight for multi-artefact content.        | ~70vw × ~85vh — room for six tabs' worth of content.            |
+| Not URL-addressable without bespoke state plumbing.          | URL-addressable for free via intercepting routes.               |
+| Drag auto-collapse needed to avoid stealing columns on drag. | No drag conflict — the modal closes on ESC or overlay click.    |
+| Unique implementation — no off-the-shelf primitive.          | Existing shadcn `Dialog` wrapper + Next.js routing primitives.  |
 
 We accepted losing board-liveness in exchange for:
 

@@ -139,15 +139,15 @@ Deep-work escape hatch (double-click / Enter on a column header → siblings col
 
 ## 8. Implementation sequencing
 
-| Spec section              | Sprint    | Notes                                                         |
-| ------------------------- | --------- | ------------------------------------------------------------- |
-| §1 Chrome-light shell     | **S3A.1** | Sticky 48px header + board-as-scroll-container                |
-| §2 Elastic main lanes     | **S3A.1** | `repeat(auto-fit, minmax(280px, 1fr))` + natural-floor scroll |
-| §3 Parked right-edge rail | **S3A.1** | Replace in-grid parked lane with rail                         |
-| §4 Density toggle         | **S3A.1** | Three modes + CSS-var swap + `localStorage`                   |
-| §5 Initiative Modal       | **S3A.2** | URL-addressable modal + six tabs + chat wizard — see S3A.2 seed |
+| Spec section              | Sprint    | Notes                                                                 |
+| ------------------------- | --------- | --------------------------------------------------------------------- |
+| §1 Chrome-light shell     | **S3A.1** | Sticky 48px header + board-as-scroll-container                        |
+| §2 Elastic main lanes     | **S3A.1** | `repeat(auto-fit, minmax(280px, 1fr))` + natural-floor scroll         |
+| §3 Parked right-edge rail | **S3A.1** | Replace in-grid parked lane with rail                                 |
+| §4 Density toggle         | **S3A.1** | Three modes + CSS-var swap + `localStorage`                           |
+| §5 Initiative Modal       | **S3A.2** | URL-addressable modal + six tabs + chat wizard — see S3A.2 seed       |
 | §6 Focused column         | **S3A.3** | Deferred from S3A.2; double-click header → siblings collapse to rails |
-| §7 Guardrails             | ongoing   | Enforced in PR review + axe smoke                             |
+| §7 Guardrails             | ongoing   | Enforced in PR review + axe smoke                                     |
 
 ---
 

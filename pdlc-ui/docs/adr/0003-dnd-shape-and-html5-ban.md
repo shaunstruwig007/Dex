@@ -40,7 +40,7 @@ Agent Q's audit on 2026-04-22 (post-merge) flagged the leftover `KeyboardSensor`
 - The dnd-kit `KeyboardSensor` is **deferred to S3A.3**. Reviving it requires either:
   - a `DragOverlay` with a surface that is not bounded to the source lane, **or**
   - a custom modifier that widens `translate3d` bounds to the whole board.
-  Both are solvable. Neither is cheap under the S3A.2 surface-area budget (Initiative Modal + chat wizard + within-lane reorder are already three non-trivial deliverables). S3A.3 owns this revival.
+    Both are solvable. Neither is cheap under the S3A.2 surface-area budget (Initiative Modal + chat wizard + within-lane reorder are already three non-trivial deliverables). S3A.3 owns this revival.
 - Until the `KeyboardSensor` is correctly wired, no code claims to ship keyboard DnD via `Space → Arrow → Space`. The cleanup PR that accompanies this ADR deletes the dead sensor + coordinate getter so the claim cannot re-emerge in the audit surface.
 
 ## Consequences
