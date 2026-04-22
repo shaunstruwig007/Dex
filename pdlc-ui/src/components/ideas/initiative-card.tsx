@@ -109,6 +109,17 @@ export function InitiativeCard({
   // S3A.3 (ADR-0003 — translate3d clamping). Within-lane pointer reorder is
   // deferred to S3A.2 (dnd-kit `useDroppable` per slot + grip-handle drag);
   // `Alt+↑/↓` keyboard reorder and the `Actions → Move to…` menu still work.
+  //
+  // S3A.1 pass-3 fix: a real-user slow drag (≤6px initial travel) was letting
+  // the browser start a native text selection across the card's text nodes
+  // before dnd-kit crossed the activation distance. Once selection started,
+  // subsequent pointermoves were interpreted as selection-extension, not drag.
+  // Playwright synthesises `mouse.move` events faster than a human and doesn't
+  // kick off text selection, so the e2e was blind to this. Fix is the standard
+  // dnd-kit idiom: `user-select: none` on the draggable surface (`.select-none`
+  // below) + visible `cursor-grab` affordance on non-parked cards. Text
+  // selection inside the opened Brief `<details>` is re-enabled via
+  // `.select-text` on its content so brief text remains copy-able.
   const { setNodeRef, attributes, listeners, isDragging } = useCardDraggable({
     initiativeId: initiative.id,
     fromLifecycle: initiative.lifecycle,
@@ -175,6 +186,7 @@ export function InitiativeCard({
       aria-label={`${initiative.handle} ${initiative.title}`}
       className={cn(
         "group/initiative relative rounded-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        !isParked && "cursor-grab select-none active:cursor-grabbing",
         isDragging && "opacity-60",
       )}
       style={{ paddingBlock: "var(--card-py)" }}
@@ -424,7 +436,7 @@ function BriefPanel({
   }
 
   return (
-    <CardContent className="border-t border-border px-3 py-2">
+    <CardContent className="select-text border-t border-border px-3 py-2">
       <details
         open={open}
         onToggle={(e) => onOpenChange((e.target as HTMLDetailsElement).open)}

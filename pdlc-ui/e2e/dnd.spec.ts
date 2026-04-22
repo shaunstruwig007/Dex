@@ -96,6 +96,28 @@ test.describe("S3A.1 cross-lane DnD", () => {
     expect(draggableCount).toBe(0);
   });
 
+  test("initiative cards disable native text selection (DnD activation guard)", async ({
+    page,
+  }) => {
+    // S3A.1 pass-3 defect (recorded 2026-04-22): a real-user slow drag lost
+    // its first ≤6px of pointermoves to native text selection across the
+    // card's text nodes, so dnd-kit's PointerSensor never activated and the
+    // card stayed put. Playwright's synthetic `mouse.move` does NOT start
+    // text selection, so the pointer drag e2e happily passed. Lock the CSS
+    // invariant directly — non-parked cards must have `user-select: none`
+    // on the draggable `<li>` surface. See comment in
+    // `src/components/ideas/initiative-card.tsx` around `useCardDraggable`.
+    await page.goto("/");
+    const card = await createInitiative(
+      page,
+      `select-none guard ${Date.now()}`,
+    );
+    const userSelect = await card.evaluate(
+      (el) => window.getComputedStyle(el).userSelect,
+    );
+    expect(["none", "-webkit-none"]).toContain(userSelect);
+  });
+
   test("pointer drag idea → develop is a no-op (illegal forward edge)", async ({
     page,
   }) => {
