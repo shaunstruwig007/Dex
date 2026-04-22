@@ -7,9 +7,7 @@ import { expect, test } from "@playwright/test";
 test.describe("ideas CRUD", () => {
   test("create, edit, delete an idea", async ({ page }) => {
     await page.goto("/");
-    await expect(
-      page.getByRole("heading", { level: 2, name: "Board" }),
-    ).toBeVisible();
+    await expect(page.locator('section[data-lane="idea"]')).toBeVisible();
 
     const title = `S1 smoke ${Date.now()}`;
     await page.getByRole("button", { name: "Create new initiative" }).click();

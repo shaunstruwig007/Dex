@@ -1,19 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { Button } from "@/components/ui/button";
 import type { Initiative, Lifecycle } from "@/schema/initiative";
-import { deriveHasBrief } from "@/lib/can-transition";
+import { canTransition, deriveHasBrief } from "@/lib/can-transition";
+import { useBoardDensity } from "@/lib/use-board-density";
 import { InitiativeCard } from "./initiative-card";
-import { SwimLane } from "./swim-lane";
+import { SwimLane, type SwimLaneDropState } from "./swim-lane";
 import { BriefWizardDialog } from "./brief-wizard-dialog";
 import { ParkedTransitionDialog } from "./parked-transition-dialog";
-import { ParkedFilterToggle } from "./parked-filter-toggle";
+import { ParkedRail, useParkedRail } from "./parked-rail";
+import { BoardDensityToggle } from "./board-density-toggle";
 import { InitiativeFormDialog } from "./initiative-form-dialog";
 import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 import { LANE_LABELS, MAIN_LANES } from "./lanes";
 import { computeMidpointSortOrder, neighboursForSwap } from "./reorder";
+import {
+  BoardDndProvider,
+  isDragData,
+  isLaneDropData,
+  type DragData,
+} from "./board-dnd";
 import type {
   CreateResponse,
   DeleteResponse,
@@ -55,7 +64,7 @@ function humanError(err: IdeasApiError, status: number): string {
     return "Parking requires an intent and a non-empty reason.";
   }
   if (err.error === "illegal_transition") {
-    return "That move isn't allowed in Sprint 2 (forward-only).";
+    return "That move is not allowed yet.";
   }
   if (err.error === "same_lifecycle") {
     return "The initiative is already in that lane.";
@@ -77,13 +86,9 @@ export function IdeasBoard() {
   const [briefWizardTarget, setBriefWizardTarget] = useState<Initiative | null>(
     null,
   );
-  const [showParked, setShowParked] = useState(false);
-  const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [dropTarget, setDropTarget] = useState<{
-    id: string;
-    position: "above" | "below";
-  } | null>(null);
-  const dragLaneRef = useRef<Lifecycle | null>(null);
+  const [activeDrag, setActiveDrag] = useState<DragData | null>(null);
+  const { density, setDensity } = useBoardDensity();
+  const parkedRail = useParkedRail();
 
   const refresh = useCallback(async () => {
     setLoadError(null);
@@ -255,72 +260,12 @@ export function IdeasBoard() {
     [refresh],
   );
 
-  // ── Drag handlers ──────────────────────────────────────────────────────
-  function buildDragHandlers(lifecycle: Lifecycle, card: Initiative) {
-    return {
-      onDragStart: (event: React.DragEvent<HTMLLIElement>) => {
-        event.dataTransfer.effectAllowed = "move";
-        event.dataTransfer.setData("text/plain", card.id);
-        dragLaneRef.current = lifecycle;
-        setDraggingId(card.id);
-      },
-      onDragEnd: () => {
-        setDraggingId(null);
-        setDropTarget(null);
-        dragLaneRef.current = null;
-      },
-      onDragOver: (event: React.DragEvent<HTMLLIElement>) => {
-        if (dragLaneRef.current !== lifecycle) return;
-        if (draggingId === card.id) return;
-        event.preventDefault();
-        const rect = event.currentTarget.getBoundingClientRect();
-        const midpoint = rect.top + rect.height / 2;
-        const position = event.clientY < midpoint ? "above" : "below";
-        setDropTarget({ id: card.id, position });
-      },
-      onDragLeave: () => {
-        setDropTarget((prev) => (prev?.id === card.id ? null : prev));
-      },
-      onDrop: (event: React.DragEvent<HTMLLIElement>) => {
-        event.preventDefault();
-        const movedId = event.dataTransfer.getData("text/plain");
-        if (!movedId || dragLaneRef.current !== lifecycle) return;
-        if (movedId === card.id) return;
-        const lane = byLane[lifecycle];
-        const moved = lane.find((i) => i.id === movedId);
-        if (!moved) return;
-        const target = dropTarget ?? {
-          id: card.id,
-          position: "below" as const,
-        };
-        const targetIdx = lane.findIndex((i) => i.id === target.id);
-        if (targetIdx === -1) return;
-
-        // Build the new lane order and resolve neighbour cards for midpoint.
-        const withoutMoved = lane.filter((i) => i.id !== movedId);
-        const insertAt =
-          target.position === "above"
-            ? withoutMoved.findIndex((i) => i.id === target.id)
-            : withoutMoved.findIndex((i) => i.id === target.id) + 1;
-        const above = insertAt > 0 ? withoutMoved[insertAt - 1] : null;
-        const below =
-          insertAt < withoutMoved.length ? withoutMoved[insertAt] : null;
-        if (above?.id === movedId || below?.id === movedId) return;
-
-        const nextSort = computeMidpointSortOrder(
-          lane,
-          movedId,
-          above ?? null,
-          below ?? null,
-        );
-        setDraggingId(null);
-        setDropTarget(null);
-        dragLaneRef.current = null;
-        void handleReorder(moved, nextSort);
-      },
-    };
-  }
-
+  // Within-lane pointer reorder was HTML5-driven in S2; it was removed in
+  // S3A.1 because `draggable` on the card <li> preempted dnd-kit's
+  // PointerSensor and blocked real-user cross-lane DnD (e2e blind spot:
+  // Playwright synthesises pointer*/mouse* events but not HTML5 drag*).
+  // Keyboard Alt+↑/↓ reorder and the card Actions menu cover the gap this
+  // sprint; S3A.2 restores pointer within-lane reorder via dnd-kit.
   function buildArrowSwap(lifecycle: Lifecycle, card: Initiative) {
     const lane = byLane[lifecycle];
     return {
@@ -351,6 +296,112 @@ export function IdeasBoard() {
     };
   }
 
+  // ── Cross-lane DnD (dnd-kit) ───────────────────────────────────────────
+  // Memo the cross-lane legality matrix while a drag is in flight so the
+  // dragOver visual highlight stays cheap and the legality check matches
+  // the menu's `Move to…` submenu exactly.
+  const dragLegalityByLane = useMemo(() => {
+    if (!activeDrag) return null;
+    const card = initiatives.find((i) => i.id === activeDrag.initiativeId);
+    if (!card) return null;
+    const hasBrief = deriveHasBrief(card);
+    const map = new Map<
+      Lifecycle | "parked-rail",
+      { ok: boolean; reason: string | null }
+    >();
+    for (const lane of MAIN_LANES) {
+      if (lane === card.lifecycle) {
+        map.set(lane, { ok: false, reason: null });
+        continue;
+      }
+      const result = canTransition(card.lifecycle, lane, {
+        hasBrief,
+        // Satisfy the parked branch with valid placeholders so non-parked
+        // lanes return their actual reason, not the parked guardrail.
+        parkedIntent: "revisit",
+        parkedReason: "__menu",
+      });
+      map.set(lane, {
+        ok: result.ok,
+        reason: result.ok ? null : result.message,
+      });
+    }
+    const parkedResult = canTransition(card.lifecycle, "parked", {
+      hasBrief,
+      parkedIntent: "revisit",
+      parkedReason: "__menu",
+    });
+    map.set("parked-rail", {
+      ok: parkedResult.ok,
+      reason: parkedResult.ok ? null : parkedResult.message,
+    });
+    return map;
+  }, [activeDrag, initiatives]);
+
+  function laneDropState(lifecycle: Lifecycle): SwimLaneDropState {
+    if (!dragLegalityByLane) return "idle";
+    const result = dragLegalityByLane.get(lifecycle);
+    if (!result) return "idle";
+    // The card's source lane has `reason: null` — same_lifecycle is silent.
+    if (!result.ok && result.reason === null) return "idle";
+    return result.ok ? "legal" : "illegal";
+  }
+
+  function laneIllegalReason(lifecycle: Lifecycle): string | null {
+    if (!dragLegalityByLane) return null;
+    return dragLegalityByLane.get(lifecycle)?.reason ?? null;
+  }
+
+  const handleCrossLaneDragStart = useCallback((event: DragStartEvent) => {
+    const data = event.active.data.current;
+    if (isDragData(data)) {
+      setActiveDrag(data);
+    }
+  }, []);
+
+  const handleCrossLaneDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const dragData = event.active.data.current;
+      const dropData = event.over?.data.current;
+      setActiveDrag(null);
+      if (!isDragData(dragData) || !isLaneDropData(dropData)) return;
+
+      const card = initiatives.find((i) => i.id === dragData.initiativeId);
+      if (!card) return;
+
+      const targetLifecycle: Lifecycle =
+        dropData.laneId === "parked-rail" ? "parked" : dropData.laneId;
+
+      // Q-P2.1 — drop on the source column is a silent no-op (same_lifecycle).
+      if (targetLifecycle === card.lifecycle) return;
+
+      const hasBrief = deriveHasBrief(card);
+      const gate = canTransition(card.lifecycle, targetLifecycle, {
+        hasBrief,
+        parkedIntent: "revisit",
+        parkedReason: "__menu",
+      });
+      if (!gate.ok) return; // illegal targets dim during drag; drop is a no-op.
+
+      // `idea → discovery` opens the brief wizard (preserves the gate);
+      // `→ parked` opens the parked transition dialog (intent + reason).
+      if (
+        card.lifecycle === "idea" &&
+        targetLifecycle === "discovery" &&
+        !hasBrief
+      ) {
+        setBriefWizardTarget(card);
+        return;
+      }
+      if (targetLifecycle === "parked") {
+        setPendingPark(card);
+        return;
+      }
+      void handleTransition(card, targetLifecycle);
+    },
+    [handleTransition, initiatives],
+  );
+
   const editTarget = dialog.kind === "edit" ? dialog.initiative : null;
   const dialogOpen = dialog.kind !== "closed";
   const dialogMode = useMemo(
@@ -362,193 +413,203 @@ export function IdeasBoard() {
   );
 
   return (
-    <section aria-label="PDLC board" className="flex flex-col gap-4">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold tracking-tight">Board</h2>
-          <p className="text-sm text-muted-foreground">
-            Forward-only moves. Parking requires an intent + reason.
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          <ParkedFilterToggle
-            showParked={showParked}
-            onChange={setShowParked}
-            parkedCount={parkedCount}
-          />
-          <Button
-            type="button"
-            onClick={() => setDialog({ kind: "create" })}
-            aria-label="Create new initiative"
-          >
-            New initiative
-          </Button>
-        </div>
-      </header>
-
-      {loading ? (
-        <p className="text-sm text-muted-foreground" aria-live="polite">
-          Loading…
-        </p>
-      ) : loadError ? (
-        <div
-          role="alert"
-          className="flex flex-col gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
-        >
-          <span>{loadError}</span>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => refresh()}
-            className="self-start"
-          >
-            Retry
-          </Button>
-        </div>
-      ) : (
-        <>
+    <BoardDndProvider
+      onDragStart={handleCrossLaneDragStart}
+      onDragEnd={handleCrossLaneDragEnd}
+      onDragCancel={() => setActiveDrag(null)}
+    >
+      <section
+        aria-label="PDLC board"
+        className="flex h-full min-h-0 w-full"
+        data-board-density={density}
+      >
+        <div className="flex min-w-0 flex-1 flex-col">
           <div
-            role="region"
-            aria-label="Lifecycle lanes"
-            // axe's `scrollable-region-focusable` rule: a horizontally
-            // scrollable container must be keyboard-reachable so users who
-            // can't swipe or use a mouse can still pan the lanes.
-            tabIndex={0}
-            className="flex gap-3 overflow-x-auto pb-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card/50"
+            style={{
+              paddingInline: "var(--board-gutter-x)",
+              paddingBlock: "10px",
+            }}
           >
-            {MAIN_LANES.map((lifecycle) => {
-              const cards = byLane[lifecycle];
-              return (
-                <SwimLane
-                  key={lifecycle}
-                  lifecycle={lifecycle}
-                  count={cards.length}
-                >
-                  {cards.map((card) => {
-                    const hasBrief = deriveHasBrief(card);
-                    const drag = buildDragHandlers(lifecycle, card);
-                    const arrow = buildArrowSwap(lifecycle, card);
-                    const indicator =
-                      dropTarget?.id === card.id ? dropTarget.position : null;
-                    return (
-                      <InitiativeCard
-                        key={card.id}
-                        initiative={card}
-                        hasBrief={hasBrief}
-                        dragging={draggingId === card.id}
-                        dropIndicator={indicator}
-                        canReorderUp={arrow.canReorderUp}
-                        canReorderDown={arrow.canReorderDown}
-                        onEdit={() =>
-                          setDialog({ kind: "edit", initiative: card })
-                        }
-                        onDelete={() => setPendingDelete(card)}
-                        onTransition={(to) => {
-                          void handleTransition(card, to);
-                        }}
-                        onOpenBriefWizard={() => setBriefWizardTarget(card)}
-                        onRequestPark={() => setPendingPark(card)}
-                        onReorderUp={arrow.onReorderUp}
-                        onReorderDown={arrow.onReorderDown}
-                        {...drag}
-                      />
-                    );
-                  })}
-                </SwimLane>
-              );
-            })}
+            <div className="flex flex-col gap-0.5">
+              <p className="text-xs text-muted-foreground">
+                Drag cards between lanes or use the card menu. Parking needs an
+                intent + reason.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <BoardDensityToggle value={density} onChange={setDensity} />
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => setDialog({ kind: "create" })}
+                aria-label="Create new initiative"
+              >
+                New initiative
+              </Button>
+            </div>
           </div>
 
-          {showParked && (
-            <section
-              aria-label="Parked initiatives"
-              className="flex flex-col gap-2 rounded-lg border border-dashed border-border bg-muted/30 p-3"
+          {loading ? (
+            <p
+              className="px-4 py-3 text-sm text-muted-foreground"
+              aria-live="polite"
             >
-              <header className="flex items-center justify-between gap-2">
-                <h3 className="text-sm font-semibold tracking-tight">Parked</h3>
-                <span className="text-[11px] text-muted-foreground">
-                  Paused with intent + reason. Un-park returns the card to Idea.
-                </span>
-              </header>
-              {byLane.parked.length === 0 ? (
-                <p className="rounded-md border border-dashed border-border px-2 py-6 text-center text-[11px] text-muted-foreground">
-                  Nothing parked.
-                </p>
-              ) : (
-                <ul
-                  aria-label="Parked initiatives"
-                  className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3"
-                >
-                  {byLane.parked.map((card) => (
-                    <InitiativeCard
-                      key={card.id}
-                      initiative={card}
-                      hasBrief={deriveHasBrief(card)}
-                      onEdit={() =>
-                        setDialog({ kind: "edit", initiative: card })
-                      }
-                      onDelete={() => setPendingDelete(card)}
-                      onTransition={(to) => {
-                        void handleTransition(card, to);
-                      }}
-                      onOpenBriefWizard={() => setBriefWizardTarget(card)}
-                      onRequestPark={() => setPendingPark(card)}
-                    />
-                  ))}
-                </ul>
-              )}
-            </section>
+              Loading…
+            </p>
+          ) : loadError ? (
+            <div
+              role="alert"
+              className="m-4 flex flex-col gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+            >
+              <span>{loadError}</span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => refresh()}
+                className="self-start"
+              >
+                Retry
+              </Button>
+            </div>
+          ) : (
+            <div
+              role="region"
+              aria-label="Lifecycle lanes"
+              tabIndex={0}
+              className="min-h-0 flex-1 overflow-x-auto overflow-y-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              style={{
+                paddingInline: "var(--board-gutter-x)",
+                paddingBlock: "12px",
+              }}
+            >
+              <div
+                className="grid h-full min-w-[1960px] gap-3"
+                style={{
+                  gridTemplateColumns:
+                    "repeat(auto-fit, minmax(var(--board-lane-min), 1fr))",
+                }}
+              >
+                {MAIN_LANES.map((lifecycle) => {
+                  const cards = byLane[lifecycle];
+                  const dropState = laneDropState(lifecycle);
+                  return (
+                    <SwimLane
+                      key={lifecycle}
+                      lifecycle={lifecycle}
+                      count={cards.length}
+                      dropState={dropState}
+                      illegalReason={laneIllegalReason(lifecycle)}
+                    >
+                      {cards.map((card) => {
+                        const hasBrief = deriveHasBrief(card);
+                        const arrow = buildArrowSwap(lifecycle, card);
+                        return (
+                          <InitiativeCard
+                            key={card.id}
+                            initiative={card}
+                            hasBrief={hasBrief}
+                            canReorderUp={arrow.canReorderUp}
+                            canReorderDown={arrow.canReorderDown}
+                            onEdit={() =>
+                              setDialog({ kind: "edit", initiative: card })
+                            }
+                            onDelete={() => setPendingDelete(card)}
+                            onTransition={(to) => {
+                              void handleTransition(card, to);
+                            }}
+                            onOpenBriefWizard={() => setBriefWizardTarget(card)}
+                            onRequestPark={() => setPendingPark(card)}
+                            onReorderUp={arrow.onReorderUp}
+                            onReorderDown={arrow.onReorderDown}
+                          />
+                        );
+                      })}
+                    </SwimLane>
+                  );
+                })}
+              </div>
+            </div>
           )}
-        </>
-      )}
+        </div>
 
-      <InitiativeFormDialog
-        open={dialogOpen}
-        mode={dialogMode}
-        onOpenChange={(next) => {
-          if (!next) setDialog({ kind: "closed" });
-        }}
-        onSubmit={(values) =>
-          editTarget ? handleEdit(editTarget, values) : handleCreate(values)
-        }
-      />
-      <DeleteConfirmDialog
-        open={pendingDelete !== null}
-        initiative={pendingDelete}
-        onOpenChange={(next) => {
-          if (!next) setPendingDelete(null);
-        }}
-        onConfirm={async () => {
-          if (!pendingDelete) return { ok: true };
-          return handleDelete(pendingDelete);
-        }}
-      />
-      <ParkedTransitionDialog
-        open={pendingPark !== null}
-        initiative={pendingPark}
-        onOpenChange={(next) => {
-          if (!next) setPendingPark(null);
-        }}
-        onSubmit={async ({ parkedIntent, parkedReason }) => {
-          if (!pendingPark) return { ok: true };
-          return handleTransition(pendingPark, "parked", {
-            parkedIntent,
-            parkedReason,
-          });
-        }}
-      />
-      <BriefWizardDialog
-        open={briefWizardTarget !== null}
-        initiative={briefWizardTarget}
-        onOpenChange={(next) => {
-          if (!next) setBriefWizardTarget(null);
-        }}
-        onCompleted={(next) => {
-          setBriefWizardTarget(null);
-          void handleBriefWizardCompleted(next);
-        }}
-      />
-    </section>
+        <ParkedRail
+          state={parkedRail.state}
+          onToggle={parkedRail.toggle}
+          parkedCount={parkedCount}
+        >
+          {byLane.parked.length === 0 ? (
+            <p className="rounded-md border border-dashed border-border px-2 py-6 text-center text-[11px] text-muted-foreground">
+              Nothing parked.
+            </p>
+          ) : (
+            <ul aria-label="Parked initiatives" className="flex flex-col gap-2">
+              {byLane.parked.map((card) => (
+                <InitiativeCard
+                  key={card.id}
+                  initiative={card}
+                  hasBrief={deriveHasBrief(card)}
+                  onEdit={() => setDialog({ kind: "edit", initiative: card })}
+                  onDelete={() => setPendingDelete(card)}
+                  onTransition={(to) => {
+                    void handleTransition(card, to);
+                  }}
+                  onOpenBriefWizard={() => setBriefWizardTarget(card)}
+                  onRequestPark={() => setPendingPark(card)}
+                />
+              ))}
+            </ul>
+          )}
+        </ParkedRail>
+
+        <InitiativeFormDialog
+          open={dialogOpen}
+          mode={dialogMode}
+          onOpenChange={(next) => {
+            if (!next) setDialog({ kind: "closed" });
+          }}
+          onSubmit={(values) =>
+            editTarget ? handleEdit(editTarget, values) : handleCreate(values)
+          }
+        />
+        <DeleteConfirmDialog
+          open={pendingDelete !== null}
+          initiative={pendingDelete}
+          onOpenChange={(next) => {
+            if (!next) setPendingDelete(null);
+          }}
+          onConfirm={async () => {
+            if (!pendingDelete) return { ok: true };
+            return handleDelete(pendingDelete);
+          }}
+        />
+        <ParkedTransitionDialog
+          open={pendingPark !== null}
+          initiative={pendingPark}
+          onOpenChange={(next) => {
+            if (!next) setPendingPark(null);
+          }}
+          onSubmit={async ({ parkedIntent, parkedReason }) => {
+            if (!pendingPark) return { ok: true };
+            return handleTransition(pendingPark, "parked", {
+              parkedIntent,
+              parkedReason,
+            });
+          }}
+        />
+        <BriefWizardDialog
+          open={briefWizardTarget !== null}
+          initiative={briefWizardTarget}
+          onOpenChange={(next) => {
+            if (!next) setBriefWizardTarget(null);
+          }}
+          onCompleted={(next) => {
+            setBriefWizardTarget(null);
+            void handleBriefWizardCompleted(next);
+          }}
+        />
+      </section>
+    </BoardDndProvider>
   );
 }

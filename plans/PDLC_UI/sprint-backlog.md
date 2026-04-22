@@ -32,7 +32,7 @@ Switch to **Build mode** only after Plan produces a task list that closes every 
 | **S3** | **A** | **`pdlc-brief-custom`**-aligned wizard on `idea → discovery`; unlocks S2's blocked transition. |
 | **S3A.1** | **A** | Interaction + layout polish on the `idea → discovery` journey **and** brief shrink to **three questions** (why / who / what): **`REQUIRED_BRIEF_FIELDS` narrows** to `problem` + `targetUsers` + `coreValue` (legacy fields stay optional in `briefSchema` — backward compat; S3B writes equivalents to `discovery.*`); **drag-and-drop** card moves (menu retained as a11y fallback); **mandatory-field indicators** in wizard; **summary-step composite** (3 fields + synthesis) with two actions (primary "Save brief & start discovery" / secondary "Save brief only" — identical server behaviour this sprint); **one-line `problem.value`** preview on card face; **chrome-light board shell** + **elastic columns** + **parked rail** + **density toggle** per [board-layout.md](../../pdlc-ui/docs/design/board-layout.md) §1–§4. No new server processes, no new skills, `briefSchema` narrows (not widens). |
 | **S3A.2** | **A** | Automation surface + side panel on top of S3A.1: **pre-filled brief drafts** for the **three required brief fields** (`coreValue` + `targetUsers` + `problem`; feature-flagged OFF in prod), **tick-driven discovery kickoff** with client-polled progress bar behind a **swappable `DiscoveryResearchProvider` interface** (deterministic stub this sprint; **S3B replaces the advance function with `/pdlc-discovery-research-custom` without touching route / job / UI**), new **`initiative_jobs` table** + startup reconciler, **non-modal resizable side panel** (Idea / Brief / Discovery / Activity) per [board-layout.md](../../pdlc-ui/docs/design/board-layout.md) §5–§6, **edit-existing-brief** from panel, **focused-column mode**. |
-| **S3B** | **A** | `/pdlc-discovery-research-custom` — real discovery research skill. Replaces the S3A.2 kickoff stub behind the same `DiscoveryResearchProvider` interface; reads `brief.*` + `gate.*` + `Market_intelligence/*` + `Market_and_deal_signals.md` + `People/External/*` + (when it exists) `System/icp.md`; writes `discovery.researchNotes` + `discovery.competitorSnapshot` + `discovery.customerEvidence[]` + `discovery.openQuestions[]` (draft). Designed to re-run on a **weekly sweep** against all `discovery`-column cards. **Deep-dive 2026-04-22+** — this row reserves the slot; full scope is defined in [seeds/s3b-discovery-research.md](./seeds/s3b-discovery-research.md). |
+| **S3B** | **A** | `/pdlc-discovery-research-custom` — real discovery research skill. Replaces the S3A.2 kickoff stub behind the same `DiscoveryResearchProvider` interface; reads `brief.*` + `gate.*` + **Felix weekly artefacts** (`Market_intelligence/synthesis/weekly/*` + `Competitors/profiles/*` + `Wyzetalk_Clients/<date>_signals.md`) + `Market_and_deal_signals.md` + `People/External/*` + **`System/icp.md` v1** (authored 2026-04-22 — three segments: FMCG manufacturing, Mining & minerals, Auto & industrial); writes `discovery.researchNotes` + `discovery.competitorSnapshot` + `discovery.customerEvidence[]` + `discovery.openQuestions[]` (draft). Designed to re-run on a **weekly sweep** against all `discovery`-column cards (Mon, after Felix's Friday pass). **Soft-prereq:** Felix umbrella bootstrapped (see [`plans/Research/felix-strategy.md`](../Research/felix-strategy.md)). **Deep-dive 2026-04-22+** — full scope is defined in [seeds/s3b-discovery-research.md](./seeds/s3b-discovery-research.md). |
 | **S4** | **A (minimal)** / **B (full)** | **Bar A:** export pack download + open-questions persistence. **Bar B:** full re-run audit, workshop export polish. |
 | **S5** | **B** | Design artefact fields — board becomes Steerco-readable. |
 | **S6** | **B** | Design review **hard gate**. In Bar A this is a **warning nudge**, not a block. |
@@ -314,7 +314,7 @@ Output: task list closing every DoD checkbox. List scope conflicts before Build.
 **Deliverables**
 
 - **Brief shrink (CPO pass):** `REQUIRED_BRIEF_FIELDS` narrows to `["problem", "targetUsers", "coreValue"]`. `pdlc-brief-steps.json` reduces to **3 content steps + 1 summary step** (order: *why* → *who* → *what* → summary). Legacy `scopeIn` / `scopeOut` / `assumptions` / `constraints` / `successDefinition` remain optional in `briefSchema` for backward compat and are not rendered by the wizard. `schema-initiative-v0.md §4.2` and `.claude/skills/pdlc-brief-custom/SKILL.md` are already staged and must ship same-PR.
-- **Drag-and-drop** card moves (accessible): `canTransition` imported client-side and evaluated on drag-over; illegal targets dim with the existing `humanError` tooltip; drops on illegal targets are a no-op. `@dnd-kit/core` is the default (confirm in Plan mode). **Keyboard DnD mandatory** (`KeyboardSensor` + `sortableKeyboardCoordinates`).
+- **Drag-and-drop** card moves (accessible): `canTransition` imported client-side and evaluated on drag-over; illegal targets dim with the existing `humanError` tooltip; drops on illegal targets are a no-op. **Library: `@dnd-kit/core` only** (`@dnd-kit/sortable` deliberately not installed — Q-alt.1, see [tech-stack.md §3.5](./tech-stack.md)). **Keyboard DnD mandatory** via `KeyboardSensor` + a hand-rolled lane-coordinate getter (within-lane reorder keeps the existing pointer + `Alt+↑/↓` fallback on the card LI).
 - **Ellipsis "Move to…" menu retained** as canonical keyboard / screen-reader path. Drag is additive.
 - **Mandatory indicators** on every required wizard step (asterisk + "Required" header + step-rail red dot + "* Required" legend). Driven by the shrunk `REQUIRED_BRIEF_FIELDS`.
 - **Summary step** renders idea + the three confirmed brief fields + auto-synthesised `understandingSummary` as a composite; **clicking any block jumps to that step with focus**. Two buttons: primary **"Save brief & start discovery"** and secondary **"Save brief only"** — **identical server behaviour in 3A.1** (same atomic endpoint, same lane move). 3A.2 wires the kickoff under the primary.
@@ -385,7 +385,7 @@ Resolve Open Questions in seed § "Open questions to resolve in Plan mode" (DnD 
 
 **Maps to:** S3A.1 follow-through (automation surface) + board-layout.md §5–§6. Still no S4 scope.
 
-**Explicitly deferred (PO):** `pdlc-brief-custom` **question copy / order / workflow** — later PO-owned pass.
+**Explicitly deferred (PO):** any further `pdlc-brief-custom` **question copy / order / workflow** rewrite is a later PO-owned pass. *(M3 — clarification 2026-04-22:* the **structural shrink to three required questions + summary composite + dual save buttons + mandatory-field indicators** **shipped in S3A.1**. **S3A.2 adds prefill / kickoff / side panel only** — it does **not** rewrite the brief content shape.*)*
 
 **Deliverables**
 
@@ -460,9 +460,11 @@ Resolve Open Questions in seed § "Open questions to resolve in Plan mode" (pref
 
 **Bar:** **A** — replaces the S3A.2 kickoff stub behind the same `DiscoveryResearchProvider` interface. Real discovery research: market intelligence, competitor snapshots, customer evidence, strategic-fit scoring against ICP. Runs on kickoff + a **weekly sweep** across all `discovery`-column cards.
 
-**Goal:** Make discovery actually discover. Replace the deterministic stub with a skill that composes existing Dex intelligence (`/customer-intel`, `/intelligence-scanning`, `/weekly-exec-intel`, `/meeting-prep`) into a per-initiative research pass that writes `discovery.*` and **accumulates context weekly**. The runner model, job table, route handlers, and UI from S3A.2 stay untouched — S3B is a provider swap plus a new skill file.
+**Goal:** Make discovery actually discover. Replace the deterministic stub with a skill that composes existing Dex intelligence (`/customer-intel`, `/intelligence-scanning`, `/weekly-exec-intel`, `/meeting-prep`) **and the Felix Leiter weekly research umbrella** (`/felix-weekly-pulse-custom` and its 4 sub-skills: `/felix-competitor-watch-custom`, `/felix-industry-pulse-custom`, `/felix-client-signals-custom`, plus `/weekly-market-discovery`) into a per-initiative research pass that writes `discovery.*` and **accumulates context weekly**. The runner model, job table, route handlers, and UI from S3A.2 stay untouched — S3B is a provider swap plus a new skill file.
 
-**⚠ Open sprint — deep-dive 2026-04-22+ with Shaun + PO before Build.** See [`seeds/s3b-discovery-research.md`](./seeds/s3b-discovery-research.md) § "Deep-dive open questions" (Q1–Q10). `System/icp.md` is a **blocker for the weekly sweep** and is authored by Shaun as part of this deep-dive.
+**Felix integration (resolved 2026-04-22):** Felix is the **upstream research agent** (head-of-research persona, 007 codename "Felix Leiter"). Its Friday weekly pass produces curated artefacts in `06-Resources/Market_intelligence/synthesis/weekly/`, refreshed `06-Resources/Competitors/profiles/*.md`, and `05-Areas/Companies/Wyzetalk_Clients/<date>_signals.md`. **`/pdlc-discovery-research-custom` consumes these as primary inputs** rather than scraping the web from scratch — see [`plans/Research/felix-strategy.md`](../Research/felix-strategy.md) for the operating doc and [`seeds/s3b-discovery-research.md` § "Companion skill stack: Felix Leiter"](./seeds/s3b-discovery-research.md) for the contract.
+
+**⚠ Open sprint — deep-dive 2026-04-22+ with Shaun + PO before Build.** See [`seeds/s3b-discovery-research.md`](./seeds/s3b-discovery-research.md) § "Deep-dive open questions" (Q1–Q10). **`System/icp.md` v1 authored 2026-04-22 ✅** — three named segments (FMCG manufacturing; Mining & minerals; Auto & industrial) + cross-segment disqualifiers + near-neighbour competitor filter (JEM HR, Yoobic, Staffbase/Workvivo/Beekeeper, Speakap/Blink/Flip). Weekly sweep blocker lifted.
 
 **Maps to:** [plan.md § Phase 3+](./plan.md) "Intelligence & meeting correlation" + product philosophy ("UI steers what Dex already does") + schema-initiative-v0 §4.3 / §8 discovery contract + S3A.2 `DiscoveryResearchProvider` interface.
 
@@ -471,7 +473,7 @@ Resolve Open Questions in seed § "Open questions to resolve in Plan mode" (pref
 - **New skill** `.claude/skills/pdlc-discovery-research-custom/SKILL.md` — I/O contract per `schema-initiative-v0 §8`; cadence (kickoff + manual re-run + weekly sweep); composition with existing Dex intel skills.
 - **Provider swap** — implement `DiscoveryResearchProvider.advance(...)` with real vault reads + LLM synthesis; replace the S3A.2 stub import. Route handler, `initiative_jobs` table, client polling, progress bar, side-panel Discovery tab **unchanged**.
 - **Weekly sweep entrypoint** — manual `/weekly-discovery-sweep` chat command + optional cron hook via existing Dex cadence scripts. Refreshes every `discovery`-column card; preserves `user` / `reviewedBy != null` fields; appends `openQuestion` drafts when new evidence contradicts a reviewed field.
-- **ICP artefact** `System/icp.md` (authored by Shaun 2026-04-22; co-ships with S3B).
+- ~~**ICP artefact** `System/icp.md`~~ — **authored 2026-04-22 ✅ (v1).** No longer a deliverable of S3B; read-only dependency.
 - **Discovery source list** (TBC Q2) — shared `System/discovery-sources.yaml` seeded by ICP segment, or per-initiative `discovery.sources[]`. Default: shared YAML.
 - **Schema doc delta** — `/pdlc-discovery-research-custom` row in `schema-initiative-v0 §8` (pre-staged 2026-04-21); `skill_run` known-ids list includes the id.
 - **Tests** — unit fixtures for the provider (brief + mocked vault → expected `discovery.*` diff); Playwright smoke (kickoff → tick → terminal → non-empty `research.summary`).
@@ -479,7 +481,7 @@ Resolve Open Questions in seed § "Open questions to resolve in Plan mode" (pref
 **DoD (outline)**
 
 - [ ] Deep-dive questions Q1–Q10 in the seed closed in Plan mode before Build.
-- [ ] `System/icp.md` exists and is read by the provider.
+- [x] `System/icp.md` **v1** exists (authored 2026-04-22) and is read by the provider — three segments + cross-segment disqualifiers + near-neighbour filter consumed on kickoff + weekly sweep.
 - [ ] Provider swap: S3A.2 stub replaced with **zero** changes to route handler / `initiative_jobs` table / polling client / side-panel Discovery tab.
 - [ ] Kickoff writes the full `discovery.*` set (see `seeds/s3b-discovery-research.md` Outputs table).
 - [ ] Weekly sweep refreshes all `discovery`-column cards; preserves reviewed fields; surfaces contradictions as draft `openQuestion`s.
@@ -494,14 +496,15 @@ Resolve Open Questions in seed § "Open questions to resolve in Plan mode" (pref
 - Hosted / headless execution beyond existing Dex cadence + `pdlc-ui` tick runner (R15 Phase 2 territory).
 - Client-side LLM calls / browser-exposed model keys.
 
-**Dependencies:** S3A.1 merged (shrunk brief), S3A.2 merged (`DiscoveryResearchProvider` interface, `initiative_jobs` table, kickoff route, side-panel Discovery tab, staleness plumbing), `System/icp.md` authored.
+**Dependencies:** S3A.1 merged (shrunk brief), S3A.2 merged (`DiscoveryResearchProvider` interface, `initiative_jobs` table, kickoff route, side-panel Discovery tab, staleness plumbing), **`System/icp.md` v1 authored 2026-04-22 ✅** (three named segments; consumed by the provider for strategic-fit scoring + competitor filtering), **Felix umbrella bootstrapped** (`/felix-weekly-pulse-custom` + 4 sub-skills exist; first Friday run completed so `Market_intelligence/synthesis/weekly/`, refreshed `Competitors/profiles/*.md`, and `Wyzetalk_Clients/<date>_signals.md` artefacts exist for the provider to read — soft-blocking: provider can degrade with "Felix brief missing/stale" notes if absent).
 
 **Risks**
 
-- **ICP authoring slippage** → weekly sweep cannot score strategic fit without it; the kickoff path can still run (scored as `gate.strategicFit` only) but the sweep's "still a fit?" check is disabled. Start the skill shipping with kickoff only; add the sweep in a follow-up commit once ICP lands.
-- **LLM cost spiral on the weekly sweep** → define per-run + per-sweep cost ceilings in the deep-dive; emit cost in the `skill_run` event payload (new optional field) if the runtime supports it.
+- ~~**ICP authoring slippage**~~ — **resolved 2026-04-22 ✅.** v1 of `System/icp.md` shipped (three segments: FMCG manufacturing, Mining & minerals, Auto & industrial). The weekly sweep's "still a fit?" check is **live from S3B day one**; no kickoff-only fallback needed. Residual risk: v1 will drift — the doc's `Version` line is the cache-invalidation key, so disciplined version bumps on every edit are now a soft process dependency.
+- **Felix not yet running** → if Friday's `/felix-weekly-pulse-custom` hasn't produced a brief, S3B's per-card synthesis falls back to raw `ingest/` reads + day-of scraping — quality drops, latency rises, cost rises. **Mitigation:** provider checks for `Market_intelligence/synthesis/weekly/<latest>.md` modified ≤7 days; if missing/stale, writes a `discovery.research.summary` warning + appends an `openQuestion` "Felix weekly brief is stale — re-run /felix-weekly-pulse-custom before sweep". Build Felix umbrella **before** writing the S3B provider.
+- **LLM cost spiral on the weekly sweep** → define per-run + per-sweep cost ceilings in the deep-dive; emit cost in the `skill_run` event payload (new optional field) if the runtime supports it. Felix being the curation layer **reduces** S3B per-card cost (synthesis only, no fetching).
 - **Partial-failure semantics** → commit-partial + emit `openQuestion` noting the gap (default per seed Q8) — confirm in Plan mode.
-- **Runner-model pressure** → a research pass longer than a few minutes pushes on the tick-driven invariant. If the deep-dive concludes this is needed, lift it to an ADR (not a sprint-convenience override).
+- **Runner-model pressure** → a research pass longer than a few minutes pushes on the tick-driven invariant. With Felix doing fetch + curation upstream, S3B per-card runs should stay well inside the budget. If the deep-dive concludes the budget is still too tight, lift it to an ADR (not a sprint-convenience override).
 
 **Plan mode seed** (copy this block into Cursor Plan mode):
 
@@ -517,8 +520,9 @@ Then read in order, and adapt the plan to S3A.1 + S3A.2 actual outcomes:
 4. plans/PDLC_UI/schema-initiative-v0.md §4.3 + §8 — confirm discovery.* write list + /pdlc-discovery-research-custom I/O row match the provider design.
 5. .claude/skills/pdlc-brief-custom/SKILL.md — confirm the 3-question brief contract S3B reads; do NOT mutate it.
 6. .claude/skills/{customer-intel,intelligence-scanning,weekly-exec-intel,meeting-prep}/SKILL.md — S3B composes these.
-7. System/icp.md — blocker for the weekly sweep; confirm it exists (Shaun authors 2026-04-22).
-8. plans/PDLC_UI/skill-agent-map.md — add a row for /pdlc-discovery-research-custom.
+7. plans/Research/felix-strategy.md + .claude/skills/{felix-weekly-pulse-custom,felix-competitor-watch-custom,felix-industry-pulse-custom,felix-client-signals-custom}/SKILL.md — S3B's primary research inputs. Confirm at least one Friday Felix run has produced `Market_intelligence/synthesis/weekly/<date>_weekly_brief.md` before any DoD checkbox depending on weekly sweep is closed.
+8. System/icp.md **v1** (authored 2026-04-22) — confirm the provider reads segments + cross-segment disqualifiers + near-neighbour list; score `gate.strategicFit` + filter `discovery.competitorSnapshot` accordingly.
+9. plans/PDLC_UI/skill-agent-map.md — add a row for /pdlc-discovery-research-custom **and rows for the four Felix skills** (Felix is the upstream agent; S3B is the per-card consumer).
 
 Output: (a) deep-dive resolutions for Q1–Q10, (b) task list closing every DoD checkbox, (c) cost ceilings + LLM-provider decision. List scope conflicts before Build. Do NOT widen brief.* or any S3 / S3A contract; do NOT change the runner model / initiative_jobs schema / route handlers.
 ```

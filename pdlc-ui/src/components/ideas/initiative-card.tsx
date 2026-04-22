@@ -27,14 +27,13 @@ import { RichTextRenderer } from "@/components/rich-text/rich-text-renderer";
 import { canTransition, type CanTransitionResult } from "@/lib/can-transition";
 import type { Initiative, Lifecycle } from "@/schema/initiative";
 import { LANE_LABELS, LIFECYCLE_ORDER, NON_PARKED_LANES } from "./lanes";
+import { useCardDraggable } from "./board-dnd";
 
 export type MoveTarget = Exclude<Lifecycle, "parked">;
 
 export type InitiativeCardProps = {
   initiative: Initiative;
   hasBrief: boolean;
-  dragging?: boolean;
-  dropIndicator?: "above" | "below" | null;
   canReorderUp?: boolean;
   canReorderDown?: boolean;
   onEdit: () => void;
@@ -43,11 +42,6 @@ export type InitiativeCardProps = {
   onRequestPark: () => void;
   onReorderUp?: () => void;
   onReorderDown?: () => void;
-  onDragStart?: (event: React.DragEvent<HTMLLIElement>) => void;
-  onDragEnd?: () => void;
-  onDragOver?: (event: React.DragEvent<HTMLLIElement>) => void;
-  onDrop?: (event: React.DragEvent<HTMLLIElement>) => void;
-  onDragLeave?: () => void;
   /** When set, `idea → discovery` without a completed brief opens the wizard instead of transitioning. */
   onOpenBriefWizard?: () => void;
 };
@@ -74,8 +68,6 @@ function gateFor(
 export function InitiativeCard({
   initiative,
   hasBrief,
-  dragging,
-  dropIndicator,
   canReorderUp,
   canReorderDown,
   onEdit,
@@ -84,11 +76,6 @@ export function InitiativeCard({
   onRequestPark,
   onReorderUp,
   onReorderDown,
-  onDragStart,
-  onDragEnd,
-  onDragOver,
-  onDrop,
-  onDragLeave,
   onOpenBriefWizard,
 }: InitiativeCardProps) {
   const hasBody = initiative.body.trim().length > 0;
@@ -104,8 +91,27 @@ export function InitiativeCard({
       initiative.lifecycle === "deployed" ||
       initiative.lifecycle === "parked");
 
+  // S3A.1 card preview: when the brief is complete, surface a one-line
+  // truncated `problem.value` so the lane can be scanned at a glance.
+  // The full BriefPanel `<details>` accordion still renders below.
+  const problemPreview = briefComplete
+    ? plainFromHtml(initiative.brief?.problem?.value ?? "")
+    : "";
+
   const [briefOpen, setBriefOpen] = useState(false);
   const [exportFeedback, setExportFeedback] = useState<string | null>(null);
+
+  // Cross-lane DnD (S3A.1) — dnd-kit's PointerSensor + KeyboardSensor own
+  // the pointer drag surface end-to-end. Native HTML5 `draggable` was removed
+  // in this sprint because it preempted pointer events and blocked dnd-kit's
+  // 6px activation (real-user drag would never cross). Within-lane pointer
+  // reorder is deferred to S3A.2 (dnd-kit over-events + neighboursForSwap);
+  // `Alt+↑/↓` keyboard reorder and the `Actions → Move to…` menu still work.
+  const { setNodeRef, attributes, listeners, isDragging } = useCardDraggable({
+    initiativeId: initiative.id,
+    fromLifecycle: initiative.lifecycle,
+    disabled: isParked,
+  });
 
   const moveTargets = useMemo(() => {
     const from = initiative.lifecycle;
@@ -156,24 +162,22 @@ export function InitiativeCard({
 
   return (
     <li
+      ref={setNodeRef}
+      {...(!isParked ? attributes : {})}
+      {...(!isParked ? listeners : {})}
+      role="listitem"
       data-initiative-id={initiative.id}
       data-initiative-handle={initiative.handle}
       data-lifecycle={initiative.lifecycle}
-      draggable={!isParked}
       tabIndex={0}
       aria-label={`${initiative.handle} ${initiative.title}`}
       className={cn(
         "group/initiative relative rounded-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        dragging && "opacity-60",
+        isDragging && "opacity-60",
       )}
+      style={{ paddingBlock: "var(--card-py)" }}
       onKeyDown={handleKeyDown}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-      onDragLeave={onDragLeave}
     >
-      {dropIndicator === "above" && <DropIndicator position="above" />}
       <Card className="py-3 gap-2">
         <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 px-3">
           <div className="flex min-w-0 flex-col gap-1">
@@ -287,6 +291,18 @@ export function InitiativeCard({
             </DropdownMenu>
           </div>
         </CardHeader>
+        {problemPreview ? (
+          <CardContent className="px-3 pb-1 text-xs">
+            <p
+              className="line-clamp-1 text-muted-foreground"
+              data-testid="card-problem-preview"
+              title={problemPreview}
+            >
+              <span className="font-medium text-foreground">Problem: </span>
+              {truncate(problemPreview, 80)}
+            </p>
+          </CardContent>
+        ) : null}
         {hasBody && (
           <CardContent className="px-3 pb-2 text-xs">
             <RichTextRenderer html={initiative.body} />
@@ -308,7 +324,6 @@ export function InitiativeCard({
           />
         )}
       </Card>
-      {dropIndicator === "below" && <DropIndicator position="below" />}
     </li>
   );
 }
@@ -318,6 +333,11 @@ function plainFromHtml(html: string): string {
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function truncate(text: string, max: number): string {
+  if (text.length <= max) return text;
+  return `${text.slice(0, Math.max(0, max - 1)).trimEnd()}…`;
 }
 
 function buildCursorExportPrompt(initiative: Initiative): string {
@@ -527,17 +547,5 @@ function MoveMenuItem({
     >
       {label}
     </DropdownMenuItem>
-  );
-}
-
-function DropIndicator({ position }: { position: "above" | "below" }) {
-  return (
-    <div
-      aria-hidden
-      className={cn(
-        "absolute left-0 right-0 h-0.5 bg-primary",
-        position === "above" ? "-top-1" : "-bottom-1",
-      )}
-    />
   );
 }
