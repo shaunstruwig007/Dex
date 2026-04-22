@@ -28,7 +28,7 @@ Sprint 3A.2 is the **second slice of the 3A pass**. It collapses the card's inli
   - `/ideas/@modal/(.)initiative/[id]` — intercepting route over the `/ideas` board; renders the modal in a portal over the live board.
   - `/initiative/[id]` — paired full-page route; renders the same tab shell without the board context behind it. Makes deep-linked modal URLs refresh-safe and shareable (Slack, Granola, meeting prep, email).
   - `@modal/default.tsx` returns `null` — the slot fallback when no modal is open.
-- **Chrome:** Radix `Dialog` via the existing shadcn wrapper. `DialogOverlay` = `bg-black/70 backdrop-blur-sm`. `DialogContent` = `w-[min(1200px,70vw)] h-[85vh] max-w-none p-0` with a compact header (handle badge + title + lifecycle chip + close) and a tab strip below.
+- **Chrome:** Base-UI `Dialog` via the existing shadcn wrapper ([pdlc-ui/src/components/ui/dialog.tsx](../../pdlc-ui/src/components/ui/dialog.tsx) — wraps `@base-ui/react/dialog`). `DialogOverlay` = `bg-black/70 backdrop-blur-sm`. `DialogContent` = `w-[min(1200px,70vw)] h-[85vh] max-w-none p-0` with a compact header (handle badge + title + lifecycle chip + close) and a tab strip below.
 - **Card click opens the modal.** `<li>` becomes the click target for anything **not** the ellipsis button, the grip handle hit-zone, or an interactive child (checkbox, menuitem, link). Keyboard Enter on a focused card opens the modal too.
 - **Ellipsis menu shrinks** to `Move to…`, `Park`, `Delete`. `Edit` is removed — editing happens inside the Idea tab.
 - **Active tab is a query param:** `?tab=brief` on the modal URL, persisted across refresh/back. Default tab on open = the **"most actionable"** tab for the initiative's current lifecycle (see tab availability below).
@@ -90,7 +90,7 @@ Sprint 3A.2 is the **second slice of the 3A pass**. It collapses the card's inli
 ### Technical — how
 
 - **Parallel routes**: scaffold `app/ideas/@modal/`, `app/ideas/@modal/default.tsx` (returns null), `app/ideas/@modal/(.)initiative/[id]/page.tsx`, `app/initiative/[id]/page.tsx`. Shared `<InitiativeModalShell>` component rendered by both the intercepted and full-page routes.
-- **Modal state vs URL state**: the modal is a controlled Radix `Dialog` whose `open` follows the presence of the intercepting segment. `router.push(...)` / `router.back()` is the only way to open/close. No separate `isOpen` state.
+- **Modal state vs URL state**: the modal is a controlled Base-UI `Dialog` whose `open` follows the presence of the intercepting segment. `router.push(...)` / `router.back()` is the only way to open/close. No separate `isOpen` state.
 - **Tab param**: `useSearchParams` reads `?tab=...`; `router.replace` updates it without new history entries (so tab switches don't pollute back-stack).
 - **Tab availability**: pure helper with ~12 unit-test cases (one per lifecycle × each tab). No component touches the raw rules.
 - **Wizard plain-text wrapping**: new helper `wrapPlainAsParagraph(text: string): string` with escape + newline handling. Unit tests: empty input → `<p></p>`, `Hello` → `<p>Hello</p>`, `Line 1\nLine 2` → `<p>Line 1<br/>Line 2</p>`, `<script>` → `<p>&lt;script&gt;</p>`. Round-trip test: `plainFromHtml(wrapPlainAsParagraph(x)) === x` for the set above.
