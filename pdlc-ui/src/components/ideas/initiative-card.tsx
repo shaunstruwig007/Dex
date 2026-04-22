@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type KeyboardEvent } from "react";
+import { CSS } from "@dnd-kit/utilities";
 import {
   ArchiveRestore,
   ArrowDown,
@@ -27,7 +28,7 @@ import { RichTextRenderer } from "@/components/rich-text/rich-text-renderer";
 import { canTransition, type CanTransitionResult } from "@/lib/can-transition";
 import type { Initiative, Lifecycle } from "@/schema/initiative";
 import { LANE_LABELS, LIFECYCLE_ORDER, NON_PARKED_LANES } from "./lanes";
-import { useCardDraggable } from "./board-dnd";
+import { useCardSortable } from "./board-dnd";
 
 export type MoveTarget = Exclude<Lifecycle, "parked">;
 
@@ -101,30 +102,46 @@ export function InitiativeCard({
   const [briefOpen, setBriefOpen] = useState(false);
   const [exportFeedback, setExportFeedback] = useState<string | null>(null);
 
-  // Cross-lane DnD (S3A.1) — dnd-kit's PointerSensor owns the pointer drag
-  // surface end-to-end. Native HTML5 `draggable` was removed in this sprint
-  // because it preempted pointer events and blocked dnd-kit's 6px activation
-  // (real-user drag would never cross). Keyboard cross-lane ships via the
-  // `Actions → Move to…` submenu; dnd-kit `KeyboardSensor` is deferred to
-  // S3A.3 (ADR-0003 — translate3d clamping). Within-lane pointer reorder is
-  // deferred to S3A.2 (dnd-kit `useDroppable` per slot + grip-handle drag);
-  // `Alt+↑/↓` keyboard reorder and the `Actions → Move to…` menu still work.
+  // DnD plumbing (S3A.1 Pass-4) — `@dnd-kit/sortable` drives both cross-lane
+  // and within-lane drag. The `BoardDndProvider` in `board-dnd.tsx` uses
+  // distance-based activation (8px) — the same activation mode Linear,
+  // Trello and Asana use. dnd-kit only claims the gesture once the
+  // pointer has moved ≥8px; anything under that goes to the browser as a
+  // click, which keeps cursor positioning / double-click / triple-click /
+  // Cmd+A text selection fully native. See `board-dnd.tsx` header + ADR-0003.
   //
-  // S3A.1 pass-3 fix: a real-user slow drag (≤6px initial travel) was letting
-  // the browser start a native text selection across the card's text nodes
-  // before dnd-kit crossed the activation distance. Once selection started,
-  // subsequent pointermoves were interpreted as selection-extension, not drag.
-  // Playwright synthesises `mouse.move` events faster than a human and doesn't
-  // kick off text selection, so the e2e was blind to this. Fix is the standard
-  // dnd-kit idiom: `user-select: none` on the draggable surface (`.select-none`
-  // below) + visible `cursor-grab` affordance on non-parked cards. Text
-  // selection inside the opened Brief `<details>` is re-enabled via
-  // `.select-text` on its content so brief text remains copy-able.
-  const { setNodeRef, attributes, listeners, isDragging } = useCardDraggable({
+  // `user-select: none` is NOT set on the card — text inside the card
+  // (title, problem preview, brief) is copy-able. The `cursor-grab` /
+  // `active:cursor-grabbing` affordance stays so users can see the card
+  // is draggable.
+  //
+  // Visual lift (JIRA-style) — `transform`+`transition` values returned by
+  // `useSortable` drive both the source-card displacement while sibling
+  // cards shuffle around during within-lane reorder, AND the source card's
+  // shadow/translate while it's being held. The actual overlay card that
+  // follows the cursor during a cross-lane drag is rendered at the board
+  // root via `<DragOverlay>` in `ideas-board.tsx`.
+  //
+  // Keyboard cross-lane still ships via the `Actions → Move to…` submenu
+  // (ADR-0003 §3). `Alt+↑/↓` keyboard reorder remains the keyboard
+  // within-lane path.
+  const {
+    setNodeRef,
+    attributes,
+    listeners,
+    isDragging,
+    transform,
+    transition,
+  } = useCardSortable({
     initiativeId: initiative.id,
     fromLifecycle: initiative.lifecycle,
     disabled: isParked,
   });
+
+  const dragStyle = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const moveTargets = useMemo(() => {
     const from = initiative.lifecycle;
@@ -186,10 +203,10 @@ export function InitiativeCard({
       aria-label={`${initiative.handle} ${initiative.title}`}
       className={cn(
         "group/initiative relative rounded-md transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        !isParked && "cursor-grab select-none active:cursor-grabbing",
-        isDragging && "opacity-60",
+        !isParked && "cursor-grab active:cursor-grabbing",
+        isDragging && "opacity-40",
       )}
-      style={{ paddingBlock: "var(--card-py)" }}
+      style={{ paddingBlock: "var(--card-py)", ...dragStyle }}
       onKeyDown={handleKeyDown}
     >
       <Card className="py-3 gap-2">
@@ -436,7 +453,7 @@ function BriefPanel({
   }
 
   return (
-    <CardContent className="select-text border-t border-border px-3 py-2">
+    <CardContent className="border-t border-border px-3 py-2">
       <details
         open={open}
         onToggle={(e) => onOpenChange((e.target as HTMLDetailsElement).open)}

@@ -1,24 +1,29 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 /**
- * S3A.1 cross-lane drag-and-drop — `@dnd-kit/core` only (Q-alt.1).
+ * S3A.1 drag-and-drop — `@dnd-kit/core` + `@dnd-kit/sortable` (Pass-4).
  *
  * Coverage:
+ *   - HTML5 `draggable` is never applied to the card <li> (regression guard
+ *     for the Pass-1 defect where HTML5 drag preempted dnd-kit).
  *   - Pointer drag from a non-source lane to an illegal target is a no-op
  *     (the lane visually dims while the drag is in flight).
  *   - Pointer drag from `discovery` → `design` (after seeding a brief) moves
  *     the card and bumps its revision.
  *   - Pointer drag onto the source lane is a silent no-op (Q-P2.1
- *     `same_lifecycle` is filtered before any API call fires).
+ *     `same_lifecycle` filters before any API call fires).
+ *   - Pointer within-lane reorder via drop-on-sibling-card fires the
+ *     `/reorder` API and the revision bumps.
  *   - Keyboard-only cross-lane move — exercises the Actions menu's
  *     `Move to…` submenu (Tab / Enter / arrow keys). dnd-kit's Space-based
- *     `KeyboardSensor` is wired, but its translate3d is clamped by dnd-kit
- *     to the card's immediate `<ul>` container on a horizontally-scrolling
- *     board, so the pixel-perfect keyboard DnD UX is an S3A.2 follow-up;
- *     the menu path is the shipped accessible surface for this sprint.
+ *     `KeyboardSensor` is still deferred to S3A.3 (ADR-0003 §3) — the menu
+ *     path is the shipped accessible surface.
  *
- * Within-lane reorder still uses native HTML5 drag + `Alt+↑/↓` and is
- * covered indirectly by the existing swim-lanes / ideas-crud specs.
+ * Pointer activation uses dnd-kit's distance-based constraint
+ * (see `board-dnd.tsx` → `POINTER_ACTIVATION_DISTANCE_PX = 8`). The sensor
+ * activates once the pointer has moved ≥8px while a mousedown is held, so
+ * the `pointerDrag` helper does `mouse.down → mouse.move(target, steps)`
+ * without any timer — the steps cross the 8px threshold on the first hop.
  */
 
 async function createInitiative(page: Page, title: string): Promise<Locator> {
@@ -52,6 +57,10 @@ async function moveViaMenu(page: Page, handle: string, label: string) {
 }
 
 async function pointerDrag(page: Page, source: Locator, target: Locator) {
+  // Make sure the source is in-viewport — `boundingBox()` is page-relative,
+  // so a card far down the lane (100+ card DBs in e2e) would give valid
+  // coords that the browser refuses to synthesize pointer events on.
+  await source.scrollIntoViewIfNeeded();
   const sourceBox = await source.boundingBox();
   const targetBox = await target.boundingBox();
   expect(sourceBox && targetBox, "drag boxes resolved").toBeTruthy();
@@ -62,12 +71,10 @@ async function pointerDrag(page: Page, source: Locator, target: Locator) {
     sourceBox.y + sourceBox.height / 2,
   );
   await page.mouse.down();
-  // dnd-kit PointerSensor activation distance = 6px (board-dnd.tsx).
-  await page.mouse.move(
-    sourceBox.x + sourceBox.width / 2 + 12,
-    sourceBox.y + sourceBox.height / 2 + 12,
-    { steps: 5 },
-  );
+  // Distance-based activation (board-dnd.tsx → POINTER_ACTIVATION_DISTANCE_PX):
+  // dnd-kit activates once the pointer has moved ≥8px. We step through the
+  // travel so the sensor sees intermediate pointermoves and the
+  // `SortableContext` can shuffle sibling cards.
   await page.mouse.move(
     targetBox.x + targetBox.width / 2,
     targetBox.y + targetBox.height / 2,
@@ -96,26 +103,23 @@ test.describe("S3A.1 cross-lane DnD", () => {
     expect(draggableCount).toBe(0);
   });
 
-  test("initiative cards disable native text selection (DnD activation guard)", async ({
+  test("initiative cards allow native text selection (copy-paste is restored)", async ({
     page,
   }) => {
-    // S3A.1 pass-3 defect (recorded 2026-04-22): a real-user slow drag lost
-    // its first ≤6px of pointermoves to native text selection across the
-    // card's text nodes, so dnd-kit's PointerSensor never activated and the
-    // card stayed put. Playwright's synthetic `mouse.move` does NOT start
-    // text selection, so the pointer drag e2e happily passed. Lock the CSS
-    // invariant directly — non-parked cards must have `user-select: none`
-    // on the draggable `<li>` surface. See comment in
-    // `src/components/ideas/initiative-card.tsx` around `useCardDraggable`.
+    // S3A.1 Pass-4 (recorded 2026-04-22): Pass-3 pinned `user-select: none`
+    // on the card <li> to shield dnd-kit's PointerSensor from losing the
+    // initial ≤6px of pointermoves to browser text selection. That broke
+    // the user's ability to copy text out of the card, so Pass-4 switched
+    // the sensor to delay-based activation (dnd-kit owns pointerdown for
+    // `delayMs` before the browser can start text selection). This guard
+    // locks in the Pass-4 regression: non-parked cards must NOT disable
+    // text selection.
     await page.goto("/");
-    const card = await createInitiative(
-      page,
-      `select-none guard ${Date.now()}`,
-    );
+    const card = await createInitiative(page, `select-text guard ${Date.now()}`);
     const userSelect = await card.evaluate(
       (el) => window.getComputedStyle(el).userSelect,
     );
-    expect(["none", "-webkit-none"]).toContain(userSelect);
+    expect(["auto", "text", ""]).toContain(userSelect);
   });
 
   test("pointer drag idea → develop is a no-op (illegal forward edge)", async ({
@@ -237,5 +241,60 @@ test.describe("S3A.1 cross-lane DnD", () => {
         .locator('section[data-lane="design"]')
         .locator(`li[data-initiative-handle="${handle}"]`),
     ).toBeVisible();
+  });
+
+  test("pointer drag within the same lane reorders the card (JIRA-style)", async ({
+    page,
+  }) => {
+    // Pass-4 restored within-lane pointer reorder via @dnd-kit/sortable —
+    // dropping a card onto a sibling card in the SAME lane fires the
+    // `/reorder` API (midpoint sortOrder) and bumps the source card's
+    // revision. The previous Alt+↑/↓ keyboard path + Actions → Move up/down
+    // menu are still the keyboard surface.
+    await page.goto("/");
+    const unique = `${Date.now()}`;
+    const topTitle = `reorder top ${unique}`;
+    const bottomTitle = `reorder bottom ${unique}`;
+
+    // Create bottom first, then top — "New initiative" inserts at the head
+    // of the idea lane so the second-created card ends up above the first.
+    await createInitiative(page, bottomTitle);
+    const top = await createInitiative(page, topTitle);
+    const topHandle = (await top.getAttribute("data-initiative-handle")) as string;
+
+    const ideaLane = page.locator('section[data-lane="idea"]');
+    const bottomCard = ideaLane
+      .locator(`li[data-initiative-handle]`)
+      .filter({ hasText: bottomTitle });
+
+    const startRev = (await top.getByText(/^rev\s+\d+/).textContent())?.trim();
+    // The drag fires the POST /reorder (fire-and-forget await in
+    // `handleReorder`) then triggers a GET /api/initiatives refresh that
+    // rebuilds the board DOM. Wait for BOTH so the endRev read below
+    // reflects the post-refresh state.
+    const reorderResponse = page.waitForResponse(
+      (r) =>
+        r.url().includes("/reorder") &&
+        r.request().method() === "POST" &&
+        r.status() === 200,
+    );
+    const refreshAfter = page.waitForResponse(
+      (r) =>
+        r.url().endsWith("/api/initiatives") &&
+        r.request().method() === "GET",
+    );
+    await pointerDrag(page, top, bottomCard);
+    await reorderResponse;
+    await refreshAfter;
+
+    // Revision of the moved card bumped → /reorder API was called and the
+    // optimistic-locked update landed.
+    const movedCard = ideaLane.locator(
+      `li[data-initiative-handle="${topHandle}"]`,
+    );
+    await expect(movedCard).toBeVisible();
+    await expect(movedCard.getByText(/^rev\s+\d+/)).not.toHaveText(
+      startRev ?? "rev 1",
+    );
   });
 });

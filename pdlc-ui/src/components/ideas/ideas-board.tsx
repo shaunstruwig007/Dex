@@ -2,7 +2,15 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
+import {
+  DragOverlay,
+  type DragEndEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import type { Initiative, Lifecycle } from "@/schema/initiative";
 import { canTransition, deriveHasBrief } from "@/lib/can-transition";
@@ -260,12 +268,11 @@ export function IdeasBoard() {
     [refresh],
   );
 
-  // Within-lane pointer reorder was HTML5-driven in S2; it was removed in
-  // S3A.1 because `draggable` on the card <li> preempted dnd-kit's
-  // PointerSensor and blocked real-user cross-lane DnD (e2e blind spot:
-  // Playwright synthesises pointer*/mouse* events but not HTML5 drag*).
-  // Keyboard Alt+↑/↓ reorder and the card Actions menu cover the gap this
-  // sprint; S3A.2 restores pointer within-lane reorder via dnd-kit.
+  // Within-lane pointer reorder rides on the same `@dnd-kit/sortable`
+  // context as cross-lane (S3A.1 Pass-4 — see `board-dnd.tsx` header +
+  // ADR-0003). This `buildArrowSwap` helper still powers the `Alt+↑/↓`
+  // keyboard path and the `Actions → Move up/down` menu items, both of
+  // which sidestep dnd-kit entirely.
   function buildArrowSwap(lifecycle: Lifecycle, card: Initiative) {
     const lane = byLane[lifecycle];
     return {
@@ -352,55 +359,128 @@ export function IdeasBoard() {
     return dragLegalityByLane.get(lifecycle)?.reason ?? null;
   }
 
-  const handleCrossLaneDragStart = useCallback((event: DragStartEvent) => {
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     const data = event.active.data.current;
     if (isDragData(data)) {
       setActiveDrag(data);
     }
   }, []);
 
-  const handleCrossLaneDragEnd = useCallback(
+  const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const dragData = event.active.data.current;
-      const dropData = event.over?.data.current;
       setActiveDrag(null);
-      if (!isDragData(dragData) || !isLaneDropData(dropData)) return;
+      if (!isDragData(dragData)) return;
 
       const card = initiatives.find((i) => i.id === dragData.initiativeId);
       if (!card) return;
 
-      const targetLifecycle: Lifecycle =
-        dropData.laneId === "parked-rail" ? "parked" : dropData.laneId;
+      const overId = event.over?.id;
+      const overData = event.over?.data.current;
 
-      // Q-P2.1 — drop on the source column is a silent no-op (same_lifecycle).
-      if (targetLifecycle === card.lifecycle) return;
+      // Branch A — drop on a lane container (empty lane / parked rail /
+      // outer lane body). `overData.laneId` identifies the target.
+      if (isLaneDropData(overData)) {
+        const targetLifecycle: Lifecycle =
+          overData.laneId === "parked-rail" ? "parked" : overData.laneId;
 
-      const hasBrief = deriveHasBrief(card);
-      const gate = canTransition(card.lifecycle, targetLifecycle, {
-        hasBrief,
-        parkedIntent: "revisit",
-        parkedReason: "__menu",
-      });
-      if (!gate.ok) return; // illegal targets dim during drag; drop is a no-op.
+        // Same lane as source — silent no-op. Within-lane reorder via
+        // drop-on-empty-space is undefined; users drop on a sibling card
+        // instead (Branch B).
+        if (targetLifecycle === card.lifecycle) return;
 
-      // `idea → discovery` opens the brief wizard (preserves the gate);
-      // `→ parked` opens the parked transition dialog (intent + reason).
-      if (
-        card.lifecycle === "idea" &&
-        targetLifecycle === "discovery" &&
-        !hasBrief
-      ) {
-        setBriefWizardTarget(card);
+        dispatchCrossLaneDrop(card, targetLifecycle);
         return;
       }
-      if (targetLifecycle === "parked") {
-        setPendingPark(card);
+
+      // Branch B — drop on a sibling card. For within-lane this is reorder;
+      // for cross-lane it's still a transition (we use the sibling's lane
+      // as the target, which @dnd-kit/sortable already tracks via the
+      // `sortable.containerId` on `overData`).
+      if (typeof overId !== "string") return;
+      const overCardId =
+        typeof overId === "string" && overId.startsWith("card-")
+          ? overId.slice("card-".length)
+          : null;
+      if (!overCardId) return;
+      const overCard = initiatives.find((i) => i.id === overCardId);
+      if (!overCard) return;
+
+      if (overCard.lifecycle === card.lifecycle) {
+        // WITHIN-LANE REORDER — compute midpoint sortOrder between the
+        // neighbour that ends up above the moved card and the one below.
+        // dnd-kit-sortable tells us the displacement direction via
+        // `event.active.rect.top` vs `event.over.rect.top` but the simpler
+        // read is: if the dragged card's original index was above the
+        // target's original index, it's moving DOWN → sits just below
+        // target; otherwise moving UP → sits just above target.
+        const lane = byLane[card.lifecycle];
+        const fromIndex = lane.findIndex((i) => i.id === card.id);
+        const toIndex = lane.findIndex((i) => i.id === overCard.id);
+        if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) {
+          return;
+        }
+        const movingDown = fromIndex < toIndex;
+        const above = movingDown
+          ? lane[toIndex]
+          : toIndex >= 1
+            ? lane[toIndex - 1]
+            : null;
+        const below = movingDown
+          ? toIndex + 1 < lane.length
+            ? lane[toIndex + 1]
+            : null
+          : lane[toIndex];
+        const nextSort = computeMidpointSortOrder(
+          lane,
+          card.id,
+          above,
+          below,
+        );
+        void handleReorder(card, nextSort);
         return;
       }
-      void handleTransition(card, targetLifecycle);
+
+      // Cross-lane drop onto a sibling card — treat the sibling's lane as
+      // the transition target, then apply the same gate/wizard/park rules
+      // as a drop on the lane container.
+      dispatchCrossLaneDrop(card, overCard.lifecycle);
     },
-    [handleTransition, initiatives],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [handleTransition, handleReorder, initiatives, byLane],
   );
+
+  /**
+   * Apply the cross-lane transition rules that were Branch A of Pass-3:
+   * - same-lane → silent no-op (caller already filtered but double-check)
+   * - illegal gate → silent no-op (lane was dimmed during drag)
+   * - `idea → discovery` without a complete brief → open wizard
+   * - `→ parked` → open the parked intent + reason modal
+   * - otherwise → straight transition API call
+   */
+  function dispatchCrossLaneDrop(card: Initiative, targetLifecycle: Lifecycle) {
+    if (targetLifecycle === card.lifecycle) return;
+    const hasBrief = deriveHasBrief(card);
+    const gate = canTransition(card.lifecycle, targetLifecycle, {
+      hasBrief,
+      parkedIntent: "revisit",
+      parkedReason: "__menu",
+    });
+    if (!gate.ok) return;
+    if (
+      card.lifecycle === "idea" &&
+      targetLifecycle === "discovery" &&
+      !hasBrief
+    ) {
+      setBriefWizardTarget(card);
+      return;
+    }
+    if (targetLifecycle === "parked") {
+      setPendingPark(card);
+      return;
+    }
+    void handleTransition(card, targetLifecycle);
+  }
 
   const editTarget = dialog.kind === "edit" ? dialog.initiative : null;
   const dialogOpen = dialog.kind !== "closed";
@@ -412,10 +492,20 @@ export function IdeasBoard() {
     [dialog],
   );
 
+  // Card rendered inside the `<DragOverlay>` — a floating duplicate of the
+  // dragged card that follows the pointer (JIRA-like lift). The source
+  // card stays in its slot and fades (via `isDragging` → `opacity-40` in
+  // `InitiativeCard`) so sibling cards can shuffle around it during
+  // within-lane reorder.
+  const activeDragCard = useMemo(() => {
+    if (!activeDrag) return null;
+    return initiatives.find((i) => i.id === activeDrag.initiativeId) ?? null;
+  }, [activeDrag, initiatives]);
+
   return (
     <BoardDndProvider
-      onDragStart={handleCrossLaneDragStart}
-      onDragEnd={handleCrossLaneDragEnd}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onDragCancel={() => setActiveDrag(null)}
     >
       <section
@@ -494,39 +584,53 @@ export function IdeasBoard() {
                 {MAIN_LANES.map((lifecycle) => {
                   const cards = byLane[lifecycle];
                   const dropState = laneDropState(lifecycle);
+                  // SortableContext per lane — the card ids must match the
+                  // `id` passed to `useSortable` in `useCardSortable`
+                  // (`card-${uuid}`). This is what lets dnd-kit shuffle
+                  // sibling cards around the dragged card on pointermove,
+                  // and it's why we can detect over-card (within-lane)
+                  // vs over-lane (cross-lane) in `handleDragEnd`.
                   return (
-                    <SwimLane
+                    <SortableContext
                       key={lifecycle}
-                      lifecycle={lifecycle}
-                      count={cards.length}
-                      dropState={dropState}
-                      illegalReason={laneIllegalReason(lifecycle)}
+                      id={`lane-${lifecycle}`}
+                      items={cards.map((c) => `card-${c.id}`)}
+                      strategy={verticalListSortingStrategy}
                     >
-                      {cards.map((card) => {
-                        const hasBrief = deriveHasBrief(card);
-                        const arrow = buildArrowSwap(lifecycle, card);
-                        return (
-                          <InitiativeCard
-                            key={card.id}
-                            initiative={card}
-                            hasBrief={hasBrief}
-                            canReorderUp={arrow.canReorderUp}
-                            canReorderDown={arrow.canReorderDown}
-                            onEdit={() =>
-                              setDialog({ kind: "edit", initiative: card })
-                            }
-                            onDelete={() => setPendingDelete(card)}
-                            onTransition={(to) => {
-                              void handleTransition(card, to);
-                            }}
-                            onOpenBriefWizard={() => setBriefWizardTarget(card)}
-                            onRequestPark={() => setPendingPark(card)}
-                            onReorderUp={arrow.onReorderUp}
-                            onReorderDown={arrow.onReorderDown}
-                          />
-                        );
-                      })}
-                    </SwimLane>
+                      <SwimLane
+                        lifecycle={lifecycle}
+                        count={cards.length}
+                        dropState={dropState}
+                        illegalReason={laneIllegalReason(lifecycle)}
+                      >
+                        {cards.map((card) => {
+                          const hasBrief = deriveHasBrief(card);
+                          const arrow = buildArrowSwap(lifecycle, card);
+                          return (
+                            <InitiativeCard
+                              key={card.id}
+                              initiative={card}
+                              hasBrief={hasBrief}
+                              canReorderUp={arrow.canReorderUp}
+                              canReorderDown={arrow.canReorderDown}
+                              onEdit={() =>
+                                setDialog({ kind: "edit", initiative: card })
+                              }
+                              onDelete={() => setPendingDelete(card)}
+                              onTransition={(to) => {
+                                void handleTransition(card, to);
+                              }}
+                              onOpenBriefWizard={() =>
+                                setBriefWizardTarget(card)
+                              }
+                              onRequestPark={() => setPendingPark(card)}
+                              onReorderUp={arrow.onReorderUp}
+                              onReorderDown={arrow.onReorderDown}
+                            />
+                          );
+                        })}
+                      </SwimLane>
+                    </SortableContext>
                   );
                 })}
               </div>
@@ -544,24 +648,63 @@ export function IdeasBoard() {
               Nothing parked.
             </p>
           ) : (
-            <ul aria-label="Parked initiatives" className="flex flex-col gap-2">
-              {byLane.parked.map((card) => (
-                <InitiativeCard
-                  key={card.id}
-                  initiative={card}
-                  hasBrief={deriveHasBrief(card)}
-                  onEdit={() => setDialog({ kind: "edit", initiative: card })}
-                  onDelete={() => setPendingDelete(card)}
-                  onTransition={(to) => {
-                    void handleTransition(card, to);
-                  }}
-                  onOpenBriefWizard={() => setBriefWizardTarget(card)}
-                  onRequestPark={() => setPendingPark(card)}
-                />
-              ))}
-            </ul>
+            // Parked cards are rendered in a SortableContext so the rail
+            // participates in the same dnd-kit collision layer as the main
+            // lanes — you can drop a lane card onto a parked card to park
+            // it. Parked cards themselves are `disabled` on the sortable
+            // hook (see `initiative-card.tsx` → `isParked` guard) so they
+            // can't be dragged out; the Actions menu is the unpark path.
+            <SortableContext
+              id="lane-parked"
+              items={byLane.parked.map((c) => `card-${c.id}`)}
+              strategy={verticalListSortingStrategy}
+            >
+              <ul
+                aria-label="Parked initiatives"
+                className="flex flex-col gap-2"
+              >
+                {byLane.parked.map((card) => (
+                  <InitiativeCard
+                    key={card.id}
+                    initiative={card}
+                    hasBrief={deriveHasBrief(card)}
+                    onEdit={() => setDialog({ kind: "edit", initiative: card })}
+                    onDelete={() => setPendingDelete(card)}
+                    onTransition={(to) => {
+                      void handleTransition(card, to);
+                    }}
+                    onOpenBriefWizard={() => setBriefWizardTarget(card)}
+                    onRequestPark={() => setPendingPark(card)}
+                  />
+                ))}
+              </ul>
+            </SortableContext>
           )}
         </ParkedRail>
+
+        {/*
+         * DragOverlay — the floating duplicate card that follows the
+         * pointer during a drag. It's portalled to `document.body` by
+         * dnd-kit so it doesn't get clipped by lane/rail scroll containers,
+         * which is what makes the lift feel JIRA-native. The `dropAnimation`
+         * default is a 250ms settle; we keep it because that's the JIRA
+         * reference in the user's validation video.
+         */}
+        <DragOverlay>
+          {activeDragCard ? (
+            <div className="pointer-events-none w-[var(--board-lane-min)] rotate-[0.5deg] opacity-95 shadow-2xl">
+              <InitiativeCard
+                initiative={activeDragCard}
+                hasBrief={deriveHasBrief(activeDragCard)}
+                onEdit={() => undefined}
+                onDelete={() => undefined}
+                onTransition={() => undefined}
+                onOpenBriefWizard={() => undefined}
+                onRequestPark={() => undefined}
+              />
+            </div>
+          ) : null}
+        </DragOverlay>
 
         <InitiativeFormDialog
           open={dialogOpen}

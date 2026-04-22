@@ -123,7 +123,7 @@ Single scale (Inter or system stack fallback):
 
 `Button`, `Input`, `Textarea` (single-line/short only), `Dialog` (modal), `DropdownMenu`, `Toast`, `Tabs`, `Checkbox`, `RadioGroup`, `Label`, `Separator`, `Badge`, `Card`, `Tooltip`. Any new primitive needs a PR-note ADR.
 
-**Drag-and-drop (added S3A.1):** `@dnd-kit/core` only — `PointerSensor` + `KeyboardSensor` with a hand-rolled keyboard coordinate getter. `@dnd-kit/sortable` was deliberately **not** installed (Q-alt.1, [`/agent-q-cto-custom`](../../.claude/skills/agent-q-cto-custom/SKILL.md) verdict on S3A.1) — within-lane reorder keeps the existing pointer + `Alt+↑/↓` keyboard fallback. Re-evaluate if a sortable arrow-key contract becomes a product requirement.
+**Drag-and-drop (S3A.1 Pass-4):** `@dnd-kit/core` + `@dnd-kit/sortable`. `PointerSensor` with **distance-based activation** (8px) — the same activation mode Linear, Trello and Asana use. dnd-kit only claims the gesture after the pointer has moved ≥8px; anything under that goes to the browser as a normal click, so text selection inside the card (cursor positioning, double-click word, triple-click paragraph, Cmd+A) remains fully native. One `SortableContext` per lane + a `DragOverlay` at the board root (portalled to `document.body`) gives JIRA-style lift + shuffle and collapses within-lane reorder, cross-lane transition, and parked-rail drop into a single `handleDragEnd` dispatch. The dnd-kit `KeyboardSensor` stays deferred — keyboard cross-lane ships via the card's `Actions → Move to…` submenu. See [ADR-0003](../../pdlc-ui/docs/adr/0003-dnd-shape-and-html5-ban.md) for the four-pass narrative.
 
 ### 3.6 Forbidden "AI slop" patterns
 
