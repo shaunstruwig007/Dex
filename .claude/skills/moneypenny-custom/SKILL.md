@@ -9,7 +9,7 @@ description: Moneypenny — per-initiative intelligence debriefer. Takes the thr
 **Command:** `/moneypenny-custom`
 **Budget:** 60–90s per headless kickoff · ~3–5 min per weekly sweep (whole column) · 5–10 min per interactive "deepen" session.
 **Operating doc:** [`plans/Research/moneypenny-strategy.md`](../../../plans/Research/moneypenny-strategy.md).
-**Seed / sprint spec:** [`plans/PDLC_UI/seeds/s3b-discovery-research.md`](../../../plans/PDLC_UI/seeds/s3b-discovery-research.md) *(S3B name retained for historical traceability; pdlc-ui is no longer PR-merge-tracked in personal mode)*.
+**Seed / sprint spec:** [`plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md`](../../../plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md) *(S3B name retained for historical traceability; pdlc-ui is no longer PR-merge-tracked in personal mode)*.
 
 **Custom skill — protected from Dex updates** (`-custom` suffix). Edit this file directly; `/dex-update` will not overwrite it.
 
@@ -312,7 +312,7 @@ When Moneypenny's discovery package is PM-reviewed and the card is ready to leav
 ## Related
 
 - [`plans/Research/moneypenny-strategy.md`](../../../plans/Research/moneypenny-strategy.md) — operating doc.
-- [`plans/PDLC_UI/seeds/s3b-discovery-research.md`](../../../plans/PDLC_UI/seeds/s3b-discovery-research.md) — sprint seed + deep-dive close-out *(S3B name historical)*.
+- [`plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md`](../../../plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md) — sprint seed + deep-dive close-out *(S3B name historical)*.
 - [`plans/PDLC_UI/schema-initiative-v0.md`](../../../plans/PDLC_UI/schema-initiative-v0.md) — card-state contract.
 - [`/weekly-discovery-sweep-custom`](../weekly-discovery-sweep-custom/SKILL.md) — Monday wrapper.
 - [`/felix-custom`](../felix-custom/SKILL.md) — upstream producer.

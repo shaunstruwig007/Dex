@@ -37,7 +37,7 @@ Switch to **Build mode** only after Plan produces a task list that closes every 
 | **S3A.1** | **A** | Interaction + layout polish on the `idea → discovery` journey **and** brief shrink to **three questions** (why / who / what): **`REQUIRED_BRIEF_FIELDS` narrows** to `problem` + `targetUsers` + `coreValue` (legacy fields stay optional in `briefSchema` — backward compat; S3B writes equivalents to `discovery.*`); **drag-and-drop** card moves (menu retained as a11y fallback); **mandatory-field indicators** in wizard; **summary-step composite** (3 fields + synthesis) with two actions (primary "Save brief & start discovery" / secondary "Save brief only" — identical server behaviour this sprint); **one-line `problem.value`** preview on card face; **chrome-light board shell** + **elastic columns** + **parked rail** + **density toggle** per [board-layout.md](../../pdlc-ui/docs/design/board-layout.md) §1–§4. No new server processes, no new skills, `briefSchema` narrows (not widens). |
 | **S3A.2** | **A** | **Initiative Modal + tabs + chat-style brief wizard + within-lane reorder restore** (scope pivoted 2026-04-22 — see [`design-log/2026-04-22-pivot-to-modal.md`](../../pdlc-ui/docs/design-log/2026-04-22-pivot-to-modal.md)): URL-addressable **Initiative Modal** via Next.js parallel + intercepting routes (`~70vw × ~85vh`, blurred overlay); **six lifecycle-gated tabs** (Idea · Brief · Discovery · Spec · Design · Activity) with `pending`/`locked` grey-dot + lock-icon grammar; **chat-style brief wizard** inside the Brief tab's empty state (one question per step, `<textarea>` only, Enter advances, plain text wrapped as `<p>…</p>` on save — same `briefSchema` + same 422 contract); card click opens the modal (ellipsis menu shrinks to Move/Park/Delete; inline `<details>` BriefPanel removed); **within-lane pointer reorder restored** via dnd-kit (`useDroppable` per slot + grip-handle `useDraggable` — HTML5 `draggable` stays banned; see ADR-0003); **read-only Activity tab** from the existing `events` table. **Zero schema change** — no new `eventSchema` kind, no new migration. See [seeds/s3a2-initiative-modal-tabs-chat-wizard.md](./seeds/s3a2-initiative-modal-tabs-chat-wizard.md). |
 | **S3A.3** | **A** | **Automation surface** (scope moved from old S3A.2 2026-04-22; see [`seeds/_superseded/s3a3-discovery-automation.md`](./seeds/_superseded/s3a3-discovery-automation.md)): **pre-filled brief drafts** for the three required brief fields (feature-flagged OFF in prod), **tick-driven discovery kickoff** with client-polled progress bar behind a **swappable `DiscoveryResearchProvider` interface** (deterministic stub this sprint — S3B replaces the advance function without touching route / job / UI), new **`initiative_jobs` table** + startup reconciler, **edit-existing-brief** re-entry from the modal, **focused-column mode** per [board-layout.md](../../pdlc-ui/docs/design/board-layout.md) §6, and dnd-kit `KeyboardSensor` revival for cross-lane (ADR-0003 carry-over — resolve `translate3d` clamping via `DragOverlay` or a custom modifier). Progress surface lives **inside the Initiative Modal's Discovery tab** — no side panel. |
-| **S3B** | **A** | `/pdlc-discovery-research-custom` — real discovery research skill. Replaces the S3A.2 kickoff stub behind the same `DiscoveryResearchProvider` interface; reads `brief.*` + `gate.*` + **Felix weekly artefacts** (`Market_intelligence/synthesis/weekly/*` + `Competitors/profiles/*` + `Wyzetalk_Clients/<date>_signals.md`) + `Market_and_deal_signals.md` + `People/External/*` + **`System/icp.md` v1** (authored 2026-04-22 — three segments: FMCG manufacturing, Mining & minerals, Auto & industrial); writes `discovery.researchNotes` + `discovery.competitorSnapshot` + `discovery.customerEvidence[]` + `discovery.openQuestions[]` (draft). Designed to re-run on a **weekly sweep** against all `discovery`-column cards (Mon, after Felix's Friday pass). **Soft-prereq:** Felix umbrella bootstrapped (see [`plans/Research/felix-strategy.md`](../Research/felix-strategy.md)). **Deep-dive 2026-04-22+** — full scope is defined in [seeds/s3b-discovery-research.md](./seeds/s3b-discovery-research.md). |
+| **S3B** | **A** | `/pdlc-discovery-research-custom` — real discovery research skill. Replaces the S3A.2 kickoff stub behind the same `DiscoveryResearchProvider` interface; reads `brief.*` + `gate.*` + **Felix weekly artefacts** (`Market_intelligence/synthesis/weekly/*` + `Competitors/profiles/*` + `Wyzetalk_Clients/<date>_signals.md`) + `Market_and_deal_signals.md` + `People/External/*` + **`System/icp.md` v1** (authored 2026-04-22 — three segments: FMCG manufacturing, Mining & minerals, Auto & industrial); writes `discovery.researchNotes` + `discovery.competitorSnapshot` + `discovery.customerEvidence[]` + `discovery.openQuestions[]` (draft). Designed to re-run on a **weekly sweep** against all `discovery`-column cards (Mon, after Felix's Friday pass). **Soft-prereq:** Felix umbrella bootstrapped (see [`plans/Research/felix-strategy.md`](../Research/felix-strategy.md)). **Deep-dive 2026-04-22+** — full scope is defined in [S3B discovery seed (archived)](./seeds/_archived-2026-04-24/s3b-discovery-research.md). |
 | **S4** | **A (minimal)** / **B (full)** | **Bar A:** export pack download + open-questions persistence. **Bar B:** full re-run audit, workshop export polish. |
 | **S5** | **B** | Design artefact fields — board becomes Steerco-readable. |
 | **S6** | **B** | Design review **hard gate**. In Bar A this is a **warning nudge**, not a block. |
@@ -369,7 +369,7 @@ Execute Sprint S3A.1 — Brief wizard + board interaction polish. Branch: feat/s
 Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
 
 Then read in order, and adapt the plan to S3 actual outcomes:
-1. plans/PDLC_UI/seeds/s3a1-brief-wizard-interactions.md.
+1. plans/PDLC_UI/seeds/_archived-2026-04-24/s3a1-brief-wizard-interactions.md.
 2. plans/PDLC_UI/sprint-backlog.md § Sprint 3A.1.
 3. pdlc-ui/docs/design/board-layout.md — implements §1–§4 this sprint; §5–§6 deferred to S3A.2.
 4. 04-Projects/PDLC_Orchestration_UI.md Slice log — S3 actual outcomes (atomic POST .../brief, brief.complete gate, skill_run event payload, BriefPanel, tightened briefSchema/eventSchema). Flag any S3A.1 DoD item invalidated.
@@ -388,7 +388,7 @@ Resolve Open Questions in seed § "Open questions to resolve in Plan mode" (DnD 
 
 **Goal:** the initiative card becomes a clickable entry point; clicking it opens a URL-addressable Initiative Modal (~70vw × ~85vh) with six lifecycle-gated tabs; the brief capture becomes a chat-style one-question-per-step flow; within-lane pointer reorder (removed from S3A.1 pass-2 to unblock real-user cross-lane drag) is restored via dnd-kit; HTML5 `draggable` stays banned (see ADR-0003).
 
-**Maps to:** board-layout.md §5 (Initiative Modal) · [`seeds/s3a2-initiative-modal-tabs-chat-wizard.md`](./seeds/s3a2-initiative-modal-tabs-chat-wizard.md) · ADR-0003. Still no S4 scope.
+**Maps to:** board-layout.md §5 (Initiative Modal) · [`seeds/_archived-2026-04-24/s3a2-initiative-modal-tabs-chat-wizard.md`](./seeds/_archived-2026-04-24/s3a2-initiative-modal-tabs-chat-wizard.md) · ADR-0003. Still no S4 scope.
 
 **Explicitly deferred (PO):** any further `pdlc-brief-custom` **question copy / order / workflow** rewrite is a later PO-owned pass. The S3A.1 structural shrink (three required fields + summary composite + dual save buttons) ships unchanged — only the **input surface** changes from modal+form to chat-style inside the Brief tab.
 
@@ -444,7 +444,7 @@ Execute Sprint S3A.2 — Initiative Modal + tabs shell + chat-style brief wizard
 Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
 
 Then read in order, and adapt the plan to S3A.1 actual outcomes + the 2026-04-22 cleanup PR:
-1. plans/PDLC_UI/seeds/s3a2-initiative-modal-tabs-chat-wizard.md.
+1. plans/PDLC_UI/seeds/_archived-2026-04-24/s3a2-initiative-modal-tabs-chat-wizard.md.
 2. plans/PDLC_UI/sprint-backlog.md § Sprint 3A.2.
 3. pdlc-ui/docs/design/board-layout.md §5 (Initiative Modal) + pdlc-ui/docs/design-log/2026-04-22-pivot-to-modal.md (side-panel → modal reasoning).
 4. pdlc-ui/docs/adr/0003-dnd-shape-and-html5-ban.md — the rules for within-lane reorder restore.
@@ -499,9 +499,9 @@ Resolve Open Questions in seed § "Open questions to resolve in Plan mode" (moda
 
 **Goal:** Make discovery actually discover. Replace the deterministic stub with a skill that composes existing Dex intelligence (`/customer-intel`, `/intelligence-scanning`, `/weekly-exec-intel`, `/meeting-prep`) **and the Felix Leiter weekly research umbrella** (`/felix-weekly-pulse-custom` and its 4 sub-skills: `/felix-competitor-watch-custom`, `/felix-industry-pulse-custom`, `/felix-client-signals-custom`, plus `/weekly-market-discovery`) into a per-initiative research pass that writes `discovery.*` and **accumulates context weekly**. The runner model, job table, route handlers, and UI from S3A.2 stay untouched — S3B is a provider swap plus a new skill file.
 
-**Felix integration (resolved 2026-04-22):** Felix is the **upstream research agent** (head-of-research persona, 007 codename "Felix Leiter"). Its Friday weekly pass produces curated artefacts in `06-Resources/Market_intelligence/synthesis/weekly/`, refreshed `06-Resources/Competitors/profiles/*.md`, and `05-Areas/Companies/Wyzetalk_Clients/<date>_signals.md`. **`/pdlc-discovery-research-custom` consumes these as primary inputs** rather than scraping the web from scratch — see [`plans/Research/felix-strategy.md`](../Research/felix-strategy.md) for the operating doc and [`seeds/s3b-discovery-research.md` § "Companion skill stack: Felix Leiter"](./seeds/s3b-discovery-research.md) for the contract.
+**Felix integration (resolved 2026-04-22):** Felix is the **upstream research agent** (head-of-research persona, 007 codename "Felix Leiter"). Its Friday weekly pass produces curated artefacts in `06-Resources/Market_intelligence/synthesis/weekly/`, refreshed `06-Resources/Competitors/profiles/*.md`, and `05-Areas/Companies/Wyzetalk_Clients/<date>_signals.md`. **`/pdlc-discovery-research-custom` consumes these as primary inputs** rather than scraping the web from scratch — see [`plans/Research/felix-strategy.md`](../Research/felix-strategy.md) for the operating doc and [S3B discovery seed (archived) § "Companion skill stack: Felix Leiter"](./seeds/_archived-2026-04-24/s3b-discovery-research.md) for the contract.
 
-**⚠ Open sprint — deep-dive 2026-04-22+ with Shaun + PO before Build.** See [`seeds/s3b-discovery-research.md`](./seeds/s3b-discovery-research.md) § "Deep-dive open questions" (Q1–Q10). **`System/icp.md` v1 authored 2026-04-22 ✅** — three named segments (FMCG manufacturing; Mining & minerals; Auto & industrial) + cross-segment disqualifiers + near-neighbour competitor filter (JEM HR, Yoobic, Staffbase/Workvivo/Beekeeper, Speakap/Blink/Flip). Weekly sweep blocker lifted.
+**⚠ Open sprint — deep-dive 2026-04-22+ with Shaun + PO before Build.** See [S3B discovery seed (archived)](./seeds/_archived-2026-04-24/s3b-discovery-research.md) § "Deep-dive open questions" (Q1–Q10). **`System/icp.md` v1 authored 2026-04-22 ✅** — three named segments (FMCG manufacturing; Mining & minerals; Auto & industrial) + cross-segment disqualifiers + near-neighbour competitor filter (JEM HR, Yoobic, Staffbase/Workvivo/Beekeeper, Speakap/Blink/Flip). Weekly sweep blocker lifted.
 
 **Maps to:** [plan.md § Phase 3+](./plan.md) "Intelligence & meeting correlation" + product philosophy ("UI steers what Dex already does") + schema-initiative-v0 §4.3 / §8 discovery contract + S3A.2 `DiscoveryResearchProvider` interface.
 
@@ -520,7 +520,7 @@ Resolve Open Questions in seed § "Open questions to resolve in Plan mode" (moda
 - [ ] Deep-dive questions Q1–Q10 in the seed closed in Plan mode before Build.
 - [x] `System/icp.md` **v1** exists (authored 2026-04-22) and is read by the provider — three segments + cross-segment disqualifiers + near-neighbour filter consumed on kickoff + weekly sweep.
 - [ ] Provider swap: S3A.3 stub replaced with **zero** changes to route handler / `initiative_jobs` table / polling client / Initiative Modal's Discovery tab.
-- [ ] Kickoff writes the full `discovery.*` set (see `seeds/s3b-discovery-research.md` Outputs table).
+- [ ] Kickoff writes the full `discovery.*` set (see `seeds/_archived-2026-04-24/s3b-discovery-research.md` Outputs table).
 - [ ] Weekly sweep refreshes all `discovery`-column cards; preserves reviewed fields; surfaces contradictions as draft `openQuestion`s.
 - [ ] LLM calls server-side only; cost ceiling defined + enforced; one `skill_run` event per card per run + one Slice log weekly roll-up.
 - [ ] `schema-initiative-v0 §4.3` + `§8` match the provider's actual reads/writes.
@@ -551,7 +551,7 @@ Execute Sprint S3B — /pdlc-discovery-research-custom. Branch: feat/s3b-discove
 Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
 
 Then read in order, and adapt the plan to S3A.1 + S3A.2 actual outcomes:
-1. plans/PDLC_UI/seeds/s3b-discovery-research.md — close Q1–Q10 in the Deep-dive block BEFORE any Build task is written.
+1. plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md — close Q1–Q10 in the Deep-dive block BEFORE any Build task is written.
 2. plans/PDLC_UI/sprint-backlog.md § Sprint 3B.
 3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S3A.2 + S3A.3 actual outcomes (Initiative Modal, DiscoveryResearchProvider interface, initiative_jobs columns, kickoff route, Initiative Modal's Discovery tab progress surface, staleness plumbing). Flag any S3B DoD item invalidated.
 4. plans/PDLC_UI/schema-initiative-v0.md §4.3 + §8 — confirm discovery.* write list + /pdlc-discovery-research-custom I/O row match the provider design.
@@ -605,7 +605,7 @@ Execute Sprint S4 — Discovery: questions, export, re-run, design pack. Branch:
 Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
 
 Then read in order, and adapt the plan to S3 actual outcomes:
-1. plans/PDLC_UI/seeds/s4-discovery.md.
+1. plans/PDLC_UI/seeds/_archived-2026-04-24/s4-discovery.md.
 2. plans/PDLC_UI/sprint-backlog.md § Sprint 4.
 3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S3 actual outcomes (brief.* payload shape, wizard step JSON location, cancel UX). Flag any S4 DoD item invalidated.
 4. plans/PDLC_UI/export-pack-template.md — placeholders for the pack download (R6b "Implementation polish" block lives here).
@@ -657,7 +657,7 @@ Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
 GATE: Do not start unless Bar A exit is confirmed per plan.md § Bar A success (real initiative completed idea → spec_ready on the board; zero retro-written PRD sections; at least one Re-run discovery event; no → idea wipes used in anger). If the gate is not met, stop and report the gap.
 
 Then read in order, and adapt the plan to S4 actual outcomes:
-1. plans/PDLC_UI/seeds/s5-design-artefacts.md.
+1. plans/PDLC_UI/seeds/_archived-2026-04-24/s5-design-artefacts.md.
 2. plans/PDLC_UI/sprint-backlog.md § Sprint 5.
 3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S4 actual outcomes (export pack fields wired, openQuestions schema, discoveryIteration audit). Flag any S5 DoD item invalidated.
 4. plans/PDLC_UI/plan.md R6 — Claude Design + Figma DS contract.
@@ -709,7 +709,7 @@ Execute Sprint S6 — Design review gate. Branch: feat/s6-design-review. Bar: B 
 Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
 
 Then read in order, and adapt the plan to S5 actual outcomes:
-1. plans/PDLC_UI/seeds/s6-design-review.md.
+1. plans/PDLC_UI/seeds/_archived-2026-04-24/s6-design-review.md.
 2. plans/PDLC_UI/sprint-backlog.md § Sprint 6.
 3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S5 actual outcomes (design artefact fields + hi-fi gate wiring). Flag any S6 DoD item invalidated.
 4. plans/PDLC_UI/plan.md R7 — design → spec_ready gate behaviour + waive policy (PO or Designer; audit by=shaun placeholder).
@@ -770,7 +770,7 @@ Execute Sprint S7 — spec_ready: handoff + /agent-prd MVP. Branch: feat/s7-spec
 Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply).
 
 Then read in order, and adapt the plan to S6 actual outcomes:
-1. plans/PDLC_UI/seeds/s7-spec-ready.md.
+1. plans/PDLC_UI/seeds/_archived-2026-04-24/s7-spec-ready.md.
 2. plans/PDLC_UI/sprint-backlog.md § Sprint 7 — includes the default spec_complete checklist (MVP nudge, PO-adjustable).
 3. 04-Projects/PDLC_Orchestration_UI.md Slice log — S6 actual outcomes (designReview gate wired + waive flow + design-system.md v0.1 tokens). Flag any S7 DoD item invalidated.
 4. .claude/skills/agent-prd/SKILL.md — spec wizard + PRD generation contract (BDD Step 3b optional in MVP).
@@ -820,7 +820,7 @@ Execute Sprint S8 — Backward moves, wipe-to-idea, develop rewind. Branch: feat
 Read plans/PDLC_UI/plan-mode-prelude.md first (cross-sprint refs apply — lifecycle-transitions.md arrives via prelude with full rewind + wipe rules).
 
 Then read in order, and adapt the plan to S2–S7 cumulative outcomes:
-1. plans/PDLC_UI/seeds/s8-backward-moves.md.
+1. plans/PDLC_UI/seeds/_archived-2026-04-24/s8-backward-moves.md.
 2. plans/PDLC_UI/sprint-backlog.md § Sprint 8.
 3. 04-Projects/PDLC_Orchestration_UI.md Slice log — cumulative outcomes of S2 (parked), S3 (brief complete gate), S6 (design gate), S7 (specComplete nudge). The canTransition matrix generalises these scattered rules; reconcile all of them without breaking existing DoD.
 4. plans/PDLC_UI/plan.md R11 — backward moves contract; PM approves develop/uat rewind in MVP.

@@ -27,7 +27,7 @@
 | **Competitor analysis** | `/felix-custom` Step 2 — T0 JEM platform-bundle scan + T1 weekly diff + T2 on-surface. Writes `Competitors/profiles/*.md`. |
 | **Industry news & durable context** | `/felix-custom` Step 3 (`--quick`: rotating sector + 3 AI sub-lenses weekly; `--deep`: PDF re-read monthly) + `06-Resources/Research/Industry_reports/`. |
 | **Software / AI shifts** | Same Step 3 Pass B (frontline-AI products, worker-data regulation, union/worker AI sentiment) + Step 2 competitor product moves. |
-| **Context for solution development** | Single artefact: **`synthesis/weekly/<date>_friday_signal.md`** — advisory "see / mean / propose" tied to ICP + WT thesis; S3B consumes it Monday for discovery cards. |
+| **Context for solution development** | Single artefact: **`synthesis/weekly/<date>_friday_signal.md`** — advisory "see / mean / propose" tied to ICP + WT thesis; **Moneypenny** (`/moneypenny-custom`) and the Monday **`/weekly-discovery-sweep-custom`** consume it for discovery cards. |
 
 **Remaining frictions (honest):** (1) **Manifest vs guide drift** — if `intel_feeds.json` / `sources_manifest.yaml` diverge from `Source_Guide_v2_1.md`, the *list you authored* and what actually fetches are not the same; reconcile on the quarterly source audit. (2) **Legacy skills still exist** — `/weekly-exec-intel` and `/intelligence-scanning` remain in the vault for on-demand / daily-cadence use; do not run them in the same week as `/felix-custom` (overlap the same `ingest/`).
 
@@ -156,7 +156,7 @@ Re-reads sector PDFs (instead of just recent ingest digest); writes `synthesis/m
 
 ## How this ties to the PDLC sprint plan (S3B)
 
-S3B's `seeds/s3b-discovery-research.md` is the per-initiative research skill. Today its **Inputs** section says it reads:
+S3B's archived seed `plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md` is the per-initiative research skill spec. Today its **Inputs** section says it reads:
 
 - `Market_intelligence/synthesis/daily/*`
 - `Market_and_deal_signals.md`
@@ -174,7 +174,7 @@ S3B's `seeds/s3b-discovery-research.md` is the per-initiative research skill. To
 
 Updates to S3B-side artefacts (filed in patches alongside this strategy):
 
-- [`plans/PDLC_UI/seeds/s3b-discovery-research.md`](../PDLC_UI/seeds/s3b-discovery-research.md) — Inputs + Companion-skill blocks name `/felix-custom` (single skill, single output).
+- [`plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md`](../PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md) — Inputs + Companion-skill blocks name `/felix-custom` (single skill, single output).
 - [`plans/PDLC_UI/sprint-backlog.md` § Sprint 3B](../PDLC_UI/sprint-backlog.md) — Dependencies reference `/felix-custom` as the single Felix pre-req.
 
 ---

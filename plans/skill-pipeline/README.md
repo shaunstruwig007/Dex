@@ -4,6 +4,8 @@
 **Started:** 2026-04-24
 **Supersedes:** `plans/PDLC_UI/` (parked 2026-04-24)
 
+**Phase 0 — COMPLETE (2026-04-24):** FROZEN banners on `plans/PDLC_UI/plan.md` + `sprint-backlog.md` + seeds README; git tag `freeze/skills-pipeline-pivot`; **`/gatekeeper-custom`** removed (use **`babysit`** + frozen R16 docs); [`.claude/hooks/session-start.sh`](../../.claude/hooks/session-start.sh) §22 loads `plans/skill-pipeline/README.md` excerpt + full `System/icp.md`; sprint seeds **s3a*, s3b, s4–s8** archived under [`plans/PDLC_UI/seeds/_archived-2026-04-24/`](../PDLC_UI/seeds/_archived-2026-04-24/) with cross-refs updated across plan corpus + skills.
+
 ---
 
 ## 1. Why this exists
@@ -101,7 +103,7 @@ No Playwright. No Cucumber runner. No `.feature` files this cycle. Optional upgr
 
 ## 7. Context + cost discipline
 
-- **Session-start hook** loads canonical context once per session: `System/icp.md`, this README, and a short vault preamble. Implemented in Phase 0 as `.claude/hooks/session-start.sh` (~20 lines). Stops paying tokens to re-read these files on every skill invocation.
+- **Session-start hook** loads canonical context once per session: `System/icp.md`, this README (excerpt + pointer), plus the rest of the Dex session preamble. Implemented in Phase 0 as [`.claude/hooks/session-start.sh`](../../.claude/hooks/session-start.sh) (**§22 — Skill pipeline + ICP**). Stops paying tokens to re-read these files on every skill invocation.
 - **Skills read targeted paths only** — no glob-the-world patterns. Every SKILL.md's Acceptance checklist lists exact input paths.
 - **Intermediate outputs cached on disk.** Felix's markers under `06-Resources/Market_intelligence/synthesis/weekly/` and Moneypenny's `discovery.*` blocks in the initiative markdown are read by downstream skills — they are not re-computed.
 - **Sub-skills invoked via the Task tool (subagents).** Moneypenny fans out to Felix in a child context so her main session does not bloat with Felix's raw inputs.
@@ -130,7 +132,7 @@ End of ~3 weeks:
 **Parked (frozen reference, not driving current work):**
 - `pdlc-ui/` repo — on a freeze branch, no active development.
 - `plans/PDLC_UI/plan.md`, `sprint-backlog.md`, `skill-agent-map.md`, `engineering-guardrails.md`, `implementation-standard.md`, `tech-stack.md`, `plan-mode-prelude.md`.
-- Old sprint seeds under `plans/PDLC_UI/seeds/s*.md`.
+- Detailed sprint seeds **s3a*, s3b, s4–s8** under [`plans/PDLC_UI/seeds/_archived-2026-04-24/`](../PDLC_UI/seeds/_archived-2026-04-24/) · in-place seeds remain: `s0`, `s1`, `s2`, `s3-brief-wizard`, `s9`, `README`, `_superseded/`.
 
 **Deleted:**
 - ~~`.claude/skills/gatekeeper-custom/`~~ — **deleted** 2026-04-24 (never pushed on this branch; last committed PR gate was at `moneypenny-custom/SKILL.md` before Phase 0: `git show freeze/skills-pipeline-pivot^:.claude/skills/moneypenny-custom/SKILL.md`).

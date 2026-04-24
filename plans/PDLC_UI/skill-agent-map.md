@@ -148,7 +148,7 @@ Steerco-facing stages above are **product** skills. When **`pdlc-ui/`** implemen
 
 *Updated 2026-04-21 — **MoneyPenny** (`/moneypenny-custom`): originally scoped as engineering / merge gate for **`pdlc-ui/`** PRs. **Renamed 2026-04-24 → `/gatekeeper-custom`**, then **deleted 2026-04-24** when `pdlc-ui` was parked — use **`babysit`** + frozen guardrails instead.*
 
-*Updated 2026-04-22 — **Bond / 007** (`/pdlc-discovery-research-custom`) + **`/weekly-discovery-sweep-custom`**: per-initiative discovery research agent with headless + interactive modes. Closes the S3B slot; see [`plans/Research/bond-strategy.md`](../Research/bond-strategy.md) for the operating doc and [`seeds/s3b-discovery-research.md`](./seeds/s3b-discovery-research.md) for the closed deep-dive. **Persona re-mapped 2026-04-24** (see note below).*
+*Updated 2026-04-22 — **Bond / 007** (`/pdlc-discovery-research-custom`) + **`/weekly-discovery-sweep-custom`**: per-initiative discovery research agent with headless + interactive modes. Closes the S3B slot; see [`plans/Research/bond-strategy.md`](../Research/bond-strategy.md) for the operating doc and [`seeds/_archived-2026-04-24/s3b-discovery-research.md`](./seeds/_archived-2026-04-24/s3b-discovery-research.md) for the closed deep-dive. **Persona re-mapped 2026-04-24** (see note below).*
 
 *Updated 2026-04-24 — **007 persona re-map** (personal-Dex workflow):*
 

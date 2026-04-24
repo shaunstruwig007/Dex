@@ -1,7 +1,7 @@
 # 2026-04-22 — Card details: side panel → URL-addressable Initiative Modal
 
 **Status:** Accepted (2026-04-22) · supersedes [`pdlc-ui/docs/design/board-layout.md`](../design/board-layout.md) §5 "Side panel".
-**Companion docs:** [`plans/PDLC_UI/seeds/s3a2-initiative-modal-tabs-chat-wizard.md`](../../../plans/PDLC_UI/seeds/s3a2-initiative-modal-tabs-chat-wizard.md) · [ADR-0003 (DnD shape + HTML5 ban)](../adr/0003-dnd-shape-and-html5-ban.md).
+**Companion docs:** [`plans/PDLC_UI/seeds/_archived-2026-04-24/s3a2-initiative-modal-tabs-chat-wizard.md`](../../../plans/PDLC_UI/seeds/_archived-2026-04-24/s3a2-initiative-modal-tabs-chat-wizard.md) · [ADR-0003 (DnD shape + HTML5 ban)](../adr/0003-dnd-shape-and-html5-ban.md).
 
 ## Context
 

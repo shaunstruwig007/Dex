@@ -19,7 +19,7 @@ If the paste carried the whole seed inline, every drift would force editing the 
 | Artefact | Location | Role |
 |----------|----------|------|
 | **Pasteable prompt** | [`../sprint-backlog.md`](../sprint-backlog.md) § **Plan mode seed** inside each sprint block | The one thing you copy and paste. ~10 lines. Lists files for Cursor to read. |
-| **Detailed seed** | `s#-<slug>.md` (this folder) | Read by Cursor via the paste prompt. Full Bar split, ADR list, DoD checkboxes, Explicitly OUT, kick-off decisions. |
+| **Detailed seed** | `s#-<slug>.md` (this folder) · **S3A–S8 deep seeds** → [`_archived-2026-04-24/`](_archived-2026-04-24/README.md) | Read by Cursor via the paste prompt (historical `pdlc-ui` sprints). Full Bar split, ADR list, DoD checkboxes, Explicitly OUT, kick-off decisions. |
 | **Shared preamble** | [`../plan-mode-prelude.md`](../plan-mode-prelude.md) | Read by Cursor first — R16 / R18 non-negotiables, branch-per-cycle, camelCase, output expectations. |
 | **Scope source of truth** | [`../sprint-backlog.md`](../sprint-backlog.md) § sprint block — Goal / DoD / Out / Risks | Backlog DoD wins when a seed lags. |
 | **Previous-sprint reality** | [`../../04-Projects/PDLC_Orchestration_UI.md`](../../04-Projects/PDLC_Orchestration_UI.md) **Slice log** | What the last sprint *actually* shipped. Cursor diffs this against the seed and flags invalidated DoD items before Build. |

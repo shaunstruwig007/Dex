@@ -13,7 +13,7 @@ description: PDLC-scoped product brief. Runs on idea → discovery column move. 
 
 **Design rationale (2026-04-21, S3A.1):** The brief is a **thesis gate**, not a PRD. Its only job is to force three honest answers before a card burns discovery time: *Why are we doing this? Who are we doing this for? What problem does it solve?* Fields like scope, constraints, assumptions, and hard success metrics were moved to discovery — they require evidence the PM does not yet have at `idea → discovery`, and asking for them here produced low-confidence agent-drafts that the PM had to unpick. See [plans/PDLC_UI/schema-initiative-v0.md §4.2](../../../plans/PDLC_UI/schema-initiative-v0.md#42-brief--discovery-brief-pdlc-brief-custom-output) and the 2026-04-21 S3A.1 Progress log entry.
 
-**Companions:** [plans/PDLC_UI/schema-initiative-v0.md](../../../plans/PDLC_UI/schema-initiative-v0.md) · [plans/PDLC_UI/skill-agent-map.md](../../../plans/PDLC_UI/skill-agent-map.md) · [lifecycle-transitions.md](../../../plans/PDLC_UI/lifecycle-transitions.md) · [plans/PDLC_UI/seeds/s3b-discovery-research.md](../../../plans/PDLC_UI/seeds/s3b-discovery-research.md) (sibling research skill — fills discovery).
+**Companions:** [plans/PDLC_UI/schema-initiative-v0.md](../../../plans/PDLC_UI/schema-initiative-v0.md) · [plans/PDLC_UI/skill-agent-map.md](../../../plans/PDLC_UI/skill-agent-map.md) · [lifecycle-transitions.md](../../../plans/PDLC_UI/lifecycle-transitions.md) · [plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md](../../../plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md) (sibling research skill — fills discovery).
 
 ---
 

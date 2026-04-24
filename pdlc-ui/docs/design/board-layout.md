@@ -1,7 +1,7 @@
 # Board layout — Chief Designer spec v0.1
 
 **Status:** Draft for S3A.1 / S3A.2 implementation (2026-04-21; revised 2026-04-22 — §5 pivoted from side panel to URL-addressable Initiative Modal, §6 deferred to S3A.3).
-**Owner:** PM (interim) · [`plans/PDLC_UI/seeds/s3a1-brief-wizard-interactions.md`](../../../plans/PDLC_UI/seeds/s3a1-brief-wizard-interactions.md) + [`plans/PDLC_UI/seeds/s3a2-initiative-modal-tabs-chat-wizard.md`](../../../plans/PDLC_UI/seeds/s3a2-initiative-modal-tabs-chat-wizard.md).
+**Owner:** PM (interim) · [`plans/PDLC_UI/seeds/_archived-2026-04-24/s3a1-brief-wizard-interactions.md`](../../../plans/PDLC_UI/seeds/_archived-2026-04-24/s3a1-brief-wizard-interactions.md) + [`plans/PDLC_UI/seeds/_archived-2026-04-24/s3a2-initiative-modal-tabs-chat-wizard.md`](../../../plans/PDLC_UI/seeds/_archived-2026-04-24/s3a2-initiative-modal-tabs-chat-wizard.md).
 **Design-log:** [`pdlc-ui/docs/design-log/2026-04-22-pivot-to-modal.md`](../design-log/2026-04-22-pivot-to-modal.md) preserves the original §5 side-panel reasoning and the trade-off that led to the modal.
 **Companion:** [`plans/PDLC_UI/tech-stack.md § 3`](../../../plans/PDLC_UI/tech-stack.md#3-ui-primitives-r18) UI primitives · [`pdlc-ui/src/styles/tokens.css`](../../src/styles/tokens.css) · [`pdlc-ui/docs/ui-notes.md`](../ui-notes.md).
 
@@ -108,7 +108,7 @@ Details open in a **URL-addressable modal** over the live board. Sourced from S3
 
 **Honest trade-off:** the modal blocks the board while open, which the original side-panel design tried to avoid. The trade is intentional — the modal is the content hub for all per-initiative artefacts (idea text, brief, discovery output, spec, design attachments, activity feed) and needs the room. ESC / back / deep-link make dismissal fast, and the URL makes state shareable. Full reasoning: [`design-log/2026-04-22-pivot-to-modal.md`](../design-log/2026-04-22-pivot-to-modal.md).
 
-See [`plans/PDLC_UI/seeds/s3a2-initiative-modal-tabs-chat-wizard.md`](../../../plans/PDLC_UI/seeds/s3a2-initiative-modal-tabs-chat-wizard.md) for the full S3A.2 deliverables — modal chrome, tab shell, chat-style brief wizard, card UX changes, within-lane pointer reorder via dnd-kit, and the read-only Activity feed.
+See [`plans/PDLC_UI/seeds/_archived-2026-04-24/s3a2-initiative-modal-tabs-chat-wizard.md`](../../../plans/PDLC_UI/seeds/_archived-2026-04-24/s3a2-initiative-modal-tabs-chat-wizard.md) for the full S3A.2 deliverables — modal chrome, tab shell, chat-style brief wizard, card UX changes, within-lane pointer reorder via dnd-kit, and the read-only Activity feed.
 
 ---
 

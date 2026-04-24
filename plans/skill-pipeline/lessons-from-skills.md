@@ -11,7 +11,7 @@
 
 ### Phase 0 — Freeze + housekeeping
 
-_(nothing to log yet)_
+- **2026-04-24 — Phase 0 closed.** Seeds s3a1, s3a2, s3b, s4–s8 moved to `plans/PDLC_UI/seeds/_archived-2026-04-24/`; plan + backlog + skill/research links repointed; Slice log + `plans/skill-pipeline/README.md` mark complete. Tag `freeze/skills-pipeline-pivot` already present on repo. Next: **S2 Moneypenny** per live README.
 
 ### S1 — Felix (upstream intel umbrella)
 

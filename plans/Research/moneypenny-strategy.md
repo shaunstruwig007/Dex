@@ -16,7 +16,7 @@ The cadence, cost ceilings, confidence scoring, and Q1–Q10 resolved decisions 
 **Why Moneypenny fits the role (canon-accurate):** in every Bond film Moneypenny briefs 007 before he deploys — she is M's trusted gatherer, not the field agent. On this board she hands Bond a mission folder (the `discovery.*` package) so he can write the spec. Bond then deploys with Q and M's critique on his back.
 
 **Skill path:** `/moneypenny-custom`. Docs and chat address the agent as "Moneypenny."
-**Status:** v0.1 — plan-mode close-out of [`plans/PDLC_UI/seeds/s3b-discovery-research.md`](../PDLC_UI/seeds/s3b-discovery-research.md) Q1–Q10 + hybrid-mode extension + 2026-04-24 persona rename.
+**Status:** v0.1 — plan-mode close-out of [`plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md`](../PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md) Q1–Q10 + hybrid-mode extension + 2026-04-24 persona rename.
 
 ---
 
@@ -213,7 +213,7 @@ After Bond PRD drafts `spec.*`, Q (`/agent-q-cto-custom`) runs a feasibility pas
 
 ## How this ties to the PDLC sprint plan (S3B)
 
-Moneypenny **is** what S3B was scoped for. The [`plans/PDLC_UI/seeds/s3b-discovery-research.md`](../PDLC_UI/seeds/s3b-discovery-research.md) seed closes its 10 deep-dive questions against the answers here. The "S3B" label is historical — pdlc-ui is no longer PR-merge-tracked in personal mode, but the interface contracts remain useful spec for a future revival. Concretely:
+Moneypenny **is** what S3B was scoped for. The [`plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md`](../PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md) seed closes its 10 deep-dive questions against the answers here. The "S3B" label is historical — pdlc-ui is no longer PR-merge-tracked in personal mode, but the interface contracts remain useful spec for a future revival. Concretely:
 
 1. **Interface unchanged** — `DiscoveryResearchProvider.advance()` would be the only integration point in a pdlc-ui build. S3A.3's kickoff route, `initiative_jobs` table, client polling, progress bar, and Initiative Modal's Discovery tab stay untouched.
 2. **Hybrid mode adds no new runner infrastructure** — Mode B is a separate chat-triggered entrypoint on the same skill; it does not use the tick-driven runner. No `initiative_jobs` row for Mode B; writes go via the atomic card-state update path.
@@ -302,7 +302,7 @@ Moneypenny **never** writes `confidence: "high"` without matching `sourceRef`s. 
 | What | Where | Why |
 |---|---|---|
 | Moneypenny operating doc (this file) | `plans/Research/moneypenny-strategy.md` *(formerly `bond-strategy.md`)* | Persona definition, handoff contracts, cadence |
-| S3B seed close-out | `plans/PDLC_UI/seeds/s3b-discovery-research.md` | Q1–Q10 answered; Mode B section added; solution-patterns added; persona + skill-path refreshed 2026-04-24 |
+| S3B seed close-out | `plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md` | Q1–Q10 answered; Mode B section added; solution-patterns added; persona + skill-path refreshed 2026-04-24 |
 | Moneypenny SKILL.md | `.claude/skills/moneypenny-custom/SKILL.md` *(formerly `.claude/skills/pdlc-discovery-research-custom/SKILL.md`)* | The agent itself — phase-by-phase runbook |
 | ~~Gatekeeper SKILL.md~~ | *(deleted 2026-04-24)* | Old PR-merge gate — last **committed** copy on this branch: `git show freeze/skills-pipeline-pivot^:.claude/skills/moneypenny-custom/SKILL.md` (pre–persona-remap MoneyPenny gate) |
 | Discovery source list | `System/discovery-sources.yaml` | ICP-segment-keyed URLs + competitor handles + search queries |
@@ -319,4 +319,4 @@ Moneypenny **never** writes `confidence: "high"` without matching `sourceRef`s. 
 
 ---
 
-*Bootstrapped 2026-04-22 by M (CPO) + Dex, closing plan-mode deep-dive against [`plans/PDLC_UI/seeds/s3b-discovery-research.md`](../PDLC_UI/seeds/s3b-discovery-research.md) Q1–Q10. Persona re-mapped 2026-04-24 (Moneypenny/Bond/Gatekeeper re-cut for the personal-Dex workflow). Mirrors [`plans/Research/felix-strategy.md`](./felix-strategy.md) structure for lineage continuity.*
+*Bootstrapped 2026-04-22 by M (CPO) + Dex, closing plan-mode deep-dive against [`plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md`](../PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md) Q1–Q10. Persona re-mapped 2026-04-24 (Moneypenny/Bond/Gatekeeper re-cut for the personal-Dex workflow). Mirrors [`plans/Research/felix-strategy.md`](./felix-strategy.md) structure for lineage continuity.*

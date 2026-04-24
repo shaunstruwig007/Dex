@@ -168,7 +168,7 @@ FELIX_STALE_THRESHOLD_DAYS = 7
 - [`/moneypenny-custom`](../moneypenny-custom/SKILL.md) — Moneypenny, the per-card agent this sweep invokes.
 - [`/felix-custom`](../felix-custom/SKILL.md) — upstream producer; sweep reads Felix's Friday Signal via Moneypenny.
 - [`plans/Research/moneypenny-strategy.md`](../../../plans/Research/moneypenny-strategy.md) — Moneypenny operating doc; § "Cadence" covers the sweep from the agent-system view.
-- [`plans/PDLC_UI/seeds/s3b-discovery-research.md`](../../../plans/PDLC_UI/seeds/s3b-discovery-research.md) — S3B seed *(name historical)*; § "Cadence" locks the Monday trigger.
+- [`plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md`](../../../plans/PDLC_UI/seeds/_archived-2026-04-24/s3b-discovery-research.md) — S3B seed *(name historical)*; § "Cadence" locks the Monday trigger.
 - [`plans/PDLC_UI/skill-agent-map.md`](../../../plans/PDLC_UI/skill-agent-map.md) — Stage→skill table.
 - `04-Projects/PDLC_Orchestration_UI.md` — Slice log target.
 
