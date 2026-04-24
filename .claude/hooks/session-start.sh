@@ -406,4 +406,24 @@ if errors:
     fi
 fi
 
+# 22. Skill pipeline + ICP (Phase A — one load per session keeps skill prompts cheap)
+# See plans/skill-pipeline/README.md. pdlc-ui is parked; chat+vault skills are the product surface.
+ICP_FILE="$CLAUDE_DIR/System/icp.md"
+SKILL_PIPELINE_README="$CLAUDE_DIR/plans/skill-pipeline/README.md"
+if [[ -f "$ONBOARDING_MARKER" ]]; then
+    if [[ -f "$SKILL_PIPELINE_README" ]]; then
+        echo "--- Skill pipeline (live methodology — excerpt) ---"
+        sed -n '1,14p' "$SKILL_PIPELINE_README"
+        echo "(Read full file: plans/skill-pipeline/README.md)"
+        echo "---"
+        echo ""
+    fi
+    if [[ -f "$ICP_FILE" ]]; then
+        echo "--- System/icp.md ---"
+        cat "$ICP_FILE"
+        echo "---"
+        echo ""
+    fi
+fi
+
 echo "=== End Session Context ==="

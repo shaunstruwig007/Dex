@@ -7,7 +7,9 @@ description: PDLC-scoped product brief. Runs on idea → discovery column move. 
 
 **Custom skill — protected from Dex updates** (`-custom` suffix). Edit this file directly; `/dex-update` will not overwrite it.
 
-**Why this exists (vs canonical `/product-brief`):** The canonical [`/product-brief`](../product-brief/SKILL.md) generates a full PRD inside itself (Phases 5–7), duplicating what [`/agent-prd`](../agent-prd/SKILL.md) does. This custom variant is **deliberately tiny**: three questions (**why / who / what**) that gate `idea → discovery`. Anything that needs market research, scoping, assumption validation, or success-metric definition is out of scope here and belongs to **`/pdlc-discovery-research-custom`** (S3B) once the card is in `discovery`.
+> **Rename note (2026-04-24):** this skill's downstream discovery consumer was originally `/pdlc-discovery-research-custom` (codename "Bond"). It is now **`/moneypenny-custom`** (Moneypenny — per-initiative intelligence debriefer) — the 007 "Bond" codename migrated to a deferred PRD author (`/bond-prd-custom`, TBD — supersedes `/agent-prd` in personal-Dex mode). Behaviour and contract identical; only the persona label changed. See [plans/Research/moneypenny-strategy.md](../../../plans/Research/moneypenny-strategy.md).
+
+**Why this exists (vs canonical `/product-brief`):** The canonical [`/product-brief`](../product-brief/SKILL.md) generates a full PRD inside itself (Phases 5–7), duplicating what [`/agent-prd`](../agent-prd/SKILL.md) does. This custom variant is **deliberately tiny**: three questions (**why / who / what**) that gate `idea → discovery`. Anything that needs market research, scoping, assumption validation, or success-metric definition is out of scope here and belongs to **`/moneypenny-custom`** *(formerly `/pdlc-discovery-research-custom`; S3B)* once the card is in `discovery`.
 
 **Design rationale (2026-04-21, S3A.1):** The brief is a **thesis gate**, not a PRD. Its only job is to force three honest answers before a card burns discovery time: *Why are we doing this? Who are we doing this for? What problem does it solve?* Fields like scope, constraints, assumptions, and hard success metrics were moved to discovery — they require evidence the PM does not yet have at `idea → discovery`, and asking for them here produced low-confidence agent-drafts that the PM had to unpick. See [plans/PDLC_UI/schema-initiative-v0.md §4.2](../../../plans/PDLC_UI/schema-initiative-v0.md#42-brief--discovery-brief-pdlc-brief-custom-output) and the 2026-04-21 S3A.1 Progress log entry.
 
@@ -43,9 +45,9 @@ description: PDLC-scoped product brief. Runs on idea → discovery column move. 
 **Does NOT write (moved to discovery or later sprints):**
 
 - `brief.scopeIn`, `brief.scopeOut`, `brief.constraints` — these need discovery evidence; if a PM volunteers them early the wizard lets them type free-text into the understanding summary, but they are not asked as structured questions.
-- `brief.assumptions[]` — populated by **`/pdlc-discovery-research-custom`** (S3B) once the card is in discovery.
+- `brief.assumptions[]` — populated by **`/moneypenny-custom`** *(formerly `/pdlc-discovery-research-custom`; S3B)* once the card is in discovery.
 - `brief.successDefinition` — success framing (hypothesis + metric) is owned by discovery + `/agent-prd` at spec-time; asking for hard metrics at brief-time produced low-confidence drafts.
-- `discovery.openQuestions[]`, `discovery.researchNotes`, `discovery.competitorSnapshot`, `discovery.customerEvidence` — all owned by **`/pdlc-discovery-research-custom`** (S3B).
+- `discovery.openQuestions[]`, `discovery.researchNotes`, `discovery.competitorSnapshot`, `discovery.customerEvidence` — all owned by **`/moneypenny-custom`** *(formerly `/pdlc-discovery-research-custom`; S3B)*.
 - `spec.*` — that's `/agent-prd`'s job.
 - `design.*` — that's the design column.
 - A full PRD markdown file — that's `/agent-prd` at `spec_ready`.
@@ -67,7 +69,7 @@ description: PDLC-scoped product brief. Runs on idea → discovery column move. 
    - `/customer-intel --initiative <handle>` *(future: per-initiative scope; today: portfolio-wide filtered to keywords from `title`+`body`)*
    - `/intelligence-scanning --initiative <handle>` *(future scope; today: scan `06-Resources/Market_intelligence/synthesis/daily/*` and `Market_and_deal_signals.md` for the card's keywords)*
    - `/meeting-prep`-style lookup: grep `00-Inbox/Meetings/` from last 60 days for keywords; stage refs under `sourceRefs[]`.
-3. **Draft only the three wizard fields** — `brief.problem`, `brief.targetUsers`, `brief.coreValue` — with `source: agent_draft` + `confidence: low|med` and a `sourceRef` pointing at the evidence row. **Do not** draft assumptions, scope, constraints, or success metrics — those are owned by `/pdlc-discovery-research-custom`.
+3. **Draft only the three wizard fields** — `brief.problem`, `brief.targetUsers`, `brief.coreValue` — with `source: agent_draft` + `confidence: low|med` and a `sourceRef` pointing at the evidence row. **Do not** draft assumptions, scope, constraints, or success metrics — those are owned by `/moneypenny-custom` *(formerly `/pdlc-discovery-research-custom`)*.
 4. **UI-triggered path:** the S3A.2 prefill endpoint (`POST /api/initiatives/:id/brief/prefill`) owns the three-field draft write at wizard-open. This SKILL.md documents the intent; the server-side prefill helper is a swappable interface.
 
 **Output of Phase 0 to the user (chat-triggered path only):**
@@ -131,13 +133,13 @@ On **yes**:
 3. Append an `events[]` entry: `{ kind: "skill_run", payload: { skill: "pdlc-brief-custom", iteration: N } }` (iteration computed server-side per `schema-initiative-v0 §6`).
 4. Set `brief.complete = true`, `brief.reviewedAt`, `brief.reviewedBy`.
 5. Return control to the UI / caller. **Do not generate a PRD.** **Do not create `06-Resources/PRDs/<Feature>.md`** — that is `/agent-prd`'s job at `spec_ready`.
-6. **Do not populate `discovery.*` fields** — `/pdlc-discovery-research-custom` (S3B) owns the discovery column.
+6. **Do not populate `discovery.*` fields** — `/moneypenny-custom` *(formerly `/pdlc-discovery-research-custom`; S3B)* owns the discovery column.
 
 ### Phase 4 — Hand-off to discovery
 
 Output a short human-readable summary plus the schema-shaped payload the UI persists. End with:
 
-> **Next:** Discovery — **`/pdlc-discovery-research-custom`** (S3B) kicks off automatically on lane move, reads this brief + market intelligence + customer evidence, and populates `discovery.*`. The card shows research progress live. `/agent-prd` picks up brief + discovery when the card enters `spec_ready`.
+> **Next:** Discovery — **`/moneypenny-custom`** *(formerly `/pdlc-discovery-research-custom`; S3B)* kicks off automatically on lane move, reads this brief + market intelligence + customer evidence, and populates `discovery.*`. The card shows research progress live. `/agent-prd` *(superseded by `/bond-prd-custom` in personal-Dex mode — TBD)* picks up brief + discovery when the card enters `spec_ready`.
 
 ---
 
@@ -191,4 +193,6 @@ Update `System/usage_log.md` with `pdlc_brief_custom_run` (or similar — free-f
 
 ---
 
-*Custom skill created 2026-04-21 — originally a shrunken variant of `/product-brief` for PDLC Bar A. Reshaped on 2026-04-21 (S3A.1 CPO pass) to **three questions only** (why / who / what); scope / assumptions / success-metrics moved to discovery (`/pdlc-discovery-research-custom`, S3B) and spec (`/agent-prd`). Protected from `/dex-update` by the `-custom` suffix.*
+*Custom skill created 2026-04-21 — originally a shrunken variant of `/product-brief` for PDLC Bar A. Reshaped on 2026-04-21 (S3A.1 CPO pass) to **three questions only** (why / who / what); scope / assumptions / success-metrics moved to discovery (`/moneypenny-custom`, *formerly* `/pdlc-discovery-research-custom`, S3B) and spec (`/agent-prd`, *superseded in personal-Dex mode by `/bond-prd-custom` — TBD*). Protected from `/dex-update` by the `-custom` suffix.*
+
+*Updated 2026-04-24 — downstream discovery skill renamed from `/pdlc-discovery-research-custom` to `/moneypenny-custom` during the 007 persona re-map. Behaviour unchanged; wizard contract unchanged.*

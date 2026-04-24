@@ -1,3 +1,5 @@
+> **FROZEN 2026-04-24 — pdlc-ui parked.** The live plan is [`plans/skill-pipeline/README.md`](../../skill-pipeline/README.md). This seed does not drive current work.
+
 Read plans/PDLC_UI/plan-mode-prelude.md first. Then execute Sprint S1 — Idea capture + persistence (Bar A). Branch: feat/s1-idea-capture.
 
 Bar: A. Goal: real write-safety for initiatives (title + body only this sprint), not docs.

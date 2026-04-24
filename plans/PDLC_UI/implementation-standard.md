@@ -1,5 +1,7 @@
 # PDLC UI — implementation standard (cross-sprint HOW rules)
 
+> **FROZEN 2026-04-24 — applies when pdlc-ui resumes.** The live plan is [`plans/skill-pipeline/README.md`](../skill-pipeline/README.md). Rules below govern `pdlc-ui` UI-building discipline and do not apply to current skill-refinement work.
+
 **Scope:** Cross-sprint rules for **how** `pdlc-ui` work ships, specifically around UI-building discipline, vertical-slice shape, and the design-system extraction loop. Applies to every sprint unless a sprint explicitly overrides with an ADR.
 
 **Not this file's job:** the UI / token / a11y **spec** itself. That lives in [`tech-stack.md` § 3 "UI primitives (R18)"](./tech-stack.md#3-ui-primitives-r18) — authoritative list of tokens, typography scale, focus/keyboard/motion rules, TipTap toolbar minimum, shadcn primitives, and forbidden "AI slop" patterns. This file **references** that spec; it does not duplicate it.

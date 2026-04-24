@@ -1,5 +1,9 @@
 # PDLC UI — sprint backlog (implementation)
 
+> **FROZEN 2026-04-24 — pdlc-ui parked.** The live plan is [`plans/skill-pipeline/README.md`](../skill-pipeline/README.md). Sprint blocks S0–S9 below are preserved for reference; they do not drive current work. Active sprint cadence is six skill-refinement sprints (Felix → Moneypenny → design-prompt → M+Q → Bond → end-to-end) — see the live plan.
+
+> **Rename note (2026-04-24 — 007 persona re-map):** references throughout this backlog to **`/pdlc-discovery-research-custom`** describe the skill now known as **`/moneypenny-custom`** (Moneypenny — per-initiative intelligence debriefer). The "Bond" codename migrated to a deferred PRD author (`/bond-prd-custom`, TBD — supersedes `/agent-prd` in personal-Dex mode). Sprint blocks + Progress log lines below retain the original slug for historical accuracy — the current canonical slug is **`/moneypenny-custom`**. See [schema-initiative-v0 §6 known-ids registry](./schema-initiative-v0.md#6-events--append-only-audit), [skill-agent-map.md](./skill-agent-map.md), and [plans/Research/moneypenny-strategy.md](../Research/moneypenny-strategy.md).
+
 **Purpose:** Turn [plan.md](./plan.md) and [PDLC_Orchestration_UI.md](../../04-Projects/PDLC_Orchestration_UI.md) into **small, shippable increments** suitable for **agile delivery** and **Cursor Plan mode** before coding.
 
 **Cadence assumption:** **2-week sprints**, **solo** PM/builder default (one demonstrable outcome per sprint to Steerco / board owner). **Exception:** **S0 may be 1 week** if the spike + scaffolding are clean (purely foundation). All other sprints = 2 weeks unless explicitly re-timed during sprint planning.
@@ -16,7 +20,7 @@ Switch to **Build mode** only after Plan produces a task list that closes every 
 
 **Ceremony:** At sprint end, append one line to **Slice log** in `04-Projects/PDLC_Orchestration_UI.md` and tick **Progress** in `plan.md`.
 
-**PR merge gate (engineering):** For every open PR that touches **`pdlc-ui/`**, invoke **`/moneypenny-custom`** ([`.claude/skills/moneypenny-custom/SKILL.md`](../../.claude/skills/moneypenny-custom/SKILL.md)) — she watches **`gh pr checks`**, fixes CI with minimal commits, runs the **R16 pre-merge audit** (schema ↔ migration ↔ docs in one PR, closed `events` enum, ADR freeze, etc.), triages review comments, and on merge can run **close-out** (Slice log + `plan.md` Progress). Complements generic PR babysitting (Cursor **`babysit`** skill) with **PDLC-UI-specific** guardrails. Requires **`gh auth login`** once.
+**PR merge gate (engineering):** *(Historical — `pdlc-ui` parked 2026-04-24.)* When **`pdlc-ui/`** PRs resume, use Cursor **`babysit`** (`.cursor/skills-cursor/babysit/SKILL.md`) plus the frozen R16 checklist in [engineering-guardrails.md](./engineering-guardrails.md) · [skill-agent-map § Engineering](./skill-agent-map.md#engineering--merge-gate-pdlc-ui-repo). The dedicated **`/gatekeeper-custom`** skill was **removed** from this vault on 2026-04-24 (it was never **`/moneypenny-custom`** — that name is the discovery debriefer). **`gh auth login`** once for CI loops.
 
 ---
 
@@ -53,7 +57,7 @@ The backlog focuses on **what each sprint covers**. Cross-sprint rules, the UI s
 | Reference | Covers |
 |-----------|--------|
 | [`plan-mode-prelude.md`](./plan-mode-prelude.md) | **Mandatory preamble** — every sprint Plan-mode run reads this first. Lists all cross-sprint references below, enforces R16 / R18 non-negotiables, and describes the expected backlog sprint shape + Plan-mode output contract. |
-| [`engineering-guardrails.md`](./engineering-guardrails.md) | R16 guardrail table (incl. **MoneyPenny** merge gate), hotfix rule, branch-per-cycle, merge gate, S0 vs S1 split, end-of-sprint ceremony. |
+| [`engineering-guardrails.md`](./engineering-guardrails.md) | R16 guardrail table (historical **Gatekeeper** row — skill **removed** 2026-04-24; use **`babysit`** + manual checklist), hotfix rule, branch-per-cycle, merge gate, S0 vs S1 split, end-of-sprint ceremony. |
 | [`implementation-standard.md`](./implementation-standard.md) | UI-building rule (read `/anthropic-frontend-design` before styling), a11y baseline, vertical-slice shape (BE + UI together), R18 inheritance pointers, S5–S6 design-system dogfood loop. |
 | [`tech-stack.md`](./tech-stack.md) | Recommended stack (ADR-0001 ratifies) + **UI primitives § 3** (tokens, typography, focus/keyboard/motion, TipTap toolbar minimum, shadcn primitives, forbidden "AI slop" patterns). |
 | [`schema-initiative-v0.md`](./schema-initiative-v0.md) | Typed initiative contract — camelCase canonical. |

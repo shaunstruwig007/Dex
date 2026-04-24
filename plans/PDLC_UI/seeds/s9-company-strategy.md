@@ -1,3 +1,5 @@
+> **FROZEN 2026-04-24 — pdlc-ui parked.** The live plan is [`plans/skill-pipeline/README.md`](../../skill-pipeline/README.md). This seed does not drive current work.
+
 **STATUS: DEFERRED — do not run until R12 is scoped.**
 
 See [plan.md](../plan.md) **R12** and [sprint-backlog.md § Sprint 9](../sprint-backlog.md) — company-strategy conformance requires a Wyzetalk `company_strategy.md` source artefact and PO-approved rules / heuristics (explicitly **not** Dex `System/pillars.yaml`). Revisit after Bar B MVP adoption.

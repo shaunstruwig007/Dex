@@ -1,5 +1,7 @@
 # PDLC Orchestration UI — improvement plans
 
+> **FROZEN 2026-04-24 — pdlc-ui parked.** The live plan is [`plans/skill-pipeline/README.md`](../skill-pipeline/README.md). All documents in this folder (plan, sprint-backlog, seeds, engineering-guardrails, implementation-standard, tech-stack, plan-mode-prelude, skill-agent-map) are preserved as frozen reference. **Still live and read by current skills:** [`schema-initiative-v0.md`](./schema-initiative-v0.md) (field contract) and [`lifecycle-transitions.md`](./lifecycle-transitions.md) (lane progression).
+
 **Purpose:** Working area for **`/dex-improve`** outputs and derived implementation plans for the **Steerco-facing PDLC orchestration UI** (thin slices, vibe-coding friendly).
 
 | Doc | Role |
@@ -10,8 +12,8 @@
 | [sprint-backlog.md](./sprint-backlog.md) | **Sprints S0–S8** (+ **S9 deferred** for R12 company strategy) — agile goals, **R#** mapping, **DoD**, **Plan mode** seeds |
 | [plan-mode-prelude.md](./plan-mode-prelude.md) | **Shared preamble** every sprint Plan-mode run reads first (R16 + R18 non-negotiables) — referenced by seeds, never pasted |
 | [tech-stack.md](./tech-stack.md) | **Recommended stack + UI primitives + a11y baseline** — ADR-0001 ratifies or overrides in S0 (R18) |
-| [skill-agent-map.md](./skill-agent-map.md) | **Stages ↔ Dex skills**; preview vs prompt library; **agent-config** overrides (future); **PR / merge gate** (MoneyPenny) |
-| [../../.claude/skills/moneypenny-custom/SKILL.md](../../.claude/skills/moneypenny-custom/SKILL.md) | **MoneyPenny** — Cursor skill: green CI loop, R16 same-PR audit, review triage, post-merge Slice log close-out for **`pdlc-ui/`** PRs |
+| [skill-agent-map.md](./skill-agent-map.md) | **Stages ↔ Dex skills**; preview vs prompt library; **agent-config** overrides (future); **PR / merge discipline** (historical Gatekeeper — **removed** 2026-04-24; use **`babysit`**) |
+| [../../.claude/skills/moneypenny-custom/SKILL.md](../../.claude/skills/moneypenny-custom/SKILL.md) | **Moneypenny** — per-initiative discovery debriefer (`/moneypenny-custom`); **not** the old PR gate |
 | [../../04-Projects/PDLC_Orchestration_UI.md](../../04-Projects/PDLC_Orchestration_UI.md) | **North star** — §0 architecture (WT UI separate from Dex), stages 0–7, slice log |
 
 **Pillars:** `ai_process_adoption` · `streamlined_product_launch` (`System/pillars.yaml`)
@@ -24,7 +26,7 @@
 
 **Governance (2026-04-23):** Steerco **decides**; **Shaun** = interim **board owner**; **board wins** `lifecycle` vs PRD YAML; swim lanes **`idea` → `discovery` → `design` → `spec_ready` → `develop` → `uat` → `deployed`** (+ **`parked`**); **backward** moves except **`→ idea`** (wipe to title + body); **BDD optional**; **R10 backups**; feature PRDs in **`06-Resources/PRDs/`** (bootstrap PRD for `pdlc-ui` only).
 
-**PR discipline (engineering):** Before merging any **`pdlc-ui/`** change to default, run **`/moneypenny-custom`** (or `audit <PR#>`) so CI is green and R16 same-PR rules are checked — see [sprint-backlog.md](./sprint-backlog.md) (**Engineering guardrails** + **PR merge gate**) and [skill-agent-map.md](./skill-agent-map.md#engineering--merge-gate-pdlc-ui-repo).
+**PR discipline (engineering):** *(Historical.)* **`/gatekeeper-custom`** was removed 2026-04-24. If **`pdlc-ui/`** resumes, use Cursor **`babysit`** + frozen R16 rows — see [sprint-backlog.md](./sprint-backlog.md) (**Engineering guardrails** + **PR merge gate**) and [skill-agent-map.md](./skill-agent-map.md#engineering--merge-gate-pdlc-ui-repo).
 
 Add follow-on files here (e.g. `slice-stage-1.md`, ADRs) as slices ship.
 

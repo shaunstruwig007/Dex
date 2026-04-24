@@ -1,5 +1,7 @@
 # PDLC UI — skills & agent behaviour map
 
+> **FROZEN 2026-04-24 — pdlc-ui parked.** The live plan is [`plans/skill-pipeline/README.md`](../skill-pipeline/README.md). UI-stage → skill mappings below assume a `pdlc-ui` runtime that is no longer being built. Agent roster for the current cycle: **Felix** (upstream intel), **Moneypenny** (per-initiative debrief), **`/design-prompt-custom`** (NEW — S3), **M + Q** (critique), **Bond `/bond-prd-custom`** (NEW — PRD author, S5). Gatekeeper is deleted. See live plan for the workflow.
+
 **Purpose:** Tie each **Steerco UI stage** to a **canonical Dex skill** (or agreed artefact) so we do **not** maintain a parallel "prompt library." Optional **agent config** lets WT tune behaviour **without** forking skill source.
 
 **Lifecycle reference:** [lifecycle-transitions.md](./lifecycle-transitions.md) — includes **`spec_ready`**, **backward moves**, **`parked`**, **strategy thread**, and **[§ Skill triggers on column moves](./lifecycle-transitions.md#skill-triggers-on-column-moves-pdlc-ui)** (compact transition → skill table).
@@ -27,16 +29,18 @@ Dex updates (see [`/dex-update`](../../.claude/skills/dex-update/SKILL.md)) pres
 
 ---
 
-## Engineering / merge gate (`pdlc-ui` repo)
+## Engineering / merge gate (`pdlc-ui` repo) — **parked with `pdlc-ui` (2026-04-24)**
 
-Steerco-facing stages above are **product** skills. **`pdlc-ui/`** implementation PRs also use an **engineering gatekeeper** so R16 does not drift on merge:
+Steerco-facing stages above are **product** skills. When **`pdlc-ui/`** implementation resumes, PRs still need **R16 discipline** — but the dedicated Dex skill **`/gatekeeper-custom`** was **removed from the vault on 2026-04-24** (dead weight while `pdlc-ui` is parked). Use this split instead:
 
-| Concern | Canonical skill | What it does |
-|---------|-----------------|--------------|
-| **Green CI + R16 audit + review triage + post-merge Slice log** | **[`/moneypenny-custom`](../../.claude/skills/moneypenny-custom/SKILL.md)** | Modes: (A) watch `gh pr checks` and fix failures with minimal commits; (B) pre-merge **same-PR** checklist (schema ↔ `migrations/*.sql` ↔ docs, closed `events` enum, ADR freeze, revision contract, etc.); (C) triage PR review comments; (D) after merge, append **Slice log** + tick **`plan.md` Progress** when you invoke close-out. **Requires** `gh auth login` once. |
-| **Generic PR babysit loop** | Cursor **`babysit`** (`.cursor/skills-cursor/babysit/SKILL.md`) | Comment triage + conflict + CI loop **without** PDLC-specific rules — use **under** MoneyPenny or when the change is not `pdlc-ui`. |
+| Concern | Approach | What it does |
+|---------|----------|---------------|
+| **Green CI + R16 audit + review triage + post-merge Slice log** | Cursor **`babysit`** (`.cursor/skills-cursor/babysit/SKILL.md`) **+** manual checklist in frozen [engineering-guardrails.md](./engineering-guardrails.md) | Same outcomes Gatekeeper automated: watch `gh pr checks`, minimal CI fix commits, same-PR schema ↔ migrations ↔ docs, triage review comments, Slice log close-out. **Requires** `gh auth login` once. |
+| **Recover the last committed PR-gate SKILL** | `git` history | On this branch the PR gate last lived at **`moneypenny-custom/SKILL.md`** before Phase 0: `git show freeze/skills-pipeline-pivot^:.claude/skills/moneypenny-custom/SKILL.md`. The `gatekeeper-custom/` folder was local-only and is deleted. |
 
-**Invocation:** `/moneypenny-custom`, `/moneypenny-custom <PR#>`, `/moneypenny-custom audit <PR#>`, `/moneypenny-custom close <PR#>` — see the skill file for the full checklist and refusals.
+**Invocation today:** **`babysit`** on the PR; cross-check **R16** rows in [engineering-guardrails.md](./engineering-guardrails.md) by hand.
+
+> **Live workflow:** [plans/skill-pipeline/README.md](../skill-pipeline/README.md) — chat+vault skills are the product surface until a UI revives.
 
 **Process tie-in:** [sprint-backlog.md](./sprint-backlog.md) **Engineering guardrails** + **Ceremony**; [plan.md § Engineering governance](./plan.md#engineering-governance-cto--tech-lead--anti-drift) item **9**.
 
@@ -72,11 +76,12 @@ Steerco-facing stages above are **product** skills. **`pdlc-ui/`** implementatio
 |----------------|---------------------|----------------------------------------|-------------------|--------------------|
 | **`idea` (optional gate)** | [`feature-decision`](../../.claude/skills/feature-decision/SKILL.md) (heavy) | **[`pdlc-idea-gate-custom`](../../.claude/skills/pdlc-idea-gate-custom/SKILL.md)** (5-Q lite) | MVP-optional nudge: 5 questions → `gate.recommendation`. On `no_go`, prefill `parkedReason`. | `gate.*` |
 | **`idea` → `discovery`** | [`product-brief`](../../.claude/skills/product-brief/SKILL.md) (heavy, generates full PRD) | **[`pdlc-brief-custom`](../../.claude/skills/pdlc-brief-custom/SKILL.md)** (shrunken; pre-fills from context; stops at brief) | Stepwise popup; Phase 0 pulls context from meetings / signals / customer-intel; writes typed brief. **Does not generate a PRD.** | `brief.*`, `discovery.openQuestions[]` (drafts) |
-| **`discovery`** | Discovery artefacts + export | — | Open questions CRUD; **re-run discovery** (invalidation driven by schema §7 staleness rules); **export pack** for Claude Design. | `discovery.*` |
-| **`discovery` → `design`** | (no skill — template only) | *gap: `pdlc-export-pack-custom` — filler for [export-pack-template.md](./export-pack-template.md)* | Human fills template today; future skill emits the `.md` from card state. | — |
+| **`discovery` (kickoff + weekly sweep + manual re-run)** | — | **[`moneypenny-custom`](../../.claude/skills/moneypenny-custom/SKILL.md)** (Moneypenny — per-initiative intelligence debriefer; *formerly `/pdlc-discovery-research-custom`, "Bond / 007"* pre-2026-04-24 rename) | Six-phase research pass: competitor filter + customer evidence + market-signal alignment + ICP strategic-fit + solution-patterns + draft open questions. Headless via S3A.3 `DiscoveryResearchProvider`; interactive "deepen" via chat. Composes Felix's weekly artefacts + `System/icp.md` + meetings + industry PDFs. | `discovery.researchNotes`, `discovery.competitorSnapshot`, `discovery.customerEvidence[]`, `discovery.solutionPatterns[]`, `discovery.openQuestions[]`, `discovery.research.summary`, `discovery.iteration`, `discovery.lastRerunAt` |
+| **`discovery` (Monday column-wide pass)** | — | **[`weekly-discovery-sweep-custom`](../../.claude/skills/weekly-discovery-sweep-custom/SKILL.md)** | Monday wrapper that iterates every card in `lifecycle === "discovery"` and invokes **Moneypenny** (`/moneypenny-custom`) headless per card. Consumes Felix's Friday Signal. One Slice-log roll-up line per week. | Invokes Moneypenny per card. Writes Slice log to `04-Projects/PDLC_Orchestration_UI.md`. |
+| **`discovery` → `design`** | (no skill — template only) | *gap: `pdlc-export-pack-custom` — filler for [export-pack-template.md](./export-pack-template.md)* | Human fills template today; future skill emits the `.md` from card state. Design-brief packaging **deferred** (revisit after 2 cards clear `discovery → design`). | — |
 | **`design`** | **Claude Design (web)** + [`anthropic-frontend-design`](../../.claude/skills/anthropic-frontend-design/SKILL.md) | — | Attach Design outputs; Cursor polish; **design review** before **`spec_ready`**. | `design.*` |
 | **Design review** (Stage 6) | `_available/design/design-review` *(not installed)* | *gap: install + wrap as `pdlc-design-review-custom`* | Waiver reason + timestamp captured against card. | `design.review.*` |
-| **`spec_ready`** | [`agent-prd`](../../.claude/skills/agent-prd/SKILL.md) | — *(canonical skill consumed directly; see schema §4.5 contract for ingest)* | **Starts when card enters column.** **MVP:** export + pre-filled Cursor. **Clarifications** emitted as `spec.clarifications[]` / `discovery.openQuestions[]` rather than chat turns (skill refactor — plan R8 later path). **BDD** optional (Step 3b). | `spec.*`, `linkedPrdPath` |
+| **`spec_ready`** | [`agent-prd`](../../.claude/skills/agent-prd/SKILL.md) *(in personal-Dex mode **superseded by `/bond-prd-custom`** — TBD; map-only this pass)* | — *(canonical skill consumed directly; see schema §4.5 contract for ingest. When `/bond-prd-custom` ships it takes over the `spec_ready` write contract with identical field-level shape.)* | **Starts when card enters column.** **MVP:** export + pre-filled Cursor. **Clarifications** emitted as `spec.clarifications[]` / `discovery.openQuestions[]` rather than chat turns (skill refactor — plan R8 later path). **BDD** optional (Step 3b). | `spec.*`, `linkedPrdPath` |
 | **`spec_ready` → `develop`** | — | *gap: `pdlc-handoff-bundle-custom`* | Assembles PRD MD + design links + constraints + test seeds into one artefact for Cursor Plan mode. Today this is prose in [export-pack-template.md](./export-pack-template.md) R6b. | `spec.handoffBundlePath` |
 | **`develop`** | — | *gap: `pdlc-release-notes-custom`* | Drafts user-facing **non-technical** release notes (plan R14). | `release.userFacingNotes` |
 | **`uat`** | — | *gap: acceptance / test-report synthesis (later)* | Captures UAT feedback to card. | `release.*` |
@@ -97,14 +102,19 @@ Steerco-facing stages above are **product** skills. **`pdlc-ui/`** implementatio
 |-------|--------|------|----------|-------------------------------|
 | **`/pdlc-idea-gate-custom`** | [.claude/skills/pdlc-idea-gate-custom/](../../.claude/skills/pdlc-idea-gate-custom/) | 5-Q idea-column gate; writes `gate.*` | New behaviour (no canonical equivalent at idea stage) | `/feature-decision` is too heavy for idea capture; a custom lite variant keeps canonical intact for decision-doc use. |
 | **`/pdlc-brief-custom`** | [.claude/skills/pdlc-brief-custom/](../../.claude/skills/pdlc-brief-custom/) | Shrunken brief with context pre-fill; writes `brief.*`, `discovery.openQuestions[]` drafts | `/product-brief` Phases 1–4 (stops before PRD generation) | `/product-brief` is used in non-PDLC chats and generates full PRDs; editing it in place would break non-PDLC flows **and** conflict on `/dex-update`. |
+| **`/moneypenny-custom`** (Moneypenny — per-initiative intelligence debriefer; *formerly `/pdlc-discovery-research-custom`, "Bond / 007"* pre-2026-04-24 rename) | [.claude/skills/moneypenny-custom/](../../.claude/skills/moneypenny-custom/) | Per-initiative discovery agent; writes `discovery.*` via S3A.3 `DiscoveryResearchProvider`. Two modes — headless (kickoff + weekly sweep + manual re-run) + interactive "deepen" chat session. Consumes Felix's weekly artefacts + `System/icp.md` + meetings + industry PDFs. See [`plans/Research/moneypenny-strategy.md`](./../Research/moneypenny-strategy.md) *(formerly `bond-strategy.md`)*. | New behaviour (S3B seed reserved the slot; deep-dive closed 2026-04-22; persona re-mapped 2026-04-24) | No canonical equivalent. Composes `/customer-intel` + `/intelligence-scanning` + `/meeting-prep` + Felix at the per-card level — none of those own the PDLC card-state contract. |
+| **`/weekly-discovery-sweep-custom`** | [.claude/skills/weekly-discovery-sweep-custom/](../../.claude/skills/weekly-discovery-sweep-custom/) | Monday wrapper — iterates every `discovery`-column card and invokes **Moneypenny** (`/moneypenny-custom`) headless per card. Writes Slice log roll-up to `04-Projects/PDLC_Orchestration_UI.md`. Budget: $5/sweep across all cards. | New behaviour | Sweep semantics (preserve user-reviewed fields, flag contradictions, respect cost ceiling) are Moneypenny-specific — generic cadence skills don't carry this contract. |
+| **~~`/gatekeeper-custom`~~** *(removed 2026-04-24)* | *(folder deleted)* | **Was:** Engineering / merge gate for `pdlc-ui/` PRs (R16 audit, CI loop, triage, close-out). **Now:** Cursor **`babysit`** + frozen [engineering-guardrails.md](./engineering-guardrails.md). **Recover SKILL:** `git show freeze/skills-pipeline-pivot^:.claude/skills/moneypenny-custom/SKILL.md` *(last committed PR gate; `gatekeeper-custom/` was never in git on this branch).* | Retired with `pdlc-ui` park | PR discipline uses generic tooling until UI work resumes; see [skill pipeline](../skill-pipeline/README.md). |
 
 **Future custom skills (planned, not built):**
 
+- **`/bond-prd-custom`** — **Bond (PRD author)** — personal-Dex successor to `/agent-prd`. Consumes Moneypenny's `discovery.*` debrief package + `brief.*` + `gate.*` and writes `spec.*`, `linkedPrdPath`, and the `spec.clarifications[]` async loop. **Map-only this pass** (2026-04-24) — SKILL.md authored in a later pass. Downstream critique handoff: `/agent-q-cto-custom` (Q) + `/agent-m-cpo-custom` (M). Field-level contract identical to `/agent-prd`; `/agent-prd` remains the compatibility shim until `/bond-prd-custom` ships.
 - `/pdlc-design-review-custom` — wraps `_available/design/design-review` for Stage 6.
 - `/pdlc-handoff-bundle-custom` — `spec_ready → develop` bundle assembler.
 - `/pdlc-release-notes-custom` — R14 user-facing notes at `develop`.
 - `/pdlc-metrics-check-custom` — post-launch `target_metrics` reader.
 - `/pdlc-export-pack-custom` — fills [export-pack-template.md](./export-pack-template.md) from card state.
+- `/pdlc-design-brief-custom` — **deferred.** Packages `discovery.*` into a designer-ready brief at `discovery → design`. Decision point after 2 cards have cleared that lane move (see [`plans/Research/moneypenny-strategy.md` § "Downstream — Moneypenny → design"](../Research/moneypenny-strategy.md#downstream--bond--design-deferred)).
 - `/pdlc-strategy-conformance-custom` — post-MVP R12.
 - `/pdlc-steerco-update-custom` — weekly board digest.
 - `/pdlc-rewind-impact-custom` — backward-move staleness analyser.
@@ -136,4 +146,13 @@ Steerco-facing stages above are **product** skills. **`pdlc-ui/`** implementatio
 
 *Updated 2026-04-21 — added **schema-v0.1** contract; added **`pdlc-idea-gate-custom`** and **`pdlc-brief-custom`** update-safe variants; documented **update-discipline** so PDLC-specific behaviour survives `/dex-update`. Previous update 2026-04-23 — **`spec_ready`** column; rewind + **parked** + strategy in [lifecycle-transitions.md](./lifecycle-transitions.md).*
 
-*Updated 2026-04-21 — **MoneyPenny** (`/moneypenny-custom`): engineering / merge gate for **`pdlc-ui/`** PRs (R16 + CI + optional post-merge docs).*
+*Updated 2026-04-21 — **MoneyPenny** (`/moneypenny-custom`): originally scoped as engineering / merge gate for **`pdlc-ui/`** PRs. **Renamed 2026-04-24 → `/gatekeeper-custom`**, then **deleted 2026-04-24** when `pdlc-ui` was parked — use **`babysit`** + frozen guardrails instead.*
+
+*Updated 2026-04-22 — **Bond / 007** (`/pdlc-discovery-research-custom`) + **`/weekly-discovery-sweep-custom`**: per-initiative discovery research agent with headless + interactive modes. Closes the S3B slot; see [`plans/Research/bond-strategy.md`](../Research/bond-strategy.md) for the operating doc and [`seeds/s3b-discovery-research.md`](./seeds/s3b-discovery-research.md) for the closed deep-dive. **Persona re-mapped 2026-04-24** (see note below).*
+
+*Updated 2026-04-24 — **007 persona re-map** (personal-Dex workflow):*
+
+- *`/moneypenny-custom` (the old PR-gate skill) → **`/gatekeeper-custom`** → **removed 2026-04-24** from the vault when `pdlc-ui` was parked. Recover from git history if needed.*
+- *`/pdlc-discovery-research-custom` (the old "Bond / 007" discovery agent) → **`/moneypenny-custom`**. Moneypenny is the per-initiative intelligence debriefer; she compiles the mission folder before Bond walks into M's office. Persona shift only — mode A / mode B / cost ceilings / cadence / schema contract unchanged.*
+- *"Bond" codename migrated to **`/bond-prd-custom`** (TBD, map-only this pass) — the PRD author. Supersedes `/agent-prd` in personal-Dex mode; SKILL.md authored in a later pass. Downstream critique handoff stays `/agent-q-cto-custom` (Q) + `/agent-m-cpo-custom` (M).*
+- *Operating doc renamed: `plans/Research/bond-strategy.md` → [`plans/Research/moneypenny-strategy.md`](../Research/moneypenny-strategy.md). Schema registry in [`schema-initiative-v0.md §6`](./schema-initiative-v0.md#6-skill_run-known-ids-registry) retired `pdlc-discovery-research-custom`, added `moneypenny-custom`, reserved `bond-prd-custom`.*

@@ -1,0 +1,215 @@
+# Discovery source seed list
+#
+# Seeded 2026-04-22 as part of the S3B discovery-agent close-out (then persona
+# "Bond"). Keyed by ICP segment from System/icp.md v1.
+#
+# Consumer: Moneypenny (/moneypenny-custom) — per-initiative intelligence
+# debriefer; formerly Bond (/pdlc-discovery-research-custom) pre-2026-04-24
+# rename. She reads this file in Phase 0 and scopes competitor + URL +
+# search-query scans to the card's mapped ICP segment(s).
+#
+# Initiatives may APPEND to per-segment lists at runtime (via future
+# discovery.sources[] on the card); they may NOT override. Shared list is the
+# source of truth.
+#
+# Update discipline: when System/icp.md bumps its Version line, this file
+# should be reviewed same-PR. Competitor tier changes (T0/T1/T2) cascade here.
+#
+# Schema:
+#   version:        string — cache-invalidation key; bump on any edit
+#   icpVersion:     string — System/icp.md Version line this seed is aligned to
+#   lastReviewedAt: ISO-8601 date
+#   segments:       map<segmentName, SegmentSources>
+#
+#   SegmentSources:
+#     nearNeighbours: list<Competitor>  # filtered against System/icp.md § Known near-neighbours
+#     searchQueries:  list<string>      # keyword sets Moneypenny uses on signal-log scans
+#     sectorFolder:   string?           # 06-Resources/Research/Industry_reports/<folder> (optional)
+#     watchUrls:      list<string>      # URLs to diff weekly (scoped to this segment)
+#
+#   Competitor:
+#     name:        string
+#     tier:        "T0" | "T1" | "T2"
+#     handle:      string?   # LinkedIn or Twitter handle (for future scraping)
+#     profilePath: string?   # 06-Resources/Competitors/profiles/<Name>.md
+
+version: v1
+icpVersion: v1
+lastReviewedAt: 2026-04-22
+
+# Cross-segment — always consulted regardless of card's primary segment.
+# Near-neighbours that show up across all three WT segments.
+crossSegment:
+  nearNeighbours:
+    - name: JEM HR
+      tier: T0
+      profilePath: 06-Resources/Competitors/profiles/Jem.md
+    - name: Staffbase
+      tier: T1
+      profilePath: 06-Resources/Competitors/profiles/Staffbase.md
+    - name: Workvivo
+      tier: T1
+      profilePath: 06-Resources/Competitors/profiles/Workvivo.md
+    - name: Beekeeper
+      tier: T1
+      profilePath: 06-Resources/Competitors/profiles/Beekeeper.md
+    - name: Speakap
+      tier: T1
+      profilePath: 06-Resources/Competitors/profiles/Speakap.md
+    - name: Blink
+      tier: T1
+      profilePath: 06-Resources/Competitors/profiles/Blink.md
+    - name: Flip
+      tier: T1
+      profilePath: 06-Resources/Competitors/profiles/Flip.md
+  searchQueries:
+    - "frontline employee experience"
+    - "deskless worker engagement"
+    - "employer advisor platform"
+    - "worker-side vs employer-side analytics"
+
+segments:
+
+  # ICP 1 — FMCG manufacturing
+  fmcg_manufacturing:
+    displayName: FMCG manufacturing
+    description: >
+      Multi-site FMCG producers with shift-based frontline operations; regulated
+      under FSSC / BRCGS / B-BBEE; primary WT value is engagement + learning
+      + shift-ops comms across plant floors.
+    sectorFolder: 06-Resources/Research/Industry_reports/Manufacturing
+    nearNeighbours:
+      # Cross-segment list already applies; add segment-specific tier-2 adjacencies here.
+      - name: Yoobic
+        tier: T2
+        profilePath: 06-Resources/Competitors/profiles/Yoobic.md
+      - name: Firstup
+        tier: T2
+        profilePath: 06-Resources/Competitors/profiles/Firstup.md
+      - name: LumApps
+        tier: T2
+    searchQueries:
+      - "FMCG frontline engagement"
+      - "shift-based comms platform"
+      - "FSSC 22000 training compliance"
+      - "plant floor learning management"
+      - "B-BBEE workforce reporting"
+    watchUrls:
+      - https://hrtechfeed.com
+      - https://www.unleash.ai/tag/frontline
+
+  # ICP 2 — Mining & minerals (highest WT customer concentration)
+  mining_minerals:
+    displayName: Mining & minerals
+    description: >
+      Mining / metals / extractive ops; ICMM + MHSA regulated; safety-driven
+      culture; WT's highest-concentration segment (Anglo, De Beers, Glencore,
+      Harmony, Implats, Kumba, Sibanye, Exxaro, AMSA, Valterra etc.).
+    sectorFolder: 06-Resources/Research/Industry_reports/Mining_and_metals
+    nearNeighbours:
+      - name: Teamwire
+        tier: T2
+      - name: Appspace
+        tier: T2
+      - name: Oneteam
+        tier: T2
+    searchQueries:
+      - "mining frontline safety communication"
+      - "MHSA compliance workforce"
+      - "ICMM critical controls"
+      - "mine site learning deployment"
+      - "fatigue risk management frontline"
+      - "deskless mining workforce"
+    watchUrls:
+      - https://www.miningweekly.com
+      - https://www.icmm.com/news
+
+  # ICP 3 — Auto & industrial operations
+  auto_industrial:
+    displayName: Auto & industrial operations
+    description: >
+      Automotive OEMs + heavy industrial (including Toyota, VW, Isuzu, CFAO);
+      shift-based assembly-line ops; Kaizen / TPS culture; WT value is
+      engagement + operational comms + shift-pattern learning.
+    sectorFolder: 06-Resources/Research/Industry_reports/Manufacturing
+    nearNeighbours:
+      - name: Poppulo
+        tier: T2
+      - name: Unily
+        tier: T2
+      - name: Humand
+        tier: T2
+    searchQueries:
+      - "automotive frontline engagement"
+      - "assembly line comms platform"
+      - "Kaizen digital frontline"
+      - "OEM shift-worker training"
+      - "industrial frontline EX"
+    watchUrls:
+      - https://hrtechfeed.com
+      - https://www.staffconnect-app.com/blog  # example — replace with real OEM-tech sources over time
+
+  # Adjacent / aspirational — not current WT ICP but signal worth watching if a card drifts here.
+  # Moneypenny does NOT score cards into these by default; they exist for Mode B / manual scope-extension.
+  adjacent:
+    retail_frontline:
+      displayName: Retail frontline (adjacent — watch-only)
+      description: >
+        Retail task-management + store-ops adjacency. Yoobic-space. Not current
+        WT ICP; listed here so Moneypenny can recognise drift and flag a
+        cross-segment disqualifier alert if a card's beneficiary looks
+        retail-shop-floor rather than industrial-shift-ops.
+      sectorFolder: 06-Resources/Research/Industry_reports/Retail
+      nearNeighbours:
+        - name: Yoobic
+          tier: T2
+          profilePath: 06-Resources/Competitors/profiles/Yoobic.md
+        - name: Sentiv
+          tier: T2
+      searchQueries:
+        - "retail task management"
+        - "visual merchandising compliance"
+        - "store-ops frontline comms"
+      watchUrls: []
+
+# Cross-segment disqualifiers — if a card's primaryBeneficiary / targetUsers
+# match any of these, Moneypenny drafts an amber-chip openQuestion in Phase 4
+# asking the PM to revisit ICP fit. Sourced from System/icp.md
+# § Cross-segment disqualifiers.
+disqualifiers:
+  - pattern: "individual-employee app with no employer-side data loop"
+    reason: >
+      WT's thesis is the advisor-platform (win the employer's insight, not the
+      worker's wallet). Consumer-facing apps without employer-side analytics
+      don't fit.
+  - pattern: "sub-500-headcount SMB with no frontline shift structure"
+    reason: >
+      WT's deployment + support model assumes multi-site, multi-shift
+      operations at scale. SMB orgs without shift structure get better fit
+      from Slack + Workvivo.
+  - pattern: "pure TA / recruitment use-case"
+    reason: >
+      WT is engagement + learning + comms after hire. Recruitment-only orgs
+      don't have the downstream employer-side engagement loop.
+  - pattern: "desk-worker knowledge firm (finance / consulting / SaaS)"
+    reason: >
+      WT's value proposition is deskless / frontline. Knowledge-worker orgs
+      get better fit from Slack, Confluence, Notion, Workvivo.
+
+# Known-good external signal sources — used for keyword scans in Phase 3.
+# Felix owns fetching; Moneypenny reads the ingested files.
+externalSignalSources:
+  newsletters:
+    - HR Tech Feed
+    - UNLEASH
+    - Josh Bersin Reports
+    - Engineering News (SA)
+  podcasts:
+    - Lenny's Podcast
+    - The HR Director podcast
+  regulators_sa:
+    - "MHSA amendments tracker"
+    - "POPIA enforcement decisions"
+  regulators_global:
+    - "EU AI Act — workforce data provisions"
+    - "CSRD — social disclosures"

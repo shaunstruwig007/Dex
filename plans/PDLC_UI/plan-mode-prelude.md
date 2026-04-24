@@ -1,5 +1,7 @@
 # PDLC UI — Plan mode prelude
 
+> **FROZEN 2026-04-24 — pdlc-ui parked.** The live plan is [`plans/skill-pipeline/README.md`](../skill-pipeline/README.md). This prelude was the mandatory pre-read for every `pdlc-ui` Plan-mode run. Current-cycle Plan-mode runs for the skill pipeline use the live plan file directly; this prelude does not apply.
+
 **Purpose:** This file is the **persistent, shared preamble** that every Cursor Plan-mode run for `pdlc-ui` must honour. Each sprint's **Plan mode seed** (inline in [`sprint-backlog.md`](./sprint-backlog.md) § Sprint `#`) opens with *"Read `plans/PDLC_UI/plan-mode-prelude.md` first, then execute this Sprint S&lt;N&gt; seed"* — you paste **only the sprint seed** into Plan mode; Cursor reads this file for the rest.
 
 **Never copy-paste this content into Plan mode** — always let Cursor read the file so updates propagate automatically.

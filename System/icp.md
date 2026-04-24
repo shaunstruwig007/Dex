@@ -1,10 +1,10 @@
 # Wyzetalk ICP (Ideal Customer Profile) — placeholder
 
 **Status:** 🚧 **PLACEHOLDER — to be authored by Shaun 2026-04-22+**
-**Purpose:** Ground the PDLC `discovery` research skill (`/pdlc-discovery-research-custom`, S3B) in a concrete "who are we building for?" so every discovery pass can score **strategic fit** and filter **competitor analysis** against a shared WT thesis.
-**Consumed by:** [`/pdlc-discovery-research-custom`](../.claude/skills/) *(future skill, S3B)*; [`/pdlc-idea-gate-custom`](../.claude/skills/pdlc-idea-gate-custom/SKILL.md) (strategic-fit scoring); [`/weekly-market-discovery`](../.claude/skills/weekly-market-discovery/SKILL.md); future `/pdlc-discovery-research-custom` weekly sweep.
+**Purpose:** Ground the PDLC `discovery` research skill ([`/moneypenny-custom`](../.claude/skills/moneypenny-custom/SKILL.md), S3B — *formerly `/pdlc-discovery-research-custom`*) in a concrete "who are we building for?" so every discovery pass can score **strategic fit** and filter **competitor analysis** against a shared WT thesis.
+**Consumed by:** [`/moneypenny-custom`](../.claude/skills/moneypenny-custom/SKILL.md) *(S3B — formerly `/pdlc-discovery-research-custom`; renamed 2026-04-24 during 007 persona re-map)*; [`/pdlc-idea-gate-custom`](../.claude/skills/pdlc-idea-gate-custom/SKILL.md) (strategic-fit scoring); [`/weekly-market-discovery`](../.claude/skills/weekly-market-discovery/SKILL.md); [`/weekly-discovery-sweep-custom`](../.claude/skills/weekly-discovery-sweep-custom/SKILL.md) (Monday column-wide pass that invokes `/moneypenny-custom` headless per card).
 **Pairs with:** `06-Resources/Company/company_strategy.md` (WT thesis + in/out lenses), `System/pillars.yaml` (Dex-wide strategic pillars).
-**Schema cross-reference:** [`plans/PDLC_UI/schema-initiative-v0.md §8`](../plans/PDLC_UI/schema-initiative-v0.md#8-skill-io-contracts-summary) — `/pdlc-discovery-research-custom` I/O row.
+**Schema cross-reference:** [`plans/PDLC_UI/schema-initiative-v0.md §8`](../plans/PDLC_UI/schema-initiative-v0.md#8-skill-io-contracts-summary) — `/moneypenny-custom` I/O row *(row retired `/pdlc-discovery-research-custom` in the 2026-04-24 persona re-map — both slugs describe the same behaviour; Moneypenny is the post-rename name)*.
 
 ---
 
@@ -93,4 +93,4 @@ For each segment, capture:
 
 ---
 
-*Placeholder created 2026-04-21 — blocking the S3B `/pdlc-discovery-research-custom` weekly sweep until Shaun authors v1.*
+*Placeholder created 2026-04-21 — blocking the S3B `/moneypenny-custom` *(formerly `/pdlc-discovery-research-custom`)* weekly sweep until Shaun authors v1. Skill renamed 2026-04-24 during 007 persona re-map; behaviour unchanged.*

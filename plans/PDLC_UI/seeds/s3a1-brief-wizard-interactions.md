@@ -1,4 +1,8 @@
+> **FROZEN 2026-04-24 — pdlc-ui parked.** The live plan is [`plans/skill-pipeline/README.md`](../../skill-pipeline/README.md). This seed does not drive current work.
+
 Read plans/PDLC_UI/plan-mode-prelude.md first. Then execute Sprint S3A.1 — Brief wizard + board interaction polish (Bar A). Branch: feat/s3a1-brief-wizard-interactions.
+
+> **Rename note (2026-04-24 — 007 persona re-map):** references in this seed to `/pdlc-discovery-research-custom` describe the skill now known as **`/moneypenny-custom`**. Sprint seed retained with original slug for historical accuracy; current canonical slug is `/moneypenny-custom`. See [plans/Research/moneypenny-strategy.md](../../Research/moneypenny-strategy.md).
 
 Sprint 3A.1 is the **first of a two-slice pass** (3A.1 interactions + 3A.2 automation-surface). It ships the **craft + cohesion** changes on top of S3 **without** introducing any new runner process, job record, or server-side skill call. 3A.1 is safe, small, shippable alone. It explicitly does not touch S4/S5+/S6+ scope.
 

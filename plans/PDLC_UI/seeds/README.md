@@ -1,5 +1,7 @@
 # PDLC UI — Plan mode seed files (detailed reference)
 
+> **FROZEN 2026-04-24 — pdlc-ui parked.** The live plan is [`plans/skill-pipeline/README.md`](../../skill-pipeline/README.md). Sprint seeds S0–S9 in this folder are preserved for reference; they do not drive current work.
+
 **These files are not what you paste into Cursor.** The paste target is the short **Plan mode seed** prompt inside each sprint block in [`../sprint-backlog.md`](../sprint-backlog.md). That prompt tells Cursor to **read** the sprint's seed file here (among others) before producing a plan.
 
 ## Why the indirection

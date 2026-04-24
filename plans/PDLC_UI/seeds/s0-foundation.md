@@ -1,3 +1,5 @@
+> **FROZEN 2026-04-24 — pdlc-ui parked.** The live plan is [`plans/skill-pipeline/README.md`](../../skill-pipeline/README.md). This seed does not drive current work.
+
 Read plans/PDLC_UI/plan-mode-prelude.md first (mandatory reading, R16/R18 non-negotiables, output expectations). Then execute Sprint S0 — Spike + shell + contracts. Branch: feat/s0-foundation.
 
 Stack + UI primitives (do not coin a stack yourself):

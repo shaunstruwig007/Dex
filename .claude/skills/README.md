@@ -290,11 +290,13 @@ Provided by Anthropic for broad productivity tasks (prefixed with `anthropic-`):
 **Meta:**
 - `/anthropic-skill-creator` - Guide for creating new skills
 
-### Repo-specific (PDLC Orchestration UI)
+### Repo-specific (PDLC + skill pipeline)
 
-Skills that govern **this** vault’s **`pdlc-ui/`** delivery process (not general PKM):
+Skills and plans that govern **this** vault’s product workflow (not general PKM):
 
-- **`/moneypenny-custom`** — PR gatekeeper: green CI (`gh`), R16 same-PR audit, review triage, optional post-merge Slice log. Full workflow: [moneypenny-custom/SKILL.md](./moneypenny-custom/SKILL.md). Process docs: [plans/PDLC_UI/skill-agent-map.md](../../plans/PDLC_UI/skill-agent-map.md#engineering--merge-gate-pdlc-ui-repo) · [plans/PDLC_UI/sprint-backlog.md](../../plans/PDLC_UI/sprint-backlog.md).
+- **Live methodology:** [plans/skill-pipeline/README.md](../../plans/skill-pipeline/README.md) — chat+vault skill pipeline (`pdlc-ui` parked 2026-04-24).
+- **`/moneypenny-custom`** — Per-initiative discovery debriefer (Felix + ICP + evidence → `discovery.*`). [moneypenny-custom/SKILL.md](./moneypenny-custom/SKILL.md) · [plans/Research/moneypenny-strategy.md](../../plans/Research/moneypenny-strategy.md).
+- **`pdlc-ui/`** PR discipline (if UI work resumes): Cursor **`babysit`** + frozen [plans/PDLC_UI/engineering-guardrails.md](../../plans/PDLC_UI/engineering-guardrails.md) — the old **`/gatekeeper-custom`** skill was **removed** 2026-04-24.
 
 ## Related
 

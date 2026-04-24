@@ -1,3 +1,5 @@
+> **FROZEN 2026-04-24 — pdlc-ui parked.** The live plan is [`plans/skill-pipeline/README.md`](../../../skill-pipeline/README.md). This seed does not drive current work. Also superseded within the pdlc-ui cycle (see 2026-04-22 note below).
+
 > **SUPERSEDED 2026-04-22.**
 >
 > This seed originally scoped **S3A.2** as "Discovery automation surface + non-modal side panel + prefill". After S3A.1 merged and real-user feedback asked for a single housing surface for every per-initiative artefact, S3A.2 pivoted to the **URL-addressable Initiative Modal + chat-style brief wizard + within-lane reorder restore** — see [`../s3a2-initiative-modal-tabs-chat-wizard.md`](../s3a2-initiative-modal-tabs-chat-wizard.md).

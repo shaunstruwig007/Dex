@@ -1,5 +1,7 @@
 # PDLC UI — tech stack & UI primitives (recommended)
 
+> **FROZEN 2026-04-24 — applies when pdlc-ui resumes.** The live plan is [`plans/skill-pipeline/README.md`](../skill-pipeline/README.md). Stack recommendation (Next.js 15 + shadcn + TipTap + SQLite) and R18 UI spec below apply only if `pdlc-ui` revives.
+
 **Status:** **Recommended default** to be **ratified or overridden** by **ADR-0001** during Sprint 0 spike. Once ADR-0001 lands, this file is **reference / rationale**, not decision.
 
 **Why pre-fill:** Leaving "choose a stack" to a blank S0 spike invites thrash. This file proposes a coherent default so S0 can focus on **validation** (install, run, CI green, render a shell page) rather than comparison shopping.

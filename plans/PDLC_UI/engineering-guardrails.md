@@ -1,5 +1,7 @@
 # PDLC UI — engineering guardrails (cross-sprint, R16)
 
+> **FROZEN 2026-04-24 — applies when pdlc-ui resumes.** The live plan is [`plans/skill-pipeline/README.md`](../skill-pipeline/README.md). These guardrails were written for a `pdlc-ui` repo under active PR discipline. Personal-Dex mode does not run them. Revive this document if `pdlc-ui` development restarts.
+
 **Scope:** Tech-lead / CTO-hat guardrails that apply to **every** sprint to prevent **pattern drift**, **schema silos**, and **one-off implementations** between sprints. Complements Steerco **product** governance in [`plan.md`](./plan.md) **R16**.
 
 **Not this file's job:** the UI / a11y standard (see [`implementation-standard.md`](./implementation-standard.md)) or the stack / UI-primitives spec (see [`tech-stack.md`](./tech-stack.md)). This file is **process and gates**.
@@ -24,7 +26,7 @@
 | **R17 split (S0 vs S1)** | **S0:** `.env.example`, **`/health`** (+ **`/ready`** stub), **version/build id** wired or documented, **OPERATIONS.md** (deploy/rollback outline), CI **required** (not optional) for lint + schema validate, **audit policy** documented. **S1:** persistence **write path** meets SQLite **WAL / busy_timeout / migrations** or JSON **atomic + schemaVersion**; **`revision`** on initiative; extend runbook for **live** data. |
 | **Branch per cycle** | **No feature work committed directly on `main`** (repo default). Each sprint / shippable increment uses a **named branch** (`feat/s<N>-<slug>` or `sprint/<N>-<slug>`); integrate via **PR** only. Solo developer: same rule — protects `main` as always-integratable. |
 | **Merge gate** | **No merge to default** until **CI is green**. Enable **branch protection** (require status checks before merge) on the host when ICT / repo policy allows; document in **OPERATIONS.md** (S0). |
-| **MoneyPenny (PR gatekeeper)** | Before declaring a **`pdlc-ui/`** PR merge-ready, run **`/moneypenny-custom`** (see [`skill-agent-map.md` § Engineering](./skill-agent-map.md#engineering--merge-gate-pdlc-ui-repo) and [`../../.claude/skills/moneypenny-custom/SKILL.md`](../../.claude/skills/moneypenny-custom/SKILL.md)). Modes: (A) CI green loop, (B) R16 same-PR audit, (C) review-comment triage, (D) post-merge Slice-log close-out. **Not** a substitute for human judgment on product trade-offs. |
+| **~~Gatekeeper (`/gatekeeper-custom`)~~** *(removed 2026-04-24)* | **Was:** PR gatekeeper for **`pdlc-ui/`** — same modes (A–D) as historically documented. **Now:** skill folder **deleted**; use Cursor **`babysit`** + this guardrails table manually (see [`skill-agent-map.md` § Engineering](./skill-agent-map.md#engineering--merge-gate-pdlc-ui-repo)). **Recover last committed PR-gate SKILL:** `git show freeze/skills-pipeline-pivot^:.claude/skills/moneypenny-custom/SKILL.md` *(this branch never had `gatekeeper-custom/` in git).* |
 
 ## 2. Hotfix — only exception to branch-per-cycle
 
@@ -52,7 +54,7 @@
 - ADR filed for every big choice this sprint?
 - `main` only advanced by **merged PR with green CI** (not direct sprint pushes)?
 - Sprint **smoke checklist** added or updated under `pdlc-ui/docs/smoke/` (`S<n>-<slug>.md`) so the next-you knows what to click — see [smoke/README.md](../../pdlc-ui/docs/smoke/README.md).
-- If the sprint shipped via PR, did **`/moneypenny-custom`** (or equivalent R16 audit) run before merge?
+- If the sprint shipped via PR, did **`babysit`** (or equivalent R16 audit per this table) run before merge? *(Historical Gatekeeper skill removed 2026-04-24.)*
 
 ---
 
