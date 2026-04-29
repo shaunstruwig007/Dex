@@ -2,9 +2,12 @@
 
 **Status:** ACTIVE
 **Started:** 2026-04-24
+**Pivoted:** 2026-04-29 — from layer-by-layer skill build to validate-via-walkthrough; persona-named skills renamed to job-described names.
 **Supersedes:** `plans/PDLC_UI/` (parked 2026-04-24)
 
-**Phase 0 — COMPLETE (2026-04-24):** FROZEN banners on `plans/PDLC_UI/plan.md` + `sprint-backlog.md` + seeds README; git tag `freeze/skills-pipeline-pivot`; **`/gatekeeper-custom`** removed (use **`babysit`** + frozen R16 docs); [`.claude/hooks/session-start.sh`](../../.claude/hooks/session-start.sh) §22 loads `plans/skill-pipeline/README.md` excerpt + full `System/icp.md`; sprint seeds **s3a*, s3b, s4–s8** archived under [`plans/PDLC_UI/seeds/_archived-2026-04-24/`](../PDLC_UI/seeds/_archived-2026-04-24/) with cross-refs updated across plan corpus + skills.
+**Phase 0 — COMPLETE (2026-04-24):** FROZEN banners on `plans/PDLC_UI/plan.md` + `sprint-backlog.md` + seeds README; git tag `freeze/skills-pipeline-pivot`; **`/gatekeeper-custom`** removed; [`.claude/hooks/session-start.sh`](../../.claude/hooks/session-start.sh) §22 loads this README excerpt + full `System/icp.md`.
+
+**Phase 1 — COMPLETE (2026-04-29):** Pipeline shape validated via manual walkthrough (multi-language content translation use case); five renamed skills authored end-to-end; cancelled the original 6-sprint build plan + the tracer-bullet delta plan. See [`sessions/2026-04-29.md`](./sessions/2026-04-29.md) for full session record.
 
 ---
 
@@ -12,131 +15,161 @@
 
 `plans/PDLC_UI/` was building a Kanban-style orchestration UI for product delivery. Post-Sprint 3 the cycle turned expensive — iteration between prose sprint seeds, Loom reviews, and scope drift cost more than the chat+vault workflow it was trying to replicate. The real workflow is **one operator + Dex chat + markdown in the vault**. The UI was scaffolding that didn't earn its keep.
 
-Pivot 2026-04-24: park `pdlc-ui/` entirely. Refine every skill in the orchestration pipeline to 100% across six small sprints. Each sprint = one skill. Each skill ends with a concrete Acceptance checklist and one real dogfood run as proof. If the pipeline lands, revisit a thin UI later. If it doesn't, the UI was never the problem.
+**First pivot (2026-04-24):** park `pdlc-ui/` entirely. Refine every skill in the orchestration pipeline across six small sprints. Each sprint = one skill.
+
+**Second pivot (2026-04-29):** the 6-sprint build plan was about to author 5 skills against unvalidated assumptions. We cancelled it and ran a manual walkthrough (multi-language feed translation) as a test harness. The walkthrough surfaced which behaviours were genuinely load-bearing — including some the original plan had wrong. Result: **5 renamed skills authored in one session**, anchored to a real PRD test artefact ([`Multilingual_Content.md`](../../06-Resources/PRDs/Multilingual_Content.md)), with concrete evidence per skill in [`lessons-from-skills.md`](./lessons-from-skills.md).
 
 ## 2. The pipeline in one picture
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 flowchart TD
     Idea["Napkin idea<br/>title plus one line"]
-    Idea --> MoneypennyStart["User runs<br/>slash-moneypenny-custom"]
+    Idea --> Discover["User runs<br/>/initiative-discovery-custom"]
 
-    subgraph MoneypennyPass [Moneypenny pass one skill]
-        Q1["Ask brief questions<br/>why / who / what<br/>from brief-steps migrated into SKILL"]
-        Q1 --> WriteInit["Write 04-Projects/INIT-NNNN-slug dot md<br/>with brief dot star"]
-        WriteInit --> InvokeFelix["Invoke slash-felix-custom via Task subagent<br/>reads markers if fresh else runs Friday pass"]
-        InvokeFelix --> ReadPRDs["Read 06-Resources/PRDs/* titles<br/>context of existing work"]
-        ReadPRDs --> ReadICP["Read System/icp dot md<br/>strategic fit plus filter"]
-        ReadICP --> WriteDiscovery["Write discovery dot star<br/>competitors / evidence / openQuestions"]
+    subgraph Discovery [Initiative Discovery skill]
+        D1["Vault grep + relevance confirmation<br/>discards stale references"]
+        D1 --> D2["ICP cross-check<br/>strategic-fit rationale"]
+        D2 --> D3["Customer evidence harvest<br/>+ stakeholder extraction"]
+        D3 --> D4["Competitor + Friday Signal alignment"]
+        D4 --> D5["Solution-pattern survey<br/>+ candidate slicing"]
+        D5 --> D6["Compose discovery package<br/>+ evidence-gap log + open questions"]
     end
 
-    MoneypennyStart --> Q1
-    WriteDiscovery --> DesignSkill["User runs slash-design-prompt-custom NEW"]
-    DesignSkill --> PromptMd["Write per-initiative design prompt dot md<br/>variant of claude-design-orchestration-doc-prompt"]
+    Discover --> D1
+    D6 --> AuthorPRD["User runs<br/>/prd-author-custom"]
 
-    PromptMd --> HumanDesign["Human pastes into Claude Design<br/>OR human designer works from prompt"]
-    HumanDesign --> DesignOutputs["Design outputs<br/>lo-fi / hi-fi / handoff"]
+    subgraph PRDAuthoring [PRD Author skill]
+        P1["Required input contract<br/>refuses without discovery"]
+        P1 --> P2["Idempotence check<br/>preserves edited PRDs"]
+        P2 --> P3["Produce bond_v1 shape<br/>incl. plan-mode-seed fence + design pointers"]
+    end
 
-    DesignOutputs --> Critique["User runs slash-agent-m and slash-agent-q"]
-    WriteDiscovery -.-> Critique
-    PromptMd -.-> Critique
+    AuthorPRD --> P1
+    P3 --> Critique["User runs critique pair<br/>/critique-product + /critique-engineering"]
+    Critique --> Verdict{"Verdict?"}
+    Verdict -->|"READY FOR BUILD"| Plan["Cursor Plan mode<br/>paste plan-mode-seed block"]
+    Verdict -->|"RETURN TO PLAN"| Fold["Author folds must-fixes<br/>idempotent re-author"]
+    Fold --> P1
 
-    Critique --> Revise["Human incorporates critique<br/>updates discovery or design"]
-    Revise --> Bond["User runs slash-bond-prd-custom NEW"]
-    Bond --> PRD["Write 06-Resources/PRDs/feature dot md<br/>structured for Cursor Plan mode"]
-    PRD --> Handoff["Hand to Cursor Plan mode<br/>Build begins"]
+    Felix["/weekly-market-intel-custom<br/>(Fridays, standalone — NOT in pipeline)"] -.->|"Friday Signal read by"| D4
 ```
+
+The dotted line from `/weekly-market-intel-custom` is the only cross-pipeline dependency: discovery reads the latest Friday Signal during its alignment phase, but the weekly intel skill is **not** invoked by the pipeline. It runs on its own cadence.
 
 ## 3. Design decisions baked into the pipeline
 
-- **Moneypenny is the entry point.** She captures the idea (creates `04-Projects/INIT-NNNN-<slug>.md`), asks the brief questions in chat, runs the research pass. `brief-steps.ts` content (why / who / what) migrates out of the parked pdlc-ui wizard and into her SKILL.md.
-- **Felix is a sub-skill invoked via the Task tool.** He reads markers if fresh (≤7 days); otherwise runs his Friday pass first. Markers live on disk — the cost is already paid.
-- **Existing PRDs are context.** Moneypenny reads `06-Resources/PRDs/*.md` titles + one-liners so she knows what's already in the system. Prevents the "verbal duplicate brief" pain.
-- **Design is a prompt-generator skill, not a design-runner.** Output is a markdown file the human pastes into Claude Design. A human designer can work from the same file without running any automation.
-- **M + Q critique any markdown artefact** — discovery, design prompt, design outputs, PRD. Same skill, different target each invocation.
-- **Bond is the PRD author.** Output shape is defined in his SKILL.md so Cursor Plan mode consumes it without re-prompting.
+- **Job-described skill names** — every skill name says what it does, not who it impersonates. `/critique-product`, not `/agent-m-cpo`. AI and humans operate the skill without persona knowledge.
+- **`-custom` suffix preserved** — Dex convention for `/dex-update` protection. Suffix is plumbing, not persona obscurity.
+- **Discovery is the entry point.** Captures the idea, scans the vault with relevance confirmation (no stale references), cross-checks the ICP, harvests customer evidence, surfaces evidence gaps, proposes candidate slices.
+- **Confirm-relevance per grep hit is load-bearing.** A stale "future phase" reference in `Scheduled_Content.md` misled discovery for an hour during the walkthrough. Discovery now aggressively prunes stale citations.
+- **Evidence-gap detection is mandatory.** When the vault is sparse, the skill explicitly logs what's missing rather than fabricating conviction.
+- **PRD is slice-shaped, not work-package-shaped.** `/prd-author-custom` produces the `bond_v1` shape: walking-skeleton slice 1, thickening slices, plan-mode-seed fence that maps 1:1 to Cursor Plan mode. Coexists with the older `/agent-prd` (different downstream consumer).
+- **PRD is idempotent.** Author edits are signal. The skill diffs and asks before overwriting; never silently clobbers.
+- **Design pointers folded into PRD.** No separate `/design-prompt-custom` skill — the multi-language walkthrough produced no incremental value from a separate design step. **Re-validate on a design-heavy walkthrough**; reinstate if proven wrong.
+- **Critique skills run as a pair.** Product first (locks the why), engineering second (sharpens the how). Either skill alone is a partial pass.
+- **`eng-alt` is mandatory.** Engineering critique always produces ≥1 cheaper / sturdier alternative shape — even if the answer is "current shape is the simplest path."
+- **Weekly market intel is standalone.** Runs Fridays. Pipeline reads its output but never invokes it.
 
-## 4. Agent roster
+## 4. Skill roster (current — 2026-04-29)
 
-| Agent | Role | Sprint |
-|-------|------|--------|
-| **Felix** (`/felix-custom`) | Upstream weekly intel umbrella — reads Market_intelligence / Competitors / Wyzetalk_Clients / ICP; writes markers | **S1** — lock Acceptance checklist |
-| **Moneypenny** (`/moneypenny-custom`) | Per-initiative debriefer — captures idea, asks brief questions, reads Felix markers + existing PRDs + ICP, writes `discovery.*` | **S2** — migrate brief questions in |
-| **`/design-prompt-custom`** (NEW) | Per-initiative design prompt generator — output is paste-ready `.md` for Claude Design | **S3** — author + dogfood |
-| **M** (`/agent-m-cpo-custom`) | CPO critique on any markdown artefact (3 rows) | **S4** — shrink + wire |
-| **Q** (`/agent-q-cto-custom`) | CTO critique on any markdown artefact (4 rows) | **S4** — shrink + wire |
-| **Bond** (`/bond-prd-custom`) (NEW) | PRD author — consumes brief + discovery + design prompt + critique notes; writes `06-Resources/PRDs/<feature>.md` for Cursor Plan mode | **S5** — author + dogfood |
-| **~~Gatekeeper~~** (`/gatekeeper-custom`) | Removed from vault 2026-04-24 | Use **`babysit`** + frozen `plans/PDLC_UI/engineering-guardrails.md` if `pdlc-ui` PRs resume |
+| Skill | Replaces | Role | Status |
+|-------|----------|------|--------|
+| [`/weekly-market-intel-custom`](../../.claude/skills/weekly-market-intel-custom/SKILL.md) | `/felix-custom` | Weekly outside-in research umbrella → writes Friday Signal brief for Steerco | ACTIVE |
+| [`/initiative-discovery-custom`](../../.claude/skills/initiative-discovery-custom/SKILL.md) | `/moneypenny-custom` | Per-initiative discovery research → produces structured discovery package | ACTIVE |
+| [`/prd-author-custom`](../../.claude/skills/prd-author-custom/SKILL.md) | (new — coexists with `/agent-prd`) | Slice-shaped PRD author → produces `bond_v1` PRD with plan-mode-seed | ACTIVE |
+| [`/critique-product-custom`](../../.claude/skills/critique-product-custom/SKILL.md) | `/agent-m-cpo-custom` | Product / outcome / UX-risk critique on plan / PRD / seed | ACTIVE |
+| [`/critique-engineering-custom`](../../.claude/skills/critique-engineering-custom/SKILL.md) | `/agent-q-cto-custom` | Engineering / feasibility / build-shape critique on plan / PRD / seed | ACTIVE |
+| ~~`/design-prompt-custom`~~ | (never authored) | Was: per-initiative design prompt generator | **KILLED** 2026-04-29 — design pointers folded into `/prd-author-custom`. Re-validate on design-heavy walkthrough. |
+| ~~`/gatekeeper-custom`~~ | (deleted 2026-04-24) | Was: post-merge engineering gate | DELETED — use Cursor `babysit` + frozen `engineering-guardrails.md` if `pdlc-ui` PRs resume. |
 
-## 5. Sprint cadence — 6 sprints, ~3 weeks
+The five `*-custom` precursors (felix-custom, moneypenny-custom, agent-m-cpo-custom, agent-q-cto-custom) **co-exist on disk** until the second walkthrough validates the new skills end-to-end. Cleanup is one batch delete after that proof point — see § 8.
+
+## 5. Validation cadence (replaces the old 6-sprint build cadence)
+
+The original plan was: 6 sprints, each sprint = 1 skill, build-then-test. Cancelled 2026-04-29.
+
+The current cadence is: **walkthrough-validate-then-author**. Pick a real use case, run it through the pipeline by hand (or with the current skill set), capture which behaviours earned their keep, then author / refine the skills against that evidence.
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 flowchart LR
-    p0["Phase 0<br/>freeze plus housekeeping<br/>2 days"]
-    s1["S1 Felix<br/>3 days"]
-    s2["S2 Moneypenny<br/>3 to 4 days"]
-    s3["S3 design-prompt<br/>2 days"]
-    s4["S4 M plus Q<br/>2 days"]
-    s5["S5 Bond<br/>3 to 4 days"]
-    s6["S6 end-to-end<br/>2 to 3 days"]
-    p0 --> s1 --> s2 --> s3 --> s4 --> s5 --> s6
+    W1["Walkthrough 1<br/>2026-04-29<br/>multi-lang content<br/>(content-heavy)"]
+    A1["Author skills v1<br/>5 skills shipped"]
+    W2["Walkthrough 2<br/>TBD<br/>design-heavy use case"]
+    R1["Refine / cleanup<br/>delete old precursors"]
+    W3["Walkthrough 3<br/>TBD<br/>engineering-heavy"]
+    Stable["Skill set stable<br/>+ lessons-from-skills.md complete"]
+    W1 --> A1 --> W2 --> R1 --> W3 --> Stable
 ```
 
-Full sprint scope is in the active plan file: [`skill-pipeline-bdd-replan`](../../.cursor/plans/skill-pipeline-bdd-replan_5d961e0d.plan.md) (read via Cursor Plan mode). The `todos` frontmatter there is the authoritative sprint list.
+Walkthroughs are the validation harness. Skills change only on walkthrough evidence. No more "build the skill first, hope it works."
 
-## 6. Per-sprint delivery shape
+## 6. Per-walkthrough delivery shape
 
-Every sprint has the same shape — write it once, follow it every time:
+Every walkthrough has the same shape:
 
-1. **SKILL.md updated or authored** — purpose, invocation, inputs, outputs, failure modes.
-2. **Acceptance checklist** at the bottom of SKILL.md:
-   - [ ] Reads: `<paths>`
-   - [ ] Writes: `<paths>`
-   - [ ] Gates: `<what blocks the run>`
-   - [ ] Failure modes: `<what happens on partial failure / stale input>`
-   - [ ] Cost ceiling: `<per-run target>`
-3. **One real dogfood run** against one real artefact / initiative / idea.
-4. **M + Q critique** on the updated SKILL.md + dogfood output. Must-fixes folded before closing.
-5. **Slice log line** in `04-Projects/PDLC_Orchestration_UI.md`.
-
-No Playwright. No Cucumber runner. No `.feature` files this cycle. Optional upgrade path if iteration cost climbs back up later — it is additive.
+1. **Pick a real initiative** — not a toy. Should stretch at least one dimension (content-heavy / design-heavy / engineering-heavy / cross-functional).
+2. **Run the pipeline end-to-end** — discovery → PRD → critique. Use the current skill set.
+3. **Capture evidence in [`lessons-from-skills.md`](./lessons-from-skills.md)** — what worked, what didn't, which skill behaviour earned its keep, which didn't.
+4. **Refine skills against evidence** — only the behaviours the walkthrough validated. Resist scope creep.
+5. **Session summary in [`sessions/<date>.md`](./sessions/)** — narrative + decisions + artefacts produced.
+6. **PR / commit** — single focused commit per walkthrough's skill changes.
 
 ## 7. Context + cost discipline
 
-- **Session-start hook** loads canonical context once per session: `System/icp.md`, this README (excerpt + pointer), plus the rest of the Dex session preamble. Implemented in Phase 0 as [`.claude/hooks/session-start.sh`](../../.claude/hooks/session-start.sh) (**§22 — Skill pipeline + ICP**). Stops paying tokens to re-read these files on every skill invocation.
-- **Skills read targeted paths only** — no glob-the-world patterns. Every SKILL.md's Acceptance checklist lists exact input paths.
-- **Intermediate outputs cached on disk.** Felix's markers under `06-Resources/Market_intelligence/synthesis/weekly/` and Moneypenny's `discovery.*` blocks in the initiative markdown are read by downstream skills — they are not re-computed.
-- **Sub-skills invoked via the Task tool (subagents).** Moneypenny fans out to Felix in a child context so her main session does not bloat with Felix's raw inputs.
-- **Cost ceiling in every Acceptance checklist.** $0.50 per Moneypenny card run, $5 per end-to-end pipeline run (tracked via the existing `skill_run` event shape).
+- **Session-start hook** loads canonical context once per session: `System/icp.md`, this README (excerpt + pointer), plus the rest of the Dex session preamble. Implemented in Phase 0 as [`.claude/hooks/session-start.sh`](../../.claude/hooks/session-start.sh) (§22 — Skill pipeline + ICP).
+- **Skills read targeted paths only** — no glob-the-world patterns. Every SKILL.md's Acceptance checklist (when present) lists exact input paths.
+- **Intermediate outputs cached on disk.** The Friday Signal under `06-Resources/Market_intelligence/synthesis/weekly/` and discovery packages under `06-Resources/Product_ideas/<feature>_discovery.md` are read by downstream skills — they are not re-computed.
+- **Sub-skills invoked via the Task tool (subagents)** when spawning makes sense — `/initiative-discovery-custom` may fan out to read multiple corpora in child contexts.
+- **Cost discipline tracked qualitatively** for now — the old `skill_run` event scaffolding (atomic writes, cost-ceiling enforcement) was decoupled from this pipeline when pdlc-ui parked. If costs become a problem, instrument then.
 
 ## 8. Success measure — pipeline proven
 
-End of ~3 weeks:
+**Phase 1 (closed 2026-04-29):** ✅
+- Fresh idea → PRD authored manually (multi-language, ~3.5 hrs end-to-end including critique).
+- Five skills authored against real evidence; SKILL.md + refusal lists per skill.
+- One real PRD test artefact at [`Multilingual_Content.md`](../../06-Resources/PRDs/Multilingual_Content.md) (currently RETURN TO PLAN — folding M+Q must-fixes is post-MVP for the pipeline itself; the PRD's existence is the proof).
+- [`lessons-from-skills.md`](./lessons-from-skills.md) seeded with concrete evidence on five skills + the killed design-prompt step.
+
+**Phase 2 (next walkthrough — design-heavy):** pending
+- Run the current skill set on a design-heavy initiative.
+- Validate that design-prompt staying killed is correct, OR resurrect it with sharper scope.
+- Refine skills against any new evidence.
+- Cleanup: delete the four legacy `*-custom` precursors after this proof point.
+
+**Phase 3 (third walkthrough — engineering-heavy):** pending
+- Stretch the engineering-critique skill on a runtime-plan artefact (vs the feature-PRD lens used in walkthrough 1).
+- Validate the dual-lens framing in `/critique-engineering-custom`.
+
+**Long-run (when skill set is stable):**
 - Fresh idea → PRD in <1 working day wall-clock.
-- Pipeline cost <$5 per run.
 - <2 human re-prompts across the full pipeline.
-- Cursor Plan mode consumes Bond's PRD without structural re-prompting.
-- Each skill has SKILL.md + Acceptance checklist + one dogfooded worked example.
-- [`lessons-from-skills.md`](./lessons-from-skills.md) seeded with what worked, what didn't, what a UI would need.
+- Cursor Plan mode consumes the PRD's plan-mode-seed without structural re-prompting.
+- [`lessons-from-skills.md`](./lessons-from-skills.md) populated end-to-end.
 
 ## 9. What this pivot preserves vs parks
 
 **Preserved live:**
-- [`plans/PDLC_UI/schema-initiative-v0.md`](../PDLC_UI/schema-initiative-v0.md) — still the `brief.*` / `discovery.*` / `spec.*` field contract; Moneypenny + Bond read and write against it.
-- [`plans/PDLC_UI/lifecycle-transitions.md`](../PDLC_UI/lifecycle-transitions.md) — still describes the lane progression in concept (idea → discovery → design → spec_ready → develop → uat → deployed), even without the UI that enforces it.
-- `System/icp.md` — read by Moneypenny every run.
-- All `-custom` skills except Gatekeeper.
-- [`plans/Research/moneypenny-strategy.md`](../Research/moneypenny-strategy.md) + [`felix-strategy.md`](../Research/felix-strategy.md).
-- `plans/PDLC_UI/claude-design-orchestration-doc-prompt.md` — referenced by the S3 `/design-prompt-custom` skill as the template.
+- `System/icp.md` — read by `/initiative-discovery-custom` every run. Authored 2026-04-29.
+- All five renamed `*-custom` skills.
+- [`plans/Research/felix-strategy.md`](../Research/felix-strategy.md), [`plans/Research/moneypenny-strategy.md`](../Research/moneypenny-strategy.md) — operating docs (filenames retained for traceability; content may need a rename pass).
 
-**Parked (frozen reference, not driving current work):**
-- `pdlc-ui/` repo — on a freeze branch, no active development.
+**Parked (frozen reference):**
+- `pdlc-ui/` repo — on a freeze branch.
 - `plans/PDLC_UI/plan.md`, `sprint-backlog.md`, `skill-agent-map.md`, `engineering-guardrails.md`, `implementation-standard.md`, `tech-stack.md`, `plan-mode-prelude.md`.
-- Detailed sprint seeds **s3a*, s3b, s4–s8** under [`plans/PDLC_UI/seeds/_archived-2026-04-24/`](../PDLC_UI/seeds/_archived-2026-04-24/) · in-place seeds remain: `s0`, `s1`, `s2`, `s3-brief-wizard`, `s9`, `README`, `_superseded/`.
+- Detailed sprint seeds **s3a*, s3b, s4–s8** under [`plans/PDLC_UI/seeds/_archived-2026-04-24/`](../PDLC_UI/seeds/_archived-2026-04-24/).
+- Cancelled plan files: [`skill-pipeline-bdd-replan_5d961e0d.plan.md`](../../.cursor/plans/skill-pipeline-bdd-replan_5d961e0d.plan.md), [`tracer-bullet-prd-shape_11632852.plan.md`](../../.cursor/plans/tracer-bullet-prd-shape_11632852.plan.md). Status: `paused-2026-04-29`. Preserved for reference, not driving current work.
 
-**Deleted:**
-- ~~`.claude/skills/gatekeeper-custom/`~~ — **deleted** 2026-04-24 (never pushed on this branch; last committed PR gate was at `moneypenny-custom/SKILL.md` before Phase 0: `git show freeze/skills-pipeline-pivot^:.claude/skills/moneypenny-custom/SKILL.md`).
+**Pending deletion (after walkthrough 2 validates):**
+- `.claude/skills/agent-m-cpo-custom/` — replaced by `/critique-product-custom`.
+- `.claude/skills/agent-q-cto-custom/` — replaced by `/critique-engineering-custom`.
+- `.claude/skills/moneypenny-custom/` — replaced by `/initiative-discovery-custom`.
+- `.claude/skills/felix-custom/` — replaced by `/weekly-market-intel-custom`.
+
+**Already deleted:**
+- `.claude/skills/gatekeeper-custom/` — deleted 2026-04-24.
 
 ## 10. Future — when UI comes back (not now)
 
-If S6 exits clean, revisit `pdlc-ui/` as a **thin read-only viewer** over vault markdown, informed by [`lessons-from-skills.md`](./lessons-from-skills.md). No commitment this cycle. If skills don't land end-to-end, the UI wasn't the problem to solve.
+If walkthroughs 2 + 3 land clean, revisit `pdlc-ui/` as a **thin read-only viewer** over vault markdown, informed by [`lessons-from-skills.md`](./lessons-from-skills.md). No commitment this cycle. If skills don't land end-to-end across multiple use cases, the UI wasn't the problem to solve.

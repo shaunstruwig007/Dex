@@ -7,6 +7,28 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.20.0] — Skill pipeline pivot: validate-via-walkthrough + 5 renamed skills (2026-04-29)
+
+**Before:** Skill pipeline was about to author five skills against unvalidated assumptions — `/felix-custom`, `/moneypenny-custom`, `/bond-prd-custom` (TBD), `/agent-m-cpo-custom`, `/agent-q-cto-custom`, and a `/design-prompt-custom` (TBD). Persona-named (007 universe — Felix Leiter, Moneypenny, Bond, M, Q) which required persona knowledge to operate. The 6-sprint build-then-test plan ([`skill-pipeline-bdd-replan`](.cursor/plans/skill-pipeline-bdd-replan_5d961e0d.plan.md)) was active; the tracer-bullet PRD-shape delta plan was layered on top.
+
+**Now:** Cancelled both build plans (status: `paused-2026-04-29`). Ran a **manual walkthrough** of multi-language content translation (idea → discovery → ICP authoring → PRD → critique pair) as a test harness. Used the walkthrough's frictions to define and ship five renamed, job-described skills end-to-end in one session:
+
+- **`/weekly-market-intel-custom`** ([SKILL](.claude/skills/weekly-market-intel-custom/SKILL.md)) — replaces `/felix-custom`. Operational substance preserved; persona stripped; explicitly **NOT** in the idea→PRD pipeline (standalone weekly cadence).
+- **`/initiative-discovery-custom`** ([SKILL](.claude/skills/initiative-discovery-custom/SKILL.md)) — replaces `/moneypenny-custom`. Decoupled from parked `pdlc-ui` runtime (markdown-native). New behaviours validated by walkthrough: **Confirm-relevance per grep hit** (catches stale "future phase" references), **Evidence-gap detection** (explicit log when vault is sparse), **`candidateSlices[]`** output for downstream PRD author.
+- **`/prd-author-custom`** ([SKILL](.claude/skills/prd-author-custom/SKILL.md)) — new. Coexists with `/agent-prd` (different output shapes for different downstream consumers). Produces **`bond_v1` shape** with `plan-mode-seed` fence (1:1 mapping to Cursor Plan mode). **Required input contract** (refuses without discovery output). **Idempotence rule** (no silent overwrite of edited PRDs). Refusal list catches: aspirational metrics with no baseline, risks with no mitigation, slice 1 candidates that aren't walking skeletons.
+- **`/critique-product-custom`** ([SKILL](.claude/skills/critique-product-custom/SKILL.md)) — replaces `/agent-m-cpo-custom`. 7-row checklist preserved; **First-demo risk** sharpened to room-flavoured (Steerco embarrassment, not technical failure — that's engineering's lane).
+- **`/critique-engineering-custom`** ([SKILL](.claude/skills/critique-engineering-custom/SKILL.md)) — replaces `/agent-q-cto-custom`. 9-row checklist preserved; new **two-lens framing** (runtime-plan vs feature-PRD); **A11y row** sharpened to call out the `lang` attribute on translated content (the catch that surfaced during the walkthrough); **`eng-alt` mandatory** (≥1 alternative shape always produced — the highest-yield row across both critiques).
+
+**Killed:** `/design-prompt-custom` (never authored). The multi-language walkthrough produced no incremental value from a separate design-step skill — design pointers folded into `/prd-author-custom`'s output. Re-validate on a design-heavy walkthrough; reinstate if proven wrong.
+
+**Test artefacts produced:** [`System/icp.md`](System/icp.md) — first real ICP authored, three segments + cross-segment disqualifiers. [`06-Resources/PRDs/Multilingual_Content.md`](06-Resources/PRDs/Multilingual_Content.md) — canonical `bond_v1` reference PRD; currently RETURN TO PLAN status from M+Q critique (the verdict format and refusal-list discipline are themselves part of the test). [`06-Resources/PRDs/Scheduled_Content.md`](06-Resources/PRDs/Scheduled_Content.md) — stale "future phase" multi-lang reference replaced with explicit scope-boundary note.
+
+**Pipeline operating doc updated:** [`plans/skill-pipeline/README.md`](plans/skill-pipeline/README.md) — new Mermaid diagram, current skill roster table, replaced 6-sprint build cadence with walkthrough-validate-then-author cadence. [`plans/skill-pipeline/lessons-from-skills.md`](plans/skill-pipeline/lessons-from-skills.md) — populated with concrete evidence per skill (S1/S2/S4/S5) + cross-cutting lessons on persona-naming and validate-via-walkthrough. [`plans/skill-pipeline/sessions/2026-04-29.md`](plans/skill-pipeline/sessions/2026-04-29.md) — full session record (decisions, artefacts, time spent).
+
+**Pending cleanup:** the four legacy persona-named precursors (`agent-m-cpo-custom`, `agent-q-cto-custom`, `moneypenny-custom`, `felix-custom`) co-exist on disk under their old names until walkthrough 2 (design-heavy use case) validates the new skills end-to-end. Cleanup is one batch delete after that proof point.
+
+---
+
 ## [1.19.59] — PDLC pre-S0 sign-off: cadence, canonical case, kick-off decisions (2026-04-20)
 
 **Before:** Sprint cadence drifted (1w/2w mixed), **Phase 5 row #14 missing**, field case **snake vs camel** drift, and several decisions (human ID, audit events, attachments, backup cadence, timezone, git host, a11y, device scope) were implicit — would cause rework by S2.

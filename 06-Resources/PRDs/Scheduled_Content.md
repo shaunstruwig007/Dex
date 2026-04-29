@@ -28,7 +28,9 @@ follow_up_tasks:
 
 *Updated: 2026-03-30 — [[00-Inbox/Meetings/2026-03-30 - Post Launch Priorities Essential|Post-launch priorities 2026-03-30]]*
 
-> **Key decision (2026-03-30):** Start with the **simplest cron-based approach** for scheduling posts and messages. Do not over-engineer for Phase 1 of this feature — ship a working time-based trigger first, layer sophistication later. Dynamic localisation and multi-layered translations are a future phase (Jan to be involved when ready).
+> **Key decision (2026-03-30):** Start with the **simplest cron-based approach** for scheduling posts and messages. Do not over-engineer for Phase 1 of this feature — ship a working time-based trigger first, layer sophistication later.
+>
+> *Multi-language and translation are owned by a separate PRD and are not in scope for Scheduled Content. Scheduled Content treats translated post variants the same as any other post — no special handling.*
 
 **Scope note:** Scheduled **Posts** and scheduled **operational messaging** (Standard Message from [Messaging_Ops_Urgent_Alerts](./Messaging_Ops_Urgent_Alerts.md)); **Urgent Alerts** stay immediate-only.
 
