@@ -21,7 +21,10 @@
 
 ## 2. The pipeline in one picture
 
-> **For stakeholders:** the presentation-ready visual lives at [`pipeline-flow.html`](./pipeline-flow.html). Open in a browser, screenshot for slides, or print to PDF. Designed for the design-manager / CTO audience &mdash; no engineering fluency assumed.
+> **For stakeholders:** two presentation-ready slides ship with this folder. Open in a browser, screenshot for slides, or print to PDF. No engineering fluency assumed.
+>
+> 1. [`pipeline-flow.html`](./pipeline-flow.html) &mdash; the journey, end-to-end, idea → build.
+> 2. [`design-in-the-pipeline.html`](./design-in-the-pipeline.html) &mdash; design&rsquo;s typed role at every stage. Read this if the question of *where design fits* comes up &mdash; especially during the handoff to the Design Manager.
 
 ```mermaid
 %%{init: {'theme': 'neutral'}}%%

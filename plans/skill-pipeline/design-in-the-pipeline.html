@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Design in the Pipeline &mdash; typed role at every stage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Companion to pipeline-flow.html. Articulates design's typed role at each stage of the skill pipeline. Designed for the Design Manager taking ownership of the process." />
+  <style>
+    :root {
+      --bg: #F5F1EA;
+      --paper: #FBF8F2;
+      --paper-warm: #F3EBDB;
+      --ink: #14182A;
+      --soft-ink: #4F586D;
+      --mute: #8A92A4;
+      --line: #D8CFC1;
+      --hairline: #E6DFD3;
+
+      --c-design:    #B85B79;   /* feature colour for this doc */
+      --c-design-soft: #E8C5D2;
+      --c-thinking:  #4D6FA5;   /* design-thinking lens */
+      --c-artefact:  #5B4C8C;   /* design-artefact lens */
+      --c-trap:      #A8516B;
+      --c-defence:   #3F7A5B;
+      --c-build:     #2C3340;
+
+      --serif: "Iowan Old Style", "Apple Garamond", Charter, "Bitstream Charter", Cambria, Georgia, serif;
+      --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono:  ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding: 48px 56px 56px;
+      min-height: 100vh;
+    }
+
+    .frame { max-width: 1320px; margin: 0 auto; }
+
+    /* ── header ───────────────────────────── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 32px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 36px;
+    }
+    .title-block { flex: 1 1 auto; }
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 0 0 8px;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: 42px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      margin: 0;
+      color: var(--ink);
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--c-design);
+    }
+    .lede {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--soft-ink);
+      margin: 14px 0 0;
+      max-width: 800px;
+    }
+    .meta-block {
+      flex: 0 0 auto;
+      text-align: right;
+      font-size: 12px;
+      color: var(--mute);
+      font-family: var(--mono);
+      line-height: 1.7;
+    }
+    .meta-block strong { color: var(--soft-ink); font-weight: 500; }
+    .meta-block a {
+      color: var(--c-design);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--c-design);
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 32px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--hairline);
+    }
+
+    /* ── two kinds of design ──────────────── */
+    .two-kinds {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin-bottom: 8px;
+    }
+    .kind {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 24px 24px;
+      position: relative;
+    }
+    .kind::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 22px; bottom: 22px;
+      width: 4px;
+      border-radius: 0 4px 4px 0;
+      background: var(--accent);
+    }
+    .kind h3 {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      margin: 0 0 6px;
+      color: var(--accent);
+      line-height: 1.15;
+    }
+    .kind .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 12px;
+    }
+    .kind p {
+      font-size: 14px;
+      color: var(--soft-ink);
+      margin: 0 0 10px;
+    }
+    .kind ul {
+      font-size: 13px;
+      color: var(--soft-ink);
+      margin: 8px 0 0;
+      padding: 0 0 0 18px;
+    }
+    .kind ul li { margin-bottom: 4px; }
+    .kind .examples {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--mute);
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--hairline);
+    }
+    .kind-thinking  { --accent: var(--c-thinking); }
+    .kind-artefact  { --accent: var(--c-artefact); }
+
+    /* ── stages table ─────────────────────── */
+    .stages-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .stages-table th, .stages-table td {
+      padding: 12px 16px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .stages-table thead th {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+      font-weight: 500;
+      background: var(--paper-warm);
+      border-bottom: 1px solid var(--line);
+    }
+    .stages-table tbody tr:last-child td { border-bottom: none; }
+    .stages-table .stage-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--mute);
+      width: 56px;
+    }
+    .stages-table .stage-name {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--stage-c, var(--ink));
+      width: 130px;
+    }
+    .stages-table .stage-role { color: var(--ink); width: 28%; }
+    .stages-table .stage-art {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--soft-ink);
+      width: 28%;
+    }
+    .stages-table .stage-not {
+      color: var(--c-trap);
+      font-style: italic;
+      font-size: 12.5px;
+    }
+    /* row colours mirror pipeline-flow.html for visual continuity */
+    .row-idea     { --stage-c: #C2873B; }
+    .row-disc     { --stage-c: #4D6FA5; }
+    .row-prd      { --stage-c: #5B4C8C; }
+    .row-crit     { --stage-c: #A8516B; }
+    .row-spec     { --stage-c: #3F7A5B; }
+    .row-design   { --stage-c: #B85B79; background: rgba(184,91,121,0.04); }
+    .row-build    { --stage-c: #2C3340; }
+
+    /* ── trap + defences split ────────────── */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 24px;
+      position: relative;
+    }
+    .panel::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 22px; right: 22px;
+      height: 3px;
+      border-radius: 0 0 3px 3px;
+      background: var(--accent);
+    }
+    .panel h4 {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      margin: 4px 0 6px;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+    .panel .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 14px;
+    }
+    .panel p {
+      font-size: 13.5px;
+      color: var(--soft-ink);
+      margin: 0 0 10px;
+    }
+    .panel-trap     { --accent: var(--c-trap); }
+    .panel-defence  { --accent: var(--c-defence); }
+    .panel ol, .panel ul {
+      font-size: 13px;
+      color: var(--soft-ink);
+      padding-left: 20px;
+      margin: 8px 0 0;
+    }
+    .panel li { margin-bottom: 6px; }
+    .panel li strong { color: var(--ink); font-weight: 600; }
+    .panel li code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+
+    /* ── category fit ─────────────────────── */
+    .category {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 24px 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .category h4 {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 8px;
+      color: var(--ink);
+    }
+    .category p {
+      font-size: 13.5px;
+      color: var(--soft-ink);
+      margin: 0;
+    }
+    .category .pill {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 9px;
+      border-radius: 99px;
+      margin-bottom: 10px;
+    }
+    .pill-yes { background: rgba(63,122,91,0.10); color: var(--c-defence); border: 1px solid rgba(63,122,91,0.25); }
+    .pill-no  { background: rgba(168,81,107,0.10); color: var(--c-trap); border: 1px solid rgba(168,81,107,0.25); }
+
+    /* ── handoff quotes ───────────────────── */
+    .quotes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+    .quote {
+      background: var(--paper-warm);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 26px;
+      border-left: 4px solid var(--c-design);
+    }
+    .quote .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 10px;
+    }
+    .quote blockquote {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 15.5px;
+      line-height: 1.5;
+      color: var(--ink);
+      font-style: italic;
+    }
+    .quote blockquote::before { content: "\201C"; color: var(--c-design); margin-right: 2px; }
+    .quote blockquote::after  { content: "\201D"; color: var(--c-design); margin-left: 2px; }
+
+    /* ── glossary ─────────────────────────── */
+    .glossary {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px 28px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 28px;
+    }
+    .term {
+      font-size: 13px;
+      color: var(--soft-ink);
+    }
+    .term dt {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink);
+      font-weight: 600;
+      margin-bottom: 2px;
+      letter-spacing: 0.02em;
+    }
+    .term dt em {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--mute);
+      font-size: 11px;
+      margin-left: 6px;
+      letter-spacing: 0;
+    }
+    .term dd {
+      margin: 0 0 6px;
+      line-height: 1.5;
+    }
+
+    /* ── footer ───────────────────────────── */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      font-size: 12px;
+      color: var(--mute);
+      font-family: var(--mono);
+      padding-top: 22px;
+      border-top: 1px solid var(--hairline);
+      margin-top: 36px;
+    }
+    footer a { color: var(--soft-ink); text-decoration: none; border-bottom: 1px solid var(--hairline); }
+    footer a:hover { color: var(--c-design); border-bottom-color: var(--c-design); }
+
+    @media (max-width: 1100px) {
+      body { padding: 36px 32px; }
+      h1 { font-size: 34px; }
+      .two-kinds, .split, .quotes, .category, .glossary { grid-template-columns: 1fr; }
+      header { flex-direction: column; align-items: flex-start; }
+      .meta-block { text-align: left; }
+      .stages-table { font-size: 12px; }
+      .stages-table th, .stages-table td { padding: 10px 12px; }
+    }
+
+    @media print {
+      @page { size: 1500px 1100px; margin: 0; }
+      body { background: white; padding: 36px 44px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+
+    <header>
+      <div class="title-block">
+        <p class="eyebrow">Companion to the skill pipeline</p>
+        <h1>Design in the pipeline &mdash; <em>typed role at every stage</em>.</h1>
+        <p class="lede">Design isn&rsquo;t stage 06. Design is in every stage &mdash; with a typed deliverable. This doc names the role, the artefact, and what each stage deliberately is&nbsp;not.</p>
+      </div>
+      <div class="meta-block">
+        <strong>For:</strong> Design Manager (owner)<br>
+        <strong>Sister doc:</strong> <a href="./pipeline-flow.html">pipeline-flow.html</a><br>
+        <strong>Source-of-truth:</strong> this file<br>
+        <strong>v1</strong> &middot; 2026-04-29
+      </div>
+    </header>
+
+    <p class="section-label">Two kinds of design get conflated &mdash; this is the most useful distinction</p>
+    <div class="two-kinds">
+      <div class="kind kind-thinking">
+        <h3>Design thinking</h3>
+        <p class="tag">Cross-cutting &middot; belongs in every stage</p>
+        <p>The lens, not the artefact. Surfacing the journey. Naming the moments-of-truth. Calling the IA risks. Flagging accessibility from day one. Identifying which stakeholders feel which pain.</p>
+        <ul>
+          <li>Maps user journeys before we commit to a UI</li>
+          <li>Identifies IA / surface-parity decisions early</li>
+          <li>Surfaces failure-mode UX risks</li>
+          <li>Calls out a11y constraints that will shape the spec</li>
+        </ul>
+        <p class="examples">Lives in: Discovery doc · PRD Design pointers · Critique rows</p>
+      </div>
+      <div class="kind kind-artefact">
+        <h3>Design artefacts</h3>
+        <p class="tag">Staged &middot; each fidelity has a place</p>
+        <p>The deliverables. Sketches, journey maps, wireframes, hi-fi mockups, prototypes. Each fidelity belongs at a specific stage &mdash; pulling them earlier is where over-spec and stakeholder-anchoring start.</p>
+        <ul>
+          <li>Sketches and journey maps &mdash; discovery</li>
+          <li>Constraint-language &mdash; PRD (Design pointers / a11y)</li>
+          <li>Wireframes &mdash; stage 06, after spec_ready</li>
+          <li>Hi-fi mocks and prototypes &mdash; stage 06, in coordination with build</li>
+        </ul>
+        <p class="examples">Lives in: discovery sketches · Figma · Claude Design wireframe mode</p>
+      </div>
+    </div>
+
+    <p class="section-label">Design&rsquo;s role per stage</p>
+    <table class="stages-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Stage</th>
+          <th>Design&rsquo;s role here</th>
+          <th>Artefact at this stage</th>
+          <th>Deliberately NOT</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-idea">
+          <td class="stage-num">01</td>
+          <td class="stage-name">Idea</td>
+          <td class="stage-role">Absent. The idea is one paragraph &mdash; design has no input here yet.</td>
+          <td class="stage-art">&mdash;</td>
+          <td class="stage-not">sketches, mockups</td>
+        </tr>
+        <tr class="row-disc">
+          <td class="stage-num">02</td>
+          <td class="stage-name">Discovery</td>
+          <td class="stage-role">Surface the user journey. Identify IA risks and surface-parity decisions. Flag a11y constraints that will shape requirements. Identify design stakeholders.</td>
+          <td class="stage-art">written narrative + rough sketches in the discovery doc · journey notes · IA risk callouts</td>
+          <td class="stage-not">wireframes, hi-fi mockups</td>
+        </tr>
+        <tr class="row-prd">
+          <td class="stage-num">03</td>
+          <td class="stage-name">PRD</td>
+          <td class="stage-role">Set design constraints. Author the Design pointers, Failure-mode UX, and A11y requirements sections of the bond_v1 PRD. These constrain what the wireframe must achieve.</td>
+          <td class="stage-art">PRD sections: Design pointers · Failure-mode UX · A11y requirements</td>
+          <td class="stage-not">wireframes, screen-by-screen mocks</td>
+        </tr>
+        <tr class="row-crit">
+          <td class="stage-num">04</td>
+          <td class="stage-name">Critique</td>
+          <td class="stage-role">Defend design choices against demo risk and cohesion. Catch over-engineering early via the product-critique &ldquo;Cohesion vs craft&rdquo; row and the engineering-critique &ldquo;A11y first-class&rdquo; row.</td>
+          <td class="stage-art">flagged must-fixes in the critique log</td>
+          <td class="stage-not">new design work, rework before fold</td>
+        </tr>
+        <tr class="row-spec">
+          <td class="stage-num">05</td>
+          <td class="stage-name">spec_ready</td>
+          <td class="stage-role">Hand-shake. Design constraints in PRD are signed off. Frontmatter flips: <code style="font-family:var(--mono); font-size:11px;">design_pass_status: pending</code>.</td>
+          <td class="stage-art">PRD frontmatter pipeline state</td>
+          <td class="stage-not">&mdash;</td>
+        </tr>
+        <tr class="row-design">
+          <td class="stage-num">06</td>
+          <td class="stage-name">Design</td>
+          <td class="stage-role"><strong>Expression.</strong> With the PRD in hand, design iterates on form without re-litigating substance. Wireframes follow the slice plan &mdash; slice 1 wireframes first, then thicker slices.</td>
+          <td class="stage-art">wireframes · prototypes · hi-fi mocks (Claude Design / Figma)</td>
+          <td class="stage-not">new requirements, scope additions</td>
+        </tr>
+        <tr class="row-build">
+          <td class="stage-num">07</td>
+          <td class="stage-name">Build handoff</td>
+          <td class="stage-role">Realisation. Design pairs with engineering to defend pixel intent without freezing the implementation. Slice 1 ships rough; design polish lands incrementally.</td>
+          <td class="stage-art">shipped UI · design QA notes</td>
+          <td class="stage-not">new requirements, scope additions</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="section-label">The fidelity trap &mdash; named, not blamed</p>
+    <div class="split">
+      <div class="panel panel-trap">
+        <p class="tag">Pattern</p>
+        <h4>The fidelity trap</h4>
+        <p>A discovery moment that should produce a journey map produces a wireframe instead. The wireframe is shown to stakeholders. Stakeholders anchor on a specific UI. Sunk-cost kicks in. Changing course feels expensive even when the problem hasn&rsquo;t been validated. Engineering ends up implementing the mockup &mdash; not the spec.</p>
+        <p>This isn&rsquo;t a designer flaw &mdash; it&rsquo;s a systems flaw. Designers default to fidelity because fidelity is what the tools optimise for. Without a typed role per stage, the tool wins.</p>
+        <ol>
+          <li><strong>Symptom:</strong> high-fidelity Figma in week one of discovery</li>
+          <li><strong>Symptom:</strong> design decisions made before slice 1 is named</li>
+          <li><strong>Symptom:</strong> requirements that read like UI specs</li>
+        </ol>
+      </div>
+      <div class="panel panel-defence">
+        <p class="tag">Built-in defences</p>
+        <h4>What the pipeline catches</h4>
+        <ol>
+          <li><strong>Cohesion vs craft</strong> &mdash; <code>/critique-product-custom</code> row 4 catches &ldquo;artefact ships craft without changing an observable user moment.&rdquo; That&rsquo;s the literal definition of over-engineering, named and checked every PRD.</li>
+          <li><strong>First-demo risk</strong> &mdash; <code>/critique-product-custom</code> row 2 forces design choices to defend against &ldquo;the most embarrassing thing that could happen in the room&rdquo; on a real demo. Craft must justify itself against viability.</li>
+          <li><strong>Walking skeleton</strong> &mdash; slice 1 must demo end-to-end, however rough. Design can&rsquo;t hide behind &ldquo;the design isn&rsquo;t ready yet.&rdquo; Slice 1 ships ugly. This is the strongest single anti-over-spec mechanism.</li>
+        </ol>
+      </div>
+    </div>
+
+    <p class="section-label">Why this calibration fits Wyzetalk</p>
+    <div class="category">
+      <div>
+        <span class="pill pill-yes">Requirements-first works here</span>
+        <h4>B2B frontline employee engagement</h4>
+        <p>ICP is well-constrained. Jobs-to-be-done are well-known (HR self-service, comms, SHEQ, recognition). Differentiation is in functional fit and operational reliability &mdash; not aesthetic novelty. The risk in this category is over-spec&rsquo;ing details that don&rsquo;t move a user moment, not under-designing.</p>
+      </div>
+      <div>
+        <span class="pill pill-no">Where requirements-first fails</span>
+        <h4>Consumer / design-led products</h4>
+        <p>Design-led discovery is correct for product categories where the design <strong>is</strong> the differentiator &mdash; consumer notes apps, design tools, content products. Wyzetalk isn&rsquo;t in that category. Don&rsquo;t adopt a framework calibrated for that category here.</p>
+      </div>
+    </div>
+
+    <p class="section-label">Handoff language &mdash; lift verbatim</p>
+    <div class="quotes">
+      <div class="quote">
+        <p class="tag">If asked: &ldquo;Where does design fit?&rdquo;</p>
+        <blockquote>Design has a typed role in every stage of this pipeline &mdash; not just stage 06. In discovery, design surfaces the journey and the IA risks in writing. In the PRD, design sets constraints. In critique, design defends choices against demo risk and cohesion. Wireframes live in stage 06 because that&rsquo;s where they earn their keep.</blockquote>
+      </div>
+      <div class="quote">
+        <p class="tag">If asked: &ldquo;But design dictates what the tech does&rdquo;</p>
+        <blockquote>Design constrains the tech &mdash; and the PRD captures those constraints in Design pointers. Engineering also constrains design. Both feed the spec. The walking skeleton in slice 1 forces both sides to ship something rough end-to-end before either side polishes &mdash; that&rsquo;s the discipline.</blockquote>
+      </div>
+    </div>
+
+    <p class="section-label">Glossary &mdash; for any reader who isn&rsquo;t fluent</p>
+    <dl class="glossary">
+      <div class="term">
+        <dt>a11y <em>accessibility</em></dt>
+        <dd>The number 11 stands for the eleven letters between &ldquo;a&rdquo; and &ldquo;y.&rdquo; Covers screen-reader compatibility, keyboard navigation, colour contrast, focus management, the <code style="font-family:var(--mono); font-size:11px;">lang</code> attribute on translated content, and tap-target sizes. Both a usability and a regulatory concern.</dd>
+      </div>
+      <div class="term">
+        <dt>IA <em>information architecture</em></dt>
+        <dd>How content is structured, labelled, organised, and navigated. The &ldquo;where does this live, what&rsquo;s it called, how do users find it&rdquo; lens. IA decisions are high-leverage and hard to reverse &mdash; which is why design-thinking belongs in discovery for those.</dd>
+      </div>
+      <div class="term">
+        <dt>JTBD <em>jobs to be done</em></dt>
+        <dd>Framework where you describe what users hire your product to do, in functional terms. &ldquo;Help me know I got paid correctly&rdquo; is a JTBD. &ldquo;A payslip screen&rdquo; is a solution.</dd>
+      </div>
+      <div class="term">
+        <dt>walking skeleton</dt>
+        <dd>A first end-to-end vertical slice that demos the full system, however rough &mdash; data layer to UI, on the happy path. The opposite of a horizontal layer-by-layer build. Term from agile / Cockburn.</dd>
+      </div>
+      <div class="term">
+        <dt>vertical slice</dt>
+        <dd>A thin end-to-end implementation that touches every layer needed to deliver a single user-visible outcome. Each slice is independently demoable. Slices stack &mdash; later slices thicken or extend earlier ones.</dd>
+      </div>
+      <div class="term">
+        <dt>Design pointers</dt>
+        <dd>A required section of the bond_v1 PRD shape. Captures the design constraints the wireframe must honour: key journeys, failure-mode UX, a11y requirements, copy tone. Not wireframes &mdash; constraints.</dd>
+      </div>
+      <div class="term">
+        <dt>Failure-mode UX</dt>
+        <dd>What the user sees when the happy path doesn&rsquo;t work. Vendor outage. Network failure. Permission denied. Stale cache. A required subsection of Design pointers when the PRD has external dependencies.</dd>
+      </div>
+      <div class="term">
+        <dt>Critique loop</dt>
+        <dd>After PRD authoring, the product and engineering critique skills run. Must-fixes loop back to the PRD author. Two passes is normal. Three is a smell. Loop closes when both sign off &mdash; PRD flips to <code style="font-family:var(--mono); font-size:11px;">spec_ready</code>.</dd>
+      </div>
+    </dl>
+
+    <footer>
+      <span>plans/skill-pipeline/design-in-the-pipeline.html</span>
+      <span>v1 &middot; 2026-04-29</span>
+      <span><a href="./pipeline-flow.html">flow diagram</a> &middot; <a href="./README.md">README</a> &middot; <a href="./lessons-from-skills.md">lessons</a></span>
+    </footer>
+
+  </div>
+</body>
+</html>
