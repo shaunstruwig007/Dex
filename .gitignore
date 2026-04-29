@@ -188,6 +188,10 @@ core/tests/fixtures/vault/System/.dex/*
 # Optional private RSS feed list (merged by fetch_intel_rss.py); may contain signed URLs / tokens
 06-Resources/Market_intelligence/intel_feeds.local.json
 
+# Transient ingest state (regenerated on each fetch; not signal — no value in version control)
+06-Resources/Market_intelligence/.intel_fetch_state.json
+06-Resources/Market_intelligence/.intel_seen_urls.json
+
 # Industry research — PDFs live in SharePoint / local mirror only (markdown summaries are tracked)
 06-Resources/Research/**/*.pdf
 

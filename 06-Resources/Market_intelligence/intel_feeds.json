@@ -1,0 +1,76 @@
+{
+  "_comment": "Felix ingest feeds — verified 2026-04-24. Public RSS URLs only. Put private/token URLs in intel_feeds.local.json (gitignored). Each feed: slug (folder name), rss_url, max_items (default 30), tags (for ingest frontmatter).",
+  "feeds": [
+
+    {
+      "slug": "hr-tech-feed",
+      "rss_url": "https://hrtechfeed.com/feed/",
+      "max_items": 20,
+      "tags": ["hr-tech", "competitor-moves", "frontline-ai", "product-launches"]
+    },
+
+    {
+      "slug": "unleash",
+      "rss_url": "https://www.unleash.ai/feed/",
+      "max_items": 15,
+      "tags": ["hr-tech", "workforce", "future-of-work", "enterprise-hr"]
+    },
+
+    {
+      "slug": "hr-dive",
+      "rss_url": "https://www.hrdive.com/feeds/news/",
+      "max_items": 20,
+      "tags": ["hr-tech", "workforce", "regulation", "benefits"]
+    },
+
+    {
+      "slug": "it-news-africa",
+      "rss_url": "https://www.itnewsafrica.com/feed/",
+      "max_items": 20,
+      "tags": ["south-africa", "tech", "competitor-moves", "startup", "fintech"]
+    },
+
+    {
+      "slug": "tech-in-africa",
+      "rss_url": "https://www.techinafrica.com/feed/",
+      "max_items": 15,
+      "tags": ["africa", "tech", "startup", "hr-tech", "regulation"]
+    },
+
+    {
+      "slug": "business-tech-africa",
+      "rss_url": "https://www.businesstechafrica.co.za/feed/",
+      "max_items": 15,
+      "tags": ["south-africa", "mining", "tech", "business", "connectivity"]
+    },
+
+    {
+      "slug": "empower-africa",
+      "rss_url": "https://empowerafrica.com/feed/",
+      "max_items": 10,
+      "tags": ["africa", "business", "investment", "tech", "workforce"]
+    },
+
+    {
+      "slug": "workforce-africa",
+      "rss_url": "https://workforceafrica.com/feed/",
+      "max_items": 15,
+      "tags": ["africa", "hr-tech", "workforce", "south-africa", "payroll"]
+    },
+
+    {
+      "slug": "african-mining",
+      "rss_url": "https://www.africanmining.co.za/feed/",
+      "max_items": 15,
+      "tags": ["mining", "south-africa", "safety", "frontline", "icp-mining"]
+    },
+
+    {
+      "slug": "mining-safety-za",
+      "rss_url": "https://www.miningsafety.co.za/feed/",
+      "max_items": 15,
+      "tags": ["mining", "safety", "mhsa", "south-africa", "compliance", "icp-mining"]
+    }
+
+  ]
+}
