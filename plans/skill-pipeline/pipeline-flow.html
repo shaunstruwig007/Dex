@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>The Skill Pipeline — idea to ready-to-build, in hours</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="How an idea becomes a build-ready PRD using the skill pipeline. Designed for product, design, and engineering leadership." />
+  <style>
+    :root {
+      /* palette — editorial, earth-toned, presentation-mature */
+      --bg: #F5F1EA;
+      --paper: #FBF8F2;
+      --ink: #14182A;
+      --soft-ink: #4F586D;
+      --mute: #8A92A4;
+      --line: #D8CFC1;
+      --hairline: #E6DFD3;
+
+      /* stage accents — distinct hues, similar saturation, chosen to read well next to each other */
+      --c-context: #2F6B66;   /* teal — the always-on band */
+      --c-idea:    #C2873B;   /* warm amber — the spark */
+      --c-discovery: #4D6FA5; /* muted blue — research, neutral */
+      --c-prd:     #5B4C8C;   /* indigo — authoring */
+      --c-critique: #A8516B;  /* dusty rose — challenge */
+      --c-spec:    #3F7A5B;   /* forest — green-light */
+      --c-design:  #B85B79;   /* warm pink — craft */
+      --c-build:   #2C3340;   /* deep slate — ship */
+
+      /* typography */
+      --serif: "Iowan Old Style", "Apple Garamond", Charter, "Bitstream Charter", Cambria, Georgia, serif;
+      --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono:  ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 48px 56px 56px;
+      min-height: 100vh;
+    }
+
+    .frame {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* ── header ───────────────────────────── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 32px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 36px;
+    }
+    .title-block { flex: 1 1 auto; }
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 0 0 8px;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: 44px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      margin: 0;
+      color: var(--ink);
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--c-discovery);
+    }
+    .lede {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--soft-ink);
+      margin: 12px 0 0;
+      max-width: 820px;
+    }
+    .meta-block {
+      flex: 0 0 auto;
+      text-align: right;
+      font-size: 12px;
+      color: var(--mute);
+      font-family: var(--mono);
+      line-height: 1.7;
+    }
+    .meta-block strong { color: var(--soft-ink); font-weight: 500; }
+
+    /* ── section labels ──────────────────── */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 0 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--hairline);
+    }
+
+    /* ── always-on context band ─────────── */
+    .context-band {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 26px;
+      margin-bottom: 28px;
+      position: relative;
+    }
+    .context-band::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 22px;
+      bottom: 22px;
+      width: 4px;
+      background: var(--c-context);
+      border-radius: 0 4px 4px 0;
+    }
+    .context-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+    .context-card h4 {
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 4px;
+      color: var(--c-context);
+    }
+    .context-card p {
+      font-size: 13px;
+      color: var(--soft-ink);
+      margin: 0;
+    }
+    .context-card .file {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--mute);
+      margin-top: 6px;
+      display: block;
+    }
+
+    /* ── pipeline ─────────────────────────── */
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 18px;
+      position: relative;
+      margin-bottom: 36px;
+    }
+
+    .stage {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      min-height: 230px;
+    }
+
+    .stage::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 16px; right: 16px;
+      height: 3px;
+      background: var(--accent, var(--soft-ink));
+      border-radius: 0 0 3px 3px;
+    }
+
+    .stage-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--mute);
+      margin-bottom: 4px;
+    }
+    .stage-name {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      color: var(--accent, var(--ink));
+      margin: 0 0 6px;
+      line-height: 1.15;
+    }
+    .stage-tag {
+      font-size: 11px;
+      color: var(--mute);
+      font-style: italic;
+      margin: 0 0 12px;
+    }
+    .stage-skill {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--soft-ink);
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 10px;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+    .stage-body {
+      font-size: 12.5px;
+      color: var(--soft-ink);
+      flex: 1;
+      margin: 0 0 12px;
+    }
+    .stage-out {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent, var(--soft-ink));
+      border-top: 1px dashed var(--hairline);
+      padding-top: 8px;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .s-idea       { --accent: var(--c-idea); }
+    .s-discovery  { --accent: var(--c-discovery); }
+    .s-prd        { --accent: var(--c-prd); }
+    .s-critique   { --accent: var(--c-critique); }
+    .s-spec       { --accent: var(--c-spec); }
+    .s-design     { --accent: var(--c-design); }
+    .s-build      { --accent: var(--c-build); }
+
+    /* arrows between stages */
+    .pipeline-arrows {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 18px;
+      margin: -10px 0 8px;
+      pointer-events: none;
+    }
+    .arrow-cell {
+      height: 0;
+      position: relative;
+    }
+
+    /* critique → PRD must-fixes loop */
+    .loop-band {
+      margin: -10px 0 30px;
+      padding: 12px 22px;
+      background: linear-gradient(90deg, transparent 0%, rgba(168,81,107,0.06) 25%, rgba(168,81,107,0.10) 55%, transparent 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 12.5px;
+      color: var(--c-critique);
+    }
+    .loop-icon {
+      font-family: var(--mono);
+      font-size: 16px;
+      color: var(--c-critique);
+    }
+    .loop-band em {
+      font-family: var(--serif);
+      font-style: italic;
+      color: var(--soft-ink);
+    }
+
+    /* ── outcome banner ───────────────────── */
+    .outcome {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 28px;
+      align-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 26px 32px;
+      margin-bottom: 32px;
+    }
+    .outcome-side h5 {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin: 0 0 8px;
+    }
+    .outcome-side p {
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.35;
+      margin: 0;
+      color: var(--ink);
+    }
+    .outcome-before h5 { color: var(--c-critique); }
+    .outcome-after  h5 { color: var(--c-spec); }
+    .outcome-arrow {
+      font-family: var(--serif);
+      font-size: 32px;
+      color: var(--c-spec);
+      line-height: 1;
+    }
+
+    /* ── footer ───────────────────────────── */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      font-size: 12px;
+      color: var(--mute);
+      font-family: var(--mono);
+      padding-top: 22px;
+      border-top: 1px solid var(--hairline);
+    }
+    footer a { color: var(--soft-ink); text-decoration: none; border-bottom: 1px solid var(--hairline); }
+    footer a:hover { color: var(--c-discovery); border-bottom-color: var(--c-discovery); }
+
+    /* ── responsive ───────────────────────── */
+    @media (max-width: 1280px) {
+      body { padding: 36px 32px; }
+      h1 { font-size: 36px; }
+      .pipeline { grid-template-columns: repeat(4, 1fr); }
+      .pipeline > .stage:nth-child(n+5) { /* shift onto second row gracefully */ }
+    }
+    @media (max-width: 900px) {
+      .pipeline { grid-template-columns: repeat(2, 1fr); }
+      .context-cards { grid-template-columns: 1fr; }
+      .outcome { grid-template-columns: 1fr; }
+      .outcome-arrow { transform: rotate(90deg); justify-self: center; }
+      header { flex-direction: column; align-items: flex-start; }
+      .meta-block { text-align: left; }
+    }
+
+    /* ── print / screenshot ───────────────── */
+    @media print {
+      @page { size: 1600px 1000px; margin: 0; }
+      body { padding: 36px 44px; background: white; }
+      .stage, .context-band, .outcome { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+
+    <header>
+      <div class="title-block">
+        <p class="eyebrow">The skill pipeline</p>
+        <h1>From an idea, to a build-ready PRD &mdash; <em>in hours, not weeks</em>.</h1>
+        <p class="lede">Five skills, two repos, one journey. Each stage produces a typed artefact the next stage consumes &mdash; no whiteboards lost, no decisions buried in chat.</p>
+      </div>
+      <div class="meta-block">
+        <strong>Owner:</strong> Design Manager<br>
+        <strong>Skill catalogue:</strong> .claude/skills/<br>
+        <strong>Vault:</strong> GitHub<br>
+        <strong>Codebase:</strong> Bitbucket
+      </div>
+    </header>
+
+    <p class="section-label">Always-on context &mdash; loaded by every skill</p>
+    <div class="context-band">
+      <div class="context-cards">
+        <div class="context-card">
+          <h4>Ideal Customer Profile</h4>
+          <p>Who we&rsquo;re building for. Used to score strategic fit and to spot ICP-misalignment in discovery.</p>
+          <span class="file">System/icp.md</span>
+        </div>
+        <div class="context-card">
+          <h4>Weekly Market Intel</h4>
+          <p>Friday brief synthesising newsletters, competitor moves, sector signals. Keeps discovery anchored to what changed.</p>
+          <span class="file">06-Resources/Market_intelligence/synthesis/weekly/</span>
+        </div>
+        <div class="context-card">
+          <h4>Vault</h4>
+          <p>Existing PRDs, meeting notes, person pages, decision logs. Used to detect duplicate work and stakeholder context.</p>
+          <span class="file">06-Resources/PRDs/ &middot; 00-Inbox/Meetings/ &middot; 05-Areas/People/</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-label">The journey &mdash; idea to ship-ready</p>
+    <div class="pipeline">
+
+      <article class="stage s-idea">
+        <span class="stage-num">01</span>
+        <h3 class="stage-name">Idea</h3>
+        <p class="stage-tag">The spark</p>
+        <p class="stage-body">A natural-language hypothesis. <em>&ldquo;What if we let frontline employees see posts in their preferred language?&rdquo;</em> No structure required. Captured in chat, in a backlog, or on a sticky note.</p>
+        <p class="stage-out">in &rarr; chat / backlog<br>out &rarr; one paragraph</p>
+      </article>
+
+      <article class="stage s-discovery">
+        <span class="stage-num">02</span>
+        <h3 class="stage-name">Discovery</h3>
+        <p class="stage-tag">What do we actually know?</p>
+        <span class="stage-skill">/initiative-discovery-custom</span>
+        <p class="stage-body">Reads ICP, weekly intel, vault. Surfaces problem statement, user segments, evidence, evidence-gaps, stakeholders, candidate slices.</p>
+        <p class="stage-out">out &rarr; <strong>discovery doc</strong><br>06-Resources/Product_ideas/<br>&lt;name&gt;_discovery.md</p>
+      </article>
+
+      <article class="stage s-prd">
+        <span class="stage-num">03</span>
+        <h3 class="stage-name">PRD</h3>
+        <p class="stage-tag">The spec, in slices</p>
+        <span class="stage-skill">/prd-author-custom</span>
+        <p class="stage-body">bond_v1 shape: goal, metrics, requirements, slices (slice 1 = walking skeleton), test shape per slice, demo readiness, plan-mode-seed, build handoff.</p>
+        <p class="stage-out">out &rarr; <strong>PRD</strong><br>06-Resources/PRDs/<br>&lt;Feature&gt;.md</p>
+      </article>
+
+      <article class="stage s-critique">
+        <span class="stage-num">04</span>
+        <h3 class="stage-name">Critique</h3>
+        <p class="stage-tag">Two-lens stress test</p>
+        <span class="stage-skill">/critique-product-custom<br>/critique-engineering-custom</span>
+        <p class="stage-body">7-row product checklist (outcome, demo risk, honesty&hellip;) and 9-row engineering checklist (atomicity, idempotence, a11y, cheaper path&hellip;). Must-fixes loop back to PRD.</p>
+        <p class="stage-out">out &rarr; <strong>critique log</strong><br>plans/skill-pipeline/sessions/<br>&lt;date&gt;-critiques.md</p>
+      </article>
+
+      <article class="stage s-spec">
+        <span class="stage-num">05</span>
+        <h3 class="stage-name">spec_ready</h3>
+        <p class="stage-tag">Green light to design &amp; build</p>
+        <p class="stage-body">All must-fixes folded. PRD frontmatter flips to <span style="font-family:var(--mono); font-size:11px;">lifecycle: spec_ready</span>. Body Status line mirrors state. The PRD is now safe to design against and safe to slice into tickets.</p>
+        <p class="stage-out">out &rarr; <strong>PRD</strong> with<br>critique_status:<br>must_fixes_folded</p>
+      </article>
+
+      <article class="stage s-design">
+        <span class="stage-num">06</span>
+        <h3 class="stage-name">Design</h3>
+        <p class="stage-tag">Wireframes from PRD pointers</p>
+        <span class="stage-skill">Claude Design (wireframe mode)</span>
+        <p class="stage-body">Consumes <em>Design pointers</em> + <em>Failure-mode UX</em> + <em>A11y requirements</em>. Produces wireframes that align with the slice plan. PRD frontmatter tracks <span style="font-family:var(--mono); font-size:11px;">design_pass_status</span>.</p>
+        <p class="stage-out">out &rarr; <strong>wireframes</strong><br>(in Claude Design)</p>
+      </article>
+
+      <article class="stage s-build">
+        <span class="stage-num">07</span>
+        <h3 class="stage-name">Build handoff</h3>
+        <p class="stage-tag">PRD &rarr; tickets, in the codebase</p>
+        <p class="stage-body">PRD copied to the Bitbucket repo. Engineer pastes the <span style="font-family:var(--mono); font-size:11px;">plan-mode-seed</span> block into Cursor Plan mode. Slices become tickets, in order, with test shape and demo-readiness attached.</p>
+        <p class="stage-out">out &rarr; <strong>tickets</strong><br>in Cursor Plan mode<br>(Bitbucket repo)</p>
+      </article>
+
+    </div>
+
+    <div class="loop-band">
+      <span class="loop-icon">&#x21BA;</span>
+      <span><strong>Critique loop.</strong> Must-fixes from stage 04 return to stage 03. The PRD author re-drafts &mdash; idempotently &mdash; and the loop runs until both critiques sign off. <em>Two passes is normal. Three is a smell.</em></span>
+    </div>
+
+    <p class="section-label">Why this matters</p>
+    <div class="outcome">
+      <div class="outcome-side outcome-before">
+        <h5>Before</h5>
+        <p>A week of meetings. Ambiguous specs. Design debt. Decisions buried in Slack threads. Engineering re-discovering scope mid-sprint.</p>
+      </div>
+      <div class="outcome-arrow">&rarr;</div>
+      <div class="outcome-side outcome-after">
+        <h5>After</h5>
+        <p>A few hours. A PRD with named slices, named tests, named risks. Design works from pointers. Engineering pastes one block into Plan mode and ships.</p>
+      </div>
+    </div>
+
+    <footer>
+      <span>plans/skill-pipeline/pipeline-flow.html</span>
+      <span>v1 &middot; 2026-04-29</span>
+      <span><a href="./README.md">README</a> &middot; <a href="./lessons-from-skills.md">lessons</a> &middot; <a href="./sessions/">sessions</a></span>
+    </footer>
+
+  </div>
+</body>
+</html>

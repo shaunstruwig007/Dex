@@ -21,6 +21,8 @@
 
 ## 2. The pipeline in one picture
 
+> **For stakeholders:** the presentation-ready visual lives at [`pipeline-flow.html`](./pipeline-flow.html). Open in a browser, screenshot for slides, or print to PDF. Designed for the design-manager / CTO audience &mdash; no engineering fluency assumed.
+
 ```mermaid
 %%{init: {'theme': 'neutral'}}%%
 flowchart TD
