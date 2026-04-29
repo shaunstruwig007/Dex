@@ -6,7 +6,7 @@ description: Felix's first-party customer-intelligence skill. Translates Wyzetal
 # Felix — Client Signals
 
 **Owner:** Felix Leiter (head of research).
-**When:** As Step 4 of `/felix-weekly-pulse-custom` (every Friday) **or** when Shaun says "give me the client read" / "who's at risk?".
+**When:** On-demand when Shaun says "give me the client read" / "who's at risk?" **or** on a cadence you choose (e.g. after a new `Clients_*.xlsx` snapshot drops). **Not** part of `/weekly-market-intel-custom` — the Friday Signal excludes book-of-business data by design.
 **Default time-budget:** 15–25 min.
 
 ---
@@ -83,7 +83,7 @@ Group accounts by activity quartile, then check what features the **bottom quart
    - Feature-gap patterns
    - Data quality flags
 
-3. **For `/felix-weekly-pulse-custom`** — return a tight headline:
+3. **For chat handoff** (e.g. after a run, or if CPO wants a one-line read alongside other work) — return a tight headline:
    ```
    Client read (week of <date>):
    - Churn risk (high): <3 accounts>
@@ -116,7 +116,7 @@ On the first Friday after bootstrap (2026-04-22), Felix should additionally:
 
 ## Related
 
-- [/felix-weekly-pulse-custom](../felix-weekly-pulse-custom/SKILL.md) — orchestrator
+- [/weekly-market-intel-custom](../weekly-market-intel-custom/SKILL.md) — weekly outside-in umbrella (**does not** run this skill; read that skill's consolidation table)
 - [/customer-intel](../customer-intel/SKILL.md) — generic customer-intelligence skill (`/felix-client-signals-custom` is the Wyzetalk-data flavour)
 - [/process-meetings](../process-meetings/SKILL.md) — feeds CSM context Felix reads
 - [05-Areas/Companies/Wyzetalk_Clients/](../../../05-Areas/Companies/Wyzetalk_Clients/) — output folder

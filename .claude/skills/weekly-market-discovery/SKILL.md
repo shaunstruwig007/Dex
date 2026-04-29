@@ -5,7 +5,9 @@ description: Run the weekly source rotation from Market_and_deal_signals and cap
 
 # Weekly market discovery
 
-**When:** End of week or when user asks to run the **weekly scanning routine**.
+**When:** End of week or when user asks to run the **weekly scanning routine** *without* the full weekly-market-intel pass.
+
+**Relationship to [`/weekly-market-intel-custom`](../weekly-market-intel-custom/SKILL.md):** this skill covers **Step 1 only** (signal log + optional EV proposals). Prefer `/weekly-market-intel-custom` on Fridays so competitor watch, industry pulse, and `synthesis/weekly/<ISO-Monday>_friday_signal.md` stay in sync.
 
 **Reference:** [Market_and_deal_signals.md](../../../06-Resources/Market_and_deal_signals.md) (routine table) · [Market_intelligence_Source_Guide.md](../../../06-Resources/Market_intelligence_Source_Guide.md)
 
