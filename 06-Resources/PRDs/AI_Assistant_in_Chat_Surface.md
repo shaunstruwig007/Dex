@@ -2,8 +2,10 @@
 prd_shape: bond_v1
 prd_id: ai-assistant-in-chat-surface-2026-04-29
 created_date: 2026-04-29
-last_bond_run: 2026-04-29 14:30
+last_bond_run: 2026-04-29 15:50
 lifecycle: spec_ready
+critique_status: must_fixes_folded
+critique_log: plans/skill-pipeline/sessions/2026-04-29-walkthrough-2-critiques.md (Run 1)
 related_prds:
   - Employee_Chat_and_Groups.md
   - AI_Assistant_FAQ.md
@@ -52,7 +54,7 @@ This PRD owns one decision the existing PRDs cannot own: **the IA / surface-pari
 
 | # | Metric | Definition | Target | Measurement source |
 |---|---|---|---|---|
-| 1 | **Chat-list discoverability** | % of tenant-enabled users who open the AI Assistant entity within first 7 days of feature exposure | ≥ 40% in 90 days post-tenant-enable | Product Analytics — `ai_assistant_opened_from_chat_list` event (instrumented at slice 1) |
+| 1 | **Chat-list discoverability** | % of tenant-enabled users who open the AI Assistant entity within first 7 days of feature exposure | **Establish baseline open-rate in first 30 days post-tenant-enable; evaluate ≥ 40% target at 90 days.** | Product Analytics — `ai_assistant_opened_from_chat_list` event (instrumented at slice 1) |
 | 2 | **FAQ deflection rate** | % of opened AI sessions resolved without HR ticket / human handoff | ≥ 70% in 90 days post-launch | tawk.to dashboard `session_resolved_no_handoff` + Wyzetalk escalation tracker (cross-source reconciliation) |
 | 3 | **Misuse / merge-attempt rate** | % of users who attempt to chat with AI as if it were a peer (off-topic personal message, "thanks Sarah", emotion-only messages) | < 5% sampled | Manual / sampled review of tawk.to conversation logs in first 30 days; analytics later |
 | 4 | **Tenant adoption** | # tenants with AI Assistant enabled in chat list / # tenants eligible | ≥ 50% in 6 months | Tenant_Management.md flags (`ai_assistant_in_chat = true`) |
@@ -84,9 +86,9 @@ This PRD owns one decision the existing PRDs cannot own: **the IA / surface-pari
 
 | # | Name | Walking-skeleton? | Demo outcome (what observer sees) | Layers touched | Depends on |
 |---|---|---|---|---|---|
-| **1** | **Skeleton — AI peer entity in chat list** | **Yes** | A frontline user opens chat list, sees "AI Assistant" entry clearly bot-badged at the top of the list, taps it, types a question, gets an HR-grounded reply within 2 seconds. Single tenant, English-only, no peer chat data involved, no admin toggle, no handoff. End-to-end demo of the IA model. | data + api + ui | — |
-| **2** | **Tenant policy gate** | No | Admin toggles `ai_assistant_in_chat = false` in tenant management → user's chat list no longer shows the entity on next open. Toggle to `true` → entity reappears. | api + config + ui (admin) | 1 |
-| **3** | **Handoff to human HR** | No | User asks AI a question outside the FAQ corpus → bot offers a "Need a person? Tap to message HR" button → tap lands user in a peer-chat thread with the appropriate role (HR or designated). Boundary is visible (new thread, different surface). | api + ui | 1 |
+| **1** | **Skeleton — AI peer entity in chat list** | **Yes** | A frontline user opens chat list, sees "AI Assistant" entry clearly bot-badged at the top of the list, taps it, types a question, gets an HR-grounded reply within 2 seconds. Single tenant, English-only, no peer chat data involved, no admin toggle, no handoff. End-to-end demo of the IA model. **Idempotency invariant (E2):** session creation + `ai_assistant_opened_from_chat_list` analytics event use a **client-generated session UUID**; server enforces idempotency on both writes. Double-tap or network retry never double-fires. **Payload versioning (E3):** chat-list payload gains a versioned entity-type taxonomy (`type: "dm" \| "group" \| "bot"`); enumerate iOS / Android / Mobi-web consumers at PR review and ship a versioned payload that allows new entity types without breaking older clients. | data + api + ui | — |
+| **2** | **Tenant policy gate** | No | Admin toggles `ai_assistant_in_chat = false` in tenant management → user's chat list no longer shows the entity on next open. Toggle to `true` → entity reappears. **Per-tenant disable SLA: < 4 hours** end-to-end (toggle write → cache invalidation → next chat-list open). This SLA is the operational backbone of the IA-revert plan (see Risk 5). | api + config + ui (admin) | 1 |
+| **3** | **Handoff to human HR (transactional)** | No | User asks AI a question outside the FAQ corpus → bot offers a "Need a person? Tap to message HR" button → tap lands user in a peer-chat thread with the appropriate role (HR or designated). Boundary is visible (new thread, different surface). **Transactional shape (E1):** the handoff is a single endpoint `createHandoff(aiSessionId, intent) → peerThreadId` that wraps three writes — close the AI session log, open the peer-chat thread, dispatch the routing notification — in one transaction. Partial failure rolls back all three. The user never sees a half-handoff. | api + ui | 1 |
 | **4** | **Profile-language honouring** | No | User with Afrikaans set as profile language preference (per Profile_Users.md / Multilingual_Content.md) opens AI Assistant; greeting, suggested messages, and replies arrive in Afrikaans where the corpus supports it; English fallback otherwise with a one-line "[English fallback]" note. | api + ui | 1, Multilingual_Content.md slice 3 |
 | **5** | **Disclosure + audit-trail visibility** | No | User taps "i" / info icon on AI thread → sees disclosure: "Stored by tawk.to. Not shared with Wyzetalk peers. Retention: <X> days. Tenant admin can audit." Disclosure copy is tenant-overridable per Open Q2 outcome. | ui | 2 |
 
@@ -99,9 +101,26 @@ This PRD owns one decision the existing PRDs cannot own: **the IA / surface-pari
 - **Slice 2 is a thickening, not a refactor** — it adds tenant control over the entity that slice 1 introduces.
 - **Slice 4 is parallelisable with slice 2 and slice 3** — depends only on slice 1 and the upstream Multilingual PRD.
 
----
+### Test shape per slice
 
-## Plan mode seed
+Cross-cutting must-fix from `/critique-engineering-custom` (E4). Every slice ships with the test coverage below; PR review enforces.
+
+| # | Unit | Integration | E2E | A11y | Notes |
+|---|---|---|---|---|---|
+| 1 | Entity rendering; chat-list payload parsing; language fallback; client-UUID idempotency dedup | tawk.to widget round-trip (mocked + live in staging); chat-list payload version negotiation | Chat-list → tap AI Assistant entity → ask FAQ question → reply in ≤ 2s | axe scan on chat list + AI thread; screen-reader smoke (English only at slice 1) | Payload-versioning test must run for each enumerated client (iOS / Android / Mobi web) |
+| 2 | Tenant flag read; chat-list filter on flag-false | Toggle write → cache invalidation → next chat-list open shows / hides entity | Admin toggles flag → user re-opens app → entity disappears within 4hr SLA | Admin console keyboard navigable; flag toggle has accessible name | Admin-side slice; end-to-end SLA is the test |
+| 3 | Handoff endpoint `createHandoff(aiSessionId, intent) → peerThreadId`; rollback on partial failure | Transactional handoff: AI session close + peer thread open + routing notification | User asks off-corpus → taps handoff button → lands in peer thread with HR | Handoff button keyboard-reachable; new thread announced via screen reader | Failure-injection test required: kill one of the three writes mid-transaction, assert rollback |
+| 4 | Profile-language read; corpus language coverage check; English fallback path | tawk.to multi-language API; cross-PRD: Multilingual_Content slice 3 contract | User on Afrikaans preference → opens AI → greeting + reply in Afrikaans (or `[English fallback]` note) | `lang` attribute on AI replies (carries Multilingual lesson); screen reader pronounces Afrikaans correctly | Cross-PRD dependency — coordinate test schedule with Multilingual_Content owner |
+| 5 | Disclosure copy load; tenant-override read | Disclosure modal renders tenant-overridden copy when set | User taps "i" icon → sees disclosure with retention + audit + boundary copy | Disclosure modal keyboard-dismissible, focus-trapped, screen-reader announces title | Tenant-override copy schema agreed in Open Q2 |
+
+### Slice 1 demo readiness
+
+Cross-cutting must-fix from `/critique-product-custom` (P1 — demo-prep deliverable). Slice 1's first-demo risk is a steerco room moment where a hallucinated answer or an empty FAQ corpus embarrasses the room. Demo prep is a slice-1 deliverable, not a follow-up.
+
+- [ ] **Minimum 30 seeded FAQ entries** loaded into the demo tenant's tawk.to workspace, covering the 4 most common steerco-asked categories (leave, payday, PPE, contact HR).
+- [ ] **One scripted steerco journey rehearsed** end-to-end: open chat-list → tap AI Assistant → ask one of 3 pre-vetted questions → confirm reply ≤ 2s → ask a 4th off-corpus question → confirm escalation handoff.
+- [ ] **Tawk.to-unreachable fallback rehearsed (E5).** If tawk.to is unreachable mid-demo, the AI thread shows: *"AI Assistant is temporarily unavailable. Tap here to message HR."* — leans on Slice 3 handoff. Demo includes a 30-second simulation of this state.
+- [ ] **Hallucination-defect example prepared (off-camera)** showing the sampled-review process catching one drift case, so steerco understands metric 3 is operationally real.
 
 ```plan-mode-seed
 Slice 1: Skeleton — AI peer entity in chat list. Frontline user opens chat list, sees "AI Assistant" entry clearly bot-badged, taps it, asks a question, gets an HR-grounded reply within 2s. Single tenant, English only, no peer chat data involved. Layers: data + api + ui.
@@ -123,7 +142,12 @@ Slice 5: Disclosure + audit-trail visibility. User taps "i" icon on AI thread �
 
 4. **Hallucination on policy answers.** AI gives ungrounded HR policy advice; tenant liability event; Wyzetalk reputation damage. **Mitigation:** tawk.to "Revise answer based on context" turned OFF by default; Base Prompt enforces "only use approved sources or escalate"; slice 3 (escalation) is required for GA — there must always be a human-handoff exit. Misuse review (metric 3) flags any drift.
 
-5. **Adoption failure (IA hypothesis disproved).** Frontline users don't open AI Assistant from chat list; the IA model is wrong. **Mitigation:** Slice 1 ships with the discoverability event. Kill criterion: < 10% open rate in 30 days post-tenant-enable triggers reverting to standalone tab and a write-up of why the IA hypothesis didn't hold. This is a controlled-failure path, not a surprise.
+5. **Adoption failure (IA hypothesis disproved).** Frontline users don't open AI Assistant from chat list; the IA model is wrong. **Mitigation:** Slice 1 ships with the discoverability event. Kill criterion: < 10% open rate in 30 days post-tenant-enable triggers reverting to standalone tab and a write-up of why the IA hypothesis didn't hold. This is a controlled-failure path, not a surprise. **Operational revert plan (P3 must-fix):**
+   - **Feature-flagged behind tenant config** from slice 2 onward. Revert = single config write per tenant. No code rollback required.
+   - **Per-tenant disable SLA: < 4 hours** end-to-end (toggle write → cache invalidation → next chat-list open). Enforced as a slice-2 deliverable.
+   - **User-facing transition copy** (drafted before launch, held in vault — `06-Resources/Copy/AI_Assistant_chat_list_revert.md` (TBD)): *"AI Assistant has moved. Find it under Help → Ask a question. Your past conversations are preserved."* Copy localised per tenant locale at revert time.
+   - **Conversation history preserved** across the revert (sessions remain in tawk.to; the standalone-tab surface points at the same workspace). Users do not lose state.
+   - **Steerco write-up template** prepared pre-launch covering: discovery rate over 30 days · misuse rate · qualitative user feedback · why the chat-list IA didn't hold · what the revert costs · when (or whether) we'd retry.
 
 6. **Tenant rollout chaos.** Some tenants want chat AI, some don't, some want it but want the disclosure copy reworded. **Mitigation:** Slice 2 makes it a per-tenant flag. Disclosure copy is tenant-overridable (open Q2). Admin docs ship before first non-Wyzetalk tenant enable.
 
@@ -239,4 +263,43 @@ The design language must communicate three invariants without ambiguity to a low
 
 ---
 
-*Authored 2026-04-29 by /prd-author-custom from `06-Resources/Product_ideas/ai-assistant-alongside-chat_discovery.md`. Last run: 2026-04-29 14:30. First validation of the bond_v1 shape on a cross-PRD initiative (vs Multilingual_Content.md, which was a single-feature PRD).*
+## Build handoff
+
+> **Repo split.** This PRD lives in the GitHub vault (`Documents/Blueprint/Dex`). Production code lives in **Bitbucket**. There is no auto-sync between the two. This section is the developer's pickup contract for taking the PRD across the repo boundary.
+
+### How to use this PRD in Cursor Plan mode (in the Bitbucket repo)
+
+1. Copy this entire markdown file to your codebase repo at `docs/PRDs/AI_Assistant_in_Chat_Surface.md`.
+2. **Also copy `Multilingual_Content.md`** — slice 4 has a hard cross-PRD dependency on its slice 3.
+3. Open Cursor with the codebase repo as the workspace, with both files in context.
+4. Paste the **Plan mode seed** block (above) as the Plan mode prompt. Each line maps to one Plan-mode step → one PR / branch.
+5. Reference the Slices, Test shape per slice, Slice 1 demo readiness, Risks (especially Risk 5 IA-revert plan), Open questions, and Design pointers sections for the full context Plan mode needs.
+
+### Handoff snapshot
+
+| Field | Value |
+|---|---|
+| **Source file (vault)** | `06-Resources/PRDs/AI_Assistant_in_Chat_Surface.md` (GitHub: `Documents/Blueprint/Dex`) |
+| **bond_v1 last run** | `2026-04-29 15:50` |
+| **Lifecycle** | `spec_ready` (must-fixes folded; ready for Build entry) |
+| **Slice 1 demo-readiness deliverables** | 30 seeded FAQ entries · scripted steerco journey rehearsed · tawk.to-unreachable fallback rehearsed · hallucination-defect example off-camera |
+| **Cross-PRD slice dependencies** | Slice 4 depends on `Multilingual_Content.md` slice 3 (profile language preference UX) |
+| **Hard gates before Slice 1 build** | Open Q1 (sequencing vs chat realtime spike) — Leon (CTO) confirms whether AI peer entity can ship as a separate "system thread" surface independent of the chat backend choice |
+| **Hard gates before Slice 2 build** | Open Q4 (admin flag taxonomy — recommendation: separate flag from Blue-app-embed) · Open Q8 (audit-row schema) |
+| **Hard gates before GA** | Open Q2 (disclosure copy + Legal sign-off) · Open Q3 (EU AI Act applicability assessment) |
+| **Sign-off needed before Build** | Product (PM) · Engineering (CTO — sequencing) · Legal (disclosure + AI Act) · Design (chat-list IA + bot affordance) |
+
+### Source-of-truth rule
+
+This PRD is generated from the GitHub vault by `/prd-author-custom`. **If you edit this file in the codebase repo, those edits do NOT propagate back.** Treat the codebase copy as a read-only snapshot. For spec changes:
+
+1. Open the GitHub vault.
+2. Edit the source file at `06-Resources/PRDs/AI_Assistant_in_Chat_Surface.md`.
+3. Re-run `/prd-author-custom` to regenerate this PRD's bond_v1 shape.
+4. Re-copy to the codebase repo.
+
+The skill's idempotence rule protects the source from accidental overwrites — if the source file has been edited since the last `last_bond_run`, the skill surfaces a diff and asks before proceeding.
+
+---
+
+*Authored 2026-04-29 by /prd-author-custom from `06-Resources/Product_ideas/ai-assistant-alongside-chat_discovery.md`. Critique pass run 2026-04-29 (Walkthrough 2, Run 1); must-fixes folded 2026-04-29 15:50 (P1–P3, E1–E5 + cross-cutting test-shape, demo-readiness, build-handoff additions). First validation of the bond_v1 shape on a cross-PRD initiative (vs Multilingual_Content.md, which was a single-feature PRD).*

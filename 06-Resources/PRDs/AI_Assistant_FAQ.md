@@ -2,8 +2,10 @@
 prd_shape: bond_v1
 prd_id: ai-assistant-faq
 created_date: 2026-03-30
-last_bond_run: 2026-04-29 14:40
+last_bond_run: 2026-04-29 16:00
 lifecycle: discovery
+critique_status: must_fixes_folded
+critique_log: plans/skill-pipeline/sessions/2026-04-29-walkthrough-2-critiques.md (Run 3)
 source: legacy_upgrade
 reshaped_from: agent-prd shape (2026-04-17)
 reshaped_on: 2026-04-29
@@ -29,6 +31,8 @@ follow_up_tasks:
 > **Steerco priority:** #2 commercial (confirmed 2026-03-30). Smart HR is #1; Chat is #3.
 >
 > **Program clarity:** WhatsApp + WhatsApp Flow remain **high portfolio priorities** (`Smart_HR_Whatsapp.md`, `Messaging_Ops_Urgent_Alerts.md`). What is **decoupled** is only **this PRD's Phase 1 scope**: ship FAQ/policy via tawk.to in Blue first, **without** making tawk.to GA depend on building the **FAQ-on-WhatsApp-Flow** integration.
+>
+> **Cross-PRD architecture coordination (P3 must-fix).** The chat-list AI entity (per `AI_Assistant_in_Chat_Surface.md`) **uses the same tawk.to workspace**, the **same Base Prompt**, and the **same FAQ corpus** as this PRD's Blue-app embed. Engine config is **shared**; **no divergence permitted** between the two surfaces. Two surfaces, one source of truth. Any per-tenant Base Prompt or corpus customisation here propagates to the chat-list surface automatically.
 
 > **2026-04-17 collaborative-pilot decisions** (preserved):
 >
@@ -72,7 +76,7 @@ This PRD is intentionally narrow — it ships a quick-win FAQ surface, not a ful
 |---|---|---|---|---|
 | 1 | **FAQ session adoption** | % of tenant-enabled employees with ≥ 1 FAQ session in a 30-day window | ≥ 40% in 90 days post-tenant-enable | tawk.to dashboard (sessions / unique users) |
 | 2 | **Deflection rate** | % of FAQ sessions resolved without escalation to human / HR ticket | ≥ 70% in 90 days | tawk.to + Wyzetalk escalation tracker (cross-source) |
-| 3 | **Hallucination rate (sampled)** | % of replies containing ungrounded HR information | **0% — any non-zero is a defect** | HR-sampled review of 100 sessions/month |
+| 3 | **Hallucination rate (sampled)** | % of replies containing ungrounded HR information | **Target 0% in sampled set; any case is investigated as a defect; quarterly sampling-adequacy review** (does 100/month catch what we'd catch at 500/month? if the gap is material, increase sampling). | HR-sampled review of 100 sessions/month, with quarterly statistical adequacy check |
 | 4 | **Time-to-first-answer (median)** | Seconds from question submitted to first reply | < 5s | tawk.to session metrics |
 
 ### Note on measurability
@@ -101,8 +105,8 @@ This PRD is intentionally narrow — it ships a quick-win FAQ surface, not a ful
 | # | Name | Walking-skeleton? | Demo outcome (what observer sees) | Layers touched | Depends on |
 |---|---|---|---|---|---|
 | **1** | **Skeleton — FAQ chat in Blue app** | **Yes** | User opens FAQ entry in Blue app on a single configured tenant; sees a greeting with 4 Suggested Messages (top intents); taps one or types a free-text question; gets an HR-grounded reply within 5 seconds. | data + api + ui + config | tawk.to workspace provisioned for the tenant |
-| **2** | **Wyzetalk-operated tenancy + ingestion playbook** | No | Wyzetalk implementation provisions a tawk.to workspace for a new tenant, ingests their policy PDFs into Documents + KB articles + FAQ rows, configures the Base Prompt — handoff to GA happens in a documented N-hour cycle. | api + config (no user UI) | 1 |
-| **3** | **Escalation path** | No | User asks something outside the FAQ corpus → bot offers escalation → handoff routes to the HR inbox or a live agent (per tenant configuration); user lands in the receiving surface end-to-end. | api + ui | 1 |
+| **2** | **Wyzetalk-operated tenancy + ingestion playbook + corpus versioning** | No | Wyzetalk implementation provisions a tawk.to workspace for a new tenant, ingests their policy PDFs into Documents + KB articles + FAQ rows, configures the Base Prompt — handoff to GA happens in a documented N-hour cycle. **Corpus version control (E6 must-fix):** every ingestion run produces a versioned snapshot (`<tenant_id>_<corpus_version>_<ingestion_timestamp>`); retention 90 days minimum; rollback to a previous version is supported (single-command). When a regression hits production (wrong policy answer surfaces), CSM can roll back to the prior corpus version while the content owner fixes forward. | api + config (no user UI) | 1 |
+| **3** | **Escalation path (transactional + routed)** | No | User asks something outside the FAQ corpus → bot offers escalation → handoff routes to the HR inbox or a live agent (per tenant configuration); user lands in the receiving surface end-to-end. **Idempotency key (E1 must-fix):** escalation-create endpoint uses `<tawk.to_session_id, intent>` as the idempotency key → ticket UUID. Double-tap or retry never opens duplicate tickets. **Handoff routing contract (E2 must-fix):** intent classification → role lookup → ticket route, documented at the wire level. Roles are tenant-configured (HR vs Ops vs Operations Manager); intent → role mapping is admin-editable. | api + ui | 1 |
 | **4** | **POPIA + tenant audit posture** | No | Tenant admin opens an audit view → sees session log entries with source attribution + retention period; POPIA / GDPR data-residency stance is documented per tenant; subprocessor list reviewed. | api + ui (admin) + config | 1 |
 | **5** | **Guided shortcut chains for top intents** | No | User taps the "Leave" Suggested Message → next-step Suggested Messages appear (Annual / Sick / Family / Compassionate); chained Shortcut returns the final HR-approved answer in 2–3 taps total. | api + config + ui | 1 |
 
@@ -114,9 +118,34 @@ This PRD is intentionally narrow — it ships a quick-win FAQ surface, not a ful
 - **5 slices** — fits 3–6 typical range.
 - **All slices have observable demo outcomes**; slice 4's demo is admin-side (audit view) rather than employee-side, but is observable.
 
----
+### Test shape per slice
 
-## Plan mode seed
+Cross-cutting must-fix from `/critique-engineering-custom` (E5). Every slice ships with the test coverage below; PR review enforces.
+
+| # | Unit | Integration | E2E | A11y | Notes |
+|---|---|---|---|---|---|
+| 1 | Message render; Suggested Message tap → reply mapping; degraded-state copy load | tawk.to widget round-trip (mocked + live in staging); cached-Suggested-Messages fallback when API unreachable | Greeting → tap Suggested Message → reply ≤ 5s; offline path → cached greeting + escalation deep-link visible | axe scan on full FAQ surface; **vendor-widget a11y compliance check (E4 must-fix)** — confirm tawk.to widget meets WCAG AA; document any vendor gaps; escalate to vendor or workaround | Vendor a11y is partly outside our control; document explicitly if widget falls short |
+| 2 | Corpus ingestion (PDF → Documents + KB + FAQ); version snapshot writer; rollback path | Ingestion run produces versioned snapshot; rollback restores prior version | New tenant onboarding: PDFs → ingestion → Base Prompt configured → demo question → grounded reply, all within documented N-hour cycle | n/a (admin operational slice) | Versioned-snapshot test must include rollback verification (E6) |
+| 3 | Idempotency key dedup on escalation-create; intent-classifier → role lookup | Escalation handoff routes to correct role per tenant config; ticket UUID dedups on retry | User asks off-corpus → escalation offered → tap → lands in receiving surface (HR inbox or live-agent) | Escalation button keyboard-reachable; new-thread / new-ticket announced via screen reader | Failure-injection test: double-tap escalation, assert single ticket |
+| 4 | Audit-row write per session; retention-period tagging | tawk.to session log → Wyzetalk audit view; cross-source reconciliation pipeline | Tenant admin opens audit view → sees session log entries with source attribution + retention period | Admin audit view keyboard-navigable; row-level details screen-reader accessible | Cross-source reconciliation pipeline (Open Q8) is the load-bearing test |
+| 5 | Suggested Message chain step transitions; final-answer load | Chained Shortcut returns final HR-approved answer in 2–3 taps | User taps "Leave" → next-step buttons (Annual / Sick / Family / Compassionate) → final answer | Each step keyboard-navigable; ≤ 4 buttons per step honoured by render; ≤ 10-word labels | Vendor doc constraint enforced by render-time validator |
+
+### Slice 1 demo readiness
+
+Cross-cutting must-fix from `/critique-product-custom` (P1). Slice 1's first-demo risk is a steerco moment where Suggested Messages return stilted or wrong answers because the corpus isn't ready.
+
+- [ ] **30+ pre-vetted Suggested Message journeys** rehearsed end-to-end on the demo tenant. Each journey: greeting → tap a Suggested Message → confirm reply ≤ 5s → confirm reply is HR-approved (matched to a corpus entry).
+- [ ] **Free-text variant rehearsed** for 5 of the 30 journeys: ask the same intent in free-text instead of tapping the button → confirm same HR-grounded answer.
+- [ ] **Hallucination defect example prepared (off-camera)** showing the sampled-review process catching one drift case → CSM logs it as a metric-3 defect → corpus is updated → defect closes. Steerco sees the operational discipline.
+- [ ] **Vendor-outage fallback rehearsed (E3 must-fix).** If tawk.to is unreachable mid-demo, the Blue app embed shows: greeting (cached) + Suggested Messages (cached) + a deep-link "If I can't help, message HR directly" → land in HR-contact surface. 30-second simulation.
+
+### Slice 2 demo readiness
+
+P1 for slice 2 specifically: the demo of the ingestion playbook is *another tenant onboarded successfully*.
+
+- [ ] **Second tenant pre-prepared** (could be a second seed tenant, mocked) with their own policy PDFs ready for ingestion.
+- [ ] **Ingestion playbook walked through live** — implementation team runs the playbook on the second tenant in front of steerco; documented N-hour cycle proven (or revised).
+- [ ] **Corpus rollback rehearsed** — ingestion mistake intentionally introduced (e.g. swap a leave-policy PDF for a wrong tenant's), one-command rollback restores prior version, demo proceeds.
 
 ```plan-mode-seed
 Slice 1: Skeleton — FAQ chat in Blue app. User opens FAQ entry in Blue app on a single configured tenant; sees greeting with 4 Suggested Messages (top intents); taps one or types free-text; gets HR-grounded reply within 5s. Layers: data + api + ui + config. Depends: tawk.to workspace provisioned for the tenant.
@@ -131,7 +160,7 @@ Slice 5: Guided shortcut chains for top intents. User taps "Leave" Suggested Mes
 ## Risks
 
 1. **Hallucination on policy answers.** Bot generates ungrounded HR advice; tenant liability event. **Mitigation:** "Revise answer based on context" OFF; Base Prompt = "use sources or escalate"; HR-sampled review (metric 3); slice 3 escalation always available; defect blocks GA expansion.
-2. **tawk.to vendor lock-in compounded.** Engine + UX both lock to tawk.to; v2 swap is heavy. **Mitigation:** documented as accepted Phase 1 trade-off; `AI_Assistant_in_Chat_Surface.md` design recommends abstracting the engine behind a peer-entity contract for the chat-list surface, which makes future swap cheaper.
+2. **tawk.to vendor lock-in compounded.** Engine + UX both lock to tawk.to; v2 swap is heavy. **Mitigation:** documented as accepted Phase 1 trade-off. **Forward-compatible shape (P4 must-fix):** future engine swaps target the **engine-abstraction-behind-peer-entity-contract** pattern in `AI_Assistant_in_Chat_Surface.md` (Risk 3 mitigation), **not** direct tawk.to widget references. New code that touches the FAQ engine should call through that abstraction wherever feasible — even if Phase 1 ships embedding the widget directly. When the swap happens (Phase 2+), the chat-list surface migrates first; this PRD's Blue-app embed migrates by replacing the widget with a thin shim that calls the same engine-abstraction. This is a soft mitigation — direct widget embedding is unavoidable in Phase 1 — but the call path inside our code respects the abstraction so future-Wyzetalk has somewhere to swap.
 3. **Content management ownership ambiguity.** Who updates the FAQ corpus on an ongoing basis is unresolved. **Mitigation:** Slice 2 ships with a role definition (Wyzetalk vs client content owner); Open Q1 captures the tradeoff; workshop decides.
 4. **POPIA / data residency exposure.** tawk.to is a subprocessor; data-residency posture not yet validated for SA / EU tenants. **Mitigation:** legal sign-off pre-GA per tenant; tenant audit view (slice 4); contractual / DPA review with vendor before each new tenant onboards.
 5. **Frontline UX failure on free-text.** Users ignore Suggested Messages and type free-text the AI fumbles. **Mitigation:** slice 5 guided chains tested with frontline pilot; short Base Prompt; escalation always one tap away; Suggested Message labels ≤ 10 words per vendor docs.
@@ -203,6 +232,15 @@ The FAQ surface is the tawk.to widget embedded inside the Blue app. Mobile-first
 - **Long-answer handling** — long PDF excerpts vs chunked replies? **Recommendation:** chunked + "more" buttons (per vendor doc tap-first guidance — long PDF dumps fail for frontline).
 - **Empty state for first-time user** — onboarding copy? **Recommendation:** one-liner above the Suggested Messages explaining what the bot can / cannot help with.
 
+### Failure-mode UX (E3 must-fix)
+
+Spec the degraded states explicitly — these are not nice-to-haves, they are the difference between "AI is broken" and "AI is having a moment".
+
+- **tawk.to API unreachable on greeting.** Show: greeting (cached locally on last successful load) + Suggested Messages (cached) + a one-line note: *"AI Assistant is having a moment. If I can't help, [message HR directly]."* The "message HR directly" link uses the same handoff surface as Slice 3 (deep-link, not a new flow).
+- **tawk.to API unreachable mid-conversation.** Show: existing message bubbles preserved client-side; input box accepts a message but on send, message queues with "sending…" indicator; on reconnect, message dispatches; if reconnect doesn't happen within 30s, pivot to *"I can't reach the AI right now. [Message HR directly]?"*
+- **Suggested Message tap returns no reply within 10s.** Show: typing indicator → after 10s, fallback copy: *"That's taking longer than usual. Try again, or [message HR directly]."*
+- **Reply contains source-attribution that fails to resolve** (PDF link broken, KB article deleted). Show: reply with a graceful caveat: *"Based on our HR policy. If you'd like the full document, [contact HR]."* — never show a broken link.
+
 ### Constraints on design (must / must not)
 
 **Must:**
@@ -237,4 +275,45 @@ The FAQ surface is the tawk.to widget embedded inside the Blue app. Mobile-first
 
 ---
 
-*Reshaped 2026-04-29 by /prd-author-custom (--reshape) from agent-prd shape (2026-04-17). Original WP-1, WP-2, WP-3 (Phase 2), WP-4 mapped to Slices 1–5 with WP-3 explicitly out-of-scoped per the pilot decoupling. tawk.to vendor analysis preserved as Design pointer constraints. Last run: 2026-04-29 14:40.*
+## Build handoff
+
+> **Repo split.** This PRD lives in the GitHub vault (`Documents/Blueprint/Dex`). Production code lives in **Bitbucket**. There is no auto-sync between the two. This section is the developer's pickup contract for taking the PRD across the repo boundary.
+
+### How to use this PRD in Cursor Plan mode (in the Bitbucket repo)
+
+1. Copy this entire markdown file to your codebase repo at `docs/PRDs/AI_Assistant_FAQ.md`.
+2. **Also copy `AI_Assistant_in_Chat_Surface.md`** — engine config, Base Prompt, and FAQ corpus are shared between the two surfaces (Architecture coordination block above).
+3. Open Cursor with the codebase repo as the workspace, with both files in context.
+4. Paste the **Plan mode seed** block (above) as the Plan mode prompt. Each line maps to one Plan-mode step → one PR / branch.
+5. Reference the Slices, Test shape per slice, Slice 1 + Slice 2 demo readiness, Risks (especially Risk 2 forward-compatible shape), Failure-mode UX, Open questions, and Design pointers sections for the full context Plan mode needs.
+
+### Handoff snapshot
+
+| Field | Value |
+|---|---|
+| **Source file (vault)** | `06-Resources/PRDs/AI_Assistant_FAQ.md` (GitHub: `Documents/Blueprint/Dex`) |
+| **bond_v1 last run** | `2026-04-29 16:00` |
+| **Lifecycle** | `discovery` (must-fixes folded; **slice 4 + GA gated by Q2 Legal sign-off**) |
+| **Slice 1 demo-readiness deliverables** | 30+ pre-vetted Suggested Message journeys · 5 free-text variants · hallucination-defect example off-camera · vendor-outage fallback rehearsed |
+| **Slice 2 demo-readiness deliverables** | Second tenant pre-prepared · ingestion playbook walked through live · corpus rollback rehearsed |
+| **Cross-PRD slice dependencies** | Engine config + Base Prompt + corpus shared with `AI_Assistant_in_Chat_Surface.md` (architecture coordination block); `Smart_HR_Whatsapp.md` boundary (Requirement 6); `Multilingual_Content.md` (Open Q5) |
+| **Hard gates before Slice 1 build** | tawk.to workspace provisioned · Q3 (free-text disabling) — **stub-able**, no-op fallback |
+| **Hard gates before Slice 2 build** | Q1 (content ownership ongoing) · Q6 (per-tenant Base Prompt customisation) · Q7 (commercial model — Wyzetalk-paid vs pass-through) |
+| **Hard gates before Slice 3 build** | Q8 (cross-source reconciliation pipeline for metric 2) |
+| **Hard gates before GA** | Q2 (tawk.to data residency for SA / EU tenants) — **Legal sign-off blocking** |
+| **Sign-off needed before Build** | Product (PM) · Engineering (CTO) · Legal (data residency + DPA review with vendor) · Design (FAQ surface + degraded-state copy) · HR-content owner (corpus + escalation roster per tenant) |
+
+### Source-of-truth rule
+
+This PRD is generated from the GitHub vault by `/prd-author-custom`. **If you edit this file in the codebase repo, those edits do NOT propagate back.** Treat the codebase copy as a read-only snapshot. For spec changes:
+
+1. Open the GitHub vault.
+2. Edit the source file at `06-Resources/PRDs/AI_Assistant_FAQ.md`.
+3. Re-run `/prd-author-custom` to regenerate this PRD's bond_v1 shape.
+4. Re-copy to the codebase repo.
+
+The skill's idempotence rule protects the source from accidental overwrites — if the source file has been edited since the last `last_bond_run`, the skill surfaces a diff and asks before proceeding.
+
+---
+
+*Reshaped 2026-04-29 by /prd-author-custom (--reshape) from agent-prd shape (2026-04-17). Original WP-1, WP-2, WP-3 (Phase 2), WP-4 mapped to Slices 1–5 with WP-3 explicitly out-of-scoped per the pilot decoupling. tawk.to vendor analysis preserved as Design pointer constraints. Critique pass run 2026-04-29 (Walkthrough 2, Run 3); must-fixes folded 2026-04-29 16:00 (P1–P4, E1–E6 + cross-cutting test-shape, demo-readiness, build-handoff additions). Last run: 2026-04-29 16:00.*

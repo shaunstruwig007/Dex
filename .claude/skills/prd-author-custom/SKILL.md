@@ -1,6 +1,6 @@
 ---
 name: prd-author-custom
-description: Draft a slice-shaped PRD (bond_v1 output shape) from an /initiative-discovery-custom output. Produces a PRD with frontmatter, Goal, Users, Success metrics, Requirements, Slices table, Plan-mode-seed block (1:1 mapping for Cursor Plan mode), Risks (with mitigation per risk), Out of scope (with reasons + future-cycle flags), Open questions, and Design pointers. Idempotent. Refuses to overwrite an edited PRD silently. Pairs with /critique-product-custom + /critique-engineering-custom.
+description: Draft a slice-shaped PRD (bond_v1 output shape) from an /initiative-discovery-custom output. Produces a PRD with frontmatter, Goal, Users, Success metrics, Requirements, Slices table, Test shape per slice, Slice 1 demo readiness, Plan-mode-seed block (1:1 mapping for Cursor Plan mode), Risks (with mitigation per risk + technical-failure-modes subsection), Out of scope (with reasons + future-cycle flags), Open questions, Design pointers (with explicit a11y subsection), and Build handoff (GitHub-vault → codebase-repo pickup contract). Idempotent. Refuses to overwrite an edited PRD silently. Pairs with /critique-product-custom + /critique-engineering-custom.
 ---
 
 # PRD Author (custom)
@@ -85,6 +85,8 @@ prd_id: <slug>-YYYY-MM-DD
 created_date: YYYY-MM-DD
 last_bond_run: YYYY-MM-DD HH:MM
 lifecycle: spec_ready  # idea | discovery | design | spec_ready | develop | uat | deployed | parked
+critique_status: pending  # pending | running | must_fixes_pending | must_fixes_folded
+critique_log: <path to plans/skill-pipeline/sessions/*.md if a critique pass has run>  # optional; omit if no critique yet
 related_prds:
   - <Sibling_PRD>.md  # PRDs whose surface this PRD touches
 discovery_skipped_reason: <one line, only if --no-discovery used>  # otherwise omit
@@ -123,7 +125,23 @@ discovery_skipped_reason: <one line, only if --no-discovery used>  # otherwise o
    - **Depends on** chains slices linearly or in parallel. Slice 1 has no deps. Most slices depend on the previous one.
    - **3–6 slices typical.** More than 6 = the slicing is too thin or the PRD scope is too broad.
    
-   After the table, a **"Slicing rules applied"** subsection explicitly notes which rules were applied and any edge cases.
+   After the table, three required subsections in this order:
+
+   **5a. Slicing rules applied** — explicitly notes which slicing rules apply and any edge cases (cross-PRD dependencies, parallelisable slices, GA-bundle constraints).
+
+   **5b. Test shape per slice** — required subsection (cross-cutting must-fix from `/critique-engineering-custom` walkthrough-2 finding #1). A markdown table:
+
+   | # | Unit | Integration | E2E | A11y | Notes |
+
+   Every slice ships with at least one entry per column (or `n/a` with reason). PR review enforces. The skill refuses to ship a Slices section without this table.
+
+   **5c. Slice 1 demo readiness** — required subsection (cross-cutting must-fix from `/critique-product-custom` walkthrough-2 finding #2). A checklist of slice-1-specific deliverables that protect the first steerco demo. Required items:
+   - Pre-vetted demo content / journey rehearsed end-to-end (corpus-backed feature: pre-loaded FAQ; UX feature: pre-vetted user-input examples).
+   - External-dependency-failure fallback rehearsed (vendor unreachable, API down, network flaky).
+   - Defect / known-bad example prepared off-camera (so steerco understands the operational discipline behind the metric).
+   - Where Slice 1 is gated by an upstream decision (engineering spike, ADR, schema migration), a **wireframe walkthrough or paper prototype** prepared so the demo can run on the wireframe until the gate lifts.
+   
+   Slices later than 1 may also have demo-readiness checklists (e.g. Slice 2 of an ingestion pipeline = "second tenant onboarded successfully"). Add per-slice checklists as their first-demo risk warrants.
 
 6. **Plan mode seed** — a fenced ` ```plan-mode-seed ` block, mechanically generated from the Slices table. One line per slice. Format:
    ```
@@ -135,6 +153,13 @@ discovery_skipped_reason: <one line, only if --no-discovery used>  # otherwise o
    - **Risk name** (bolded).
    - **Description** — one sentence on what could go wrong + when.
    - **Mitigation** — one sentence on the defensive move. **Required, not optional.** A risk without a mitigation is incomplete; the skill refuses to ship.
+
+   For PRDs that touch external dependencies (vendors, APIs, realtime stacks, external datasources), add a **Technical failure modes** subsection after the product-risk list. Bullet list of:
+   - External-dependency unavailable: what the user sees / what the system does.
+   - Idempotency on retry: client-UUID dedup, server-enforced.
+   - Cache miss / corruption (where caches exist): behaviour + observability.
+   - Slow render / timeout (where SLA-relevant): fallback shape.
+   - Vendor lock-in / engine swap: concrete abstraction (interface + call site) shipped from the slice that introduces the dependency.
 
 8. **Out of scope** — markdown table:
 
@@ -152,9 +177,45 @@ discovery_skipped_reason: <one line, only if --no-discovery used>  # otherwise o
     - **Context** — one paragraph platform / surface context.
     - **Surfaces in scope** — numbered list of UI surfaces touched.
     - **Critical UX questions for the designer to answer** — bulleted list of design-decision-shaped questions, each with a recommendation if the PRD author has one.
+    - **Failure-mode UX** (required if the PRD has external dependencies) — bulleted list of degraded-state copy + behaviour for each failure mode named in section 7's Technical failure modes subsection.
+    - **A11y requirements** (required, non-negotiable — cross-cutting must-fix from `/critique-engineering-custom` walkthrough-1 finding) — bulleted list:
+      - **`lang` attribute on translated / localised content** (where applicable). Without this, screen readers mispronounce non-default-language content. Non-negotiable.
+      - **Keyboard navigability** of any new interactive element.
+      - **Screen-reader announcement** of stateful indicators (`aria-live` where appropriate).
+      - **Sufficient contrast** for outdoor / low-light frontline use.
+      - **Tap-target sizes** meet platform guidelines.
     - **Constraints on design** — bulleted list of "must / must not".
     - **What the designer should NOT prescribe** — bulleted list of decisions that belong to PM / engineering, not design.
     - **Design slice ordering** — mirrors the build slices, calls out which slices have design changes vs which don't.
+
+11. **Build handoff** — required section (added 2026-04-29 after walkthrough-2; addresses the **GitHub-vault → codebase-repo split**). When the PRD lives in a vault repo (e.g. GitHub) and the production code lives in a separate repo (e.g. Bitbucket), the developer needs a self-contained pickup contract. Subsections:
+
+    **11a. Repo-split callout** — one-line block-quote naming where the PRD lives vs where the code lives, and that there is no auto-sync.
+
+    **11b. How to use this PRD in Cursor Plan mode (in the codebase repo)** — numbered list:
+    1. Copy this entire markdown file to the codebase repo at `docs/PRDs/<filename>.md` (or the repo's product-spec convention).
+    2. List sibling PRDs that must also be copied (cross-PRD slice dependencies).
+    3. Open Cursor with the codebase repo as workspace, with the PRD(s) in context.
+    4. Paste the **Plan mode seed** block as the Plan mode prompt — each line maps to one Plan-mode step → one PR / branch.
+    5. Reference the Slices, Test shape per slice, demo readiness, Risks, Open questions, and Design pointers sections for full context.
+
+    **11c. Handoff snapshot** — a markdown table:
+
+    | Field | Value |
+    |---|---|
+    | **Source file (vault)** | `<path>` (`<repo-host>: <repo-name>`) |
+    | **bond_v1 last run** | `<timestamp>` |
+    | **Lifecycle** | `<lifecycle>` |
+    | **Slice 1 demo-readiness deliverables** | `<short list from 5c>` |
+    | **Cross-PRD slice dependencies** | `<list>` |
+    | **Hard gates before Slice 1 build** | `<list of blocking Open Q's>` |
+    | **Hard gates before later slices / GA** | `<list>` |
+    | **Sign-off needed before Build** | `<list of approvers — Product / Engineering / Legal / Design / domain-owner>` |
+
+    **11d. Source-of-truth rule** — a numbered list explaining:
+    - Edits to the codebase-repo copy do NOT propagate back.
+    - For spec changes, edit the source file in the vault and re-run `/prd-author-custom`.
+    - The skill's idempotence rule protects the source from accidental overwrites.
 
 ### Footer
 
@@ -175,6 +236,11 @@ The skill **stops and asks** before generating, if any of these are true:
 - **A slice with no observable demo outcome.** → "Slice <N> has no observable demo outcome. If it's a refactor, it's not a slice — fold into the slice it supports."
 - **Slice 1 is not a walking skeleton (touches < all layers needed for end-to-end demo).** → "Slice 1 must demo end-to-end. Currently touches only <layers>. Either thicken slice 1 or move the missing layer in."
 - **Out-of-scope item with no reason.** → "Add a one-line reason for why <X> is out of scope."
+- **Test shape per slice missing for any slice.** → "Slice <N> has no test shape entry (unit / integration / e2e / a11y). Either fill it or mark `n/a` with reason. Cross-cutting must-fix from walkthrough-2 critique pass."
+- **Slice 1 demo readiness checklist missing.** → "Slice 1 has no demo readiness checklist. First-demo risk is unprotected — add at minimum: pre-vetted demo content, dependency-failure fallback rehearsed, defect/known-bad example off-camera."
+- **External-dependency PRD with no Technical failure modes subsection.** → "PRD names <vendor / API> as a dependency but Risks has no Technical failure modes. Spec at minimum: unavailable behaviour, idempotency, vendor lock-in mitigation."
+- **Translated / localised content with no `lang` attribute requirement in Design pointers A11y.** → "PRD ships content in non-default languages. The `lang` attribute is non-negotiable for screen readers. Add to Design pointers A11y."
+- **Build handoff section missing.** → "Build handoff section required when the PRD will be picked up in a different repo from the vault. Add the repo-split callout, Plan-mode-in-codebase-repo instructions, handoff snapshot table, and source-of-truth rule."
 
 ---
 
@@ -224,12 +290,31 @@ The skill does **not** run critique skills automatically. It surfaces the sugges
 
 ---
 
-## Reference example
+## Reference examples (canonical bond_v1 references)
 
-The first PRD authored in this shape, by hand, is [`06-Resources/PRDs/Multilingual_Content.md`](../../../06-Resources/PRDs/Multilingual_Content.md). It was the test artefact for this skill's authoring; its existence proves the shape is writeable end-to-end without a skill, and its critique-pass output (M + Q surfaced 1 GAP + 5 SOFTs from product, 5 GAPs from engineering) showed which behaviours the skill should automate.
+Four PRDs in vault are authored in this exact shape and have all bond_v1 must-fixes folded:
 
-The skill's output should match that file's structure exactly — including the footer line that names the source of the draft.
+1. [`06-Resources/PRDs/Multilingual_Content.md`](../../../06-Resources/PRDs/Multilingual_Content.md) — single-feature PRD; first walkthrough; M + Q surfaced 1 GAP + 5 SOFTs (product), 5 GAPs (engineering); all folded.
+2. [`06-Resources/PRDs/AI_Assistant_in_Chat_Surface.md`](../../../06-Resources/PRDs/AI_Assistant_in_Chat_Surface.md) — cross-PRD initiative; Walkthrough 2; demonstrates cross-PRD slice dependencies in the bond_v1 shape.
+3. [`06-Resources/PRDs/Employee_Chat_and_Groups.md`](../../../06-Resources/PRDs/Employee_Chat_and_Groups.md) — reshaped from agent-prd shape; demonstrates `--reshape` mode; ADR-gated (slice 1 cannot enter spec_ready until Q1 lands).
+4. [`06-Resources/PRDs/AI_Assistant_FAQ.md`](../../../06-Resources/PRDs/AI_Assistant_FAQ.md) — reshaped; demonstrates engine-shared coordination with the chat-surface PRD; vendor-locked engine forcing the forward-compatible-shape pattern in Risks.
+
+The skill's output should match these files' structure exactly — including frontmatter shape, section order, table column structure, and footer line attribution.
 
 ---
 
-*Created 2026-04-29 to replace the persona-named bond / agent-prd-bond proposal. Coexists with `/agent-prd` (different shape, different downstream consumer). Validated against `Multilingual_Content.md` — that file is the canonical bond_v1 reference shape.*
+## Cross-cutting findings — promoted into bond_v1
+
+The bond_v1 shape was extended on 2026-04-29 after walkthrough-2's six critique runs surfaced patterns worth promoting from "fix per PRD" to "required by skill":
+
+- **Test shape per slice** (5b) — was a GAP on every PRD critiqued. Now required.
+- **Slice 1 demo readiness** (5c) — was SOFT on every product critique. Now required.
+- **Technical failure modes** subsection in Risks (7) — was GAP on engineering-heavy PRDs. Now required for any PRD with external dependencies.
+- **A11y subsection** in Design pointers (10) — `lang` attribute on translated content was the original walkthrough-1 catch. Now non-negotiable.
+- **Build handoff** (11) — addresses the GitHub-vault → codebase-repo split (e.g. vault on GitHub, code on Bitbucket). Without it, the developer in the codebase-repo Cursor environment has no operational pickup contract. Added 2026-04-29.
+
+Cross-cutting findings ledger: [`plans/skill-pipeline/sessions/2026-04-29-walkthrough-2-critiques.md`](../../../plans/skill-pipeline/sessions/2026-04-29-walkthrough-2-critiques.md).
+
+---
+
+*Created 2026-04-29 to replace the persona-named bond / agent-prd-bond proposal. Coexists with `/agent-prd` (different shape, different downstream consumer). bond_v1 spec extended 2026-04-29 with cross-cutting findings from walkthrough-2 (test shape per slice, demo readiness, technical failure modes, a11y, build handoff). Validated against four PRDs in vault — those files are the canonical bond_v1 references.*

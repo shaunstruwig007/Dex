@@ -7,6 +7,52 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.22.0] — Walkthrough 3 — fold critique must-fixes + Build-handoff for repo-split (2026-04-29)
+
+**Before:** Four bond_v1 PRDs sat at `RETURN TO PLAN` from M + Q critique passes — must-fixes deferred from walkthroughs 1 + 2. The cross-cutting findings (test shape per slice, Slice 1 demo readiness) had been logged as "promote to skill spec" but not yet promoted. And the GitHub-vault → Bitbucket-codebase repo split was an unaddressed gap: pasting `plan-mode-seed` into Cursor Plan mode only works inside the codebase repo, not from the vault.
+
+**Now:** Walkthrough 3 closed the loop on all four PRDs and extended the bond_v1 spec to cover the repo split.
+
+**Per-PRD must-fixes folded:**
+- [`Multilingual_Content.md`](06-Resources/PRDs/Multilingual_Content.md) — M1–M6 + Q1–Q8 folded (Steerco framing, demo prep, metric reframe, slice 5 enumeration, technical failure modes, `lang`-attribute a11y, provider abstraction).
+- [`AI_Assistant_in_Chat_Surface.md`](06-Resources/PRDs/AI_Assistant_in_Chat_Surface.md) — P1–P3 + E1–E5 folded (transactional handoff, client-UUID idempotency, payload versioning, IA-revert plan, vendor-outage UX).
+- [`Employee_Chat_and_Groups.md`](06-Resources/PRDs/Employee_Chat_and_Groups.md) — P1–P3 + E1–E4 folded (wireframe-walkthrough demo posture until ADR, ADR swap-cost section, entry-type taxonomy, notification-failure path).
+- [`AI_Assistant_FAQ.md`](06-Resources/PRDs/AI_Assistant_FAQ.md) — P1–P4 + E1–E6 folded (cross-PRD architecture coordination block, hallucination-rate sampling-adequacy, escalation idempotency, handoff routing contract, degraded-state UX, vendor a11y check, corpus version control).
+
+**Build-handoff section added to all four PRDs:**
+A new section addressing the repo split — vault on GitHub, code on Bitbucket, no auto-sync. Each PRD now has:
+- A repo-split callout block.
+- "How to use this PRD in Cursor Plan mode (in the codebase repo)" — copy markdown to `docs/PRDs/<name>.md`, also copy any sibling cross-PRD-dependency files, paste plan-mode-seed.
+- A handoff snapshot table (source path, last_bond_run, lifecycle, demo-readiness deliverables, cross-PRD deps, hard gates per slice, sign-off owners).
+- Source-of-truth rule (codebase-repo edits do NOT propagate; spec changes happen in vault).
+
+**bond_v1 spec extended:**
+[`/prd-author-custom`](.claude/skills/prd-author-custom/SKILL.md) now requires (and refuses without):
+- **Test shape per slice** subsection (`unit / integration / e2e / a11y / notes` table).
+- **Slice 1 demo readiness** checklist (pre-vetted content, dependency-failure fallback, defect example, wireframe-walkthrough where Slice 1 is gated).
+- **Technical failure modes** subsection in Risks (when external dependencies exist).
+- **A11y subsection** in Design pointers, with `lang` attribute on translated content as non-negotiable.
+- **Build handoff** section (when PRD will be picked up in a different repo from the vault).
+- Frontmatter additions: `critique_status`, `critique_log`.
+
+**Process learning surfaced:**
+- Walkthrough 1's M + Q critique on Multilingual was ephemeral — chat-only, no session file. Reconstructing it for the fold-pass took a transcript dive. Walkthrough 2's "save critique to session file" pattern is now the standard.
+
+**Why you'll care:**
+- The four PRDs are now actually ready for Build (not just paper-ready). Test shape is named, demo prep is concrete, repo split is solved.
+- bond_v1 is now a hard spec — the skill enforces these properties on every future PRD. No more "we should have done test shape per slice" five steps later.
+- The repo-split solution is reusable. Any team running their planning vault separate from their codebase has the same problem; the Build-handoff pattern travels.
+
+**What's still pending:**
+- Plan-mode consumption test — paste a plan-mode-seed block into a real codebase-repo Cursor session and capture what Plan mode produces. Validates the load-bearing claim of the pipeline.
+- Design pass on `AI_Assistant_in_Chat_Surface.md` via Claude Design wireframe mode (subject to credit availability).
+- Idempotence diff-and-ask flow test — re-author a folded PRD through `/prd-author-custom`.
+- Walkthrough 4 candidate — runtime-plan critique pass to exercise `/critique-engineering-custom`'s runtime-lens.
+
+**Session log:** [`plans/skill-pipeline/sessions/2026-04-29-walkthrough-3-fold-and-handoff.md`](plans/skill-pipeline/sessions/2026-04-29-walkthrough-3-fold-and-handoff.md).
+
+---
+
 ## [1.21.0] — Walkthrough 2 (cross-PRD + design-heavy) + persona-name cleanup (2026-04-29)
 
 **Before:** Five renamed skills had been authored against walkthrough-1 evidence (multi-language content translation — content-heavy, single-PRD). The four persona-named precursors (`agent-m-cpo-custom`, `agent-q-cto-custom`, `moneypenny-custom`, `felix-custom`) co-existed on disk pending walkthrough-2 validation. Cursor Plan-mode consumption, cross-PRD discovery, and the `--reshape` flag on `/prd-author-custom` were untested. The kill of `/design-prompt-custom` had been called but not validated against a design-heavy initiative.

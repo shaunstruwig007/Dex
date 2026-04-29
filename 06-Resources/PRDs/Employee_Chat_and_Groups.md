@@ -2,8 +2,10 @@
 prd_shape: bond_v1
 prd_id: employee-chat-and-groups
 created_date: 2026-04-17
-last_bond_run: 2026-04-29 14:35
+last_bond_run: 2026-04-29 15:55
 lifecycle: discovery
+critique_status: must_fixes_folded
+critique_log: plans/skill-pipeline/sessions/2026-04-29-walkthrough-2-critiques.md (Run 2)
 source: legacy_upgrade
 reshaped_from: agent-prd shape (2026-04-17)
 reshaped_on: 2026-04-29
@@ -62,7 +64,7 @@ Frontline employees in Wyzetalk Essential can have peer (1:1) and group conversa
 
 | # | Metric | Definition | Target | Measurement source |
 |---|---|---|---|---|
-| 1 | **Chat MAU** | % of tenant-enabled employees who send ≥ 1 chat message in a 30-day window | ≥ 50% in 90 days post-tenant-enable | Chat-stack analytics events (deferred — pending engineering spike outcome) |
+| 1 | **Chat MAU (rolling 30-day)** | % of enabled employees who send ≥ 1 chat message in a **rolling 30-day window**, tracked **from each tenant's enable-date** (not from launch). | ≥ 50% in 90 days post-tenant-enable | Chat-stack analytics events (deferred — pending engineering spike outcome) |
 | 2 | **Group adoption** | Active groups per 1000 employees per tenant | ≥ 5 active groups per 1000 employees in 90 days | Chat-stack metrics |
 | 3 | **Cross-surface confusion rate** | % of users who attempt to use peer chat for ops broadcast or vice versa (sampled) | < 5% sampled in first 30 days | Manual / sampled review of session logs |
 | 4 | **Surface-separation compliance** | % of UAT separation tests passing (ops vs chat routing) | 100% on each release | Scripted UAT + product sign-off |
@@ -93,7 +95,7 @@ Frontline employees in Wyzetalk Essential can have peer (1:1) and group conversa
 
 | # | Name | Walking-skeleton? | Demo outcome (what observer sees) | Layers touched | Depends on |
 |---|---|---|---|---|---|
-| **1** | **Skeleton — DM happy path** | **Yes** | User A opens chat, taps colleague B, types "hello", sends. B gets push notification, opens app, sees the message in their chat list, taps in, sees the thread, types a reply. End-to-end DM in single tenant, single config, single device class. | data + api + ui | Engineering spike outcome (ADR — chat backend chosen) |
+| **1** | **Skeleton — DM happy path** | **Yes** | User A opens chat, taps colleague B, types "hello", sends. B gets push notification, opens app, sees the message in their chat list, taps in, sees the thread, types a reply. End-to-end DM in single tenant, single config, single device class. **Idempotency invariant (E1):** message-create uses a **client-generated message UUID**; server enforces idempotency. Flaky-network retries never duplicate messages. **Chat-list entry-type taxonomy (E2):** `type: "dm" \| "group" \| "bot"` is part of the chat-list payload from slice 1, not retrofitted later — required for Slice 3 separation invariant and for Requirement 8 (AI Assistant entity per `AI_Assistant_in_Chat_Surface.md`). | data + api + ui | Engineering spike outcome (ADR — chat backend chosen, see P3 below) |
 | **2** | **Group chat — discovery-workshop rules applied** | No | Whoever the workshop nominates (admin, or role-gated user, or permissive user) creates a group with N members; members get notified; can post in the group thread; group appears in members' chat list. | data + api + ui | 1, discovery workshop output |
 | **3** | **Cross-surface separation enforcement** | No | Ops broadcast lands in ops inbox; peer chats land in chat inbox; surfaces never merge into one ambiguous list. UAT separation script passes. | api + ui | 1 |
 | **4** | **Tenant policy on chat permissions** | No | Admin configures "who can chat with whom" (e.g. per role / location); user's chat-target list reflects policy on next refresh. | api + config + ui | 1 |
@@ -107,9 +109,26 @@ Frontline employees in Wyzetalk Essential can have peer (1:1) and group conversa
 - **All slices have observable demo outcomes**; UAT script for Slice 3 explicitly counts as the demo.
 - **Slice 1 + Slice 2 must ship same Phase 1 GA** per pilot 2026-04-17 — they are not separate releases. Slicing them is a planning device, not a release sequence.
 
----
+### Test shape per slice
 
-## Plan mode seed
+Cross-cutting must-fix from `/critique-engineering-custom` (E4). Every slice ships with the test coverage below; PR review enforces.
+
+| # | Unit | Integration | E2E | A11y | Notes |
+|---|---|---|---|---|---|
+| 1 | Message create / list render; client-UUID dedup; chat-list entry-type taxonomy parser | Realtime delivery (stack-dependent — pending ADR); push notification dispatch | DM happy path: A → message → B receives push → opens → reads → replies | axe scan on chat list + DM thread; screen-reader smoke; tap-target audit | Stack-dependent integration test list locks once ADR lands |
+| 2 | Group-thread membership read/write; member-list render | Group-create → member notify → group appears in members' chat list | Workshop-nominated user creates group with N members; members receive notification; can post; group thread renders | Group thread keyboard-navigable; member list screen-reader friendly | Locked by Q2 workshop output |
+| 3 | Surface routing logic (ops vs chat vs AI taxonomy) | Cross-surface separation enforcement at API + UI | UAT separation script: ops broadcast lands in ops inbox; peer chats land in chat inbox; AI threads in AI list | n/a (taxonomy-level test) | UAT script doubles as the demo per Slice 3 design |
+| 4 | Tenant-policy read; chat-target filter | Admin policy write → user's chat-target list refreshes | Admin sets "shift workers can chat with shift workers only"; user's target list reflects on next refresh | Admin policy console keyboard-navigable | — |
+| 5 | Report payload write; retention-job logic | Report → admin moderation queue; retention applied at configured interval | User reports message → flagged in admin view; retention deletes per interval | Report affordance reachable via long-press AND three-dot menu (mobile a11y) | Q3 (block / mute) and Q4 (retention defaults) refine |
+
+### Slice 1 demo readiness
+
+Cross-cutting must-fix from `/critique-product-custom` (P1 — demo-posture-until-Q1-resolved). Slice 1 cannot enter Build until the chat-backend ADR lands (Q1). The risk is steerco sees a stalled product. **Demo posture covers the gap.**
+
+- [ ] **Wireframe walkthrough or paper prototype** prepared for steerco demos taking place between PRD-spec_ready and ADR-decided. Walk through the DM happy path on the wireframe, narrate the realtime behaviour, surface the spike question explicitly. Stakeholders see the product is moving even when code isn't shipping yet.
+- [ ] **Spike-completion-trigger** prepared: when the ADR lands, swap the wireframe demo for the live-stack demo within one steerco cycle.
+- [ ] **One known-bad-network simulation** prepared (slice 1 build): toggle airplane mode mid-message; assert the message queues client-side, retries on reconnect, dedups via client UUID, never duplicates. Demo-able in 30 seconds; carries the idempotency invariant.
+- [ ] **Cross-surface confusion sample** prepared: 3 mocked-up screenshots showing the wrong-surface-routing failure mode (ops broadcast in chat inbox, etc.) so steerco understands what metric 3 is catching.
 
 ```plan-mode-seed
 Slice 1: Skeleton — DM happy path. User A opens chat, taps colleague B, types "hello", sends. B gets push notification, opens app, sees message in chat list, taps in, sees thread, types reply. End-to-end DM in single tenant. Layers: data + api + ui. Depends: engineering spike outcome (ADR — chat backend chosen).
@@ -123,13 +142,20 @@ Slice 5: Retention + moderation baseline. Admin configures retention period and 
 
 ## Risks
 
-1. **Chat backend choice locks Wyzetalk into a build / vendor trade-off.** First-party realtime is heavy build effort; CPaaS / vendor introduces lock-in + per-message cost. **Mitigation:** spike-before-build (per pilot 2026-04-17); ADR records both options + criteria; commit only after ADR.
+1. **Chat backend choice locks Wyzetalk into a build / vendor trade-off.** First-party realtime is heavy build effort; CPaaS / vendor introduces lock-in + per-message cost. **Mitigation:** spike-before-build (per pilot 2026-04-17); ADR records both options + criteria; commit only after ADR. **ADR template must include a "Swap cost" section (P3 must-fix):** what it takes to change vendor (CPaaS → CPaaS), what it takes to swap from CPaaS to first-party post-MVP, what migration looks like for in-flight messages and users mid-conversation. Without this section the ADR is a snapshot of preference, not a decision artefact.
 2. **Group creation rules without consensus = adoption noise OR strangulation.** Permissive defaults flood users with low-value groups; restrictive defaults slow adoption to admin pace. **Mitigation:** discovery workshop is the gate, not the PRD. Slice 2 cannot ship without workshop output. Decision-tree captured as workshop output deliverable.
 3. **Cross-surface bleed (chat ↔ ops broadcast).** Even if technically separated, users mentally merge them and lose trust in either surface. **Mitigation:** Slice 3 (separation enforcement) is required for GA; metric 3 (sampled confusion rate) catches drift.
 4. **POPIA retention / data residency exposure.** Inadequate retention period or wrong jurisdiction storage exposes tenant + Wyzetalk. **Mitigation:** tenant-configurable retention; legal sign-off pre-GA; default retention floor set conservatively.
 5. **Notification storm.** Chat creates new notification load — frontline users disable notifications and lose value across the app. **Mitigation:** align routing per `Notifications.md`; per-conversation mute; sensible defaults (e.g. group threshold at N members triggers digest mode).
 6. **Federation pressure post-launch.** Tenants ask to federate with their existing IM (Slack, Teams). **Mitigation:** explicit out-of-scope v1; collect customer evidence in `05-Areas/Companies/`; future cycle gated on evidence volume.
-7. **AI Assistant entity behaving like a peer.** AI thread (per `AI_Assistant_in_Chat_Surface.md`) sits in the same chat list — risk: users mentally model it as another colleague. **Mitigation:** Requirement 8 enforces server-side that AI ≠ peer; visual / behavioural distinction enforced by the AI PRD's design pointers.
+7. **AI Assistant entity behaving like a peer.** AI thread (per `AI_Assistant_in_Chat_Surface.md`) sits in the same chat list — risk: users mentally model it as another colleague. **Mitigation:** Requirement 8 enforces server-side that AI ≠ peer; visual / behavioural distinction enforced by the AI PRD's design pointers. Cross-PRD coordination metric (`AI_Assistant_in_Chat_Surface.md` metric 3, "misuse / merge-attempt rate") flags drift; threshold `< 5%` sampled.
+
+### Technical failure modes (E3 must-fix)
+
+- **Notification dispatch failure on DM send.** **Behaviour:** message is saved server-side immediately; recipient sees the message on their next chat-open even if the push notification was lost. **No retry-storm** — one push attempt per message; if it fails, fall back to silent delivery (the message exists in the recipient's chat list either way). The user-facing promise is "your message was delivered"; the push is an attention-affordance, not the delivery itself.
+- **Realtime stack unavailable mid-conversation.** **Behaviour:** queue messages client-side with their client-UUID; retry on reconnect; dedup via UUID idempotency. User sees a "sending…" indicator until ack. No silent drops.
+- **Recipient session expired / device offline.** **Behaviour:** message persists in chat list; recipient sees it on next session-open. (No read-receipt feedback to sender per pilot 2026-04-17 scope — read receipts out of scope.)
+- **Group notification storm (slice 2).** **Behaviour:** notification routing per `Notifications.md`; default group threshold (TBD per Q5) triggers digest mode; user can mute per-conversation.
 
 ---
 
@@ -225,4 +251,43 @@ Chat surface in Wyzetalk Essential's Blue app. Mobile-first, frontline-targeted,
 
 ---
 
-*Reshaped 2026-04-29 by /prd-author-custom (--reshape) from agent-prd shape (2026-04-17). Original WP-1, WP-2, WP-3 mapped to Slices 1–5; 2026-04-17 collaborative-pilot decisions preserved verbatim. Last run: 2026-04-29 14:35.*
+## Build handoff
+
+> **Repo split.** This PRD lives in the GitHub vault (`Documents/Blueprint/Dex`). Production code lives in **Bitbucket**. There is no auto-sync between the two. This section is the developer's pickup contract for taking the PRD across the repo boundary.
+
+### How to use this PRD in Cursor Plan mode (in the Bitbucket repo)
+
+1. Copy this entire markdown file to your codebase repo at `docs/PRDs/Employee_Chat_and_Groups.md`.
+2. **Also copy `AI_Assistant_in_Chat_Surface.md`** — Requirement 8 binds the chat-list payload to the AI peer-entity model; both PRDs need to be in Plan-mode context for slice 1.
+3. Open Cursor with the codebase repo as the workspace, with both files in context.
+4. Paste the **Plan mode seed** block (above) as the Plan mode prompt. Each line maps to one Plan-mode step → one PR / branch.
+5. Reference the Slices, Test shape per slice, Slice 1 demo readiness (especially the wireframe walkthrough until ADR lands), Risks (technical failure modes), Open questions, and Design pointers sections for the full context Plan mode needs.
+
+### Handoff snapshot
+
+| Field | Value |
+|---|---|
+| **Source file (vault)** | `06-Resources/PRDs/Employee_Chat_and_Groups.md` (GitHub: `Documents/Blueprint/Dex`) |
+| **bond_v1 last run** | `2026-04-29 15:55` |
+| **Lifecycle** | `discovery` (must-fixes folded; **slice 1 cannot enter spec_ready until Q1 ADR lands**) |
+| **Slice 1 demo-readiness deliverables** | Wireframe walkthrough or paper prototype (until ADR) · spike-completion-trigger prepared · airplane-mode network simulation · cross-surface confusion screenshots |
+| **Cross-PRD slice dependencies** | Requirement 8 / chat-list entry-type taxonomy ↔ `AI_Assistant_in_Chat_Surface.md` slice 1; Notifications routing ↔ `Notifications.md` |
+| **Hard gates before Slice 1 build** | Q1 (realtime stack ADR) — **blocking** · Q5 (notification routing for groups — stub-able) · Q8 (chat-list ordering with AI entity — stub-able) |
+| **Hard gates before Slice 2 build** | Q2 (group creation rules workshop) |
+| **Hard gates before Slice 5 build** | Q3 (moderation scope) · Q4 (POPIA retention defaults) |
+| **Sign-off needed before Build** | Product (PM) · Engineering (CTO — ADR sign-off) · Legal (POPIA + retention) · Design (chat-list segmentation + moderation UI) |
+
+### Source-of-truth rule
+
+This PRD is generated from the GitHub vault by `/prd-author-custom`. **If you edit this file in the codebase repo, those edits do NOT propagate back.** Treat the codebase copy as a read-only snapshot. For spec changes:
+
+1. Open the GitHub vault.
+2. Edit the source file at `06-Resources/PRDs/Employee_Chat_and_Groups.md`.
+3. Re-run `/prd-author-custom` to regenerate this PRD's bond_v1 shape.
+4. Re-copy to the codebase repo.
+
+The skill's idempotence rule protects the source from accidental overwrites — if the source file has been edited since the last `last_bond_run`, the skill surfaces a diff and asks before proceeding.
+
+---
+
+*Reshaped 2026-04-29 by /prd-author-custom (--reshape) from agent-prd shape (2026-04-17). Original WP-1, WP-2, WP-3 mapped to Slices 1–5; 2026-04-17 collaborative-pilot decisions preserved verbatim. Critique pass run 2026-04-29 (Walkthrough 2, Run 2); must-fixes folded 2026-04-29 15:55 (P1–P3, E1–E4 + cross-cutting test-shape, demo-readiness, build-handoff additions). Last run: 2026-04-29 15:55.*
