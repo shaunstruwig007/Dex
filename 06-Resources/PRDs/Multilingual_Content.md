@@ -15,7 +15,7 @@ related_prds:
 
 # Multilingual Content (Wyzetalk Essential)
 
-**Status:** Critique pass complete (M + Q from `/critique-product-custom` + `/critique-engineering-custom`). Must-fixes folded 2026-04-29.
+**Status:** `spec_ready` · critique pass complete (`/critique-product-custom` + `/critique-engineering-custom`) · must-fixes folded 2026-04-29.
 **Target:** Wyzetalk Essential reader (frontline employee).
 **Out of scope intentionally:** comments on posts, images/captions/attachments, SHEQ content, emergency comms, support tickets, per-post translation disable, customer-facing language-registry admin UI, verifier/moderator roles, old-platform parity.
 

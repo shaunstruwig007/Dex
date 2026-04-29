@@ -24,7 +24,7 @@ follow_up_tasks:
 
 # AI Assistant — FAQ & HR Queries
 
-**Status:** Reshaped from agent-prd to bond_v1 on 2026-04-29. **Phase 1 GA = Blue app + tawk.to (engine locked).** **FAQ-on-WhatsApp-Flow is Phase 2 of this PRD (out of scope here).** 2026-04-17 collaborative-pilot decisions preserved verbatim.
+**Status:** `discovery` · reshaped to bond_v1 on 2026-04-29 · critique pass complete · must-fixes folded 2026-04-29. **Phase 1 GA = Blue app + tawk.to (engine locked).** **FAQ-on-WhatsApp-Flow is Phase 2 of this PRD (out of scope here).** 2026-04-17 collaborative-pilot decisions preserved verbatim. **Slice 4 + GA gated by Legal sign-off on tawk.to data residency (Q2).**
 **Target:** Frontline (blue-collar) employees and HR-adjacent teams needing fast, HR-grounded answers to recurring policy / FAQ questions, via the Blue app FAQ surface.
 **Out of scope intentionally:** FAQ-on-WhatsApp-Flow (Phase 2 of this PRD), live HRIS lookups, custom LLM training, full conversational AI platform, peer / team chat, AI as peer entity in chat list, voice / video.
 

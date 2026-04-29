@@ -100,7 +100,7 @@ Refusal list updated to enforce all of the above. Reference examples updated to 
 ## What's pending
 
 - **Plan-mode consumption test.** Pick one PRD (likely `Multilingual_Content.md` — simplest), copy to a Bitbucket-codebase-repo Cursor session, paste the plan-mode-seed block, capture what Plan mode produces. Validates the load-bearing claim of the whole pipeline.
-- **Design pass on `AI_Assistant_in_Chat_Surface.md`.** User flagged they may have run out of Claude Design credits but plan to attempt the wireframe pass anyway. If credits hold, this validates whether `Design pointers` + the new `Failure-mode UX` + `A11y` subsections give a designer enough to work with.
+- **Design pass on `AI_Assistant_in_Chat_Surface.md` — parked until 2026-05-01.** User hit Claude Design credit limit on 2026-04-29; rescheduled for Friday after credit reset. PRD frontmatter now carries `design_pass_status: pending` and the body Status line surfaces the same. Design brief in `plans/PDLC_UI/claude-design-wireframe-brief.md` is ready to consume.
 - **Idempotence flow test.** Re-author one of the folded PRDs through `/prd-author-custom` and confirm the diff-and-ask flow surfaces the author's edits cleanly.
 - **Walkthrough 4 candidate.** A runtime-plan critique pass (sprint seed or actual Cursor Plan output) to exercise `/critique-engineering-custom`'s runtime-lens — not yet validated. Cross-cutting finding #8 from walkthrough-2.
 
@@ -151,4 +151,4 @@ Refusal list updated to enforce all of the above. Reference examples updated to 
 
 ---
 
-*Session captured 2026-04-29 (walkthrough 3). Next session: plan-mode consumption test in a codebase-repo Cursor environment, OR design pass on `AI_Assistant_in_Chat_Surface.md` via Claude Design wireframe mode (subject to credit availability).*
+*Session captured 2026-04-29 (walkthrough 3). Park-state edits (design-pass + critique-status visibility on PRDs) added 2026-04-29 PM. Next session: design pass on `AI_Assistant_in_Chat_Surface.md` via Claude Design wireframe mode on **2026-05-01 (Friday — credit reset)**, OR plan-mode consumption test in a codebase-repo Cursor environment, whichever the user runs first.*

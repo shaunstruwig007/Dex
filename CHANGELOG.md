@@ -7,6 +7,24 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.22.1] — Park-state visibility on PRDs — design + critique status surfaced (2026-04-29)
+
+**Before:** `critique_status` was added to PRD frontmatter in 1.22.0, but YAML frontmatter is collapsed by most markdown viewers — so an external reviewer (e.g. a software development manager getting a PRD link) couldn't see "this has been critiqued and folded" without parsing YAML. Similarly, `AI_Assistant_in_Chat_Surface.md` was waiting for a Claude Design wireframe pass that got parked when credits ran out — but no field captured that state.
+
+**Now:**
+- **`design_pass_status` added to bond_v1 frontmatter** (optional field — only set when the PRD has Design pointers warranting a designer pass). Values: `not_applicable | pending | scheduled | in_progress | done`.
+- **Body Status line is now a mirror of pipeline state.** Format: `<lifecycle>` · `<critique state>` · `<design state if applicable>` · `<next step>`. The skill now refuses if the body Status line drifts from frontmatter.
+- **`AI_Assistant_in_Chat_Surface.md`:** `design_pass_status: pending` set; Claude Design wireframe scheduled 2026-05-01 (credit reset).
+- **All four PRDs:** Status lines updated to reflect post-walkthrough-3 state (lifecycle + critique + next gate). Old "M + Q" persona references swept.
+- **`/prd-author-custom`:** `design_pass_status` added to frontmatter spec; refusal list now catches Status-line drift.
+- **Walkthrough-3 session log:** Pending section updated with the Friday calendar.
+
+**Why you'll care:**
+- A PRD reader (your software development manager, a designer, a future-you) now sees pipeline state in the first line of the body. No YAML-spelunking to know whether the doc has been critiqued, whether design is parked, or what the next gate is.
+- The `design_pass_status` field gives the skill a hook for future automation (e.g. "list all PRDs where `design_pass_status: pending` and Friday calendar is open").
+
+---
+
 ## [1.22.0] — Walkthrough 3 — fold critique must-fixes + Build-handoff for repo-split (2026-04-29)
 
 **Before:** Four bond_v1 PRDs sat at `RETURN TO PLAN` from M + Q critique passes — must-fixes deferred from walkthroughs 1 + 2. The cross-cutting findings (test shape per slice, Slice 1 demo readiness) had been logged as "promote to skill spec" but not yet promoted. And the GitHub-vault → Bitbucket-codebase repo split was an unaddressed gap: pasting `plan-mode-seed` into Cursor Plan mode only works inside the codebase repo, not from the vault.

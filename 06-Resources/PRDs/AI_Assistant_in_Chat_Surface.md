@@ -6,6 +6,7 @@ last_bond_run: 2026-04-29 15:50
 lifecycle: spec_ready
 critique_status: must_fixes_folded
 critique_log: plans/skill-pipeline/sessions/2026-04-29-walkthrough-2-critiques.md (Run 1)
+design_pass_status: pending  # Claude Design wireframe mode — scheduled 2026-05-01 (credit reset)
 related_prds:
   - Employee_Chat_and_Groups.md
   - AI_Assistant_FAQ.md
@@ -18,7 +19,7 @@ related_prds:
 
 # AI Assistant in Chat Surface
 
-**Status:** First draft, ready for product + engineering critique.
+**Status:** `spec_ready` · critique pass complete · must-fixes folded 2026-04-29 · **design pass pending — Claude Design wireframe mode scheduled 2026-05-01 (credit reset).**
 **Target:** Wyzetalk Essential frontline employee — primarily the high-volume FAQ-asker (low-literacy / low-patience subset of ICP segment 1) who already lives in their chat list daily.
 **Out of scope intentionally:** mixed-mode peer + AI threads, `@AI` invocation in group chats, peer-chat data merger with AI conversations, replacing AI_Assistant_FAQ.md's tawk.to engine choice, replacing Employee_Chat_and_Groups.md's realtime-stack spike, live HRIS lookups, AI in emergency comms surface.
 

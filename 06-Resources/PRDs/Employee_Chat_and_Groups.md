@@ -24,7 +24,7 @@ follow_up_tasks:
 
 # Employee Chat & Groups
 
-**Status:** Reshaped from agent-prd to bond_v1 on 2026-04-29. Still in discovery — engineering spike on chat realtime stack pending; group creation rules pending workshop. **2026-04-17 collaborative-pilot decisions preserved verbatim.**
+**Status:** `discovery` · reshaped to bond_v1 on 2026-04-29 · critique pass complete · must-fixes folded 2026-04-29 · **slice 1 cannot enter `spec_ready` until engineering spike (Q1) lands ADR**. Group creation rules pending workshop (Q2). **2026-04-17 collaborative-pilot decisions preserved verbatim.** Currently shared with software development manager for review (2026-04-29).
 **Target:** Wyzetalk Essential frontline employee needing peer + group chat distinct from ops messaging, urgent alerts, and AI bot threads.
 **Out of scope intentionally:** federation with external IM, full enterprise eDiscovery, AI in peer threads (owned by `AI_Assistant_in_Chat_Surface.md`), USSD chat path, voice / video, read receipts.
 

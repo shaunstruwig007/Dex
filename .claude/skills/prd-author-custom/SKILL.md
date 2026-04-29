@@ -87,6 +87,7 @@ last_bond_run: YYYY-MM-DD HH:MM
 lifecycle: spec_ready  # idea | discovery | design | spec_ready | develop | uat | deployed | parked
 critique_status: pending  # pending | running | must_fixes_pending | must_fixes_folded
 critique_log: <path to plans/skill-pipeline/sessions/*.md if a critique pass has run>  # optional; omit if no critique yet
+design_pass_status: not_applicable  # not_applicable | pending | scheduled | in_progress | done — only set if the PRD has a Design pointers section that warrants a Claude Design wireframe pass
 related_prds:
   - <Sibling_PRD>.md  # PRDs whose surface this PRD touches
 discovery_skipped_reason: <one line, only if --no-discovery used>  # otherwise omit
@@ -98,7 +99,7 @@ discovery_skipped_reason: <one line, only if --no-discovery used>  # otherwise o
 ```markdown
 # <Feature Name>
 
-**Status:** <one-line status — e.g. "First draft, ready for product + engineering critique.">
+**Status:** <one-line status that mirrors frontmatter pipeline state. Format: `<lifecycle>` · <critique state> · <design state if applicable> · <human-readable next step>. e.g. "`spec_ready` · critique pass complete · must-fixes folded 2026-04-29 · design pass pending — Claude Design scheduled 2026-05-01." This line MUST be kept in sync with frontmatter `lifecycle` / `critique_status` / `design_pass_status` whenever any of those change. Surfaces pipeline state to readers (incl. external reviewers) without expanding YAML frontmatter.>
 **Target:** <primary user, e.g. "Wyzetalk Essential reader (frontline employee).">
 **Out of scope intentionally:** <comma-separated headline list of major exclusions>
 ```
@@ -241,6 +242,7 @@ The skill **stops and asks** before generating, if any of these are true:
 - **External-dependency PRD with no Technical failure modes subsection.** → "PRD names <vendor / API> as a dependency but Risks has no Technical failure modes. Spec at minimum: unavailable behaviour, idempotency, vendor lock-in mitigation."
 - **Translated / localised content with no `lang` attribute requirement in Design pointers A11y.** → "PRD ships content in non-default languages. The `lang` attribute is non-negotiable for screen readers. Add to Design pointers A11y."
 - **Build handoff section missing.** → "Build handoff section required when the PRD will be picked up in a different repo from the vault. Add the repo-split callout, Plan-mode-in-codebase-repo instructions, handoff snapshot table, and source-of-truth rule."
+- **Body Status line out of sync with frontmatter pipeline state.** → "Frontmatter says `lifecycle: <X>` / `critique_status: <Y>` / `design_pass_status: <Z>` but body Status line doesn't reflect that. Update the body Status line so external reviewers can see pipeline state without parsing YAML."
 
 ---
 
