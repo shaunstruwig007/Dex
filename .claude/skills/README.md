@@ -295,8 +295,15 @@ Provided by Anthropic for broad productivity tasks (prefixed with `anthropic-`):
 Skills and plans that govern **this** vault’s product workflow (not general PKM):
 
 - **Live methodology:** [plans/skill-pipeline/README.md](../../plans/skill-pipeline/README.md) — chat+vault skill pipeline (`pdlc-ui` parked 2026-04-24).
-- **`/moneypenny-custom`** — Per-initiative discovery debriefer (Felix + ICP + evidence → `discovery.*`). [moneypenny-custom/SKILL.md](./moneypenny-custom/SKILL.md) · [plans/Research/moneypenny-strategy.md](../../plans/Research/moneypenny-strategy.md).
+- **Pipeline skills (idea → discovery → PRD → critique):**
+  - **`/weekly-market-intel-custom`** — weekly outside-in research umbrella (Friday Signal). [SKILL.md](./weekly-market-intel-custom/SKILL.md). *Standalone — not in pipeline.*
+  - **`/initiative-discovery-custom`** — per-initiative discovery (vault scan + ICP cross-check + evidence-gap detection + candidate slices). [SKILL.md](./initiative-discovery-custom/SKILL.md).
+  - **`/prd-author-custom`** — slice-shaped PRD authoring (bond_v1 shape, plan-mode-seed for Cursor Plan mode). [SKILL.md](./prd-author-custom/SKILL.md).
+  - **`/critique-product-custom`** — product / outcome / UX-risk critique on plan / PRD / seed. [SKILL.md](./critique-product-custom/SKILL.md).
+  - **`/critique-engineering-custom`** — engineering / feasibility / build-shape critique on plan / PRD / seed. [SKILL.md](./critique-engineering-custom/SKILL.md).
 - **`pdlc-ui/`** PR discipline (if UI work resumes): Cursor **`babysit`** + frozen [plans/PDLC_UI/engineering-guardrails.md](../../plans/PDLC_UI/engineering-guardrails.md) — the old **`/gatekeeper-custom`** skill was **removed** 2026-04-24.
+
+> Persona-named precursors (`/moneypenny-custom`, `/felix-custom`, `/agent-m-cpo-custom`, `/agent-q-cto-custom`) were **removed** 2026-04-29 after walkthrough 2 validated their renamed replacements end-to-end. See [plans/skill-pipeline/lessons-from-skills.md](../../plans/skill-pipeline/lessons-from-skills.md) for the validation evidence.
 
 ## Related
 

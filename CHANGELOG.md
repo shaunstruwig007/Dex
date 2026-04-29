@@ -7,6 +7,48 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.21.0] — Walkthrough 2 (cross-PRD + design-heavy) + persona-name cleanup (2026-04-29)
+
+**Before:** Five renamed skills had been authored against walkthrough-1 evidence (multi-language content translation — content-heavy, single-PRD). The four persona-named precursors (`agent-m-cpo-custom`, `agent-q-cto-custom`, `moneypenny-custom`, `felix-custom`) co-existed on disk pending walkthrough-2 validation. Cursor Plan-mode consumption, cross-PRD discovery, and the `--reshape` flag on `/prd-author-custom` were untested. The kill of `/design-prompt-custom` had been called but not validated against a design-heavy initiative.
+
+**Now:** Walkthrough 2 ran end-to-end on a cross-PRD initiative — *"AI Assistant alongside Employee Chat — IA / surface-parity question"* — reconciling `Employee_Chat_and_Groups.md` and `AI_Assistant_FAQ.md`. ~2.5 hrs end-to-end (30% faster than walkthrough 1 despite producing 3× the artefacts).
+
+**Artefacts produced:**
+- Discovery: [`06-Resources/Product_ideas/ai-assistant-alongside-chat_discovery.md`](06-Resources/Product_ideas/ai-assistant-alongside-chat_discovery.md) — first cross-PRD discovery test; surfaced 6 evidence gaps + Path A/B/C scope recommendation to PRD author.
+- NEW PRD: [`06-Resources/PRDs/AI_Assistant_in_Chat_Surface.md`](06-Resources/PRDs/AI_Assistant_in_Chat_Surface.md) — bond_v1 shape; 5 slices, 8 risks, 10 out-of-scope, 8 open questions, full Design pointers section. First test of cross-PRD slice dependencies (Slice 4 depends on `Multilingual_Content.md` slice 3).
+- Reshaped to bond_v1: [`Employee_Chat_and_Groups.md`](06-Resources/PRDs/Employee_Chat_and_Groups.md) + [`AI_Assistant_FAQ.md`](06-Resources/PRDs/AI_Assistant_FAQ.md) (preserved 2026-04-17 collaborative-pilot decisions verbatim). First test of `/prd-author-custom`'s `--reshape` flag.
+- Critique log: [`plans/skill-pipeline/sessions/2026-04-29-walkthrough-2-critiques.md`](plans/skill-pipeline/sessions/2026-04-29-walkthrough-2-critiques.md) — 6 critique runs (3 PRDs × product + engineering); all returned RETURN TO PLAN as expected for first-draft spec_ready.
+
+**Validations confirmed:**
+- **Kill of `/design-prompt-custom` survives walkthrough 2** (the design-heavy test). Three PRDs with substantial design surfaces (chat IA, bot affordance density, in-thread disclosure) all fit cleanly in `/prd-author-custom`'s Design pointers section.
+- **Pair protocol (product → engineering)** worked across 6 runs; no conflicts surfaced.
+- **`eng-alt` mandatory rule** is doing its job — 7 alternatives produced across 3 PRDs.
+- **A11y `lang` lesson propagates** via design pointers; 2 of 3 PRDs hit PASS automatically.
+
+**Skill-spec gaps surfaced (deferred — apply after walkthrough 3 to avoid over-fitting):**
+- `/initiative-discovery-custom` — Phase 7 (skipped-steps log) + Phase 8 (PRD scope recommendation when discovery surfaces multiple-PRD options).
+- `/prd-author-custom` — Test-shape-per-slice subsection (GAP across all 3 critiques); Demo-readiness deliverable on Slice 1 (consistently SOFT).
+- `/critique-product-custom` — Cross-PRD seam detection guidance on Cohesion-vs-craft row.
+- Both critique skills — synthesis/meta-output mode for batch critique runs.
+
+**Persona-name cleanup completed:**
+- `.claude/skills/agent-m-cpo-custom/` — DELETED. Replaced by `/critique-product-custom`.
+- `.claude/skills/agent-q-cto-custom/` — DELETED. Replaced by `/critique-engineering-custom`.
+- `.claude/skills/moneypenny-custom/` — DELETED. Replaced by `/initiative-discovery-custom`.
+- `.claude/skills/felix-custom/` — DELETED. Replaced by `/weekly-market-intel-custom`.
+- `.claude/skills/README.md` updated to reflect new pipeline-skill catalog.
+- `plans/skill-pipeline/README.md` § 8 cleanup note updated (status moved from "Pending deletion" to "Already deleted").
+- Provenance preserved in each new skill's footer (`*Replaces <old-name>...*`) and in `lessons-from-skills.md`.
+
+**Out of scope this commit (left for separate review):** `felix-client-signals-custom` (different skill — first-party client activity intelligence; not part of pipeline-rename scope), `weekly-market-discovery` (different skill — market signal source rotation), `Market_intelligence/` ingest output, `create_multilingual_docx.js`, `claude-design-wireframe-brief.md`.
+
+**Still pending (post-walkthrough 3 candidates):**
+- Cursor Plan mode consumption test (paste `plan-mode-seed` from any of the 3 PRDs into Plan mode after must-fixes folded).
+- Idempotence diff-and-ask flow (re-author after edits).
+- Runtime-plan lens on engineering critique (sprint-seed or runtime artefact).
+
+---
+
 ## [1.20.0] — Skill pipeline pivot: validate-via-walkthrough + 5 renamed skills (2026-04-29)
 
 **Before:** Skill pipeline was about to author five skills against unvalidated assumptions — `/felix-custom`, `/moneypenny-custom`, `/bond-prd-custom` (TBD), `/agent-m-cpo-custom`, `/agent-q-cto-custom`, and a `/design-prompt-custom` (TBD). Persona-named (007 universe — Felix Leiter, Moneypenny, Bond, M, Q) which required persona knowledge to operate. The 6-sprint build-then-test plan ([`skill-pipeline-bdd-replan`](.cursor/plans/skill-pipeline-bdd-replan_5d961e0d.plan.md)) was active; the tracer-bullet PRD-shape delta plan was layered on top.

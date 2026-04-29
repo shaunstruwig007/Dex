@@ -83,7 +83,7 @@ The dotted line from `/weekly-market-intel-custom` is the only cross-pipeline de
 | ~~`/design-prompt-custom`~~ | (never authored) | Was: per-initiative design prompt generator | **KILLED** 2026-04-29 — design pointers folded into `/prd-author-custom`. Re-validate on design-heavy walkthrough. |
 | ~~`/gatekeeper-custom`~~ | (deleted 2026-04-24) | Was: post-merge engineering gate | DELETED — use Cursor `babysit` + frozen `engineering-guardrails.md` if `pdlc-ui` PRs resume. |
 
-The five `*-custom` precursors (felix-custom, moneypenny-custom, agent-m-cpo-custom, agent-q-cto-custom) **co-exist on disk** until the second walkthrough validates the new skills end-to-end. Cleanup is one batch delete after that proof point — see § 8.
+The four persona-named precursors (felix-custom, moneypenny-custom, agent-m-cpo-custom, agent-q-cto-custom) were **deleted 2026-04-29** after walkthrough 2 validated their renamed replacements end-to-end. Provenance is preserved in each new skill's footer (`*Replaces <old-name>...*`) and in [lessons-from-skills.md](./lessons-from-skills.md).
 
 ## 5. Validation cadence (replaces the old 6-sprint build cadence)
 
@@ -161,13 +161,11 @@ Every walkthrough has the same shape:
 - Detailed sprint seeds **s3a*, s3b, s4–s8** under [`plans/PDLC_UI/seeds/_archived-2026-04-24/`](../PDLC_UI/seeds/_archived-2026-04-24/).
 - Cancelled plan files: [`skill-pipeline-bdd-replan_5d961e0d.plan.md`](../../.cursor/plans/skill-pipeline-bdd-replan_5d961e0d.plan.md), [`tracer-bullet-prd-shape_11632852.plan.md`](../../.cursor/plans/tracer-bullet-prd-shape_11632852.plan.md). Status: `paused-2026-04-29`. Preserved for reference, not driving current work.
 
-**Pending deletion (after walkthrough 2 validates):**
-- `.claude/skills/agent-m-cpo-custom/` — replaced by `/critique-product-custom`.
-- `.claude/skills/agent-q-cto-custom/` — replaced by `/critique-engineering-custom`.
-- `.claude/skills/moneypenny-custom/` — replaced by `/initiative-discovery-custom`.
-- `.claude/skills/felix-custom/` — replaced by `/weekly-market-intel-custom`.
-
 **Already deleted:**
+- `.claude/skills/agent-m-cpo-custom/` — deleted 2026-04-29; replaced by `/critique-product-custom`.
+- `.claude/skills/agent-q-cto-custom/` — deleted 2026-04-29; replaced by `/critique-engineering-custom`.
+- `.claude/skills/moneypenny-custom/` — deleted 2026-04-29; replaced by `/initiative-discovery-custom`.
+- `.claude/skills/felix-custom/` — deleted 2026-04-29; replaced by `/weekly-market-intel-custom`.
 - `.claude/skills/gatekeeper-custom/` — deleted 2026-04-24.
 
 ## 10. Future — when UI comes back (not now)

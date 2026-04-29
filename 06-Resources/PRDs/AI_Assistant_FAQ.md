@@ -1,453 +1,240 @@
 ---
+prd_shape: bond_v1
 prd_id: ai-assistant-faq
-lifecycle: discovery
 created_date: 2026-03-30
-last_status_update: 2026-04-17
+last_bond_run: 2026-04-29 14:40
+lifecycle: discovery
 source: legacy_upgrade
-project_mgmt_tool: none
-issue_id: null
-analytics_tool: none
-shipped_date: null
-metrics_checked_date: null
+reshaped_from: agent-prd shape (2026-04-17)
+reshaped_on: 2026-04-29
+related_prds:
+  - AI_Assistant_in_Chat_Surface.md
+  - Employee_Chat_and_Groups.md
+  - Smart_HR_Whatsapp.md
+  - Messaging_Ops_Urgent_Alerts.md
+  - Notifications.md
+  - Multilingual_Content.md
 follow_up_tasks:
   - Define analytics events when Product Analytics stack is chosen
-  - This PRD Phase 2: Revisit Technical Blueprint when tawk.to ↔ WhatsApp Flow (**FAQ path only**) integration is validated (WhatsApp/Flow program work may precede elsewhere)
+  - Phase 2 (this PRD): revisit when tawk.to ↔ WhatsApp Flow integration is validated (WhatsApp / Flow program work proceeds elsewhere)
   - Pilot tawk.to Shortcuts + Suggested Message chains on one tenant; measure tap-through vs free-text for frontline cohort
 ---
 
-# AI Assistant — FAQ & HR Queries (Rapid Deployment)
+# AI Assistant — FAQ & HR Queries
 
-**Status:** Discovery — binding agent-oriented spec (retrofit)  
-**Target:** Frontline (blue-collar) employees and HR-adjacent teams needing fast answers to recurring policy/FAQ questions — **primary surface for Phase 1 of this PRD: Blue app**. **FAQ delivery via WhatsApp Flow** is **Phase 2 here** (decoupled from tawk.to Phase 1 — **WhatsApp / Flow stay priorities** on Smart HR & Messaging roadmaps).  
-**Estimated Effort:** 20–32 hours agent time for Phase 1 (Blue + tawk.to); +8–16 hours when WhatsApp Flow is picked up (excludes full conversational AI platform)
+**Status:** Reshaped from agent-prd to bond_v1 on 2026-04-29. **Phase 1 GA = Blue app + tawk.to (engine locked).** **FAQ-on-WhatsApp-Flow is Phase 2 of this PRD (out of scope here).** 2026-04-17 collaborative-pilot decisions preserved verbatim.
+**Target:** Frontline (blue-collar) employees and HR-adjacent teams needing fast, HR-grounded answers to recurring policy / FAQ questions, via the Blue app FAQ surface.
+**Out of scope intentionally:** FAQ-on-WhatsApp-Flow (Phase 2 of this PRD), live HRIS lookups, custom LLM training, full conversational AI platform, peer / team chat, AI as peer entity in chat list, voice / video.
 
-> **Steerco:** Active stub · **Phase:** Next (post-Essential GA) — **#2 commercial priority** (confirmed 2026-03-30)
+> **Steerco priority:** #2 commercial (confirmed 2026-03-30). Smart HR is #1; Chat is #3.
 >
-> *Scope is intentionally narrow — ship quickly, learn, then expand. A fuller conversational assistant roadmap may follow in later phases.*
+> **Program clarity:** WhatsApp + WhatsApp Flow remain **high portfolio priorities** (`Smart_HR_Whatsapp.md`, `Messaging_Ops_Urgent_Alerts.md`). What is **decoupled** is only **this PRD's Phase 1 scope**: ship FAQ/policy via tawk.to in Blue first, **without** making tawk.to GA depend on building the **FAQ-on-WhatsApp-Flow** integration.
 
-**Program vs this PRD:** **WhatsApp** and **WhatsApp Flow** remain **high portfolio priorities** (e.g. [Smart_HR_Whatsapp.md](./Smart_HR_Whatsapp.md), [Messaging_Ops_Urgent_Alerts.md](./Messaging_Ops_Urgent_Alerts.md)) — nothing here downranks that. What is **decoupled** is only **this PRD’s Phase 1 scope**: ship **FAQ/policy via tawk.to in Blue** first, **without** making tawk.to GA depend on building the **FAQ-on-WhatsApp-Flow** integration. The Flow path for *this* FAQ product is **Phase 2** in *this* document; Flow and WhatsApp work proceed on their own tracks elsewhere.
+> **2026-04-17 collaborative-pilot decisions** (preserved):
+>
+> | Decision | Shaun's call |
+> |----------|----------------|
+> | **tawk.to tenancy (Phase 1)** | **Wyzetalk-operated** workspaces/properties per tenant — not client-owned tawk.to accounts for GA. |
+> | **Phase 1 GA scope** | **Blue app + tawk.to.** **FAQ-on-WhatsApp-Flow** is **Phase 2 in this PRD** (out of scope here; not in the same delivery slice as tawk.to depth work). **WhatsApp / Flow remain program priorities**; they are NOT deprioritized — only **ungated** from this FAQ milestone. |
+> | **FAQ engine** | **tawk.to stays locked** — leadership choice stands; only integration patterns may change in discovery. |
 
-*Created: 2026-03-30 — [[00-Inbox/Meetings/2026-03-30 - Post Launch Priorities Essential|Post-launch priorities 2026-03-30]]*
-
-### Collaborative pilot (product decisions — 2026-04-17)
-
-Captured during a **pilot-only** `/agent-prd` session (questions before treating the spec as locked):
-
-| Decision | Shaun’s call |
-|----------|----------------|
-| **tawk.to tenancy (Phase 1)** | **Wyzetalk-operated** workspaces/properties per tenant — not client-owned tawk.to accounts for GA. |
-| **Phase 1 GA scope** | **Blue app + tawk.to** — ship FAQ/policy chat in-app first. **FAQ-on-WhatsApp-Flow** is **Phase 2 in this PRD** (not in the same delivery slice as tawk.to depth work). **WhatsApp / Flow remain program priorities**; they are **not** deprioritized — only **ungated** from this FAQ milestone. Extra discovery goes to tawk.to (policy ingestion, guided flows, frontline UX). |
-| **FAQ engine** | **tawk.to stays locked** as the engine; leadership choice stands — only integration patterns may change in discovery. |
-
-*Content ownership (who edits FAQ copy on an ongoing basis) remains in Open questions below.*
+*Created 2026-03-30 — [[00-Inbox/Meetings/2026-03-30 - Post Launch Priorities Essential|Post-launch priorities 2026-03-30]] (note: meeting file does not currently exist in vault; reference preserved from original PRD).*
 
 ---
 
-## The Job to Be Done
+## Goal
 
-Employees can get accurate, HR-approved answers to common FAQ and policy questions from a single chat experience in the **Blue app** (Phase 1 of this PRD), without waiting for a human, with **tap-first guided paths** where helpful for low-literacy or low-patience users, and a clear path to escalation when the bot cannot answer. **Exposing this same FAQ bot via WhatsApp Flow** is Phase 2 **in this PRD** — separate from company-wide WhatsApp investment, which stays priority on [Smart_HR_Whatsapp.md](./Smart_HR_Whatsapp.md) and [Messaging_Ops_Urgent_Alerts.md](./Messaging_Ops_Urgent_Alerts.md).
+Frontline employees in Wyzetalk Essential tenants get accurate, HR-approved answers to recurring policy / FAQ questions via a chat experience in the Blue app — without waiting for a human, with tap-first guided paths designed for low-literacy / low-patience users, and clear escalation when the bot cannot answer. The HR ticket queue gets shorter; the perception of "AI value" in the product gets sharper; the next chat-list iteration (`AI_Assistant_in_Chat_Surface.md`) inherits a working FAQ engine.
 
-**User value:** Cuts HR/support load, matches competitor “AI quick win” positioning, and delivers tangible AI value to clients without building a custom LLM platform in Phase 1.
+This PRD is intentionally narrow — it ships a quick-win FAQ surface, not a full conversational platform. A fuller assistant roadmap may follow in later phases.
 
----
-
-## tawk.to — policy ingestion, guided prompts, frontline UX (discovery)
-
-**Sources:** [Understanding AI Assist’s Data Sources](https://help.tawk.to/article/understanding-ai-assist%E2%80%99s-data-sources), [Setting up your Knowledge Base](https://help.tawk.to/article/setting-up-your-knowledge-base), [Suggested Messages and AI Questions](https://help.tawk.to/article/suggested-messages-and-ai-questions) (tawk.to Help Center, retrieved 2026-04-17).
-
-### Client policies → answers (Wyzetalk service shape)
-
-tawk.to **AI Assist** can combine multiple **data sources** so uploaded client material feeds the same bot that employees use in Blue:
-
-| Source type | Fit for client policies / HR docs |
-|-------------|-------------------------------------|
-| **Documents** | **PDF, CSV, TXT** — add per property; text must be copy-extractable (scanned images without OCR are weak). AI reads snippets (~3,300 chars per chunk per vendor doc). |
-| **Knowledge Base articles** | Good for structured chapters (leave, safety, conduct). When AI Assist is on, KB is a **data source**. |
-| **FAQs** | Q/A pairs; **CSV batch import**; per-row limits (question ≤255 chars, answer ≤1,000 chars — long answers must be split or moved to KB/Documents/Text). |
-| **Plain Text** | Short global context per AI agent (tone, disclaimers, escalation rules). |
-| **Shortcuts** | Templated answers + attachments; can pair with guided UI (below). |
-
-**Operational implication:** Wyzetalk can standardize an **ingestion playbook** for tenants: receive policy PDFs → QA text extractability → upload to **Documents** and/or split into **KB articles** / FAQ rows → tune **Base Prompt** (tone, “only use sources,” escalation) → test with preview “which sources were used” indicator in dashboard.
-
-### Guided prompts — is it possible?
-
-**Yes, with important nuance.** tawk.to supports **tap-first guided paths** alongside free-text chat:
-
-- **Suggested Messages:** Up to **four** clickable buttons per Shortcut response — vendor guidance: **simple language, under 10 words per button**, no internal jargon ([Suggested Messages and AI Questions](https://help.tawk.to/article/suggested-messages-and-ai-questions)).
-- **Chained flows:** A Shortcut response can include Suggested Messages that trigger the **next** Shortcut (scripted sequences).
-- **AI Questions:** Hidden matching phrases on Shortcuts so **AI Assist** routes typed *or* tapped input to the **exact** templated reply (predictable, HR-approved wording when “Revise answer based on context” is off).
-- **Triggers / pre-chat:** Automation and pre-chat forms can start structured flows ([scripted sequences guide](https://help.tawk.to/article/using-suggested-message-and-ai-assist-to-create-scripted-chat-sequences)).
-
-**Nuance for ~90% blue-collar / frontline users:** Visitors **can still ignore buttons and type freely**; AI Assist then answers from **data sources + Base Prompt**. Mitigations for Phase 1 product design:
-
-1. **Open with Suggested Messages** on greeting (top intents: Leave, Pay, Safety, Talk to someone).  
-2. **Base Prompt** tuned for **short, plain** replies, local language if supported, and **mandatory escalation** when confidence/source match is weak ([restrict replies](https://help.tawk.to/article/using-base-prompt-to-restrict-ai-assist-replies) / escalation patterns per vendor).  
-3. **Avoid over-reliance on long PDF-only** answers — break policies into **shortcuts + KB** so guided taps return **readable** chunks, not walls of text.  
-4. **Human handoff** remains a Shortcut action (transfer to department/agent) for low-literacy or frustrated users.
-
-**Verdict:** tawk.to is **suitable for guided self-service** for frontline workers **if** product invests in **Shortcut + Suggested Message** design and **policy chunking** — **Meta Flow–style** structured screens are a **different** channel (still a priority elsewhere); tawk.to delivers **strong button-led** chat inside the widget for Phase 1.
-
-### Vendor limits to track in implementation
-
-- AI Assist pulls **up to five** relevant chunks per reply; duplicate content across sources hurts accuracy — **dedupe** in ingestion playbook.  
-- **AI Assist message quotas / overages** apply (billing).  
-- Images in PDFs/websites are **not** analyzed; tables on websites may be incomplete.
+**Evidence grounding.** 2026-03-30 leadership session (Merel CEO/CPO + Leon CTO) ratified #2 commercial priority + tawk.to as engine. 2026-04-17 collaborative pilot ratified Wyzetalk-operated workspaces + Blue-app-first GA + FAQ-on-Flow as Phase 2 (out of GA scope here). ICP v1 (2026-04-29) — strongest fit with ICP segment 2 (HR self-service). Competitive frame: JEM / Paymenow ship AI + WhatsApp HR narratives; Wyzetalk needs a credible AI-quick-win that does not require months of LLM platform work. No customer / leadership meeting evidence in vault yet (`00-Inbox/Meetings/` empty — gap flagged).
 
 ---
 
-## Work Packages
+## Users
 
-### WP-1: Product & tawk.to tenancy model (P0 — No dependencies)
+**Primary user — frontline employee, high-volume FAQ asker.** Low-literacy / low-patience subset of ICP segment 1 + 2. Asks the same questions repeatedly: leave policy, payslip query (redirected — see Smart HR boundary), safety procedures, conduct policy, onboarding info. Win condition: opens FAQ chat in Blue app, taps a Suggested Message or types a question, gets an HR-grounded reply within seconds.
 
-**Priority:** P0  
-**Dependencies:** No dependencies  
-**Files:** Tenant-facing runbooks (TBD), tawk.to workspace config (TBD)  
-**VPS-eligible:** Yes (admin/config work)
+**Secondary user — HR-adjacent / supervisor.** Receives fewer repetitive questions because the bot deflects. Win condition: monthly volume of "where do I find...?" tickets / phone calls drops measurably.
 
-| # | Behavior | Observable |
-|---|----------|------------|
-| 1a | **Wyzetalk-operated** tawk.to property/workspace per tenant; credentials in Wyzetalk-controlled stores | Runbook: provision + rotate; no client-owned tawk GA requirement |
-| 1b | Roles for **who authors/updates FAQ corpus** (Wyzetalk vs client content owner) documented | Roster in runbook — separate from workspace ownership |
+**Secondary user — tenant content owner.** Owns the FAQ corpus per tenant (who exactly, on an ongoing basis, is open Q1). Win condition: a documented ingestion playbook + clear updating workflow.
 
-**Dependency graph:**
+**Out of scope (MVP) — Wyzetalk implementation / CSM.** They provision the tawk.to workspace + ingest the corpus (per Slice 2 runbook) but are not direct UI users of the consumer chat experience.
 
-```text
-WP-1 (P0) ──> WP-2, WP-3 (Phase 2 — FAQ-on-Flow; decoupled from tawk Phase 1)
-WP-2 (P0, deps: WP-1) ──> WP-4 ──> Phase 1 release candidate (Blue + tawk.to)
-WP-3 (P1/P2, deps: WP-1; Messaging PRDs) ──> WP-4 extension ──> dual-channel GA (future)
-```
-
-### WP-2: Blue app — FAQ chat surface (P0 — Depends on WP-1)
-
-**Priority:** P0  
-**Dependencies:** WP-1  
-**Files:** Mobile: TBD · Web embed SDK usage per tawk.to docs  
-**VPS-eligible:** No (mobile toolchain)
-
-| # | Behavior | Observable |
-|---|----------|------------|
-| 2a | User opens FAQ/chat entry point in Blue app | Chat UI loads within app shell |
-| 2b | Session is attributable to tenant/user for escalation | Identifiers passed per tawk.to integration pattern (TBD in implementation) |
-
-### WP-3: WhatsApp Flow — FAQ path (**Phase 2 — this PRD only**)
-
-**Priority:** P1/P2 for **this** FAQ product (not Phase 1 GA here)  
-**Rationale (clarity):** **WhatsApp and WhatsApp Flow stay portfolio priorities** — owned and advanced primarily via [Smart_HR_Whatsapp.md](./Smart_HR_Whatsapp.md) and [Messaging_Ops_Urgent_Alerts.md](./Messaging_Ops_Urgent_Alerts.md). **This WP** only **decouples**: the **tawk.to FAQ** milestone does **not** wait on hooking that bot into Flow. When program Flow surfaces and handoff patterns are ready, **add** the FAQ entry path (WP-3) to the same tawk.to engine — second channel UAT, not a statement that WhatsApp is “later” company-wide.
-
-**Dependencies:** WP-1; product dependency on Messaging PRDs WhatsApp/Flow readiness  
-**Files:** Flow definitions (TBD); integration with Smart HR shared surfaces  
-**VPS-eligible:** Partial (backend flows yes)
-
-| # | Behavior | Observable |
-|---|----------|------------|
-| 3a | User can start FAQ interaction from approved WhatsApp Flow entry | Flow reaches tawk.to or handoff endpoint |
-| 3b | Behaviour stays FAQ-scoped (no live HRIS data in this path) | No payroll/leave API calls in the FAQ Flow path |
-
-### WP-4: Content, escalation, and compliance (P1 — Depends on WP-2)
-
-**Priority:** P1  
-**Dependencies:** WP-2 (Phase 1). When WP-3 ships, re-run UAT for **second channel** (WhatsApp).  
-**Files:** Content schema (TBD); privacy assessment (TBD)  
-**VPS-eligible:** Yes
-
-| # | Behavior | Observable |
-|---|----------|------------|
-| 4a | FAQ corpus is curated and versioned | Change log or CMS behaviour documented |
-| 4b | Unanswered queries escalate to HR inbox or human agent | Escalation route visible in tawk.to or email handoff |
-| 4c | POPIA/GDPR data residency for tawk.to is recorded | Decision logged with vendor docs link |
+**Out of scope (MVP) — peer-chat-only users.** They have their own surface (`Employee_Chat_and_Groups.md`); the FAQ surface is not for peer conversation.
 
 ---
 
-## Success Scenarios
+## Success metrics
 
-### Scenario 1: Happy path — in-app FAQ
+| # | Metric | Definition | Target | Measurement source |
+|---|---|---|---|---|
+| 1 | **FAQ session adoption** | % of tenant-enabled employees with ≥ 1 FAQ session in a 30-day window | ≥ 40% in 90 days post-tenant-enable | tawk.to dashboard (sessions / unique users) |
+| 2 | **Deflection rate** | % of FAQ sessions resolved without escalation to human / HR ticket | ≥ 70% in 90 days | tawk.to + Wyzetalk escalation tracker (cross-source) |
+| 3 | **Hallucination rate (sampled)** | % of replies containing ungrounded HR information | **0% — any non-zero is a defect** | HR-sampled review of 100 sessions/month |
+| 4 | **Time-to-first-answer (median)** | Seconds from question submitted to first reply | < 5s | tawk.to session metrics |
 
-**Setup:** Employee authenticated in Blue app; tawk.to FAQ content published for tenant.  
-**Action:** User opens FAQ chat and asks a question covered by the corpus.  
-**Observable Outcome:** User receives an approved answer in the chat within the tawk.to SLA (configure target in implementation).  
-**Success Criteria:** 100% of seeded smoke-test questions return a non-empty bot response in UAT.
+### Note on measurability
 
-### Scenario 2: Escalation path
-
-**Setup:** Question not in corpus.  
-**Action:** User requests help or bot offers escalation.  
-**Observable Outcome:** Ticket or handoff reaches HR inbox or live agent per configuration.  
-**Success Criteria:** Escalation path verified in UAT with a test message end-to-end **from Blue app** (Phase 1). When WhatsApp Flow ships (Phase 2), repeat once for that channel.
-
-### Scenario 3: Error / compliance — out-of-scope ask
-
-**Setup:** User asks for live payslip or leave balance (Phase 1 out of scope).  
-**Action:** User submits query.  
-**Observable Outcome:** Bot does not fabricate HRIS data; redirects or defers to documented process / Smart HR scope.  
-**Success Criteria:** Scripted test passes: no ungrounded payroll numbers returned.
+- **Metrics 1, 2, 4** are measurable from tawk.to dashboard at slice 1; no Wyzetalk analytics plumbing required pre-launch.
+- **Metric 3 is the load-bearing safety signal.** Hallucinations are tenant-liability events. Sampled HR review starts at slice 1; a defect (any non-zero hallucination case) blocks GA expansion to next tenant.
+- **Metric 2** has a cross-source reconciliation requirement — tawk.to "session resolved without handoff" must align with Wyzetalk's escalation log. Spec gate at slice 3 PR review: is the reconciliation pipeline shipped?
 
 ---
 
-## Satisfaction Metric
+## Requirements
 
-**Overall Success:** 90% of UAT scripted FAQ intents receive a correct grounded response or explicit escalation (no hallucinated policy).
-
-**Measured by:** UAT script pass rate + HR sign-off on corpus coverage list.
-
----
-
-## Metrics Strategy
-
-### Events to Track (none — deferred)
-
-`analytics_tool: none`. When [Product_Analytics.md](./Product_Analytics.md) is implemented, add events such as `faq_session_started`, `faq_answer_served`, `faq_escalation_triggered` (names TBD with analytics owner).
-
-### Success Targets
-
-- Discovery complete by target date in steering notes (May 2026 aspiration).  
-- Phase 1 launch: UAT satisfaction gate above before GA toggle.
-
-### Business Outcome Mapping
-
-This feature ladders to **commercial priority #2** and **perceived AI value** for clients (leadership session 2026-03-30).  
-Expected impact: competitive parity with JEM/Paymenow-style AI + WhatsApp HR narratives; quantified revenue tie-in deferred to GTM.
+1. User can open a FAQ chat surface inside the Blue app and immediately see a greeting with up to 4 Suggested Messages mapped to top intents.
+2. tawk.to AI Assist is configured per-tenant from a Wyzetalk-operated workspace; tenant FAQ content (PDFs, KB articles, Q/A pairs, plain text) is ingested per a documented Wyzetalk playbook.
+3. Replies are grounded in approved sources only; the tawk.to "Revise answer based on context" toggle is OFF by default; the Base Prompt enforces "use sources or escalate".
+4. When the bot cannot answer with confidence (or the user requests it), escalation to HR inbox or human agent is offered and routed.
+5. AI conversations are stored by tawk.to per its data-residency policy; tenant admin has audit visibility and the POPIA / GDPR posture is documented per tenant.
+6. Live HRIS lookups (payslip, leave balance, roster) are NOT in this PRD; user is redirected to the Smart HR surface (`Smart_HR_Whatsapp.md`).
+7. The FAQ surface meets a11y baseline — keyboard / screen-reader parity, correct `lang` attribute on rendered AI replies, sufficient contrast, tap-target sizes.
+8. Top intents are reachable in 2–3 taps via guided Shortcut chains with localised, ≤ 10-word labels (per tawk.to vendor docs: `Suggested Messages and AI Questions`).
 
 ---
 
-## Architecture Constraints
+## Slices
 
-**Non-Negotiable Decisions:**
+| # | Name | Walking-skeleton? | Demo outcome (what observer sees) | Layers touched | Depends on |
+|---|---|---|---|---|---|
+| **1** | **Skeleton — FAQ chat in Blue app** | **Yes** | User opens FAQ entry in Blue app on a single configured tenant; sees a greeting with 4 Suggested Messages (top intents); taps one or types a free-text question; gets an HR-grounded reply within 5 seconds. | data + api + ui + config | tawk.to workspace provisioned for the tenant |
+| **2** | **Wyzetalk-operated tenancy + ingestion playbook** | No | Wyzetalk implementation provisions a tawk.to workspace for a new tenant, ingests their policy PDFs into Documents + KB articles + FAQ rows, configures the Base Prompt — handoff to GA happens in a documented N-hour cycle. | api + config (no user UI) | 1 |
+| **3** | **Escalation path** | No | User asks something outside the FAQ corpus → bot offers escalation → handoff routes to the HR inbox or a live agent (per tenant configuration); user lands in the receiving surface end-to-end. | api + ui | 1 |
+| **4** | **POPIA + tenant audit posture** | No | Tenant admin opens an audit view → sees session log entries with source attribution + retention period; POPIA / GDPR data-residency stance is documented per tenant; subprocessor list reviewed. | api + ui (admin) + config | 1 |
+| **5** | **Guided shortcut chains for top intents** | No | User taps the "Leave" Suggested Message → next-step Suggested Messages appear (Annual / Sick / Family / Compassionate); chained Shortcut returns the final HR-approved answer in 2–3 taps total. | api + config + ui | 1 |
 
-- **Engine:** tawk.to for Phase 1 FAQ bot — **vendor locked** (leadership 2026-03-30 + pilot 2026-04-17); not an open RFP for GA.  
-- **Tenancy:** **Wyzetalk-operated** tawk.to workspace per tenant for Phase 1 GA (pilot 2026-04-17).  
-- **GA gate (revised 2026-04-17):** **Blue app + tawk.to** for **this PRD’s** Phase 1 GA. **FAQ-on-WhatsApp-Flow** is **Phase 2 here** — prior “both channels for GA” pilot language for *this FAQ product* is superseded. **WhatsApp / Flow program priority is unchanged**; other PRDs continue Flow work on their timelines.  
-- **Scope:** FAQ and HR *policy* queries only — not full conversational AI; no custom model training in Phase 1.  
-- **No live HRIS lookups** in Phase 1 ([Smart_HR_Whatsapp.md](./Smart_HR_Whatsapp.md) owns structured data).  
-- **Responses** must be grounded in approved content, not open-ended generation.
+### Slicing rules applied
 
----
-
-## Technical Blueprint
-
-### System Integration Map
-
-```text
-Employee --> Blue_app --> tawk_to_widget --> tawk_to_cloud
-Employee --> WhatsApp --> WhatsApp_Flow --> [handoff_TBD] --> tawk_to   # Phase 2 — deferred
-tawk_to --> escalation --> HR_inbox_or_agent
-```
-
-Cross-PRD: WhatsApp / Flow infrastructure and investment live under [Messaging_Ops_Urgent_Alerts.md](./Messaging_Ops_Urgent_Alerts.md) (Part 2) and [Smart_HR_Whatsapp.md](./Smart_HR_Whatsapp.md) — **remain priorities**. **This PRD:** Phase 1 = Blue + tawk.to; **attaching this FAQ bot to Flow** = Phase 2 **here** (does not block other WhatsApp work).
-
-### Implementation repository paths (TBD)
-
-| Layer | Path / owner |
-|-------|----------------|
-| Mobile (Blue) | TBD |
-| Backend / Flow | TBD |
-| tawk.to workspace | **Wyzetalk-provisioned**, tenant-scoped (credentials Wyzetalk ops/secrets) |
-| Content / CMS | TBD — who edits copy is a process decision (see Open questions) |
-
-### Config & Setup
-
-Concrete JSON/YAML for tawk.to and WhatsApp Flow must be produced during discovery. Example placeholder shape (values not binding):
-
-```yaml
-# TBD — illustrative only
-tawk:
-  property_id: "<tenant_property>"
-  widget_key: "<embed_key>"
-whatsapp_flow:
-  flow_id: "<meta_flow_id>"
-  entry_point: "<deep_link_or_cta>"
-```
-
-### Key Implementation Patterns
-
-- Embed tawk.to per official mobile/Web SDK; pass user/tenant context as supported by vendor.  
-- WhatsApp Flow → tawk.to or middleware: **unresolved —** confirm with vendor + Meta docs during WP-3.
-
-### Dependencies (runtime)
-
-| Package / system | Version | Purpose |
-|------------------|---------|---------|
-| tawk.to | Per vendor | FAQ + escalation |
-| WhatsApp Business / Flow | Per Meta | Delivery channel |
-
-### Environment Variables
-
-| Variable | Example Value | Where Set | Purpose |
-|----------|---------------|-----------|---------|
-| `TAWK_PROPERTY_ID` | TBD | Secrets store | Tenant routing |
+- **Slice 1 is the walking skeleton.** Touches data (FAQ corpus storage in tawk.to) + api (tawk.to widget integration in Blue app) + ui (chat surface, Suggested Messages on greeting) + config (tenant property + workspace credentials). Single end-to-end demo.
+- **Slice 2 is non-user-facing** but earns its own slice — tenancy provisioning for a new tenant is a repeatable operational pattern that defines tenant onboarding. Without it, slice 1 only demos for the seed tenant.
+- **WhatsApp Flow as a slice is out-of-scope.** That's Phase 2 of this PRD per pilot 2026-04-17. It does not appear in the slice list.
+- **5 slices** — fits 3–6 typical range.
+- **All slices have observable demo outcomes**; slice 4's demo is admin-side (audit view) rather than employee-side, but is observable.
 
 ---
 
-## Validation Protocol
+## Plan mode seed
 
-Vault-era checks (no app repo in this workspace): static proof that the spec remains internally consistent. Product QA remains manual/UAT.
-
-### WP-1 checks
-
-```bash
-# Check 1.1: PRD names tawk.to as engine
-grep -c "tawk" "06-Resources/PRDs/AI_Assistant_FAQ.md"
-# PASS: >= 1
-
-# Check 1.2: Phase 1 excludes live HRIS lookups (spec consistency)
-grep -c "Smart_HR_Whatsapp" "06-Resources/PRDs/AI_Assistant_FAQ.md"
-# PASS: >= 1 (cross-PRD boundary)
-```
-
-### WP-2 / WP-3 checks
-
-```bash
-# Check 2.1: Blue app surface explicitly required
-grep -c "Blue" "06-Resources/PRDs/AI_Assistant_FAQ.md"
-# PASS: >= 1
-
-# Check 3.1: WhatsApp Flow still tracked (Phase 2 for this PRD’s FAQ-on-Flow path)
-grep -c "WhatsApp Flow" "06-Resources/PRDs/AI_Assistant_FAQ.md"
-# PASS: >= 1
-```
-
-### WP-4 checks
-
-```bash
-# Check 4.1: Escalation path documented
-grep -c -i "escalat" "06-Resources/PRDs/AI_Assistant_FAQ.md"
-# PASS: >= 1
-```
-
-**Manual (not counted in automated pass rate):** UAT on device; tawk.to dashboard verification; legal/privacy sign-off.
-
-### Post-launch metrics (not agent-verifiable at vault build time)
-
-Adoption rate, deflection rate, median time-to-answer — require analytics instrumentation and production data.
-
----
-
-## Success Rate Target
-
-**4 of 4** static vault checks above must pass on each doc update.  
-**Overall:** 100% of automated grep checks pass before merge to main for this file.
-
-UAT and production metrics are out of scope for automated vault validation.
-
----
-
-## Notes for Agent Implementation
-
-**Scout priorities:**
-
-1. tawk.to **AI Assist** data sources + **Shortcuts / Suggested Messages** for guided frontline UX (vendor Help Center — links in **tawk.to capability review** below).  
-2. tawk.to integration with WhatsApp Business API / Flow when Phase 2 is scheduled (vendor + Meta documentation).  
-3. POPIA/GDPR data residency and subprocessors list for tawk.to.
-
-**Worker tasks:**
-
-1. Confirm embed vs redirect model for Blue app.  
-2. **Service design:** client policy PDFs → Wyzetalk ingestion checklist (Documents + KB articles + FAQ rows; chunking for AI Assist limits) per vendor docs.  
-3. Prototype **guided shortcut chains** (Suggested Messages: short labels, ≤4 buttons per step) for 2–3 top intents; validate with frontline pilot users.  
-4. **This PRD Phase 2:** FAQ → Flow handoff prototype when product chooses to attach this bot to Flow (Messaging / Smart HR timelines may already be advancing WhatsApp elsewhere).  
-5. Define FAQ content workflow and escalation roster.
-
-**Soldier review focus:**
-
-- Boundary with Smart HR (no HRIS reads here in Phase 1).  
-- Escalation UX and audit trail.  
-- No ungrounded generative answers outside approved corpus.
-
----
-
-## Files to Create
-
-```
-# TBD at implementation time (outside vault)
-docs/runbooks/tawk-to-tenant-setup.md
-config/whatsapp-flow/faq-entry.yaml
-```
-
-## Files to Modify
-
-```
-# Mobile / backend repos — TBD paths
-Blue app: add chat entry + SDK integration
+```plan-mode-seed
+Slice 1: Skeleton — FAQ chat in Blue app. User opens FAQ entry in Blue app on a single configured tenant; sees greeting with 4 Suggested Messages (top intents); taps one or types free-text; gets HR-grounded reply within 5s. Layers: data + api + ui + config. Depends: tawk.to workspace provisioned for the tenant.
+Slice 2: Wyzetalk-operated tenancy + ingestion playbook. Wyzetalk implementation provisions tawk.to workspace for new tenant, ingests policy PDFs into Documents + KB articles + FAQ rows, configures Base Prompt; handoff to GA in documented N-hour cycle. Layers: api + config. Depends: 1.
+Slice 3: Escalation path. User asks something outside corpus → bot offers escalation → handoff routes to HR inbox or live agent per tenant config; user lands in receiving surface end-to-end. Layers: api + ui. Depends: 1.
+Slice 4: POPIA + tenant audit posture. Tenant admin opens audit view → sees session log entries with source attribution + retention period; POPIA / GDPR data-residency stance documented per tenant. Layers: api + ui (admin) + config. Depends: 1.
+Slice 5: Guided shortcut chains for top intents. User taps "Leave" Suggested Message → next-step Suggested Messages appear (Annual / Sick / Family / Compassionate); chained Shortcut returns final HR-approved answer in 2–3 taps. Layers: api + config + ui. Depends: 1.
 ```
 
 ---
 
-## Out of Scope
+## Risks
 
-- Complex conversational flows or multi-turn reasoning beyond FAQ.  
-- Live HR data lookups (leave, real-time payslip) — [Smart_HR_Whatsapp.md](./Smart_HR_Whatsapp.md).  
-- Custom AI model training or fine-tuning.  
-- Full conversational AI platform in Phase 1.  
-- Peer/team chat — [Employee_Chat_and_Groups.md](./Employee_Chat_and_Groups.md).
-
----
-
-## Detailed product context (historical)
-
-### Priority & rationale
-
-**#2 post-GA priority** as confirmed in the 2026-03-30 leadership session (Leon — CTO, Merel — CEO/CPO).
-
-- Competitors (JEM, Paymenow) are moving fast with AI and WhatsApp-delivered HR services.
-- Clients want immediate, tangible AI value.
-- Framing: **quick win** — simple, effective, fast to ship. This is not a full AI platform.
-
-### Confirmed decisions (2026-03-30)
-
-| Decision | Detail |
-|----------|--------|
-| **Tool confirmed** | **tawk.to** — live chat and AI support platform. Confirmed suitable for rapid implementation. |
-| **Scope** | Basic FAQ and HR query handling **only**. Not a full conversational AI platform. |
-| **Delivery surfaces** | Blue app (Phase 1 for this PRD) + **FAQ via** WhatsApp Flow (Phase 2 **here**). **WhatsApp / Flow remain priorities** on other roadmaps. |
-| **Approach** | Simple, fast to ship. Do not over-engineer for Phase 1. |
-
-### Hypothesis
-
-Frontline employees have recurring, repetitive HR and policy questions (leave balances, payslip queries, safety procedures, company policies). Answering these through a simple FAQ chatbot — without requiring HR staff intervention — reduces support load and delivers immediate perceived AI value to clients.
-
-tawk.to enables rapid deployment of a structured FAQ bot without custom AI infrastructure, making this a genuine quick win rather than a multi-month build.
-
-### Scope (Phase 1 — fast ship)
-
-- **FAQ bot** — Pre-configured answers to the most common HR and policy questions (leave, payslips, safety contacts, onboarding info)
-- **Accessible from Blue app** — In-app chat surface
-- **Accessible via WhatsApp Flow (Phase 2)** — same FAQ engine (tawk.to); channel work deferred
-- **tawk.to as the engine** — No custom AI infrastructure required for Phase 1
-- **HR-grounded responses** — Answers constrained to approved company content (not open-ended AI generation)
-- **Escalation path** — Unanswered queries routed to HR inbox or human agent
-
-### Relationship to other PRDs
-
-| PRD | Relationship |
-|-----|-------------|
-| [Smart_HR_Whatsapp.md](./Smart_HR_Whatsapp.md) | Smart HR is **#1 priority** and handles structured HR data (payslips, leave, roster via HRIS). This PRD is **#2** (FAQ/policy via tawk.to). **WhatsApp / Flow stay central to Smart HR**; **this** PRD’s Phase 2 is only “**also** surface the tawk FAQ via Flow when integrated” — not a competition with Smart HR’s Flow roadmap. |
-| *(Future conversational assistant)* | Phase 1 is FAQ-only; broader assistant vision is not tracked in a separate vault PRD yet. |
-| [Employee_Chat_and_Groups.md](./Employee_Chat_and_Groups.md) | Chat is #3 priority. Separate surface — peer/team messaging vs bot. |
-
-### Dependencies
-
-- WhatsApp outbound ([Messaging_Ops_Urgent_Alerts.md](./Messaging_Ops_Urgent_Alerts.md#whatsapp-channel--outbound-messaging) Part 2 — Essential, live at GA) — **remains priority**; independent of this PRD’s Phase 1.
-- WhatsApp Flow infrastructure (Smart HR / Messaging — **ongoing priority**). **This PRD** adds a **FAQ-on-Flow** dependency only for **Phase 2** of *this* scope (tawk handoff), not for Blue + tawk.to GA.
-- tawk.to account setup and configuration
-- HR/policy content sourced and structured by client (or Wyzetalk implementation team)
-
-### Open questions (pre-discovery)
-
-- For frontline-only UX: does tawk.to widget support **disabling or de-emphasizing** free-text input so flows are **primarily** tap-driven? (If not, product relies on greeting Shortcuts + Base Prompt — confirm in widget/SDK docs.)
-- How does tawk.to integrate with WhatsApp Business API and WhatsApp Flow? (**Phase 2**)
-- **Content management:** who updates FAQ answers on an ongoing basis, how often, and approval workflow — *workspace tenancy is Wyzetalk-operated per pilot 2026-04-17; content ops still TBD.*
-- ~~Is this Wyzetalk-configured per tenant or client self-serve?~~ **Resolved (pilot 2026-04-17):** tawk.to **workspace is Wyzetalk-operated** per tenant for Phase 1 GA; client self-serve of tawk accounts is out of scope for GA.
-- POPIA/GDPR: tawk.to conversation data residency — where is it stored?
-- Escalation: does tawk.to support live agent handoff within the same interface?
-- Will Phase 1 tawk.to be reusable or replaced when the broader AI Assistant platform matures?
+1. **Hallucination on policy answers.** Bot generates ungrounded HR advice; tenant liability event. **Mitigation:** "Revise answer based on context" OFF; Base Prompt = "use sources or escalate"; HR-sampled review (metric 3); slice 3 escalation always available; defect blocks GA expansion.
+2. **tawk.to vendor lock-in compounded.** Engine + UX both lock to tawk.to; v2 swap is heavy. **Mitigation:** documented as accepted Phase 1 trade-off; `AI_Assistant_in_Chat_Surface.md` design recommends abstracting the engine behind a peer-entity contract for the chat-list surface, which makes future swap cheaper.
+3. **Content management ownership ambiguity.** Who updates the FAQ corpus on an ongoing basis is unresolved. **Mitigation:** Slice 2 ships with a role definition (Wyzetalk vs client content owner); Open Q1 captures the tradeoff; workshop decides.
+4. **POPIA / data residency exposure.** tawk.to is a subprocessor; data-residency posture not yet validated for SA / EU tenants. **Mitigation:** legal sign-off pre-GA per tenant; tenant audit view (slice 4); contractual / DPA review with vendor before each new tenant onboards.
+5. **Frontline UX failure on free-text.** Users ignore Suggested Messages and type free-text the AI fumbles. **Mitigation:** slice 5 guided chains tested with frontline pilot; short Base Prompt; escalation always one tap away; Suggested Message labels ≤ 10 words per vendor docs.
+6. **AI Assist quotas / billing surprises.** tawk.to AI Assist quotas / overages can spike unexpectedly. **Mitigation:** vendor monitoring; per-tenant quota; alerting before tenant hits cap; quota review in monthly tenant check-ins.
+7. **Cross-PRD boundary leak.** Bot answers Smart-HR-owned intents (payslip, leave balance, roster). **Mitigation:** Requirement 6 + corpus exclusion; intent-classifier rejects Smart HR-owned intents; out-of-scope reply directs user to Smart HR surface.
+8. **Phase-2 confusion** — stakeholders interpret "FAQ-on-WhatsApp-Flow is Phase 2" as "WhatsApp is deprioritised". **Mitigation:** explicit clarity blocks (preserved in this PRD's status); WhatsApp / Flow program priority is unchanged on `Smart_HR_Whatsapp.md` and `Messaging_Ops_Urgent_Alerts.md`.
 
 ---
 
-## Acceptance criteria (BDD)
+## Out of scope
 
-*Not yet authored — discovery stub. When promoting toward `spec_ready`, add Given/When/Then rows here and link checks in **Validation Protocol**.*
+| Out of scope | Why | Future cycle? |
+|---|---|---|
+| **FAQ-on-WhatsApp-Flow** integration | Phase 2 of THIS PRD per pilot 2026-04-17; depends on Messaging / Smart HR Flow infrastructure being ready (those tracks proceed independently) | Yes — Phase 2 of this PRD |
+| Live HRIS lookups (payslip / leave / roster) | `Smart_HR_Whatsapp.md` owns; cross-PRD boundary | Yes — separate PRD (Smart HR is #1 priority) |
+| Custom LLM training / fine-tuning on tenant data | Phase 1 is FAQ-grounded only; quick-win scope | Yes — future post-Phase-2 |
+| Full conversational AI platform (multi-turn reasoning, agentic flows) | Quick-win scope; explicit non-goal | Yes — future, separate PRD |
+| Peer / team chat | `Employee_Chat_and_Groups.md` owns | No — explicit non-goal |
+| AI as peer entity in chat list | `AI_Assistant_in_Chat_Surface.md` owns; this PRD remains the Blue-app-embed surface | No — explicit non-goal (separate PRD covers) |
+| Voice input / output | Phase 1 is text-only; voice opens new modality + new failure modes | Yes — future, post-Phase-2 |
+| Per-tenant model fine-tuning | Out of "fast ship" scope | Yes — future |
+| Multi-language outside tawk.to-supported list | Vendor language coverage gates this; `Multilingual_Content.md` patterns apply where supported | Yes — future, expansion-driven |
 
 ---
 
-*Promote toward `spec_ready` when discovery closes. Fast-ship target — aim to have discovery complete by May 2026. See [README.md](./README.md) for lifecycle.*
+## Open questions
 
-*Agent-prd retrofit — 2026-04-17 · collaborative pilot decisions merged — 2026-04-17 · FAQ-on-Flow = Phase 2 in this PRD (decoupled from tawk Phase 1); WhatsApp/Flow remain program priorities — clarified 2026-04-17 · tawk.to guided-flow + policy ingestion review — 2026-04-17*
+| # | Question | Blocks | Owner / next step |
+|---|---|---|---|
+| 1 | Content ownership ongoing — Wyzetalk-operated content vs client content owner | Slice 2 (role definition) | Workshop + Implementation team |
+| 2 | tawk.to data residency for SA tenants (and EU if any) | Slice 4 + Phase 1 GA | Legal — vendor docs review + DPA |
+| 3 | Does tawk.to widget support disabling / de-emphasising free-text input for frontline-only UX? | Slice 1 design | Vendor docs check; if no, Base Prompt covers |
+| 4 | Reusable when broader AI platform matures? | Future cycle | Future — re-evaluate at Phase-3 boundary |
+| 5 | Suggested Messages copy localisation alignment with `Multilingual_Content.md` | Slices 1 + 5 | Cross-PRD coordination |
+| 6 | Per-tenant Base Prompt customisation — extent + governance | Slice 2 spec | Implementation team + Product |
+| 7 | tawk.to AI Assist quota tier per tenant — Wyzetalk-paid or pass-through? | Slice 2 (commercial model) | Commercial + vendor |
+| 8 | Cross-source reconciliation pipeline for metric 2 (tawk.to + Wyzetalk escalation tracker) | Slice 3 PR review | Engineering + Product Analytics |
+
+### None of these block slice-1 build EXCEPT Q3 (free-text-disabling) which has a no-op fallback (Base Prompt covers).
+
+Q1 blocks slice 2. Q2 blocks GA. Q5 is a slice-1-time copy decision. Q6, Q7 block slice 2. Q8 blocks slice 3.
+
+**Build-stub assumptions** for slice 1 if Q3, Q5 are still open at build time:
+- Q3 stub: tawk.to default UX (free-text + Suggested Messages both available); Base Prompt enforces grounding.
+- Q5 stub: English-only Suggested Messages in slice 1; localisation in slice 5 + 4 (Multilingual cross-PRD).
+
+---
+
+## Design pointers
+
+### Context
+
+The FAQ surface is the tawk.to widget embedded inside the Blue app. Mobile-first, frontline-targeted (~ 90% blue-collar per legacy framing), low-literacy mitigations are explicit design constraints. The surface is one of three Wyzetalk Essential AI / chat surfaces; it is the **only** one that uses tawk.to as the engine.
+
+### Surfaces in scope
+
+1. **Blue app FAQ entry point** — how the user enters the FAQ surface from the app shell.
+2. **FAQ chat surface (tawk.to widget)** — greeting, Suggested Messages, message bubbles, free-text input, escalation button.
+3. **Escalation handoff** — within the widget (live agent transfer) OR routed out (HR inbox).
+4. **Wyzetalk-side ingestion runbook** (Slice 2) — implementation team's playbook for a new tenant.
+5. **Tenant audit view** (Slice 4) — admin-facing view of session logs + retention.
+
+### Critical UX questions for the designer to answer
+
+- **Greeting layout** — Suggested Messages prominent vs free-text prominent? **Recommendation:** Suggested Messages above the fold; free-text below; make the bot's "I can also answer typed questions" affordance visible.
+- **Bot affordance** — clear "AI Assistant" labelling on every screen? **Recommendation:** yes — redundant signals (per `AI_Assistant_in_Chat_Surface.md` design pointer carry-over); this is a Phase-1 design decision worth carrying.
+- **Escalation copy** — neutral or apologetic? **Recommendation:** neutral, clear: *"I can't answer this confidently. Tap to message HR directly."*
+- **Out-of-scope handling (Smart HR intents)** — bot reply when user asks for payslip? **Recommendation:** *"I can't fetch your payslip — open WhatsApp and chat with Smart HR for that. Tap here for instructions."*
+- **Long-answer handling** — long PDF excerpts vs chunked replies? **Recommendation:** chunked + "more" buttons (per vendor doc tap-first guidance — long PDF dumps fail for frontline).
+- **Empty state for first-time user** — onboarding copy? **Recommendation:** one-liner above the Suggested Messages explaining what the bot can / cannot help with.
+
+### Constraints on design (must / must not)
+
+**Must:**
+- tawk.to widget embedded in Blue app context.
+- HR-grounded replies only.
+- Escalation always one tap away.
+- A11y: correct `lang` attribute on AI replies (carries the lesson from `Multilingual_Content.md` + critique-engineering A11y row); keyboard / screen-reader parity; tap-target sizes; sufficient contrast.
+- Suggested Message labels ≤ 10 words each, ≤ 4 buttons per step (vendor doc constraint).
+- Base Prompt configured per pilot 2026-04-17 (sources-only mode).
+
+**Must not:**
+- Fabricate policy / HR information (any incident is a metric-3 defect).
+- Expose live HRIS data (cross-PRD boundary).
+- Render outside Blue app context (Phase 1 = Blue-only).
+- Merge with peer chat (out-of-scope; `Employee_Chat_and_Groups.md` ownership).
+
+### What the designer should NOT prescribe
+
+- tawk.to engine config (vendor docs are the source of truth).
+- Tenant policy / audit schema (`Tenant_Management.md`).
+- WhatsApp Flow surface (Phase 2, out of scope).
+- HR-content / corpus structure (HR / content owners — Open Q1).
+- Cross-PRD chat-list IA (`AI_Assistant_in_Chat_Surface.md` covers).
+
+### Design slice ordering
+
+- **Slice 1** — heaviest visual lift. Chat surface, greeting, Suggested Messages style, message bubbles, free-text input.
+- **Slice 2** — minimal UI design; ingestion runbook is documentation.
+- **Slice 3** — escalation button + handoff copy + receiving-surface continuity.
+- **Slice 4** — admin audit view (new admin UI surface).
+- **Slice 5** — chained Suggested Messages flow design — each "step" replaces the previous button set rather than stacking.
+
+---
+
+*Reshaped 2026-04-29 by /prd-author-custom (--reshape) from agent-prd shape (2026-04-17). Original WP-1, WP-2, WP-3 (Phase 2), WP-4 mapped to Slices 1–5 with WP-3 explicitly out-of-scoped per the pilot decoupling. tawk.to vendor analysis preserved as Design pointer constraints. Last run: 2026-04-29 14:40.*

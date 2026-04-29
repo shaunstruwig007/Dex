@@ -1,11 +1,13 @@
 # Lessons from the skill pipeline
 
-**Status:** SEEDED — first round of evidence captured 2026-04-29 from manual walkthrough on multi-language content translation.
+**Status:** TWO ROUNDS SEEDED — walkthrough 1 (2026-04-29 multi-language, content-heavy) + walkthrough 2 (2026-04-29 AI alongside Employee Chat, cross-PRD + design-heavy).
 **Purpose:** Capture what worked, what didn't, and what a future `pdlc-ui` would need — based on real walkthrough evidence from the chat+vault pipeline. This file seeds any future UI replan.
 
 **Fill discipline:** After each walkthrough or significant skill iteration, append dated rows. Be specific. Cite the use case + the vault path + the time-cost, not vibes.
 
-**Cross-reference:** Walkthrough 1 (2026-04-29 multi-language) full session record at [`sessions/2026-04-29.md`](./sessions/2026-04-29.md).
+**Cross-reference:**
+- Walkthrough 1 (multi-language) — [`sessions/2026-04-29.md`](./sessions/2026-04-29.md).
+- Walkthrough 2 (AI in chat surface) — critique log at [`sessions/2026-04-29-walkthrough-2-critiques.md`](./sessions/2026-04-29-walkthrough-2-critiques.md).
 
 ---
 
@@ -123,4 +125,92 @@ _(only fill if walkthroughs 2 + 3 land clean and a UI decision is on the table)_
 
 ---
 
-*Seeded 2026-04-29 from walkthrough 1. Next fill: after walkthrough 2 (design-heavy use case TBD).*
+## Walkthrough 2 — 2026-04-29 — AI Assistant alongside Employee Chat
+
+**Use case:** Cross-PRD initiative reconciling `Employee_Chat_and_Groups.md` + `AI_Assistant_FAQ.md` on the IA / surface-parity question — *"does AI Assistant share the chat IA pattern (chat list entry, threaded surface, bot-badged peer entity) without merging data, permissions, or thread state with peer chat?"*
+**Stretch dimension:** cross-PRD + design-heavy. Three artefacts produced: 1 NEW PRD (`AI_Assistant_in_Chat_Surface.md`) + 2 reshapes (chat + AI FAQ to bond_v1).
+**Outputs:**
+- Discovery: [`06-Resources/Product_ideas/ai-assistant-alongside-chat_discovery.md`](../../06-Resources/Product_ideas/ai-assistant-alongside-chat_discovery.md)
+- New PRD: [`06-Resources/PRDs/AI_Assistant_in_Chat_Surface.md`](../../06-Resources/PRDs/AI_Assistant_in_Chat_Surface.md)
+- Reshaped: [`06-Resources/PRDs/Employee_Chat_and_Groups.md`](../../06-Resources/PRDs/Employee_Chat_and_Groups.md), [`06-Resources/PRDs/AI_Assistant_FAQ.md`](../../06-Resources/PRDs/AI_Assistant_FAQ.md)
+- Critique log: [`sessions/2026-04-29-walkthrough-2-critiques.md`](./sessions/2026-04-29-walkthrough-2-critiques.md)
+**Wall-clock:** ~2.5 hrs (discovery → 3 PRDs → 6 critiques + cross-cutting findings).
+
+### Lessons by skill
+
+#### S1 — `/weekly-market-intel-custom`
+
+- **Friday Signal staleness check fired correctly.** Latest signal was 9 days old; skill flagged `felix_stale: true` per spec rule and surfaced the gap as Open Q3 (EU AI Act lens). **Validates:** the staleness check is load-bearing for cross-PRD initiatives where the AI lens specifically matters.
+- **Standalone-not-in-pipeline framing held.** Discovery cited the signal but did not invoke the skill mid-flow. Correct posture.
+
+#### S2 — `/initiative-discovery-custom`
+
+- **Confirm-relevance per grep hit fired again** — caught all five related PRDs as current (recent pilot decisions); no stale references on this initiative. Walkthrough 1 caught noise, walkthrough 2 confirmed silence. Both outcomes are useful — the rule produces signal in both directions.
+- **Evidence-gap detection earned its keep harder than walkthrough 1.** Six explicit gaps (no meetings, no people pages, no companies, only 1 of N expected competitor profiles, stale Friday Signal, no design artefacts). The rule's value compounds when vault is sparse — without it, discovery would have read as confidently-incomplete.
+- **Stakeholder extraction worked but exposed the people-page gap.** Stakeholders inferred from PRD bodies (Merel CEO, Leon CTO, Discovery workshop owner, Legal, HR content owner, etc.). Discovery flagged the gap. **Lesson: the skill's behaviour is right; the vault foundation is the constraint.**
+- **Cross-PRD reconciliation behaviour fired naturally.** Discovery had to span three sibling PRDs and reconcile their explicit separation decisions. Walkthrough 1 had only one anchor PRD; this is genuinely new exercise. Worked clean — the skill doesn't require code changes, but the experience surfaced that the **`related_prds` traversal pattern is reusable** for any cross-cutting initiative.
+- **NEW behaviour observed (worth promoting back into the skill spec):** the discovery's "Steps the discovery skill explicitly DID NOT take" section. Honesty about skipped steps + risk created. Walkthrough 1 didn't surface this. **Skill learning: add a Phase 7 "Honest skipped-steps log" to the discovery skill's output shape.**
+- **NEW behaviour observed (worth promoting):** the discovery's PRD-scope recommendation to the PRD author (Path A vs B vs C). Walkthrough 1 had a single-PRD output; walkthrough 2 had three options for what to author. Discovery surfaced the structural decision rather than dumping candidate slices. **Skill learning: add a Phase 8 "PRD scope recommendation" to the discovery skill's output shape, used when the discovery surfaces multiple-PRD options.**
+
+#### S3 — `/design-prompt-custom`
+
+- **STATUS: KILL CONFIRMED.** Walkthrough 2 was design-heavy (chat IA, bot affordance density, in-thread disclosure, handoff button placement) — exactly the test case where a separate design-prompt skill might have earned its keep. It didn't.
+- **Why kill held:** the new cross-PRD spec's Design pointers section ran to 7 critical UX questions (each with PM recommendation), full constraints, what-NOT-to-prescribe list, and slice-by-slice design ordering. **Same depth a separate `/design-prompt-custom` would have produced**, in 30% less context-switching. The single section is paste-ready for Claude Design or a human designer.
+- **Verdict:** kill is correct. Walkthrough 2 is the strong evidence; walkthrough 3 (TBD) doesn't need to re-test unless the design surface is materially different.
+
+#### S4 — `/critique-product-custom` + `/critique-engineering-custom`
+
+- **Six critique runs (3 PRDs × 2 skills) — full execution of the pair protocol on multiple artefacts in one session.** First test of cross-PRD critique synthesis.
+- **All three PRDs landed RETURN TO PLAN.** Expected for first-draft spec_ready content; the critique loop's job is to surface this before Build.
+- **Test shape per slice is a GAP across all three PRDs.** Six runs, three GAPs on the same row. **Skill learning: bond_v1 needs a Test-shape-per-slice subsection requirement** — caught by critique not by author skill.
+- **First-demo risk consistently SOFT.** Three "demo prep is implicit, not deliverable." **Skill learning: bond_v1 should require Slice 1 to ship a demo-readiness deliverable** (corpus loaded, scripted journey, fallback for external dependency).
+- **Cohesion vs craft did the most work on cross-PRD.** Caught the seam between AI_Assistant_FAQ.md (Blue app embed) and AI_Assistant_in_Chat_Surface.md (chat-list peer entity) — both ship to Blue app, both use tawk.to, both touch FAQ. Without coordination, divergent surfaces would have shipped. **Skill learning: row's row-by-row guidance should explicitly call out cross-PRD seam detection.**
+- **`eng-alt` is the highest-yield row.** 7 alternatives produced across three PRDs. Mandatory ≥1 rule (added end of walkthrough 1) is doing its job — keep.
+- **Two-lens framing not yet exercised.** All three artefacts were feature-PRDs; runtime-plan lens still pending walkthrough 3 or a sprint-seed test.
+- **A11y mostly PASS once the multilingual lesson carries.** Two of three PRDs hit PASS on the row because design pointers carried `lang` attribute, keyboard, screen-reader, tap-target language. The third (`AI_Assistant_FAQ.md`) was SOFT only because of vendor-widget a11y dependence. **Lesson is propagating between walkthroughs — keep the row's sharpening as authored.**
+- **Six concrete cross-cutting findings produced from synthesis** (numbered in critique log). **NEW behaviour observed: the synthesis-across-runs output shape isn't in either critique skill's spec.** When run on multiple artefacts, the skills produce per-artefact findings; the cross-cutting synthesis layer is currently authored manually. **Skill learning: add a synthesis/meta-output mode for batch critique runs.**
+
+#### S5 — `/prd-author-custom`
+
+- **Three PRDs authored — fresh + 2× --reshape.** All three landed in valid bond_v1 shape, all linter-clean. No section skipped, no skeleton-form filled.
+- **--reshape flag exercised twice.** Both reshapes preserved 2026-04-17 collaborative-pilot decisions verbatim (chat: DM+groups same GA + group rules TBD + realtime stack TBD; AI FAQ: tawk.to + Wyzetalk-operated workspace + Phase 2 decoupling). Mechanical mapping: WPs → slices held with minor restructuring. **Idempotence frontmatter timestamps written for future re-run protection.**
+- **Cross-PRD slice dependency syntax tested.** Slice 4 of `AI_Assistant_in_Chat_Surface.md` depends on `Multilingual_Content.md` slice 3; the bond_v1 Slices table accommodated the cross-PRD reference cleanly in the Depends column. **First test of the pattern; works.**
+- **Required-input contract exercise.** PRD author refused to author `AI_Assistant_in_Chat_Surface.md` without discovery output (it had one, but the contract pre-flighted). Walkthrough 1 didn't fire this either; the contract is preventative.
+- **Refusal list caught real things again** during the manual draft:
+  - Risk 5 (IA hypothesis disproved) had no concrete kill criterion → forced explicit `<10% in 30 days` threshold.
+  - Metric 1 had a target but no measurement source on first pass → forced "Note on measurability" subsection.
+  - Slice 5 (`@AI` in groups, from discovery candidate-slice list) was kill-flagged in discovery → author honoured the flag and out-of-scoped explicitly rather than including it speculatively.
+- **Plan-mode-seed fence held up across three PRDs.** Each generated mechanically from its slices table; 1:1 mapping intact. Direct paste-into-Cursor-Plan-mode contract is the load-bearing artefact.
+- **Idempotence rule pending direct test.** No PRD edited between runs in this walkthrough; the diff-and-ask flow remains untested. **Pending walkthrough 3 (re-author after must-fixes folded).**
+
+#### S6 — End-to-end dogfood (walkthrough 2)
+
+- **Total wall-clock:** ~2.5 hrs (discovery + 3 PRDs + 6 critiques + cross-cutting findings + lessons update). **30% faster than walkthrough 1**, despite producing 3× the artefacts. Proof that the skill specs reduce friction.
+- **Total LLM cost:** N/A — manual session.
+- **Number of human re-prompts:** ~3 across the entire session (scope choice for walkthrough, path-A-vs-B-vs-C decision, evidence-gap-backfill decision). Walkthrough 1 was ~6 re-prompts. **Confirms the now-shipped skills reduce re-prompt count.** Target was <2 — exceeded by 1, but trend is right.
+- **Cursor Plan mode consumption quality:** still untested. None of the PRDs had must-fixes folded + plan-mode-seed pasted into Cursor Plan mode. **Pending walkthrough 3.**
+- **Biggest friction point:** evidence-gap was the same as walkthrough 1 (sparse vault); but walkthrough 2 was BETTER positioned because related PRDs existed. **Lesson: existing PRDs are the highest-leverage vault asset for cross-PRD discovery.**
+
+### Cross-walkthrough patterns (1 + 2)
+
+These appear in **both** walkthroughs:
+
+- **Sparse vault is the binding constraint, not the skills.** Both walkthroughs flagged the same evidence gaps (no meetings, no companies, no people pages). Skills' evidence-gap detection works; the vault foundation is the limiter.
+- **`eng-alt` is the highest-yield row of either critique.** Multilingual produced 3; cross-PRD produced 7. Always look for the cheaper path.
+- **A11y `lang` attribute is the recurring catch.** Both walkthroughs hit it; the lesson now propagates via design pointers automatically.
+- **Refusal list earns its keep.** Same anti-patterns (aspirational metrics, risk without mitigation, slices that don't span layers, kill-candidates included speculatively) caught in both walkthroughs. Refusal list is correctly tuned.
+
+### Skill specs to update (proposed, not yet applied)
+
+Based on walkthrough 2 evidence:
+
+1. **`/initiative-discovery-custom`** — add Phase 7 (Honest skipped-steps log) + Phase 8 (PRD scope recommendation when discovery surfaces multiple-PRD options).
+2. **`/prd-author-custom`** — add Test-shape-per-slice subsection requirement; add Demo-readiness deliverable on Slice 1.
+3. **`/critique-product-custom`** — add Cross-PRD seam detection guidance to Cohesion-vs-craft row.
+4. **`/critique-product-custom` + `/critique-engineering-custom`** — add a synthesis/meta-output mode for batch critique runs across multiple artefacts.
+
+**Apply these only after walkthrough 3** validates the patterns hold on a third initiative — avoids over-fitting to two walkthroughs.
+
+---
+
+*Seeded 2026-04-29 from walkthrough 1; expanded 2026-04-29 with walkthrough 2 evidence (cross-PRD initiative). Next fill: after walkthrough 3 — preferably a runtime-plan / sprint-seed critique to exercise the runtime lens, OR a re-author cycle (must-fixes folded) to test idempotence.*
