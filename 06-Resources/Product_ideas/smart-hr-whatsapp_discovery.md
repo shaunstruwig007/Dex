@@ -3,9 +3,10 @@ discovery_id: smart-hr-whatsapp
 discovery_shape: discovery_v1
 status: draft
 created_date: 2026-04-30
-last_updated: 2026-04-30
+last_updated: 2026-04-30  # spike findings paraphrased + capacity constraint added
 authored_by: /initiative-discovery-custom (Path B — refine existing PRD into bond_v1)
 exec_roadmap_priority: 1
+spike_findings_note: 06-Resources/Product_ideas/whatsapp-spike-findings.md  # paraphrased Jan 2026-04-30; pending Jan validation
 icp_version_at_run: v1 — 2026-04-29
 felix_signal_at_run: 2026-04-20 (10 days old — within freshness window)
 related_prds:
@@ -70,7 +71,7 @@ Maps cleanly to **ICP segment 1 (frontline + multi-channel access)** and **ICP s
 **Background risks from exec roadmap "Identified gaps":**
 - **Product analytics (gap #1)** — without analytics instrumented, the success metrics in any bond_v1 slice (utility-message classification rate, payslip delivery rate, intent classification accuracy) are unmeasurable. Slice 1 demo readiness is achievable without analytics; Slice 2+ scaling decisions are not.
 - **Bug debt (gap #2)** — any Smart HR WhatsApp defect lands in a backlog with no triage rule against MVP debt. The bond_v1 PRD should not silently assume defects get resourced.
-- **Tech debt (gap #3)** — WABA spike was completed by Jan in a tech-forum meeting (Q2 follow-up confirms feasibility, no written record). The mid-April demo milestone has slipped to **end-April / end-May 2026**. Tech debt eating engineering capacity is a candidate cause; the bond_v1 PRD's slice 1 demo-readiness checklist should explicitly surface "engineering capacity confirmed for the new target window."
+- **Tech debt + capacity (gap #3) — UPGRADED 2026-04-30.** WABA spike was completed by Jan in a tech-forum meeting (paraphrased findings now captured in `whatsapp-spike-findings.md` 2026-04-30; pending Jan validation). The mid-April demo milestone has slipped to **end-April / end-May 2026**. **Engineering capacity is the binding constraint** — confirmed by user 2026-04-30: *"team is not yet there to do this due to pressure and bug fixes."* The bond_v1 PRD's Slice 1 demo-readiness checklist must explicitly verify engineering capacity for the new target window; otherwise slice 1 will slip again.
 
 ---
 
@@ -154,11 +155,11 @@ The PRD author may refine, drop, or merge. **Slice 1 is the walking skeleton.**
 
 ## Open questions (for the PRD author / steerco)
 
-1. **Engineering spike write-up.** Jan reported back verbally in a tech forum (no recording). The bond_v1 PRD will need the spike's findings captured in writing — at minimum: WABA provider candidate(s), Flow JSON pattern decision, BSP selection criteria, payslip-PDF transport. **Blocks:** Slice 1 entry into `spec_ready`. **Owner:** Jan + Shaun (capture from Jan before handoff).
+1. **Engineering spike write-up — PARTIALLY CLOSED 2026-04-30.** Jan reported back verbally in a tech forum (no recording). Shaun's paraphrased capture lives in `whatsapp-spike-findings.md` (2026-04-30) — confirms WA Flow + endpoint connection works, names media-URL pattern as the payslip transport (needs stress-test), names **Sage** as the first HRIS, and confirms elevated/validation auth required for first access. **Pending:** Jan to validate the paraphrase before bond_v1 enters `spec_ready`. **Owner:** Jan (validate) + Shaun (capture).
 2. **Demo / sales target date.** Mid-April 2026 has slipped to **end-April / end-May 2026**. Which exact date? Slice 1 demo readiness needs a target. **Blocks:** Slice 1 sequencing. **Owner:** Merel + Shaun.
 3. **BSP selection.** Smart_HR_Whatsapp's open question still unresolved — affects per-message markup, MAU pricing, developer experience. **Blocks:** Slice 1 cost economics. **Owner:** Anneke (was investigating).
 4. **Magic Link auth scope.** Slice 2 depends on `Elevated_Auth_Remote_App.md` Phase 1 workshop (task-20260323-008). Is that workshop scheduled? If not, Slice 2 risks slipping. **Blocks:** Slice 2 entry into spec_ready. **Owner:** Elevated Auth PRD owner.
-5. **HRIS systems for leave/roster.** PaySpace? SAP? Sage? Custom? Affects Slice 3 and Slice 5 feasibility. The bond_v1 PRD should NOT promise both intents until the HRIS landscape is named per tenant. **Blocks:** Slice 3 + 5 spec. **Owner:** Product + Engineering.
+5. **HRIS systems for leave/roster — PARTIALLY CLOSED 2026-04-30.** Slice 1 payslip target is **Sage** (per spike findings). PaySpace, SAP, custom HRIS landscape for Slices 3 and 5 (leave / roster) remains unresolved. **Blocks:** Slice 3 + 5 spec. **Owner:** Product + Engineering.
 6. **POPIA/GDPR retention model.** What gets stored, where, for how long? Open from `Smart_HR_Whatsapp.md`. **Blocks:** GA, not Slice 1. **Owner:** Legal + Product.
 7. **Message classification — Utility vs Marketing.** Template wording determines Meta's classification (Utility ~$0.01 vs Marketing ~$0.05). Affects Slice 1 cost and tenant pricing model. **Blocks:** Slice 1 cost economics. **Owner:** Product + the BSP relationship.
 8. **One-way → two-way overlap with `Messaging_Ops_Urgent_Alerts.md` Part 2.** That PRD ships next week. Slice 1 of Smart HR depends on the same WABA infrastructure. Are the configurations compatible? Is there a tenant-config seam to manage? **Blocks:** Slice 1 entry into build. **Owner:** Comms_service / Messaging_Ops PRD owner + this PRD's owner.
@@ -168,7 +169,7 @@ The PRD author may refine, drop, or merge. **Slice 1 is the walking skeleton.**
 ## Evidence gaps (what discovery could not find)
 
 1. **No customer / CS meetings in vault for this initiative.** Severity: **expected** (sparse-vault posture for exec-driven initiatives). Triangulation via JEM profile + Friday signal + exco ratification.
-2. **Engineering spike verbal-only.** Jan's findings need to be captured in writing before bond_v1 can name them as decisions.
+2. **Engineering spike paraphrased, pending validation 2026-04-30.** Captured in `whatsapp-spike-findings.md`. Five findings confirmed (feasibility, media-URL pattern, Sage as first HRIS, elevated auth needed, capacity constrained). Pending Jan to ratify or correct before bond_v1 enters `spec_ready`. Was: verbal-only.
 3. **No competitor-parity data on Magic Link auth via WhatsApp.** JEM ships payslip-via-WhatsApp but the auth pattern is not documented in their profile. Worth a refresh on the JEM profile if Slice 2 is committed.
 4. **No HRIS-integration coverage in vault.** Affects Slices 3 + 5. The bond_v1 PRD should call this out, not silently assume HRIS data is available.
 5. **No analytics / tracking spec for WhatsApp message delivery.** From `System/exec_roadmap.md` "Identified gaps" — analytics is unresourced. Slice success metrics will be observable via WABA delivery callbacks but not via Wyzetalk's own analytics layer (because it doesn't exist yet).

@@ -7,6 +7,24 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.23.0] — Walkthrough 4 — Smart HR WhatsApp bond_v1 (first exec-driven initiative) (2026-04-30)
+
+**Before:** Smart HR WhatsApp was the #1 commercial priority on the exec roadmap but the PRD was still in agent-prd shape (no slices, no plan-mode-seed, no walking-skeleton, no build-handoff). The discovery doc authored 2026-04-30 flagged Jan's engineering spike as the highest-priority evidence gap (verbal report, no recording). The prior slicing assumed Slice 1 = phone-as-identity (no auth gate) — which the spike findings would later invalidate.
+
+**Now:**
+- **Spike findings captured** as a parallel artefact: [`06-Resources/Product_ideas/whatsapp-spike-findings.md`](06-Resources/Product_ideas/whatsapp-spike-findings.md) — paraphrased pending Jan validation. Five concrete data points: WA Flow + endpoint connection feasible; media URL = payslip transport (needs stress test ≥ 1,000 concurrent); Sage = first HRIS; elevated auth required for first access (NOT deferrable); team capacity constrained by MVP/bug pressure.
+- **Discovery doc updated** to close evidence gap #2 (spike write-up), upgrade Q5 (HRIS) to "Sage = Slice 1," and promote tech-debt + capacity from background risk to binding constraint.
+- **bond_v1 PRD authored** at [`06-Resources/PRDs/Smart_HR_Whatsapp.md`](06-Resources/PRDs/Smart_HR_Whatsapp.md) — overwrites prior agent-prd shape (legacy preserved in git history per "rerun" semantics). 5 slices; Slice 1 = walking skeleton (auth + payslip together, thickened from discovery's draft to handle the spike's auth requirement). 8 open questions, 3 hard gates before Slice 1 build (Q1 spike ratification, Q4 Elevated_Auth workshop, Q8 Messaging_Ops Part 2 config seam).
+- **Body Status line names hard gates explicitly** — `lifecycle: spec_ready` alone is a false-confidence read for an external reviewer; the body Status line now lists the three gates so the design manager and software dev manager don't get a misleading "ready to build" signal.
+- **Walkthrough-4 session log:** [`plans/skill-pipeline/sessions/2026-04-30-whatsapp-bond-v1.md`](plans/skill-pipeline/sessions/2026-04-30-whatsapp-bond-v1.md) — 5 lessons worth promoting to skill spec on next iteration (spike-as-overlay rule; capacity-as-checklist-gate; spike-findings-as-parallel-artefact; "rerun"-defaults-to-overwrite when migrating from non-bond shape; body-Status-line-as-load-bearing).
+
+**Why you'll care:**
+- First end-to-end run of the new exec-roadmap-aware pipeline on a real exec-driven initiative. The four pipeline guard-rails held: discovery refused to invent customer evidence; spike findings entered as a parallel artefact (provenance preserved); `/prd-author-custom` enforced bond_v1 shape; hard gates surfaced in the body Status line.
+- The Slice 1 walking-skeleton was thickened (auth + payslip), not relaxed, when the spike findings invalidated discovery's slicing draft. This is the bond_v1 spec working as designed — "smallest end-to-end cut" survives input changes; what changes is what's *in* the cut.
+- The bond_v1 PRD is now ready for the engineering capacity conversation at the next post-MVP review. If capacity isn't confirmed, the demo target slips again — and the PRD makes that visible up-front.
+
+---
+
 ## [1.22.1] — Park-state visibility on PRDs — design + critique status surfaced (2026-04-29)
 
 **Before:** `critique_status` was added to PRD frontmatter in 1.22.0, but YAML frontmatter is collapsed by most markdown viewers — so an external reviewer (e.g. a software development manager getting a PRD link) couldn't see "this has been critiqued and folded" without parsing YAML. Similarly, `AI_Assistant_in_Chat_Surface.md` was waiting for a Claude Design wireframe pass that got parked when credits ran out — but no field captured that state.
