@@ -4,7 +4,8 @@ prd_id: smart-hr-whatsapp-2026-04-30
 created_date: 2026-03-30  # original agent-prd shape; bond_v1 reshape 2026-04-30
 last_bond_run: 2026-04-30 16:00
 lifecycle: spec_ready
-critique_status: pending  # /critique-product-custom + /critique-engineering-custom not yet run on bond_v1 shape
+critique_status: must_fixes_pending  # /critique-product-custom (4 SOFTs) + /critique-engineering-custom (7 SOFTs, 2 eng-alts) run 2026-04-30; no GAPs; 11 must-fixes group into 4 edit-clusters
+critique_log: plans/skill-pipeline/sessions/2026-04-30-whatsapp-critiques.md
 design_pass_status: pending  # Slice 2 (Magic Link / Elevated Auth UX in Blue) needs Claude Design wireframe pass; rest is engineering integration
 related_prds:
   - Messaging_Ops_Urgent_Alerts.md  # Part 2 ships next week — same WABA infra; tenant-config seam
@@ -20,7 +21,7 @@ exec_roadmap_priority: 1
 
 # WhatsApp — Smart HR (Conversational)
 
-**Status:** `spec_ready` · critique pass pending (`/critique-product-custom` + `/critique-engineering-custom`) · design pass pending (Slice 2 only) · **Slice 1 hard-gated by:** Jan to validate spike findings in writing + Elevated_Auth Phase 1 workshop scheduled + engineering capacity confirmed for end-April / end-May 2026 demo target.
+**Status:** `spec_ready` · critique pass complete 2026-04-30 (`/critique-product-custom` 4 SOFTs + `/critique-engineering-custom` 7 SOFTs + 2 eng-alts; no GAPs) · **must-fixes pending fold** (4 edit-clusters — see `plans/skill-pipeline/sessions/2026-04-30-whatsapp-critiques.md`) · design pass pending (Slice 2 only) · **Slice 1 hard-gated by:** Jan ratifies spike findings in writing + Elevated_Auth Phase 1 workshop scheduled + engineering capacity confirmed for end-April / end-May 2026 demo target + author decides on eng-alt.1 (Magic Link-first) vs current shape.
 **Target:** Frontline employees (ICP segment 1 + 2) requesting structured HR self-service — payslip, leave, roster — via WhatsApp, with POPIA/GDPR-compliant identity proof on first access.
 **Out of scope intentionally:** Open-domain LLM chat over WhatsApp (handed off to AI_Assistant_FAQ.md), peer-to-peer chat over WhatsApp (out of scope of Employee_Chat_and_Groups.md), emergency comms via WhatsApp (owned by Messaging_Ops_Urgent_Alerts.md Part 2), multi-tenant rollout (defer to GA), full HRIS integration coverage beyond Sage (Slice 1 = Sage only).
 

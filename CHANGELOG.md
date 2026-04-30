@@ -7,6 +7,25 @@ All notable changes to Dex will be documented in this file.
 
 ---
 
+## [1.23.1] — Critique pass on Smart HR WhatsApp bond_v1 — 11 must-fixes, 2 eng-alts, no GAPs (2026-04-30)
+
+**Before:** The Smart HR WhatsApp bond_v1 PRD was authored 2026-04-30 16:00 with `critique_status: pending`. Without a critique pass, the PRD was at risk of going to a Slice 1 build conversation with hidden SOFTs around metric shape (continuous vs binary), demo framing (Steerco vs sales-led), opt-in semantics (one-way vs two-way inheritance), atomicity guarantees, schema parity to Elevated_Auth's audit-log, and a11y inheritance.
+
+**Now:**
+- **`/critique-product-custom`** — 4 SOFTs (outcome integrity, first-demo risk, honesty of asks, cohesion vs craft), 0 GAPs. **READY FOR BUILD with must-fixes.**
+- **`/critique-engineering-custom`** — 7 SOFTs (atomicity, idempotence, schema parity, contracts unchanged, failure modes, a11y, cheaper path), 0 GAPs, **2 eng-alts** (Magic Link-first; pre-vetted demo-only auth). **READY FOR BUILD with must-fixes.**
+- **Net: 11 must-fixes group into 4 edit-clusters** (metrics rework, demo readiness extension, risks/failure-modes, open-questions+design+handoff sub-edits). Author can fold in a single edit pass.
+- **eng-alt.1 (Magic Link-first) deserves a 30-minute conversation with Jan + Merel before Slice 1 commits** — engineering capacity is the explicitly-named binding constraint, and Magic Link-first is materially cheaper while preserving slices 2–5.
+- **PRD updated** — `critique_status: pending` → `must_fixes_pending`; `critique_log` field added pointing at the session file; body Status line names the new decision point ("author decides on eng-alt.1 vs current shape").
+- **Critique session log:** [`plans/skill-pipeline/sessions/2026-04-30-whatsapp-critiques.md`](plans/skill-pipeline/sessions/2026-04-30-whatsapp-critiques.md) — full row-by-row scorecards, all must-fixes with concrete edit instructions, both eng-alts with trade-offs, 4 lessons worth promoting to skill spec on next iteration (4-cluster pattern is reusable; capacity-constrained authoring should evaluate eng-alts pre-draft; sibling-PRD coordination is structurally invisible until critique; wrong-shaped metrics survive agent-prd → bond_v1 migration unless explicitly checked).
+
+**Why you'll care:**
+- The PRD is honest about being not-quite-ready: no GAPs blocking, but 11 SOFTs that would have shipped silently. The body Status line now names the must-fix-fold dependency so external readers don't read `spec_ready` as "ready to build."
+- The eng-alt.1 (Magic Link-first) call-out is the kind of structural rethink that's easy to miss when the discovery → bond_v1 author is the same person. The engineering critique surfaced it cleanly — and the skill's mandatory-`eng-alt` rule (`/critique-engineering-custom`) earned its place again.
+- The 4-cluster fold pattern is replicable for future critique-fold passes — surfacing it in the session log creates the lesson for next iteration of `/prd-author-custom`.
+
+---
+
 ## [1.23.0] — Walkthrough 4 — Smart HR WhatsApp bond_v1 (first exec-driven initiative) (2026-04-30)
 
 **Before:** Smart HR WhatsApp was the #1 commercial priority on the exec roadmap but the PRD was still in agent-prd shape (no slices, no plan-mode-seed, no walking-skeleton, no build-handoff). The discovery doc authored 2026-04-30 flagged Jan's engineering spike as the highest-priority evidence gap (verbal report, no recording). The prior slicing assumed Slice 1 = phone-as-identity (no auth gate) — which the spike findings would later invalidate.
