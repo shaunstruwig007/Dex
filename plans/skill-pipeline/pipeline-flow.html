@@ -140,9 +140,12 @@
     }
     .context-cards {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
       align-items: stretch;
+    }
+    @media (max-width: 1280px) {
+      .context-cards { grid-template-columns: repeat(2, 1fr); }
     }
     .context-card h4 {
       font-family: var(--sans);
@@ -387,13 +390,18 @@
           <span class="file">System/icp.md</span>
         </div>
         <div class="context-card">
+          <h4>Exec Roadmap</h4>
+          <p>What exco has prioritised, in order. The strongest evidence source &mdash; not all decisions originate from customer evidence in this org.</p>
+          <span class="file">System/exec_roadmap.md</span>
+        </div>
+        <div class="context-card">
           <h4>Weekly Market Intel</h4>
           <p>Friday brief synthesising newsletters, competitor moves, sector signals. Keeps discovery anchored to what changed.</p>
           <span class="file">06-Resources/Market_intelligence/synthesis/weekly/</span>
         </div>
         <div class="context-card">
           <h4>Vault</h4>
-          <p>Existing PRDs, meeting notes, person pages, decision logs. Used to detect duplicate work and stakeholder context.</p>
+          <p>Existing PRDs, meeting notes, person pages, decision logs. Used to detect duplicate work and stakeholder context. Sparse vault is honest, not failed.</p>
           <span class="file">06-Resources/PRDs/ &middot; 00-Inbox/Meetings/ &middot; 05-Areas/People/</span>
         </div>
       </div>
@@ -473,7 +481,7 @@
     <div class="outcome">
       <div class="outcome-side outcome-before">
         <h5>Before</h5>
-        <p>A week of meetings. Ambiguous specs. Design debt. Decisions buried in Slack threads. Engineering re-discovering scope mid-sprint.</p>
+        <p>A week of meetings. Ambiguous specs. Design debt. Decisions buried in Teams threads or exec verbal directives. Engineering re-discovering scope mid-sprint.</p>
       </div>
       <div class="outcome-arrow">&rarr;</div>
       <div class="outcome-side outcome-after">

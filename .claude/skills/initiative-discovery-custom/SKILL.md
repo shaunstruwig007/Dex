@@ -1,6 +1,6 @@
 ---
 name: initiative-discovery-custom
-description: Per-initiative discovery research. Reads the vault (ICP, Felix's weekly intel, competitor profiles, customer-evidence meetings, related PRDs) and produces a discovery package — problem statement, user segments, stakeholders, evidence log, evidence gaps, ICP-segment match, candidate slices, open questions — that /prd-author-custom consumes. Confirms-relevance per grep hit (no stale references). Surfaces evidence gaps explicitly when the vault is sparse. Use when an idea is moving from idea→discovery and you need a defensible research package before drafting a PRD.
+description: Per-initiative discovery research. Reads the vault (ICP, exec roadmap, Felix's weekly intel, competitor profiles, customer-evidence meetings, related PRDs) and produces a discovery package — problem statement, user segments, stakeholders, evidence log, evidence gaps, ICP-segment match, candidate slices, open questions — that /prd-author-custom consumes. Confirms-relevance per grep hit (no stale references). Surfaces evidence gaps explicitly when the vault is sparse. Treats exec-direction as a primary, valid evidence source — not all decisions originate from customer evidence. Use when an idea is moving from idea→discovery and you need a defensible research package before drafting a PRD.
 ---
 
 # Initiative Discovery (custom)
@@ -66,8 +66,16 @@ If a vault file is in scope and **QMD is available**, prefer `qmd query` over gr
 
 1. Load the input. Extract: idea statement, candidate user segment(s), candidate problem area, any keywords to scan for.
 2. Read `System/icp.md` `Version` line. Hard-fail with `error: "icp_missing"` if absent.
-3. Check Felix freshness. If stale, queue a warning to embed in the output.
-4. If `--rerun` or `--deepen`, load existing discovery file and identify which sections are user-edited (skill must preserve those).
+3. Read `System/exec_roadmap.md` if present. **This is a primary evidence source — load it before scanning customer evidence.** If absent, log as `evidence_gap: "no exec roadmap captured — discovery cannot cite exec-direction provenance"` and continue.
+4. Check Felix freshness. If stale, queue a warning to embed in the output.
+5. If `--rerun` or `--deepen`, load existing discovery file and identify which sections are user-edited (skill must preserve those).
+
+### Phase 0.5 — Exec-roadmap match (~5s)
+
+1. **Is this initiative on the exec roadmap?** Match the idea's keywords / problem area against the priority list and lower-priority list in `System/exec_roadmap.md`.
+2. **If matched** (priority N): cite `exec_roadmap_priority: <N>` as the strongest evidence source in the output. The proposition is **already validated by exco** — discovery's job is to scope, slice, and de-risk, not to re-litigate the decision. Skip the "no customer evidence — fix before spec" failure mode in Phase 2.
+3. **If unmatched**: flag as `evidence_gap: "Initiative does not appear on exec_roadmap. Either (a) new product opportunity to surface to exco for prioritisation, or (b) technical / debt initiative outside the feature roadmap."` Continue normally.
+4. **Cross-check the exec roadmap's "Identified gaps" section.** If the initiative depends on items in that section (e.g. analytics, tech debt, bug burndown), surface them as background risks in the output.
 
 ### Phase 1 — Vault scan + relevance confirmation (~30–60s)
 
@@ -97,7 +105,10 @@ The skill greps / queries the vault for keyword overlap with the idea across:
 2. Extract direct quotes that speak to the problem statement. Each quote captured with: text, person (named), date, source path.
 3. Cross-check named people against `05-Areas/People/External/` and `Internal/` — if a quote attributes to "the VP of Sales" but no person page exists, flag as evidence gap (we don't know who the VP of Sales is).
 4. **Stakeholder extraction.** From the quoted meetings + people pages, identify named SMEs the PM should talk to before spec lands. Each stakeholder captured with: name, role, why they're relevant, last meeting (if any).
-5. If no relevant meetings exist in the last 90 days → **evidence gap entry**: "No customer meetings touch this idea in 90d. Either (a) we have no customer evidence yet — fix before spec, or (b) the keyword scan missed; PM to confirm."
+5. If no relevant meetings exist in the last 90 days → **evidence gap entry**: "No customer meetings touch this idea in 90d." **Severity depends on whether the initiative matched the exec roadmap (Phase 0.5):**
+   - **Matched exec roadmap:** log as `severity: expected` — in this org, exco often decides ahead of customer-evidence collection. Note the gap to be filled post-launch via beta / pilot data; don't block discovery.
+   - **Unmatched exec roadmap:** log as `severity: blocker` — neither customer nor exec evidence supports this. Either (a) we have no evidence yet — fix before spec, or (b) the keyword scan missed; PM to confirm.
+6. **Sparse-vault is not a failure mode in this org.** Product does not always have direct visibility into sales discussions or CS check-ins. The discovery package should reflect this honestly: cite what exists, name what doesn't, and pair with the exec-roadmap match for triangulation.
 
 ### Phase 3 — Competitor + market signal alignment (~20s)
 
@@ -146,6 +157,7 @@ created_date: YYYY-MM-DD
 last_run_at: YYYY-MM-DD HH:MM
 iteration: <N>
 icp_version_at_run: <icp version line>
+exec_roadmap_priority: <1-N | "lower-priority-1-N" | "off-roadmap">  # set per Phase 0.5 match
 felix_signal_at_run: <Friday Signal date or "stale: <N> days">
 related_prds: [<PRD>.md, ...]
 ready_for_prd: true | false
@@ -177,6 +189,15 @@ ready_for_prd_blockers: [<open-question id>, ...]  # only if false
 ## ICP segment match
 
 <One sentence: which ICP segment(s) this serves and via what evidence. Cross-segment disqualifier notes if any.>
+
+---
+
+## Exec-roadmap match
+
+<One line. Either:
+- "**Priority N** in `System/exec_roadmap.md` — \<one line on the exec wording\>. Discovery's job is to scope, slice, and de-risk."
+- "**Off-roadmap.** This initiative does not appear in the current exec roadmap. Surface to exco for prioritisation OR scope as technical-debt / observability work."
+**Background risks from exec roadmap "Identified gaps":** <list any that apply — e.g. "Depends on product analytics (gap #1) for measurability."> >
 
 ---
 
