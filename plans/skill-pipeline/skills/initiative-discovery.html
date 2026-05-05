@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Initiative Discovery &mdash; what it does, what it produces</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="The skill that turns a one-line idea into a defensible, evidence-grounded discovery package. Stage 02 of the skill pipeline." />
+  <style>
+    :root {
+      --bg: #F5F1EA;
+      --paper: #FBF8F2;
+      --paper-warm: #F3EBDB;
+      --ink: #14182A;
+      --soft-ink: #4F586D;
+      --mute: #8A92A4;
+      --line: #D8CFC1;
+      --hairline: #E6DFD3;
+
+      /* feature accent — matches pipeline-flow stage 02 (Discovery) */
+      --c-skill:    #4D6FA5;
+      --c-skill-soft: #C7D3E5;
+      --c-context:  #2F6B66;
+      --c-prd:      #5B4C8C;
+      --c-critique: #A8516B;
+      --c-spec:     #3F7A5B;
+      --c-trap:     #A8516B;
+      --c-defence:  #3F7A5B;
+
+      --serif: "Iowan Old Style", "Apple Garamond", Charter, "Bitstream Charter", Cambria, Georgia, serif;
+      --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono:  ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding: 48px 56px 56px;
+      min-height: 100vh;
+    }
+
+    .frame { max-width: 1320px; margin: 0 auto; }
+
+    /* ── header ───────────────────────────── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 32px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 36px;
+    }
+    .title-block { flex: 1 1 auto; }
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 0 0 8px;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: 42px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      margin: 0;
+      color: var(--ink);
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--c-skill);
+    }
+    .lede {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--soft-ink);
+      margin: 14px 0 0;
+      max-width: 820px;
+    }
+    .meta-block {
+      flex: 0 0 auto;
+      text-align: right;
+      font-size: 12px;
+      color: var(--mute);
+      font-family: var(--mono);
+      line-height: 1.7;
+    }
+    .meta-block strong { color: var(--soft-ink); font-weight: 500; }
+    .meta-block a {
+      color: var(--c-skill);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--c-skill);
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 32px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--hairline);
+    }
+
+    /* ── where-it-sits mini-strip ─────────── */
+    .pipeline-strip {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .strip-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-right: 12px;
+    }
+    .strip-stage {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--mute);
+      background: var(--paper-warm);
+      border: 1px solid var(--hairline);
+      padding: 6px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .strip-stage.is-here {
+      color: var(--c-skill);
+      background: rgba(77,111,165,0.08);
+      border-color: rgba(77,111,165,0.35);
+      font-weight: 600;
+    }
+    .strip-arrow {
+      font-family: var(--mono);
+      color: var(--mute);
+      font-size: 14px;
+    }
+
+    /* ── phase cards ──────────────────────── */
+    .phases {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .phase {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 18px 16px;
+      position: relative;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+    }
+    .phase::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 16px; right: 16px;
+      height: 3px;
+      background: var(--c-skill);
+      border-radius: 0 0 3px 3px;
+    }
+    .phase .num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--mute);
+      margin-bottom: 4px;
+    }
+    .phase .name {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--c-skill);
+      margin: 0 0 8px;
+      line-height: 1.2;
+    }
+    .phase .body {
+      font-size: 13px;
+      color: var(--soft-ink);
+      flex: 1;
+      margin: 0 0 10px;
+    }
+    .phase .out {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--mute);
+      border-top: 1px dashed var(--hairline);
+      padding-top: 8px;
+      line-height: 1.5;
+    }
+
+    /* ── inputs / outputs columns ─────────── */
+    .io {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+    .io-col {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 24px 24px;
+      position: relative;
+    }
+    .io-col::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 22px; bottom: 22px;
+      width: 4px;
+      border-radius: 0 4px 4px 0;
+    }
+    .io-in::before  { background: var(--c-context); }
+    .io-out::before { background: var(--c-skill); }
+    .io-col h3 {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 600;
+      margin: 0 0 6px;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+    .io-col .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 12px;
+    }
+    .io-col p { font-size: 13px; color: var(--soft-ink); margin: 0 0 8px; }
+    .io-col ul {
+      font-size: 13px;
+      color: var(--soft-ink);
+      padding-left: 20px;
+      margin: 6px 0 0;
+    }
+    .io-col li { margin-bottom: 6px; }
+    .io-col code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+
+    /* ── load-bearing rule (feature panel) ─ */
+    .rule {
+      background: var(--paper-warm);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 26px;
+      border-left: 4px solid var(--c-skill);
+    }
+    .rule h4 {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 600;
+      margin: 0 0 8px;
+      color: var(--ink);
+    }
+    .rule p { font-size: 13.5px; color: var(--soft-ink); margin: 0 0 10px; }
+    .rule .why {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13.5px;
+      color: var(--soft-ink);
+      padding: 10px 14px;
+      background: rgba(77,111,165,0.06);
+      border-left: 3px solid var(--c-skill);
+      border-radius: 0 6px 6px 0;
+      margin-top: 10px;
+    }
+    .rule code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.04);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+
+    /* ── refusals + invocation panels ────── */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 24px;
+      position: relative;
+    }
+    .panel::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 22px; right: 22px;
+      height: 3px;
+      border-radius: 0 0 3px 3px;
+      background: var(--accent);
+    }
+    .panel h4 {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      margin: 4px 0 6px;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+    .panel .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 14px;
+    }
+    .panel p { font-size: 13.5px; color: var(--soft-ink); margin: 0 0 10px; }
+    .panel ul { font-size: 13px; color: var(--soft-ink); padding-left: 20px; margin: 8px 0 0; }
+    .panel li { margin-bottom: 6px; }
+    .panel li strong { color: var(--ink); font-weight: 600; }
+    .panel li code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+    .panel-trap     { --accent: var(--c-trap); }
+    .panel-defence  { --accent: var(--c-defence); }
+    .panel-skill    { --accent: var(--c-skill); }
+
+    /* ── invocation block ─────────────────── */
+    .invocations {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 22px;
+    }
+    .invocations pre {
+      margin: 0;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--soft-ink);
+      line-height: 1.7;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .invocations pre .cmt { color: var(--mute); }
+
+    /* ── companion skills table ───────────── */
+    .companions {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .companions th, .companions td {
+      padding: 12px 16px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .companions thead th {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+      font-weight: 500;
+      background: var(--paper-warm);
+      border-bottom: 1px solid var(--line);
+    }
+    .companions tbody tr:last-child td { border-bottom: none; }
+    .companions .skill {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--c-skill);
+      width: 270px;
+      overflow-wrap: anywhere;
+    }
+    .companions .skill a {
+      color: var(--c-skill);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--c-skill);
+    }
+    .companions .role { color: var(--ink); width: 30%; }
+    .companions .relation { color: var(--soft-ink); }
+
+    /* ── footer ───────────────────────────── */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      font-size: 12px;
+      color: var(--mute);
+      font-family: var(--mono);
+      padding-top: 22px;
+      border-top: 1px solid var(--hairline);
+      margin-top: 36px;
+      flex-wrap: wrap;
+    }
+    footer a { color: var(--soft-ink); text-decoration: none; border-bottom: 1px solid var(--hairline); }
+    footer a:hover { color: var(--c-skill); border-bottom-color: var(--c-skill); }
+
+    /* ── responsive ───────────────────────── */
+    @media (max-width: 1280px) {
+      .phases { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 1100px) {
+      body { padding: 36px 32px; }
+      h1 { font-size: 34px; }
+      .io, .split { grid-template-columns: 1fr; }
+      .phases { grid-template-columns: 1fr; }
+      header { flex-direction: column; align-items: flex-start; }
+      .meta-block { text-align: left; }
+      .companions { font-size: 12px; }
+      .companions th, .companions td { padding: 10px 12px; }
+      .companions .skill { width: auto; }
+    }
+
+    @media print {
+      @page { size: 1500px 1100px; margin: 0; }
+      body { background: white; padding: 36px 44px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+
+    <header>
+      <div class="title-block">
+        <p class="eyebrow">Skill in the pipeline &middot; stage 02</p>
+        <h1>Initiative Discovery &mdash; <em>turn a one-line idea into evidence</em>.</h1>
+        <p class="lede">Reads the vault &mdash; ICP, exec roadmap, weekly market intel, customer meetings, competitor profiles, related PRDs &mdash; and produces a defensible discovery package the PRD author can build on. <strong>Confirms-relevance per grep hit</strong> so stale references never become live evidence.</p>
+      </div>
+      <div class="meta-block">
+        <strong>Skill:</strong> /initiative-discovery-custom<br>
+        <strong>Replaces:</strong> /moneypenny-custom<br>
+        <strong>Stage:</strong> 02 &middot; Discovery<br>
+        <strong>Output:</strong> <a href="../../../06-Resources/Product_ideas/">Product_ideas/&lt;slug&gt;_discovery.md</a>
+      </div>
+    </header>
+
+    <p class="section-label">Where it sits in the pipeline</p>
+    <div class="pipeline-strip">
+      <span class="strip-label">Pipeline stages</span>
+      <span class="strip-stage">01 Idea</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage is-here">02 Discovery</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">03 PRD</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">04 Critique</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">05 spec_ready</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">06 Design</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">07 Build</span>
+    </div>
+
+    <p class="section-label">What it does &mdash; six phases, ~2 minutes wall-clock</p>
+    <div class="phases">
+
+      <article class="phase">
+        <span class="num">Phase 0</span>
+        <h4 class="name">Load + staleness checks</h4>
+        <p class="body">Loads the input idea, hard-fails if <code style="font-family:var(--mono); font-size:11px;">System/icp.md</code> is missing, reads the exec roadmap, checks whether the latest Friday Signal is &lt;7 days old.</p>
+        <p class="out">~10s &middot; loads context</p>
+      </article>
+
+      <article class="phase">
+        <span class="num">Phase 0.5</span>
+        <h4 class="name">Exec-roadmap match</h4>
+        <p class="body">Is this initiative on the exec roadmap? If matched, exco has already validated the proposition &mdash; discovery&rsquo;s job is to scope and de-risk, not re-litigate. If unmatched, flag as gap.</p>
+        <p class="out">~5s &middot; sets evidence severity downstream</p>
+      </article>
+
+      <article class="phase">
+        <span class="num">Phase 1</span>
+        <h4 class="name">Vault scan + relevance confirmation</h4>
+        <p class="body">Greps / queries the vault for keyword overlap. <strong>Confirms relevance per hit</strong> &mdash; discards stale, tangential, or out-of-scope-marker references.</p>
+        <p class="out">~30&ndash;60s &middot; produces filtered evidence list</p>
+      </article>
+
+      <article class="phase">
+        <span class="num">Phase 2</span>
+        <h4 class="name">Customer evidence harvest</h4>
+        <p class="body">Top-5 most-relevant meetings. Extracts direct quotes (text, person, date, source). Cross-checks named people against person pages. Identifies SMEs the PM should talk to before spec lands.</p>
+        <p class="out">~30s &middot; quotes + stakeholder list</p>
+      </article>
+
+      <article class="phase">
+        <span class="num">Phase 3</span>
+        <h4 class="name">Competitor + market signal alignment</h4>
+        <p class="body">Reads filtered competitor profiles and the latest Friday Signal. Captures one-liner positioning per near-neighbour. Downgrades confidence on stale profiles.</p>
+        <p class="out">~20s &middot; competitor table + signal cross-ref</p>
+      </article>
+
+      <article class="phase">
+        <span class="num">Phase 4</span>
+        <h4 class="name">ICP fit + segment match</h4>
+        <p class="body">Compares the idea&rsquo;s user segments and problem to the ICP. Identifies which segment(s) it serves. Flags cross-segment disqualifiers as cautions + open questions.</p>
+        <p class="out">~10s &middot; one-sentence rationale</p>
+      </article>
+
+      <article class="phase">
+        <span class="num">Phase 5</span>
+        <h4 class="name">Solution patterns + candidate slicing</h4>
+        <p class="body">2&ndash;4 patterns for how others have solved this class of problem. <strong>Candidate slices</strong> &mdash; first-pass walking-skeleton + thickening slices for the PRD author to refine. Always 3&ndash;6 candidates.</p>
+        <p class="out">~30s &middot; patterns + candidateSlices[]</p>
+      </article>
+
+      <article class="phase">
+        <span class="num">Phase 6</span>
+        <h4 class="name">Compose + evidence-gap log + open Qs</h4>
+        <p class="body">Composes the discovery package. <strong>Evidence-gap log</strong> &mdash; explicit list of what discovery could NOT find. Open questions for every low-confidence field, contradiction, or gap.</p>
+        <p class="out">~15s &middot; writes Product_ideas/&lt;slug&gt;_discovery.md</p>
+      </article>
+
+      <article class="phase">
+        <span class="num">Terminal</span>
+        <h4 class="name">Write &mdash; idempotent</h4>
+        <p class="body">Writes to <code style="font-family:var(--mono); font-size:11px;">06-Resources/Product_ideas/&lt;slug&gt;_discovery.md</code>. Re-runs preserve any sections marked <code style="font-family:var(--mono); font-size:11px;">&lt;!-- user-edited --&gt;</code>; overwrites the rest.</p>
+        <p class="out">writes &middot; idempotent on filename</p>
+      </article>
+
+    </div>
+
+    <p class="section-label">Inputs and outputs &mdash; typed contracts</p>
+    <div class="io">
+      <div class="io-col io-in">
+        <h3>Always loaded before talking</h3>
+        <p class="tag">Inputs &middot; in load order</p>
+        <ul>
+          <li><strong>The input idea</strong> &mdash; one-line, brief file, or existing discovery file (under <code>--rerun</code> / <code>--deepen</code>).</li>
+          <li><code>System/icp.md</code> &mdash; ICP segments + cross-segment disqualifiers. <strong>Hard-fail if missing.</strong></li>
+          <li><code>System/exec_roadmap.md</code> &mdash; primary evidence source for exec-direction matching. Logs gap if absent, continues.</li>
+          <li><code>06-Resources/Market_intelligence/synthesis/weekly/&lt;latest&gt;_friday_signal.md</code> &mdash; flags <code>felix_stale: true</code> if &gt;7 days old.</li>
+          <li>Related PRDs in <code>06-Resources/PRDs/*.md</code> &mdash; surfaces intersections.</li>
+          <li>Competitor profiles filtered to ICP near-neighbours.</li>
+          <li>Vault scan: <code>00-Inbox/Meetings/</code> last 90d &middot; <code>05-Areas/People/</code> &middot; <code>05-Areas/Companies/</code> &middot; <code>06-Resources/Product_ideas/</code> &middot; <code>Market_and_deal_signals.md</code>.</li>
+        </ul>
+      </div>
+      <div class="io-col io-out">
+        <h3>The discovery package</h3>
+        <p class="tag">Output &middot; consumed by /prd-author-custom</p>
+        <p>One markdown file with frontmatter + ten sections in fixed order:</p>
+        <ul>
+          <li><strong>Frontmatter:</strong> <code>discovery_id</code>, <code>iteration</code>, <code>icp_version_at_run</code>, <code>exec_roadmap_priority</code>, <code>felix_signal_at_run</code>, <code>related_prds</code>, <code>ready_for_prd</code> + blockers.</li>
+          <li><strong>Problem statement</strong> &mdash; evidence-grounded paragraph, cited.</li>
+          <li><strong>User segments</strong> &mdash; primary, secondary, out-of-scope.</li>
+          <li><strong>ICP segment match</strong> &mdash; one sentence + cross-segment notes.</li>
+          <li><strong>Exec-roadmap match</strong> &mdash; priority N or off-roadmap + background risks.</li>
+          <li><strong>Stakeholders</strong> &mdash; named SMEs to talk to before spec.</li>
+          <li><strong>Customer evidence</strong> &mdash; verbatim quotes, person, date, source.</li>
+          <li><strong>Competitor + market signal</strong> &mdash; near-neighbour table + Friday Signal synthesis.</li>
+          <li><strong>Solution patterns</strong> &mdash; how others solved this class; build/buy + anti-pattern when surfaced.</li>
+          <li><strong>Candidate slices</strong> &mdash; first-pass walking skeleton + thickeners (3&ndash;6).</li>
+          <li><strong>Evidence gaps</strong> + <strong>Open questions</strong> + <strong>Stale references discarded</strong> (audit trail).</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="section-label">The load-bearing rule &mdash; confirm-relevance per grep hit</p>
+    <div class="rule">
+      <h4>Stale references are noise, not signal &mdash; the skill aggressively prunes</h4>
+      <p>For every grep / QMD hit during the vault scan, the skill answers three questions before the hit becomes evidence: <strong>(1)</strong> Is this reference still current (last touched &lt;6mo, or anchored to active PRD/project)? <strong>(2)</strong> Does the reference actually speak to this idea, or is it incidental keyword overlap? <strong>(3)</strong> Is the reference inside an out-of-scope marker (e.g. &ldquo;Future phase &mdash; not for this cycle&rdquo;)?</p>
+      <p>Answer-no on any &rarr; <strong>discard</strong>. Discarded hits land in the &ldquo;Stale references found + discarded&rdquo; section of the output for full audit transparency.</p>
+      <div class="why">Added 2026-04-29 after the multi-language walkthrough surfaced a stale &ldquo;future phase&rdquo; reference in <code>Scheduled_Content.md</code> that misled discovery for an hour. The PM can override with a <code>&lt;!-- keep-stale --&gt;</code> marker if they really want to retain a citation; the skill respects that on subsequent runs.</div>
+    </div>
+
+    <p class="section-label">How to invoke</p>
+    <div class="invocations">
+      <pre>/initiative-discovery-custom "&lt;one-line idea&gt;"           <span class="cmt"># cold start from a one-liner</span>
+/initiative-discovery-custom &lt;brief-file&gt;                <span class="cmt"># discovery from an existing brief / card / inbox idea</span>
+/initiative-discovery-custom --rerun &lt;discovery-file&gt;    <span class="cmt"># re-run; preserves sections marked &lt;!-- user-edited --&gt;</span>
+/initiative-discovery-custom --deepen &lt;discovery-file&gt;   <span class="cmt"># interactive pressure-test on the 2&ndash;3 weakest fields</span></pre>
+    </div>
+
+    <p class="section-label">Hard refusals &mdash; what the skill will not do</p>
+    <div class="split">
+      <div class="panel panel-trap">
+        <p class="tag">Refusals</p>
+        <h4>Stops cold on these</h4>
+        <ul>
+          <li><strong>No <code>System/icp.md</code></strong> &rarr; hard-fail. Discovery without an ICP is opinion.</li>
+          <li><strong>No problem statement supplied</strong> (cold start with empty / unintelligible input) &rarr; ask for a one-liner before continuing.</li>
+          <li><strong><code>--deepen</code> on a clean discovery</strong> (no low-confidence fields, no open questions) &rarr; &ldquo;Nothing weak to pressure-test. Run <code>--rerun</code> instead.&rdquo;</li>
+          <li><strong>Stale reference re-confirmed without explicit override</strong> &rarr; discarded.</li>
+        </ul>
+      </div>
+      <div class="panel panel-trap">
+        <p class="tag">Out of lane</p>
+        <h4>Will never do these</h4>
+        <ul>
+          <li><strong>Author the PRD</strong> &mdash; that&rsquo;s <code>/prd-author-custom</code>.</li>
+          <li><strong>Run market intel from scratch</strong> &mdash; reads the latest Friday Signal; never falls back to ad-hoc scraping.</li>
+          <li><strong>Author the ICP</strong> &mdash; <code>System/icp.md</code> is read-only to this skill.</li>
+          <li><strong>Echo internal client-activity numbers / account names into the output</strong> &mdash; informs reasoning, never echoes.</li>
+          <li><strong>Treat a stale &ldquo;future phase&rdquo; reference as live evidence</strong> &mdash; pruned by Phase 1 rule.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="section-label">Companion skills &mdash; what runs before, after, alongside</p>
+    <table class="companions">
+      <thead>
+        <tr>
+          <th>Skill</th>
+          <th>What it does</th>
+          <th>Relation to this one</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="skill"><a href="../friday-signal-cadence.html">/weekly-market-intel-custom</a></td>
+          <td class="role">Weekly outside-in research umbrella. Produces the Friday Signal brief. Runs Fridays.</td>
+          <td class="relation"><strong>Upstream.</strong> This skill reads its latest Friday Signal output during Phase 0 and Phase 3. Warns + drafts an open question if &gt;7 days stale.</td>
+        </tr>
+        <tr>
+          <td class="skill"><a href="./prd-author.html">/prd-author-custom</a></td>
+          <td class="role">Drafts a slice-shaped <code>bond_v1</code> PRD with a plan-mode-seed for Cursor.</td>
+          <td class="relation"><strong>Downstream consumer.</strong> Refuses to draft without this skill&rsquo;s output (or an explicit <code>--no-discovery</code> reason).</td>
+        </tr>
+        <tr>
+          <td class="skill"><a href="./critique-product.html">/critique-product-custom</a></td>
+          <td class="role">7-row product / outcome / UX-risk critique. Returns PASS / SOFT / GAP per row + must-fixes.</td>
+          <td class="relation"><strong>Optional pre-PRD critique.</strong> Can run on the discovery package itself before promotion to PRD.</td>
+        </tr>
+        <tr>
+          <td class="skill"><a href="./critique-engineering.html">/critique-engineering-custom</a></td>
+          <td class="role">9-row engineering / feasibility / build-shape critique. Always produces &ge;1 cheaper alternative.</td>
+          <td class="relation"><strong>Optional pre-PRD critique.</strong> Same as above &mdash; pairs with the product critique on the discovery itself.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="section-label">Where it changed &middot; provenance</p>
+    <div class="panel panel-skill">
+      <p class="tag">Replaces</p>
+      <h4>From <code>/moneypenny-custom</code> &middot; renamed 2026-04-29</h4>
+      <p>Replaces the persona-named Moneypenny / 007 version. Same job, named after what it does instead of who it impersonates &mdash; AI and humans operate the skill without persona knowledge.</p>
+      <p>Decoupled from the parked <code>pdlc-ui</code> runtime &mdash; markdown-native output. Bakes in three behaviours validated 2026-04-29 during the multi-language manual walkthrough: <strong>(a)</strong> Confirm-relevance per grep hit (the load-bearing rule above), <strong>(b)</strong> Evidence-gap detection (explicit log when vault is sparse), <strong>(c)</strong> <code>candidateSlices[]</code> output for the downstream PRD author to refine.</p>
+    </div>
+
+    <footer>
+      <span>plans/skill-pipeline/skills/initiative-discovery.html</span>
+      <span>v1 &middot; 2026-05-04</span>
+      <span>
+        <a href="../pipeline-flow.html">&larr; pipeline-flow</a> &middot;
+        <a href="../running-the-pipeline.html">running it</a> &middot;
+        <a href="./prd-author.html">prd-author</a> &middot;
+        <a href="./critique-product.html">critique-product</a> &middot;
+        <a href="./critique-engineering.html">critique-engineering</a> &middot;
+        <a href="../friday-signal-cadence.html">friday-signal cadence</a> &middot;
+        <a href="../README.md">README</a>
+      </span>
+    </footer>
+
+  </div>
+</body>
+</html>

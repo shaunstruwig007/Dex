@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Friday Signal &mdash; the weekly cadence that grounds discovery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Companion to pipeline-flow.html. Explains the weekly market-intel cadence that produces the Friday Signal — a steerco-facing brief consumed by the discovery skill." />
+  <style>
+    :root {
+      --bg: #F5F1EA;
+      --paper: #FBF8F2;
+      --paper-warm: #F3EBDB;
+      --ink: #14182A;
+      --soft-ink: #4F586D;
+      --mute: #8A92A4;
+      --line: #D8CFC1;
+      --hairline: #E6DFD3;
+
+      /* feature colour for this doc — matches "always-on context" band in pipeline-flow */
+      --c-cadence:    #2F6B66;
+      --c-cadence-soft: #C9DDDB;
+      --c-discovery:  #4D6FA5;
+      --c-see:        #4D6FA5;
+      --c-mean:       #C2873B;
+      --c-propose:    #3F7A5B;
+      --c-trap:       #A8516B;
+      --c-defence:    #3F7A5B;
+
+      --serif: "Iowan Old Style", "Apple Garamond", Charter, "Bitstream Charter", Cambria, Georgia, serif;
+      --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono:  ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding: 48px 56px 56px;
+      min-height: 100vh;
+    }
+
+    .frame { max-width: 1320px; margin: 0 auto; }
+
+    /* ── header ───────────────────────────── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 32px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 36px;
+    }
+    .title-block { flex: 1 1 auto; }
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 0 0 8px;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: 42px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      margin: 0;
+      color: var(--ink);
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--c-cadence);
+    }
+    .lede {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--soft-ink);
+      margin: 14px 0 0;
+      max-width: 820px;
+    }
+    .meta-block {
+      flex: 0 0 auto;
+      text-align: right;
+      font-size: 12px;
+      color: var(--mute);
+      font-family: var(--mono);
+      line-height: 1.7;
+    }
+    .meta-block strong { color: var(--soft-ink); font-weight: 500; }
+    .meta-block a {
+      color: var(--c-cadence);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--c-cadence);
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 36px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--hairline);
+    }
+
+    /* ── parallel-track diagram ───────────── */
+    .tracks {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 26px 30px 28px;
+      margin-bottom: 8px;
+    }
+    .track-row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 22px;
+      align-items: center;
+      padding: 18px 0;
+      border-bottom: 1px dashed var(--hairline);
+    }
+    .track-row:last-of-type { border-bottom: none; padding-bottom: 0; }
+    .track-row:first-of-type { padding-top: 4px; }
+    .track-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .track-label .colour-chip {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 2px;
+      margin-right: 8px;
+      vertical-align: -1px;
+    }
+    .track-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .track-pill {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--soft-ink);
+      background: var(--paper-warm);
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .track-pill.cadence {
+      background: rgba(47,107,102,0.08);
+      border-color: rgba(47,107,102,0.30);
+      color: var(--c-cadence);
+    }
+    .track-pill.pipeline {
+      background: rgba(77,111,165,0.06);
+      border-color: rgba(77,111,165,0.25);
+      color: var(--c-discovery);
+    }
+    .track-arrow {
+      font-family: var(--mono);
+      color: var(--mute);
+      font-size: 14px;
+    }
+    .track-feed {
+      grid-column: 1 / -1;
+      margin-top: 6px;
+      padding: 10px 14px;
+      background: linear-gradient(90deg, rgba(47,107,102,0.06) 0%, rgba(77,111,165,0.06) 100%);
+      border-radius: 8px;
+      font-size: 12.5px;
+      color: var(--soft-ink);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .track-feed strong {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--c-cadence);
+    }
+    .track-feed code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+
+    /* ── 6-step run sequence ──────────────── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+    }
+    .step {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 14px 14px;
+      position: relative;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+    }
+    .step::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 14px; right: 14px;
+      height: 3px;
+      background: var(--c-cadence);
+      border-radius: 0 0 3px 3px;
+    }
+    .step .num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--mute);
+      margin-bottom: 4px;
+    }
+    .step .name {
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--c-cadence);
+      margin: 0 0 6px;
+      line-height: 1.2;
+    }
+    .step .body {
+      font-size: 12.5px;
+      color: var(--soft-ink);
+      flex: 1;
+      margin: 0 0 10px;
+    }
+    .step .out {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--mute);
+      border-top: 1px dashed var(--hairline);
+      padding-top: 8px;
+      line-height: 1.5;
+    }
+
+    /* ── three-movement voice ─────────────── */
+    .voice {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .movement {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px 22px;
+      position: relative;
+    }
+    .movement::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 22px; bottom: 22px;
+      width: 4px;
+      border-radius: 0 4px 4px 0;
+      background: var(--accent);
+    }
+    .movement h4 {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 600;
+      margin: 0 0 4px;
+      color: var(--accent);
+      line-height: 1.15;
+    }
+    .movement .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 12px;
+    }
+    .movement p {
+      font-size: 13px;
+      color: var(--soft-ink);
+      margin: 0 0 10px;
+    }
+    .movement .example {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13px;
+      color: var(--ink);
+      padding: 10px 12px;
+      border-left: 3px solid var(--accent);
+      background: rgba(0,0,0,0.015);
+      margin-top: 10px;
+    }
+    .m-see     { --accent: var(--c-see); }
+    .m-mean    { --accent: var(--c-mean); }
+    .m-propose { --accent: var(--c-propose); }
+
+    /* ── artefacts grid ───────────────────── */
+    .artefacts {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+    .artefact {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px 22px;
+    }
+    .artefact h4 {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      margin: 0 0 4px;
+      color: var(--ink);
+    }
+    .artefact .where {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--c-cadence);
+      margin-bottom: 10px;
+      display: block;
+      overflow-wrap: anywhere;
+    }
+    .artefact p {
+      font-size: 13px;
+      color: var(--soft-ink);
+      margin: 0;
+    }
+
+    /* ── trap + defence panels ────────────── */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 24px;
+      position: relative;
+    }
+    .panel::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 22px; right: 22px;
+      height: 3px;
+      border-radius: 0 0 3px 3px;
+      background: var(--accent);
+    }
+    .panel h4 {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      margin: 4px 0 6px;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+    .panel .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 14px;
+    }
+    .panel p {
+      font-size: 13.5px;
+      color: var(--soft-ink);
+      margin: 0 0 10px;
+    }
+    .panel ul {
+      font-size: 13px;
+      color: var(--soft-ink);
+      padding-left: 20px;
+      margin: 8px 0 0;
+    }
+    .panel li { margin-bottom: 6px; }
+    .panel li strong { color: var(--ink); font-weight: 600; }
+    .panel li code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+    .panel-trap     { --accent: var(--c-trap); }
+    .panel-defence  { --accent: var(--c-defence); }
+
+    /* ── staleness contract ───────────────── */
+    .contract {
+      background: var(--paper-warm);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 26px;
+      border-left: 4px solid var(--c-cadence);
+    }
+    .contract h4 {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 8px;
+      color: var(--ink);
+    }
+    .contract p { font-size: 13.5px; color: var(--soft-ink); margin: 0 0 8px; }
+    .contract ol {
+      font-size: 13px;
+      color: var(--soft-ink);
+      padding-left: 22px;
+      margin: 8px 0 0;
+    }
+    .contract li { margin-bottom: 6px; }
+    .contract code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.04);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+
+    /* ── companion skills table ───────────── */
+    .companions {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .companions th, .companions td {
+      padding: 12px 16px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .companions thead th {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+      font-weight: 500;
+      background: var(--paper-warm);
+      border-bottom: 1px solid var(--line);
+    }
+    .companions tbody tr:last-child td { border-bottom: none; }
+    .companions .skill {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--c-cadence);
+      width: 270px;
+      overflow-wrap: anywhere;
+    }
+    .companions .role { color: var(--ink); width: 30%; }
+    .companions .relation { color: var(--soft-ink); }
+
+    /* ── footer ───────────────────────────── */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      font-size: 12px;
+      color: var(--mute);
+      font-family: var(--mono);
+      padding-top: 22px;
+      border-top: 1px solid var(--hairline);
+      margin-top: 36px;
+    }
+    footer a { color: var(--soft-ink); text-decoration: none; border-bottom: 1px solid var(--hairline); }
+    footer a:hover { color: var(--c-cadence); border-bottom-color: var(--c-cadence); }
+
+    /* ── responsive ───────────────────────── */
+    @media (max-width: 1280px) {
+      .steps { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 1100px) {
+      body { padding: 36px 32px; }
+      h1 { font-size: 34px; }
+      .voice, .split, .artefacts { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      header { flex-direction: column; align-items: flex-start; }
+      .meta-block { text-align: left; }
+      .track-row { grid-template-columns: 1fr; gap: 10px; }
+      .companions { font-size: 12px; }
+      .companions th, .companions td { padding: 10px 12px; }
+      .companions .skill { width: auto; }
+    }
+
+    @media print {
+      @page { size: 1500px 1100px; margin: 0; }
+      body { background: white; padding: 36px 44px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+
+    <header>
+      <div class="title-block">
+        <p class="eyebrow">Companion to the skill pipeline</p>
+        <h1>The Friday Signal &mdash; <em>the weekly cadence that grounds discovery</em>.</h1>
+        <p class="lede">An advisory, steerco-facing market brief, produced every Friday. It runs <strong>parallel</strong> to the idea&rarr;PRD pipeline &mdash; not inside it &mdash; and feeds discovery a single typed artefact. One page. Three movements. Safe for the board.</p>
+      </div>
+      <div class="meta-block">
+        <strong>Skill:</strong> /weekly-market-intel-custom<br>
+        <strong>Cadence:</strong> weekly &middot; default Friday<br>
+        <strong>Audience:</strong> steerco (CEO escalates)<br>
+        <strong>Sister docs:</strong> <a href="./pipeline-flow.html">pipeline-flow</a> &middot; <a href="./design-in-the-pipeline.html">design role</a>
+      </div>
+    </header>
+
+    <p class="section-label">Where it sits &mdash; parallel cadence, single feed-in</p>
+    <div class="tracks">
+
+      <div class="track-row">
+        <div class="track-label"><span class="colour-chip" style="background: var(--c-cadence);"></span>Weekly cadence</div>
+        <div class="track-pills">
+          <span class="track-pill cadence">/weekly-market-intel-custom</span>
+          <span class="track-arrow">&rarr;</span>
+          <span class="track-pill cadence">Friday Signal brief</span>
+          <span class="track-arrow">&rarr;</span>
+          <span class="track-pill cadence">refreshed competitor profiles</span>
+          <span class="track-arrow">&rarr;</span>
+          <span class="track-pill cadence">EV candidates queued</span>
+        </div>
+      </div>
+
+      <div class="track-row">
+        <div class="track-label"><span class="colour-chip" style="background: var(--c-discovery);"></span>Idea&rarr;PRD pipeline</div>
+        <div class="track-pills">
+          <span class="track-pill pipeline">01 Idea</span>
+          <span class="track-arrow">&rarr;</span>
+          <span class="track-pill pipeline">02 Discovery</span>
+          <span class="track-arrow">&rarr;</span>
+          <span class="track-pill pipeline">03 PRD</span>
+          <span class="track-arrow">&rarr;</span>
+          <span class="track-pill pipeline">04 Critique</span>
+          <span class="track-arrow">&rarr;</span>
+          <span class="track-pill pipeline">05 spec_ready</span>
+          <span class="track-arrow">&rarr;</span>
+          <span class="track-pill pipeline">06 Design</span>
+          <span class="track-arrow">&rarr;</span>
+          <span class="track-pill pipeline">07 Build</span>
+        </div>
+      </div>
+
+      <div class="track-feed">
+        <strong>One feed-in</strong>
+        <span>The cadence does <em>not</em> trigger the pipeline. <code>/initiative-discovery-custom</code> reads the latest <code>&lt;ISO-Monday&gt;_friday_signal.md</code> as a primary input during Phase&nbsp;0 and Phase&nbsp;3. If it&rsquo;s &gt;7 days old, discovery warns and asks the user to re-run the cadence skill before continuing.</span>
+      </div>
+
+    </div>
+
+    <p class="section-label">The 6-step run &mdash; one command, end to end</p>
+    <div class="steps">
+
+      <article class="step">
+        <span class="num">00</span>
+        <h4 class="name">Ingest fetch</h4>
+        <p class="body">RSS + YouTube fetchers pull the week&rsquo;s content. Skipped if the newest ingest file is &lt;24h old (same-day re-runs stay cheap). Failure is logged but never blocks downstream steps.</p>
+        <p class="out">scripts &rarr; ingest/<br>newsletters/, youtube/</p>
+      </article>
+
+      <article class="step">
+        <span class="num">01</span>
+        <h4 class="name">Market discovery</h4>
+        <p class="body">Walks this week&rsquo;s ingest, appends Phase&nbsp;1 rows to the signal log, and proposes (never auto-writes) <code style="font-family:var(--mono); font-size:11px;">EV-*</code> candidates for CPO confirm.</p>
+        <p class="out">out &rarr; signal-log rows<br>Market_and_deal_signals.md</p>
+      </article>
+
+      <article class="step">
+        <span class="num">02</span>
+        <h4 class="name">Competitor watch</h4>
+        <p class="body">T0 (JEM HR &mdash; bundle-extension scan), T1 (Staffbase, Workvivo, Beekeeper, Speakap, Blink, Flip &mdash; only those that moved), T2 (adjacent rotation, on-surface only). Profiles refreshed in place.</p>
+        <p class="out">out &rarr; refreshed<br>Competitors/profiles/*.md</p>
+      </article>
+
+      <article class="step">
+        <span class="num">03</span>
+        <h4 class="name">Industry pulse</h4>
+        <p class="body">Pass A: rotating sector pulse (Mining&rarr;Energy&rarr;Retail&rarr;&hellip;) tied to vault PDFs. Pass B: exactly three AI sub-lenses &mdash; frontline-AI product moves, worker-data regulation, union/worker AI sentiment.</p>
+        <p class="out">out &rarr; sector paragraph<br>+ 3 AI sub-lens lines</p>
+      </article>
+
+      <article class="step">
+        <span class="num">04</span>
+        <h4 class="name">Compose the brief</h4>
+        <p class="body">Assemble Top of mind / Competitor moves / Industry signal / AI sub-lenses / Worth a click / EV candidates queued / Provenance. <strong>One page.</strong> Steerco-safe voice.</p>
+        <p class="out">out &rarr; <strong>Friday Signal</strong><br>synthesis/weekly/<br>&lt;ISO-Monday&gt;_friday_signal.md</p>
+      </article>
+
+      <article class="step">
+        <span class="num">05</span>
+        <h4 class="name">Chat summary + log</h4>
+        <p class="body">Three-line summary in chat. One Slice-log roll-up entry written to the project log. Brief is now safe for board escalation at the CEO&rsquo;s discretion.</p>
+        <p class="out">out &rarr; chat 3-liner<br>+ project log row</p>
+      </article>
+
+    </div>
+
+    <p class="section-label">The voice &mdash; three movements, every time</p>
+    <div class="voice">
+      <div class="movement m-see">
+        <h4>What we see</h4>
+        <p class="tag">Observation &middot; sourced &middot; dated</p>
+        <p>Concrete moves, named sources, dated. No interpretation yet. If a sentence here can&rsquo;t cite a URL or a vault PDF, it doesn&rsquo;t belong in this section.</p>
+        <div class="example">Two independent mining-sector sources this week framed the same operational need in identical terms&hellip;</div>
+      </div>
+      <div class="movement m-mean">
+        <h4>What it means for WT</h4>
+        <p class="tag">Interpretation &middot; advisor voice</p>
+        <p>What the observation implies for Wyzetalk specifically &mdash; ICP segments, competitive lane, narrative posture. Never alarm vocabulary (&ldquo;at risk&rdquo;, &ldquo;crisis&rdquo;, &ldquo;losing&rdquo;). Always advisor framing.</p>
+        <div class="example">The mining sector is not waiting for a product pitch &mdash; it is articulating its own requirements&hellip;</div>
+      </div>
+      <div class="movement m-propose">
+        <h4>What we propose</h4>
+        <p class="tag">Action &middot; for steerco / CPO</p>
+        <p>One concrete proposal per item &mdash; a one-pager, a positioning frame, a follow-up scan. Decisions stay with the CEO / CPO; the brief proposes, never decides.</p>
+        <div class="example">We propose WT produce a single one-page mining-sector positioning document &hellip; before end of Q2.</div>
+      </div>
+    </div>
+
+    <p class="section-label">What the cadence produces &mdash; typed artefacts</p>
+    <div class="artefacts">
+
+      <div class="artefact">
+        <h4>The Friday Signal brief</h4>
+        <span class="where">06-Resources/Market_intelligence/synthesis/weekly/&lt;ISO-Monday&gt;_friday_signal.md</span>
+        <p>One-page steerco brief. Frontmatter declares <em>type: weekly_signal_brief</em>, <em>audience: steerco</em>, <em>tone: advisory</em>. Same calendar week re-runs <strong>update</strong> the same file (idempotent filename).</p>
+      </div>
+
+      <div class="artefact">
+        <h4>Signal-log rows</h4>
+        <span class="where">06-Resources/Market_and_deal_signals.md &sect; Phase 1</span>
+        <p>Append-only week-by-week log of notable items with one-line WT implication each. The historical record &mdash; survives long after individual briefs roll off the top of mind.</p>
+      </div>
+
+      <div class="artefact">
+        <h4>Refreshed competitor profiles</h4>
+        <span class="where">06-Resources/Competitors/profiles/*.md</span>
+        <p>T0 (JEM HR) every run; T1 only those that moved this week. Each profile&rsquo;s <code style="font-family:var(--mono); font-size:11px;">last_reviewed</code> bumped, dated <em>Watch signals</em> bullet appended.</p>
+      </div>
+
+      <div class="artefact">
+        <h4>EV candidates queued</h4>
+        <span class="where">section in the brief &middot; CPO confirms &amp; assigns IDs</span>
+        <p>Items the brief proposes (never auto-writes) for promotion to <code style="font-family:var(--mono); font-size:11px;">EV-*</code> rows. Each candidate names the source, the WT artefact it binds to, and why.</p>
+      </div>
+
+    </div>
+
+    <p class="section-label">Hard exclusions &mdash; what never lands in the brief</p>
+    <div class="split">
+      <div class="panel panel-trap">
+        <p class="tag">Excluded</p>
+        <h4>Never in the Friday Signal</h4>
+        <ul>
+          <li><strong>Client account names in risk framing.</strong> Book-of-business is CPO-internal. Account names appear only in neutral reference contexts (case-study candidates, ICP illustration).</li>
+          <li><strong>Numbers from the client snapshot.</strong> <code>05-Areas/Companies/Wyzetalk_Clients/index.md</code> is <code>visibility: cpo-internal</code>, <code>dashboard_surface: false</code>. Owned by a separate skill on a separate cadence.</li>
+          <li><strong>Risk-alarm vocabulary.</strong> &ldquo;At risk&rdquo;, &ldquo;threatens&rdquo;, &ldquo;crisis&rdquo;, &ldquo;losing&rdquo;. The CEO may forward this to the board &mdash; tone discipline is non-negotiable.</li>
+          <li><strong>Padded AI bullets.</strong> Exactly three sub-lenses per week. &ldquo;No movement worth a line this week&rdquo; is a valid complete answer.</li>
+        </ul>
+      </div>
+      <div class="panel panel-defence">
+        <p class="tag">The tone test</p>
+        <h4>Before any item lands</h4>
+        <p><em>&ldquo;If this landed in a board pack with no other context, would it create clarity or panic?&rdquo;</em></p>
+        <p>If panic, reframe or drop. The brief advising the CPO is the prototype of what WT-the-product aspires to offer its clients &mdash; advisor-voice, sourced, dated, propose-not-decide. If the brief ever stops feeling like advisor-voice, the skill is broken.</p>
+      </div>
+    </div>
+
+    <p class="section-label">The staleness contract &mdash; how discovery uses this</p>
+    <div class="contract">
+      <h4>&gt;7 days old &rarr; discovery warns &amp; asks for a re-run</h4>
+      <p><code>/initiative-discovery-custom</code> reads the latest <code>*_friday_signal.md</code> as a primary input. The contract is enforced on file mtime, not on calendar week.</p>
+      <ol>
+        <li><strong>Fresh (&le;7 days):</strong> discovery treats the brief as authoritative for market signal alignment. Quotes from it land in <code>discovery.researchNotes</code> and <code>discovery.competitorSnapshot</code>.</li>
+        <li><strong>Stale (&gt;7 days):</strong> discovery flags <code>felix_stale: true</code>, prepends a one-line warning to <code>discovery.research.summary</code>, and drafts an open question asking the user to re-run <code>/weekly-market-intel-custom</code> before the sweep.</li>
+        <li><strong>Missing entirely:</strong> discovery does <em>not</em> fall back to scraping <code>ingest/</code> raw &mdash; that&rsquo;s a different skill&rsquo;s job. It writes a missing-brief warning and continues with vault-only context.</li>
+      </ol>
+      <p style="margin-top: 10px;">This is why the cadence runs on its own schedule and not on the pipeline&rsquo;s. Outside-in market reality refreshes weekly regardless of whether anyone has a new idea to discover.</p>
+    </div>
+
+    <p class="section-label">Companion skills &mdash; what runs alongside, and what it does</p>
+    <table class="companions">
+      <thead>
+        <tr>
+          <th>Skill</th>
+          <th>What it does</th>
+          <th>Relation to the Friday Signal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="skill">/weekly-market-intel-custom</td>
+          <td class="role">Single-command weekly run. Steps 0&ndash;5 above. Default Friday.</td>
+          <td class="relation"><strong>Produces</strong> the Friday Signal &mdash; the source of truth.</td>
+        </tr>
+        <tr>
+          <td class="skill">/felix-client-signals-custom</td>
+          <td class="role">First-party book-of-business signals (renewal risk, expansion candidates, feature gaps from real usage).</td>
+          <td class="relation">Separate skill, separate cadence. Writes <code style="font-family:var(--mono); font-size:11.5px;">Wyzetalk_Clients/&lt;date&gt;_signals.md</code>. <strong>Never merged</strong> into the Friday Signal body (CPO-internal).</td>
+        </tr>
+        <tr>
+          <td class="skill">/weekly-discovery-sweep-custom</td>
+          <td class="role">Monday morning. Iterates every card in the discovery column and re-runs per-card discovery research.</td>
+          <td class="relation"><strong>Consumes</strong> the latest Friday Signal as input. Checks freshness; warns if stale.</td>
+        </tr>
+        <tr>
+          <td class="skill">/initiative-discovery-custom</td>
+          <td class="role">Per-initiative discovery research, on-demand. Phase 0 + Phase 3 read the brief.</td>
+          <td class="relation"><strong>Consumes</strong> the brief. Enforces the &gt;7-day staleness contract above.</td>
+        </tr>
+        <tr>
+          <td class="skill">/weekly-exec-intel</td>
+          <td class="role">Different artefact, different audience. Writes <code style="font-family:var(--mono); font-size:11.5px;">&lt;date&gt;_weekly_exec_brief.md</code> from a separate template.</td>
+          <td class="relation">Adjacent, not a substitute. Don&rsquo;t stack with the Friday Signal in the same session &mdash; both re-read the same ingest.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="section-label">Flags worth knowing</p>
+    <div class="panel" style="border-left: 4px solid var(--c-cadence); padding: 22px 26px;">
+      <p style="margin: 0 0 10px;"><strong>Defaults are sane &mdash; you rarely need flags.</strong> Same-day re-runs short-circuit on ingest freshness. The brief is idempotent on filename. Voice and exclusions are baked in.</p>
+      <ul style="font-size: 13px; color: var(--soft-ink); padding-left: 20px; margin: 8px 0 0;">
+        <li><code style="font-family:var(--mono); font-size:11.5px; padding:1px 6px; background:rgba(0,0,0,0.025); border:1px solid var(--hairline); border-radius:3px;">--deep</code> &mdash; monthly mode. First Friday of the month. Re-reads sector PDFs in Step 3 and writes a monthly industry-pulse digest under <code style="font-family:var(--mono); font-size:11.5px;">synthesis/monthly/</code>.</li>
+        <li><code style="font-family:var(--mono); font-size:11.5px; padding:1px 6px; background:rgba(0,0,0,0.025); border:1px solid var(--hairline); border-radius:3px;">--skip-ingest</code> &mdash; debug only. Skips Step 0 and uses whatever is already under <code style="font-family:var(--mono); font-size:11.5px;">ingest/</code>.</li>
+        <li><code style="font-family:var(--mono); font-size:11.5px; padding:1px 6px; background:rgba(0,0,0,0.025); border:1px solid var(--hairline); border-radius:3px;">--dry-run</code> &mdash; render the composed brief to chat only; no file writes. Useful for previewing voice changes.</li>
+      </ul>
+    </div>
+
+    <footer>
+      <span>plans/skill-pipeline/friday-signal-cadence.html</span>
+      <span>v1 &middot; 2026-05-04</span>
+      <span><a href="./pipeline-flow.html">flow diagram</a> &middot; <a href="./running-the-pipeline.html">running it</a> &middot; <a href="./design-in-the-pipeline.html">design role</a> &middot; <a href="./README.md">README</a> &middot; <a href="./lessons-from-skills.md">lessons</a></span>
+    </footer>
+
+  </div>
+</body>
+</html>

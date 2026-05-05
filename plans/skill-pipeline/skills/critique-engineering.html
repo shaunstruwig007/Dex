@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Critique &mdash; Engineering &mdash; what it does, how it scores</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="The engineering / feasibility / build-shape critique skill. Returns a 9-row PASS/SOFT/GAP scorecard + must-fixes + at least one cheaper alternative. Stage 04 of the skill pipeline." />
+  <style>
+    :root {
+      --bg: #F5F1EA;
+      --paper: #FBF8F2;
+      --paper-warm: #F3EBDB;
+      --ink: #14182A;
+      --soft-ink: #4F586D;
+      --mute: #8A92A4;
+      --line: #D8CFC1;
+      --hairline: #E6DFD3;
+
+      /* feature accent — matches pipeline-flow stage 04 (Critique); engineering uses the warmer eng colour for its title */
+      --c-skill:    #A8516B;
+      --c-skill-soft: #E8C5D0;
+      --c-eng-warm: #C2873B;
+      --c-product:  #A8516B;
+      --c-discovery: #4D6FA5;
+      --c-prd:      #5B4C8C;
+      --c-context:  #2F6B66;
+      --c-spec:     #3F7A5B;
+      --c-trap:     #A8516B;
+      --c-defence:  #3F7A5B;
+      --c-pass:     #3F7A5B;
+      --c-soft:     #C2873B;
+      --c-gap:      #A8516B;
+      --c-alt:      #2F6B66;
+
+      --serif: "Iowan Old Style", "Apple Garamond", Charter, "Bitstream Charter", Cambria, Georgia, serif;
+      --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono:  ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding: 48px 56px 56px;
+      min-height: 100vh;
+    }
+
+    .frame { max-width: 1320px; margin: 0 auto; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 32px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 36px;
+    }
+    .title-block { flex: 1 1 auto; }
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 0 0 8px;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: 42px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      margin: 0;
+      color: var(--ink);
+    }
+    h1 em { font-style: italic; color: var(--c-skill); }
+    .lede {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--soft-ink);
+      margin: 14px 0 0;
+      max-width: 820px;
+    }
+    .meta-block {
+      flex: 0 0 auto;
+      text-align: right;
+      font-size: 12px;
+      color: var(--mute);
+      font-family: var(--mono);
+      line-height: 1.7;
+    }
+    .meta-block strong { color: var(--soft-ink); font-weight: 500; }
+    .meta-block a {
+      color: var(--c-skill);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--c-skill);
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 32px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--hairline);
+    }
+
+    /* ── pipeline strip ───────────────────── */
+    .pipeline-strip {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .strip-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-right: 12px;
+    }
+    .strip-stage {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--mute);
+      background: var(--paper-warm);
+      border: 1px solid var(--hairline);
+      padding: 6px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .strip-stage.is-here {
+      color: var(--c-skill);
+      background: rgba(168,81,107,0.08);
+      border-color: rgba(168,81,107,0.35);
+      font-weight: 600;
+    }
+    .strip-arrow { font-family: var(--mono); color: var(--mute); font-size: 14px; }
+
+    /* ── two lenses ───────────────────────── */
+    .two-lenses {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+    .lens {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 24px 24px;
+      position: relative;
+    }
+    .lens::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 22px; bottom: 22px;
+      width: 4px;
+      border-radius: 0 4px 4px 0;
+      background: var(--accent);
+    }
+    .lens.runtime  { --accent: var(--c-prd); }
+    .lens.feature  { --accent: var(--c-skill); }
+    .lens h3 {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 4px;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+    .lens .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 12px;
+    }
+    .lens p {
+      font-size: 13px;
+      color: var(--soft-ink);
+      margin: 0 0 8px;
+    }
+    .lens ul { font-size: 12.5px; color: var(--soft-ink); padding-left: 18px; margin: 6px 0 10px; }
+    .lens li { margin-bottom: 4px; }
+    .lens .examples {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--mute);
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--hairline);
+    }
+    .lens code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+
+    /* ── 9-row checklist ──────────────────── */
+    .rows {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .rows th, .rows td {
+      padding: 14px 16px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .rows thead th {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+      font-weight: 500;
+      background: var(--paper-warm);
+      border-bottom: 1px solid var(--line);
+    }
+    .rows tbody tr:last-child td { border-bottom: none; }
+    .rows .num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--mute);
+      width: 36px;
+    }
+    .rows .row-name {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--c-skill);
+      width: 200px;
+    }
+    .rows .row-asks { color: var(--ink); width: 38%; }
+    .rows .row-gap {
+      color: var(--c-gap);
+      font-style: italic;
+      font-size: 12.5px;
+    }
+    .rows .row-alt {
+      color: var(--c-alt);
+      font-style: italic;
+      font-size: 12.5px;
+      font-weight: 500;
+    }
+    .rows tr.row-cheaper .row-name { color: var(--c-alt); }
+    .rows code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+
+    /* ── output format pre ────────────────── */
+    .output-pre {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 26px;
+    }
+    .output-pre pre {
+      margin: 0;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--soft-ink);
+      line-height: 1.7;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .output-pre pre .row-key { color: var(--ink); font-weight: 600; }
+    .output-pre pre .pass { color: var(--c-pass); font-weight: 600; }
+    .output-pre pre .soft { color: var(--c-soft); font-weight: 600; }
+    .output-pre pre .gap  { color: var(--c-gap);  font-weight: 600; }
+    .output-pre pre .alt  { color: var(--c-alt);  font-weight: 600; }
+    .output-pre pre .verdict-ready { color: var(--c-pass); font-weight: 600; }
+    .output-pre pre .verdict-return { color: var(--c-gap); font-weight: 600; }
+    .output-pre pre .cmt { color: var(--mute); }
+
+    /* ── load-bearing rule (eng-alt) ──────── */
+    .rule {
+      background: var(--paper-warm);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 26px;
+      border-left: 4px solid var(--c-alt);
+    }
+    .rule h4 {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 600;
+      margin: 0 0 8px;
+      color: var(--ink);
+    }
+    .rule p { font-size: 13.5px; color: var(--soft-ink); margin: 0 0 10px; }
+    .rule .why {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13.5px;
+      color: var(--soft-ink);
+      padding: 10px 14px;
+      background: rgba(47,107,102,0.06);
+      border-left: 3px solid var(--c-alt);
+      border-radius: 0 6px 6px 0;
+      margin-top: 10px;
+    }
+    .rule code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.04);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+
+    /* ── pair protocol diagram ────────────── */
+    .pair {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 26px;
+    }
+    .pair h4 {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      margin: 0 0 10px;
+      color: var(--ink);
+    }
+    .pair p { font-size: 13.5px; color: var(--soft-ink); margin: 0 0 12px; }
+    .pair-flow {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      margin: 14px 0 0;
+      flex-wrap: wrap;
+    }
+    .pair-step {
+      flex: 1 1 0;
+      min-width: 200px;
+      background: var(--paper-warm);
+      border: 1px solid var(--hairline);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .pair-step.first  { border-left: 3px solid var(--c-product); }
+    .pair-step.second { border-left: 3px solid var(--c-skill); }
+    .pair-step.third  { border-left: 3px solid var(--c-defence); }
+    .pair-step .step-tag {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 4px;
+    }
+    .pair-step .step-name {
+      font-family: var(--serif);
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 0 0 4px;
+    }
+    .pair-step .step-body {
+      font-size: 12.5px;
+      color: var(--soft-ink);
+      margin: 0;
+      line-height: 1.45;
+    }
+    .pair-arrow {
+      align-self: center;
+      font-family: var(--mono);
+      color: var(--mute);
+      font-size: 18px;
+    }
+
+    /* ── anti-patterns + refusals ────────── */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 24px;
+      position: relative;
+    }
+    .panel::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 22px; right: 22px;
+      height: 3px;
+      border-radius: 0 0 3px 3px;
+      background: var(--accent);
+    }
+    .panel h4 {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      margin: 4px 0 6px;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+    .panel .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 14px;
+    }
+    .panel p { font-size: 13.5px; color: var(--soft-ink); margin: 0 0 10px; }
+    .panel ul { font-size: 13px; color: var(--soft-ink); padding-left: 20px; margin: 8px 0 0; }
+    .panel li { margin-bottom: 6px; }
+    .panel li strong { color: var(--ink); font-weight: 600; }
+    .panel li code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+    .panel-trap     { --accent: var(--c-trap); }
+    .panel-defence  { --accent: var(--c-defence); }
+    .panel-skill    { --accent: var(--c-skill); }
+
+    /* ── invocation block ─────────────────── */
+    .invocations {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 22px;
+    }
+    .invocations pre {
+      margin: 0;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--soft-ink);
+      line-height: 1.7;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .invocations pre .cmt { color: var(--mute); }
+
+    /* ── companions table ─────────────────── */
+    .companions {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .companions th, .companions td {
+      padding: 12px 16px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .companions thead th {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+      font-weight: 500;
+      background: var(--paper-warm);
+      border-bottom: 1px solid var(--line);
+    }
+    .companions tbody tr:last-child td { border-bottom: none; }
+    .companions .skill {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--c-skill);
+      width: 270px;
+      overflow-wrap: anywhere;
+    }
+    .companions .skill a {
+      color: var(--c-skill);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--c-skill);
+    }
+    .companions .role { color: var(--ink); width: 30%; }
+    .companions .relation { color: var(--soft-ink); }
+
+    /* ── footer ───────────────────────────── */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      font-size: 12px;
+      color: var(--mute);
+      font-family: var(--mono);
+      padding-top: 22px;
+      border-top: 1px solid var(--hairline);
+      margin-top: 36px;
+      flex-wrap: wrap;
+    }
+    footer a { color: var(--soft-ink); text-decoration: none; border-bottom: 1px solid var(--hairline); }
+    footer a:hover { color: var(--c-skill); border-bottom-color: var(--c-skill); }
+
+    @media (max-width: 1100px) {
+      body { padding: 36px 32px; }
+      h1 { font-size: 34px; }
+      .split, .two-lenses { grid-template-columns: 1fr; }
+      header { flex-direction: column; align-items: flex-start; }
+      .meta-block { text-align: left; }
+      .companions { font-size: 12px; }
+      .companions th, .companions td { padding: 10px 12px; }
+      .companions .skill { width: auto; }
+      .rows .row-name { width: 140px; font-size: 13px; }
+      .rows th, .rows td { padding: 10px 12px; font-size: 12.5px; }
+    }
+
+    @media print {
+      @page { size: 1500px 1100px; margin: 0; }
+      body { background: white; padding: 36px 44px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+
+    <header>
+      <div class="title-block">
+        <p class="eyebrow">Skill in the pipeline &middot; stage 04 (engineering half)</p>
+        <h1>Critique &mdash; Engineering &mdash; <em>is this buildable, safe, and the right shape?</em></h1>
+        <p class="lede">Reads a draft plan, PRD, or sprint seed and returns a 9-row scorecard &mdash; <strong>PASS / SOFT / GAP</strong> &mdash; with concrete must-fixes and <strong>at least one cheaper alternative shape</strong>. Catches contract drift, atomicity gaps, and a11y misses before they hit runtime. Pairs with <a href="./critique-product.html" style="color: var(--c-skill); border-bottom: 1px dotted var(--c-skill); text-decoration: none;">/critique-product-custom</a>.</p>
+      </div>
+      <div class="meta-block">
+        <strong>Skill:</strong> /critique-engineering-custom<br>
+        <strong>Replaces:</strong> /agent-q-cto-custom<br>
+        <strong>Stage:</strong> 04 &middot; Critique<br>
+        <strong>Verdict:</strong> READY FOR BUILD &middot; RETURN TO PLAN
+      </div>
+    </header>
+
+    <p class="section-label">Where it sits in the pipeline</p>
+    <div class="pipeline-strip">
+      <span class="strip-label">Pipeline stages</span>
+      <span class="strip-stage">01 Idea</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">02 Discovery</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">03 PRD</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage is-here">04 Critique</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">05 spec_ready</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">06 Design</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">07 Build</span>
+    </div>
+
+    <p class="section-label">Two lenses &mdash; same checklist, different rigour</p>
+    <div class="two-lenses">
+      <div class="lens runtime">
+        <h3>Runtime-plan lens</h3>
+        <p class="tag">Path: plans/PDLC_UI/sprint-N-seed.md</p>
+        <p>Applies when the artefact is a runtime / sprint plan. <strong>Schema parity</strong> means literal Zod / migration / fixture parity. <strong>Atomicity</strong> means literal database transactions. <strong>Contracts</strong> are shipped API event payloads.</p>
+        <ul>
+          <li>Reads code, not just docs &mdash; pulls in affected runtime files in <code>pdlc-ui/src/</code>.</li>
+          <li>Honours ratified ADRs in <code>pdlc-ui/docs/adr/</code> &mdash; never silently violates or supersedes.</li>
+        </ul>
+        <p class="examples">Anchors: plan.md &middot; engineering-guardrails.md &middot; tech-stack.md &middot; schema-initiative-v0.md</p>
+      </div>
+      <div class="lens feature">
+        <h3>Feature-PRD lens</h3>
+        <p class="tag">Path: 06-Resources/PRDs/&lt;feature&gt;.md</p>
+        <p>Applies when the artefact is a feature PRD. <strong>Schema parity</strong> means data contract coherence across consumers. <strong>Atomicity</strong> means multi-write user-action paths. <strong>Contracts</strong> are the API surface the PRD implies.</p>
+        <ul>
+          <li>Verifies fields the PRD assumes &ldquo;exist conceptually&rdquo; actually exist in production schema / migrations.</li>
+          <li>Reads <code>related_prds:</code> frontmatter to understand surface intersections.</li>
+        </ul>
+        <p class="examples">Anchors: linked PRDs &middot; existing schema files / DB migrations</p>
+      </div>
+    </div>
+    <p style="font-size: 12.5px; color: var(--mute); text-align: center; margin: 14px 0 0;">The skill picks the lens automatically: runtime files cited or path under <code style="font-family:var(--mono); font-size:11.5px; padding:1px 6px; background:rgba(0,0,0,0.025); border:1px solid var(--hairline); border-radius:3px;">plans/PDLC_UI/</code> &rarr; runtime lens &middot; PRD frontmatter or path under <code style="font-family:var(--mono); font-size:11.5px; padding:1px 6px; background:rgba(0,0,0,0.025); border:1px solid var(--hairline); border-radius:3px;">06-Resources/PRDs/</code> &rarr; feature-PRD lens.</p>
+
+    <p class="section-label">The 9-row checklist &mdash; every artefact runs against this</p>
+    <table class="rows">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Row</th>
+          <th>The skill asks</th>
+          <th>GAP if&hellip;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num">01</td>
+          <td class="row-name">Atomicity</td>
+          <td class="row-asks">Does any user action need two writes that can drift?</td>
+          <td class="row-gap">Save&rarr;transition chain instead of a single transaction. Multi-write publish path with no specified behaviour on partial failure.</td>
+        </tr>
+        <tr>
+          <td class="num">02</td>
+          <td class="row-name">Idempotence</td>
+          <td class="row-asks">What happens if the request runs twice (network retry, double-click, replay)?</td>
+          <td class="row-gap">No server-side guard; identical replays cause duplicate state. Cache key shape that allows duplicates.</td>
+        </tr>
+        <tr>
+          <td class="num">03</td>
+          <td class="row-name">Schema parity</td>
+          <td class="row-asks"><strong>Runtime lens:</strong> Do schema doc, runtime Zod, golden fixture, and migrations all agree after this PR? <strong>PRD lens:</strong> Does the data contract make sense across all consumers &mdash; and do fields the artefact assumes exist actually exist in production?</td>
+          <td class="row-gap">One of the four lags (runtime). PRD assumes a column / field exists &ldquo;conceptually&rdquo; but it&rsquo;s not in the schema (PRD).</td>
+        </tr>
+        <tr>
+          <td class="num">04</td>
+          <td class="row-name">Contracts unchanged</td>
+          <td class="row-asks">Does the artefact touch a previously-shipped contract (event payload, API shape, gate function, post payload)?</td>
+          <td class="row-gap">Contract widens or narrows silently &mdash; no ADR, no doc update, no consumer enumeration.</td>
+        </tr>
+        <tr>
+          <td class="num">05</td>
+          <td class="row-name">Failure modes</td>
+          <td class="row-asks">What does the user see when the network / server / DB / 3rd-party API fails? Backoff? Retry? Visible degraded state?</td>
+          <td class="row-gap">Artefact only covers the happy path. No prescribed behaviour for the obvious failure cases.</td>
+        </tr>
+        <tr>
+          <td class="num">06</td>
+          <td class="row-name">A11y first-class</td>
+          <td class="row-asks">Keyboard path, focus ring, screen-reader semantics, axe story? <strong><code>lang</code> attribute on translated content?</strong> Touch-target sizes?</td>
+          <td class="row-gap">A11y is a &ldquo;follow-up&rdquo; or only on the menu/fallback path. Translated content rendered without the <code>lang</code> attribute (screen reader mispronounces). New interactive element with no keyboard parity.</td>
+        </tr>
+        <tr>
+          <td class="num">07</td>
+          <td class="row-name">Test shape</td>
+          <td class="row-asks">Unit + integration + e2e + a11y &mdash; proportional to the change? Per slice, what&rsquo;s the test coverage?</td>
+          <td class="row-gap">One layer carries the weight (often e2e); unit gaps will cost on CI flakes. PRD has no test shape per slice at all.</td>
+        </tr>
+        <tr>
+          <td class="num">08</td>
+          <td class="row-name">Reversibility / blast radius</td>
+          <td class="row-asks">If wrong, what&rsquo;s the back-out? Data migration needed? Vendor lock-in?</td>
+          <td class="row-gap">Artefact introduces an irreversible shape (vendor, schema, UX habit) without an ADR or a migration / mitigation story.</td>
+        </tr>
+        <tr class="row-cheaper">
+          <td class="num">09</td>
+          <td class="row-name">Cheaper path</td>
+          <td class="row-asks">Is there a smaller, sturdier way to hit the same outcome?</td>
+          <td class="row-alt">This row never produces a GAP. <strong>Always produces &ge;1 alternative shape</strong> labelled <code style="font-family:var(--mono); font-size:11px;">eng-alt</code>. Up to three. Mandatory &mdash; even if the answer is &ldquo;current shape is the simplest path,&rdquo; say it explicitly.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="section-label">Output format &mdash; verdict + recs + alternatives</p>
+    <div class="output-pre">
+<pre>[Critique &mdash; Engineering on &lt;artefact name&gt;]
+
+(Lens: runtime-plan | feature-PRD)
+
+<span class="row-key">Atomicity:</span>               <span class="pass">PASS</span> | <span class="soft">SOFT</span> | <span class="gap">GAP</span> &mdash; &lt;one sentence + file:line if applicable&gt;
+<span class="row-key">Idempotence:</span>             <span class="pass">PASS</span> | <span class="soft">SOFT</span> | <span class="gap">GAP</span> &mdash; &lt;one sentence&gt;
+<span class="row-key">Schema parity:</span>           <span class="pass">PASS</span> | <span class="soft">SOFT</span> | <span class="gap">GAP</span> &mdash; &lt;one sentence&gt;
+<span class="row-key">Contracts unchanged:</span>     <span class="pass">PASS</span> | <span class="soft">SOFT</span> | <span class="gap">GAP</span> &mdash; &lt;one sentence&gt;
+<span class="row-key">Failure modes:</span>           <span class="pass">PASS</span> | <span class="soft">SOFT</span> | <span class="gap">GAP</span> &mdash; &lt;one sentence&gt;
+<span class="row-key">A11y first-class:</span>        <span class="pass">PASS</span> | <span class="soft">SOFT</span> | <span class="gap">GAP</span> &mdash; &lt;one sentence&gt;
+<span class="row-key">Test shape:</span>              <span class="pass">PASS</span> | <span class="soft">SOFT</span> | <span class="gap">GAP</span> &mdash; &lt;one sentence&gt;
+<span class="row-key">Reversibility / blast:</span>   <span class="pass">PASS</span> | <span class="soft">SOFT</span> | <span class="gap">GAP</span> &mdash; &lt;one sentence&gt;
+<span class="row-key">Cheaper path:</span>            <span class="soft">SOFT</span> | <span class="cmt">(no GAP)</span> &mdash; &lt;one sentence&gt;
+
+<span class="cmt">Must-fix (fold into artefact before Build):</span>
+  E1. &lt;specific, artefact-shaped change with file path&gt;
+  E2. &hellip;
+
+<span class="cmt">Alternatives (eng-alt &mdash; author picks one or none):</span>
+  <span class="alt">eng-alt.1.</span> &lt;smaller / sturdier shape&gt; &mdash; trade-off: &hellip;
+  <span class="alt">eng-alt.2.</span> &lt;smaller / sturdier shape&gt; &mdash; trade-off: &hellip;
+
+<span class="cmt">Nice-to-have (track but don&rsquo;t block):</span>
+  E-NTH.1. &hellip;
+
+Verdict: <span class="verdict-ready">READY FOR BUILD</span> | <span class="verdict-return">RETURN TO PLAN</span></pre>
+    </div>
+
+    <p class="section-label">The load-bearing rule &mdash; <code>eng-alt</code> is mandatory</p>
+    <div class="rule">
+      <h4>Row 9 (cheaper path) always produces at least one alternative shape &mdash; even if the answer is &ldquo;current shape is simplest&rdquo;</h4>
+      <p>The author is free to ignore the alternatives, but they have to be offered. Up to three <code>eng-alt</code>s per critique. The skill cannot skip this row &mdash; it&rsquo;s the consistently-highest-yield row across critiques.</p>
+      <div class="why">Without a forced alternative, the engineering critique becomes a checklist. With it, every PRD gets at least one moment of &ldquo;is there a smaller way?&rdquo; explicitly considered. Even &ldquo;no, current shape is the simplest&rdquo; is a useful answer &mdash; it&rsquo;s an explicit decision, not a default.</div>
+    </div>
+
+    <p class="section-label">Pair protocol &mdash; engineering runs second</p>
+    <div class="pair">
+      <h4>Why product runs first?</h4>
+      <p>Product reframes intent. Engineering then tells us if the reframe is buildable. <strong>If engineering goes first, alternatives sometimes optimise for a thing product would have killed.</strong> Engineering critique is sharper when the why is locked.</p>
+      <div class="pair-flow">
+        <div class="pair-step first">
+          <p class="step-tag">1. Run first</p>
+          <p class="step-name">/critique-product-custom</p>
+          <p class="step-body">Frames the why &mdash; outcome, demo risk, honesty, cohesion, scope, reversibility.</p>
+        </div>
+        <div class="pair-arrow">&rarr;</div>
+        <div class="pair-step second">
+          <p class="step-tag">2. Run second</p>
+          <p class="step-name">/critique-engineering-custom</p>
+          <p class="step-body">Sharpens the how &mdash; atomicity, idempotence, schema, contracts, failure, a11y, tests, blast radius, cheaper paths.</p>
+        </div>
+        <div class="pair-arrow">&rarr;</div>
+        <div class="pair-step third">
+          <p class="step-tag">3. Author folds</p>
+          <p class="step-name">Net product + eng applied</p>
+          <p class="step-body">Both must-fix sets in a single edit, under one heading. PRD re-runs critique on demand.</p>
+        </div>
+      </div>
+      <p style="margin-top: 18px;"><strong>Conflict resolution:</strong> if the two critiques disagree, the artefact author picks one and notes the trade-off in the artefact body. Neither skill has a veto.</p>
+    </div>
+
+    <p class="section-label">Anti-patterns the skill flags on sight</p>
+    <div class="panel panel-trap" style="border-left: 4px solid var(--c-trap); padding: 22px 26px;">
+      <p class="tag">Anti-patterns &middot; never silent</p>
+      <ul style="font-size: 13.5px; color: var(--soft-ink); padding-left: 20px; margin: 8px 0 0;">
+        <li>Two-API chains that should be one transaction.</li>
+        <li>Client-only validation guarding a state change (no server enforcement).</li>
+        <li>A new event <code>kind</code> without same-PR Zod + doc + fixture update.</li>
+        <li><code>setInterval</code> / <code>setTimeout</code> / <code>after()</code> in route handlers when the runtime is tick-driven.</li>
+        <li>New dependency for a problem solvable with existing primitives.</li>
+        <li>HTML5 drag-and-drop for any flow that needs keyboard parity.</li>
+        <li>Translated content rendered without the <code>lang</code> attribute on the wrapping element.</li>
+        <li>New table without <code>(&lt;entity_id&gt;, &lt;kind&gt;, started_at DESC)</code>-style index when the obvious query needs it.</li>
+        <li><code>TODO(Sn)</code> markers added in this sprint with no DoD line owning them.</li>
+        <li>Test only covers e2e &mdash; no unit / integration; will flake on CI.</li>
+        <li>&ldquo;We&rsquo;ll handle the edge case in S&lt;n+1&gt;&rdquo; with no DoD entry in S&lt;n+1&gt;.</li>
+        <li>PRD assumes a database column or API field exists without checking.</li>
+        <li>API payload change with no consumer enumeration.</li>
+      </ul>
+    </div>
+
+    <p class="section-label">How to invoke</p>
+    <div class="invocations">
+      <pre>/critique-engineering-custom                   <span class="cmt"># critique active artefact / open file</span>
+/critique-engineering-custom &lt;file&gt;            <span class="cmt"># critique a specific plan / PRD / seed file</span>
+/critique-engineering-custom seed &lt;seed-file&gt;  <span class="cmt"># critique a sprint seed before plan-creation</span></pre>
+    </div>
+
+    <p class="section-label">Hard refusals &mdash; what the skill will not do</p>
+    <div class="split">
+      <div class="panel panel-trap">
+        <p class="tag">Refusals</p>
+        <h4>Never bypassed</h4>
+        <ul>
+          <li><strong>Critique without reading end-to-end</strong> &mdash; including the affected runtime files when the runtime lens applies.</li>
+          <li><strong>Replace product critique.</strong> That&rsquo;s <code>/critique-product-custom</code>&rsquo;s lane.</li>
+          <li><strong>Propose code.</strong> Points at the file and the shape &mdash; doesn&rsquo;t write the patch.</li>
+          <li><strong>Bless an artefact with an open GAP.</strong> Return it to plan.</li>
+          <li><strong>Add a dependency without a one-line stack-justification</strong> or a new ADR.</li>
+          <li><strong>Skip the <code>eng-alt</code> step.</strong> At least one alternative shape per critique &mdash; even &ldquo;current shape is simplest&rdquo; counts.</li>
+        </ul>
+      </div>
+      <div class="panel panel-defence">
+        <p class="tag">Voice discipline</p>
+        <h4>How it talks</h4>
+        <ul>
+          <li><strong>Lead with the verdict.</strong> One sentence per row. <strong>Cite file paths</strong> when blocking.</li>
+          <li><strong>No platitudes.</strong> Direct, technically opinionated, never operational.</li>
+          <li><strong>Voice example (atomicity):</strong> <em>&ldquo;Atomicity: GAP &mdash; <code>pdlc-ui/src/storage/repository.ts</code> saveBrief + transitionInitiative are still two writes; collapse into <code>saveBriefAndTransition</code> so revision bumps once.&rdquo;</em></li>
+          <li><strong>Voice example (a11y):</strong> <em>&ldquo;A11y first-class: GAP &mdash; translated content needs <code>lang</code> attribute on wrapping element (<code>&lt;div lang=&ldquo;zu&rdquo;&gt;</code>). Without it, screen readers pronounce Zulu text using English phonemes. Add to slice 1 DoD.&rdquo;</em></li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="section-label">Companion skills &mdash; what runs before, after, alongside</p>
+    <table class="companions">
+      <thead>
+        <tr>
+          <th>Skill</th>
+          <th>What it does</th>
+          <th>Relation to this one</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="skill"><a href="./critique-product.html">/critique-product-custom</a></td>
+          <td class="role">7-row product / outcome / UX-risk critique. PASS / SOFT / GAP per row.</td>
+          <td class="relation"><strong>Runs first in the pair.</strong> See pair protocol above. Same artefact under review; both must-fixes folded together.</td>
+        </tr>
+        <tr>
+          <td class="skill"><a href="./prd-author.html">/prd-author-custom</a></td>
+          <td class="role">Drafts the bond_v1 PRD. Idempotent &mdash; preserves author edits.</td>
+          <td class="relation"><strong>Upstream.</strong> Produces the artefact this skill critiques. Must-fixes loop back to <code>--rerun</code>.</td>
+        </tr>
+        <tr>
+          <td class="skill"><a href="./initiative-discovery.html">/initiative-discovery-custom</a></td>
+          <td class="role">Discovery research and candidate-slice generation.</td>
+          <td class="relation"><strong>Optional pre-PRD critique.</strong> This skill can run on the discovery package itself before promotion to PRD.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="section-label">Where it changed &middot; provenance</p>
+    <div class="panel panel-skill" style="border-left: 4px solid var(--c-skill); padding: 22px 26px;">
+      <p class="tag">Replaces</p>
+      <h4>From <code>/agent-q-cto-custom</code> &middot; renamed and sharpened 2026-04-29</h4>
+      <p>Replaces the persona-named Q / CTO / 007 version. Same 9-row checklist; persona stripped, job described in the name. Adapted 2026-04-29 with three changes from the multi-language PRD critique session:</p>
+      <ul style="font-size: 13px; color: var(--soft-ink); padding-left: 22px; margin: 10px 0 0;">
+        <li><strong>Explicit dual-lens framing</strong> (runtime-plan vs feature-PRD).</li>
+        <li><strong>A11y row sharpened</strong> to call out the <code>lang</code> attribute on translated content (the original walkthrough-1 catch).</li>
+        <li><strong><code>eng-alt</code> made mandatory</strong> &mdash; &ge;1 always produced.</li>
+      </ul>
+    </div>
+
+    <footer>
+      <span>plans/skill-pipeline/skills/critique-engineering.html</span>
+      <span>v1 &middot; 2026-05-04</span>
+      <span>
+        <a href="../pipeline-flow.html">&larr; pipeline-flow</a> &middot;
+        <a href="../running-the-pipeline.html">running it</a> &middot;
+        <a href="./initiative-discovery.html">initiative-discovery</a> &middot;
+        <a href="./prd-author.html">prd-author</a> &middot;
+        <a href="./critique-product.html">critique-product</a> &middot;
+        <a href="../friday-signal-cadence.html">friday-signal cadence</a> &middot;
+        <a href="../README.md">README</a>
+      </span>
+    </footer>
+
+  </div>
+</body>
+</html>

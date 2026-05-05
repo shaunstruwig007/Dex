@@ -21,10 +21,17 @@
 
 ## 2. The pipeline in one picture
 
-> **For stakeholders:** two presentation-ready slides ship with this folder. Open in a browser, screenshot for slides, or print to PDF. No engineering fluency assumed.
+> **For stakeholders:** presentation-ready briefings ship with this folder. Open in a browser, screenshot for slides, or print to PDF. No engineering fluency assumed. **`pipeline-flow.html` is the high-level hub; the rest go deeper into specific areas or specific skills.**
 >
-> 1. [`pipeline-flow.html`](./pipeline-flow.html) &mdash; the journey, end-to-end, idea → build.
-> 2. [`design-in-the-pipeline.html`](./design-in-the-pipeline.html) &mdash; design&rsquo;s typed role at every stage. Read this if the question of *where design fits* comes up &mdash; especially during the handoff to the Design Manager.
+> 1. [`pipeline-flow.html`](./pipeline-flow.html) &mdash; **the high-level view.** The journey, end-to-end, idea → build. Start here. Skill pills are clickable.
+> 2. [`running-the-pipeline.html`](./running-the-pipeline.html) &mdash; **operator's manual.** Three paste-ready starter prompts (cold start, continuation, dry-run) + a per-stage checklist of what to type, what to expect back, and what to scan before continuing. Read this if you're about to run the pipeline yourself from Claude Code.
+> 3. [`design-in-the-pipeline.html`](./design-in-the-pipeline.html) &mdash; **design deep-dive.** Design&rsquo;s typed role at every stage. Read this if the question of *where design fits* comes up &mdash; especially during the handoff to the Design Manager.
+> 4. [`friday-signal-cadence.html`](./friday-signal-cadence.html) &mdash; **market-intel deep-dive.** The weekly cadence that produces the Friday Signal. Read this to understand how outside-in evidence enters the pipeline.
+> 5. [`skills/`](./skills/) &mdash; **per-skill deep-dives.** One HTML page per skill in the pipeline: what it does step-by-step, what it reads, what it writes, the load-bearing rule, refusals, and how it pairs with companion skills. Linked from the skill pills in `pipeline-flow.html`.
+>    - [`skills/initiative-discovery.html`](./skills/initiative-discovery.html) &mdash; stage 02
+>    - [`skills/prd-author.html`](./skills/prd-author.html) &mdash; stage 03
+>    - [`skills/critique-product.html`](./skills/critique-product.html) &mdash; stage 04 (product half)
+>    - [`skills/critique-engineering.html`](./skills/critique-engineering.html) &mdash; stage 04 (engineering half)
 
 ```mermaid
 %%{init: {'theme': 'neutral'}}%%

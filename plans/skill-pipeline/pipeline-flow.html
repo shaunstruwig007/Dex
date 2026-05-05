@@ -227,9 +227,52 @@
       padding: 4px 8px;
       border-radius: 4px;
       display: inline-block;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
+      margin-right: 6px;
       max-width: 100%;
       overflow-wrap: anywhere;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    a.stage-skill {
+      cursor: pointer;
+      color: var(--accent, var(--soft-ink));
+    }
+    a.stage-skill::after {
+      content: " \2197"; /* ↗ */
+      color: var(--mute);
+      margin-left: 2px;
+      font-size: 10px;
+      transition: color 0.15s ease;
+    }
+    a.stage-skill:hover {
+      background: rgba(0,0,0,0.05);
+      border-color: var(--accent, var(--soft-ink));
+      color: var(--accent, var(--soft-ink));
+    }
+    a.stage-skill:hover::after {
+      color: var(--accent, var(--soft-ink));
+    }
+    /* push the body away from skill pills so the bottom margin doesn't collapse */
+    .stage-skill + .stage-body { margin-top: 6px; }
+
+    /* small discoverability line under section labels */
+    .hint-line {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13px;
+      color: var(--mute);
+      margin: -4px 0 14px;
+    }
+    .hint-line code {
+      font-family: var(--mono);
+      font-style: normal;
+      font-size: 11px;
+      color: var(--soft-ink);
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 1px 5px;
+      border-radius: 3px;
     }
     .stage-body {
       font-size: 12.5px;
@@ -291,6 +334,59 @@
       color: var(--soft-ink);
     }
 
+    /* ── dive deeper companion cards ─────── */
+    .deeper {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+    .deeper-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px 24px 22px;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      position: relative;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .deeper-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .deeper-card.deeper-design  { --accent: var(--c-design);  border-left: 4px solid var(--c-design); }
+    .deeper-card.deeper-cadence { --accent: var(--c-context); border-left: 4px solid var(--c-context); }
+    .deeper-card.deeper-running { --accent: var(--c-build);   border-left: 4px solid var(--c-build); }
+    .deeper-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mute);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .deeper-title {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 600;
+      margin: 0 0 8px;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+    .deeper-body {
+      font-size: 13px;
+      color: var(--soft-ink);
+      margin: 0 0 14px;
+    }
+    .deeper-link {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--accent);
+    }
+
     /* ── outcome banner ───────────────────── */
     .outcome {
       display: grid;
@@ -346,12 +442,14 @@
       h1 { font-size: 36px; }
       .pipeline { grid-template-columns: repeat(4, 1fr); }
       .pipeline > .stage:nth-child(n+5) { /* shift onto second row gracefully */ }
+      .deeper { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 900px) {
       .pipeline { grid-template-columns: repeat(2, 1fr); }
       .context-cards { grid-template-columns: 1fr; }
       .outcome { grid-template-columns: 1fr; }
       .outcome-arrow { transform: rotate(90deg); justify-self: center; }
+      .deeper { grid-template-columns: 1fr; }
       header { flex-direction: column; align-items: flex-start; }
       .meta-block { text-align: left; }
     }
@@ -396,8 +494,8 @@
         </div>
         <div class="context-card">
           <h4>Weekly Market Intel</h4>
-          <p>Friday brief synthesising newsletters, competitor moves, sector signals. Keeps discovery anchored to what changed.</p>
-          <span class="file">06-Resources/Market_intelligence/synthesis/weekly/</span>
+          <p>Friday brief synthesising newsletters, competitor moves, sector signals. Produced by <span style="font-family:var(--mono); font-size:11px; color:var(--soft-ink);">/weekly-market-intel-custom</span> on its own weekly cadence; discovery reads it and warns if &gt;7 days stale. <a href="./friday-signal-cadence.html" style="color: var(--c-context); border-bottom: 1px dotted var(--c-context); text-decoration: none;">How the cadence works &rarr;</a></p>
+          <span class="file">06-Resources/Market_intelligence/synthesis/weekly/&lt;ISO-Monday&gt;_friday_signal.md</span>
         </div>
         <div class="context-card">
           <h4>Vault</h4>
@@ -408,6 +506,7 @@
     </div>
 
     <p class="section-label">The journey &mdash; idea to ship-ready</p>
+    <p class="hint-line">Click any skill pill (<code>/skill-name</code> &nearr;) for a deep-dive on what that skill does, what it produces, and how to invoke it.</p>
     <div class="pipeline">
 
       <article class="stage s-idea">
@@ -422,7 +521,7 @@
         <span class="stage-num">02</span>
         <h3 class="stage-name">Discovery</h3>
         <p class="stage-tag">What do we actually know?</p>
-        <span class="stage-skill">/initiative-discovery-custom</span>
+        <a class="stage-skill" href="./skills/initiative-discovery.html" title="What this skill does, in detail">/initiative-discovery-custom</a>
         <p class="stage-body">Reads ICP, weekly intel, vault. Surfaces problem statement, user segments, evidence, evidence-gaps, stakeholders, candidate slices.</p>
         <p class="stage-out">out &rarr; <strong>discovery doc</strong><br>06-Resources/Product_ideas/<br>&lt;name&gt;_discovery.md</p>
       </article>
@@ -431,7 +530,7 @@
         <span class="stage-num">03</span>
         <h3 class="stage-name">PRD</h3>
         <p class="stage-tag">The spec, in slices</p>
-        <span class="stage-skill">/prd-author-custom</span>
+        <a class="stage-skill" href="./skills/prd-author.html" title="What this skill does, in detail">/prd-author-custom</a>
         <p class="stage-body">bond_v1 shape: goal, metrics, requirements, slices (slice 1 = walking skeleton), test shape per slice, demo readiness, plan-mode-seed, build handoff.</p>
         <p class="stage-out">out &rarr; <strong>PRD</strong><br>06-Resources/PRDs/<br>&lt;Feature&gt;.md</p>
       </article>
@@ -440,7 +539,8 @@
         <span class="stage-num">04</span>
         <h3 class="stage-name">Critique</h3>
         <p class="stage-tag">Two-lens stress test</p>
-        <span class="stage-skill">/critique-product-custom<br>/critique-engineering-custom</span>
+        <a class="stage-skill" href="./skills/critique-product.html" title="What this skill does, in detail">/critique-product-custom</a>
+        <a class="stage-skill" href="./skills/critique-engineering.html" title="What this skill does, in detail">/critique-engineering-custom</a>
         <p class="stage-body">7-row product checklist (outcome, demo risk, honesty&hellip;) and 9-row engineering checklist (atomicity, idempotence, a11y, cheaper path&hellip;). Must-fixes loop back to PRD.</p>
         <p class="stage-out">out &rarr; <strong>critique log</strong><br>plans/skill-pipeline/sessions/<br>&lt;date&gt;-critiques.md</p>
       </article>
@@ -477,6 +577,28 @@
       <span><strong>Critique loop.</strong> Must-fixes from stage 04 return to stage 03. The PRD author re-drafts &mdash; idempotently &mdash; and the loop runs until both critiques sign off. <em>Two passes is normal. Three is a smell.</em></span>
     </div>
 
+    <p class="section-label">Dive deeper into a specific area</p>
+    <div class="deeper">
+      <a class="deeper-card deeper-running" href="./running-the-pipeline.html">
+        <span class="deeper-eyebrow">Companion &middot; operator&rsquo;s manual</span>
+        <h4 class="deeper-title">How to run this from Claude Code</h4>
+        <p class="deeper-body">Three paste-ready starter prompts &mdash; cold start, continuation, dry-run &mdash; plus a per-stage checklist of what to type, what to expect back, and what to scan before moving on. Read this if you&rsquo;re about to run the pipeline yourself.</p>
+        <span class="deeper-link">running-the-pipeline.html &rarr;</span>
+      </a>
+      <a class="deeper-card deeper-design" href="./design-in-the-pipeline.html">
+        <span class="deeper-eyebrow">Companion &middot; design</span>
+        <h4 class="deeper-title">How design fits at every stage</h4>
+        <p class="deeper-body">Design isn&rsquo;t stage 06. It has a typed role in every stage &mdash; discovery, PRD, critique, build handoff. Read this if the question of <em>where design fits</em> comes up &mdash; especially during the handoff to the Design Manager.</p>
+        <span class="deeper-link">design-in-the-pipeline.html &rarr;</span>
+      </a>
+      <a class="deeper-card deeper-cadence" href="./friday-signal-cadence.html">
+        <span class="deeper-eyebrow">Companion &middot; market intel</span>
+        <h4 class="deeper-title">How the weekly market intel works</h4>
+        <p class="deeper-body">The Friday Signal cadence runs <em>parallel</em> to the pipeline &mdash; not inside it. One typed feed-in to discovery; a steerco-safe brief once a week. Read this to understand outside-in evidence flow and the &gt;7-day staleness contract.</p>
+        <span class="deeper-link">friday-signal-cadence.html &rarr;</span>
+      </a>
+    </div>
+
     <p class="section-label">Why this matters</p>
     <div class="outcome">
       <div class="outcome-side outcome-before">
@@ -492,8 +614,17 @@
 
     <footer>
       <span>plans/skill-pipeline/pipeline-flow.html</span>
-      <span>v1 &middot; 2026-04-29</span>
-      <span><a href="./design-in-the-pipeline.html">design role</a> &middot; <a href="./README.md">README</a> &middot; <a href="./lessons-from-skills.md">lessons</a> &middot; <a href="./sessions/">sessions</a></span>
+      <span>v1.4 &middot; 2026-05-04</span>
+      <span>
+        <a href="./running-the-pipeline.html">running the pipeline</a> &middot;
+        <a href="./skills/initiative-discovery.html">discovery</a> &middot;
+        <a href="./skills/prd-author.html">prd-author</a> &middot;
+        <a href="./skills/critique-product.html">critique-product</a> &middot;
+        <a href="./skills/critique-engineering.html">critique-engineering</a> &middot;
+        <a href="./design-in-the-pipeline.html">design role</a> &middot;
+        <a href="./friday-signal-cadence.html">Friday Signal</a> &middot;
+        <a href="./README.md">README</a>
+      </span>
     </footer>
 
   </div>

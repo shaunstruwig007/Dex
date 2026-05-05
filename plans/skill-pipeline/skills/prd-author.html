@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>PRD Author &mdash; what it does, what it produces</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="The skill that drafts a slice-shaped bond_v1 PRD from a discovery output. Stage 03 of the skill pipeline." />
+  <style>
+    :root {
+      --bg: #F5F1EA;
+      --paper: #FBF8F2;
+      --paper-warm: #F3EBDB;
+      --ink: #14182A;
+      --soft-ink: #4F586D;
+      --mute: #8A92A4;
+      --line: #D8CFC1;
+      --hairline: #E6DFD3;
+
+      /* feature accent — matches pipeline-flow stage 03 (PRD) */
+      --c-skill:    #5B4C8C;
+      --c-skill-soft: #D6CFE8;
+      --c-discovery: #4D6FA5;
+      --c-context:  #2F6B66;
+      --c-critique: #A8516B;
+      --c-spec:     #3F7A5B;
+      --c-trap:     #A8516B;
+      --c-defence:  #3F7A5B;
+
+      --serif: "Iowan Old Style", "Apple Garamond", Charter, "Bitstream Charter", Cambria, Georgia, serif;
+      --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono:  ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding: 48px 56px 56px;
+      min-height: 100vh;
+    }
+
+    .frame { max-width: 1320px; margin: 0 auto; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 32px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 36px;
+    }
+    .title-block { flex: 1 1 auto; }
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 0 0 8px;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: 42px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      margin: 0;
+      color: var(--ink);
+    }
+    h1 em { font-style: italic; color: var(--c-skill); }
+    .lede {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--soft-ink);
+      margin: 14px 0 0;
+      max-width: 820px;
+    }
+    .meta-block {
+      flex: 0 0 auto;
+      text-align: right;
+      font-size: 12px;
+      color: var(--mute);
+      font-family: var(--mono);
+      line-height: 1.7;
+    }
+    .meta-block strong { color: var(--soft-ink); font-weight: 500; }
+    .meta-block a {
+      color: var(--c-skill);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--c-skill);
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin: 32px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--hairline);
+    }
+
+    /* ── pipeline strip ───────────────────── */
+    .pipeline-strip {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .strip-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-right: 12px;
+    }
+    .strip-stage {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--mute);
+      background: var(--paper-warm);
+      border: 1px solid var(--hairline);
+      padding: 6px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .strip-stage.is-here {
+      color: var(--c-skill);
+      background: rgba(91,76,140,0.08);
+      border-color: rgba(91,76,140,0.35);
+      font-weight: 600;
+    }
+    .strip-arrow { font-family: var(--mono); color: var(--mute); font-size: 14px; }
+
+    /* ── bond_v1 shape diagram ────────────── */
+    .bond-shape {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 26px 30px;
+    }
+    .bond-frontmatter {
+      background: rgba(91,76,140,0.05);
+      border: 1px dashed var(--c-skill-soft);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--soft-ink);
+      margin-bottom: 18px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+    .bond-frontmatter .key { color: var(--c-skill); }
+    .bond-sections {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .bond-section {
+      background: var(--paper-warm);
+      border: 1px solid var(--hairline);
+      border-radius: 8px;
+      padding: 12px 14px 12px 16px;
+      position: relative;
+      border-left: 3px solid var(--c-skill);
+    }
+    .bond-section .num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--mute);
+      letter-spacing: 0.1em;
+      margin-right: 6px;
+    }
+    .bond-section .name {
+      font-family: var(--serif);
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 0 0 4px;
+    }
+    .bond-section .body {
+      font-size: 12px;
+      color: var(--soft-ink);
+      margin: 0;
+      line-height: 1.45;
+    }
+    .bond-section.required-extension {
+      border-left-color: var(--c-defence);
+    }
+    .bond-section.required-extension .name::after {
+      content: " ✦";
+      color: var(--c-defence);
+      font-size: 11px;
+    }
+    .bond-legend {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--mute);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--hairline);
+    }
+    .bond-legend .swatch-base,
+    .bond-legend .swatch-cross {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 2px;
+      margin: 0 6px 0 14px;
+      vertical-align: -1px;
+    }
+    .bond-legend .swatch-base { background: var(--c-skill); }
+    .bond-legend .swatch-cross { background: var(--c-defence); }
+
+    /* ── load-bearing rule (idempotence) ──── */
+    .rule {
+      background: var(--paper-warm);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 26px;
+      border-left: 4px solid var(--c-skill);
+    }
+    .rule h4 {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 600;
+      margin: 0 0 8px;
+      color: var(--ink);
+    }
+    .rule p { font-size: 13.5px; color: var(--soft-ink); margin: 0 0 10px; }
+    .rule ul { font-size: 13px; color: var(--soft-ink); padding-left: 22px; margin: 8px 0 10px; }
+    .rule li { margin-bottom: 6px; }
+    .rule li strong { color: var(--ink); font-weight: 600; }
+    .rule .why {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13.5px;
+      color: var(--soft-ink);
+      padding: 10px 14px;
+      background: rgba(91,76,140,0.06);
+      border-left: 3px solid var(--c-skill);
+      border-radius: 0 6px 6px 0;
+      margin-top: 10px;
+    }
+    .rule code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.04);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+
+    /* ── input contract ───────────────────── */
+    .contract-list {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 26px;
+    }
+    .contract-list h4 {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      margin: 0 0 10px;
+      color: var(--ink);
+    }
+    .contract-list .opt {
+      padding: 14px 0 14px 22px;
+      border-left: 3px solid var(--c-skill);
+      margin-bottom: 8px;
+      padding-left: 16px;
+    }
+    .contract-list .opt h5 {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0 0 4px;
+      color: var(--c-skill);
+    }
+    .contract-list .opt p { font-size: 13px; color: var(--soft-ink); margin: 0 0 6px; }
+    .contract-list .opt code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+    .contract-list .opt ul {
+      font-size: 12.5px;
+      color: var(--soft-ink);
+      padding-left: 18px;
+      margin: 6px 0 0;
+    }
+    .contract-list .opt li { margin-bottom: 3px; }
+
+    /* ── refusals + skill panels ─────────── */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 24px;
+      position: relative;
+    }
+    .panel::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 22px; right: 22px;
+      height: 3px;
+      border-radius: 0 0 3px 3px;
+      background: var(--accent);
+    }
+    .panel h4 {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 600;
+      margin: 4px 0 6px;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+    .panel .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 14px;
+    }
+    .panel p { font-size: 13.5px; color: var(--soft-ink); margin: 0 0 10px; }
+    .panel ul { font-size: 13px; color: var(--soft-ink); padding-left: 20px; margin: 8px 0 0; }
+    .panel li { margin-bottom: 6px; }
+    .panel li strong { color: var(--ink); font-weight: 600; }
+    .panel li code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+    .panel-trap     { --accent: var(--c-trap); }
+    .panel-defence  { --accent: var(--c-defence); }
+    .panel-skill    { --accent: var(--c-skill); }
+
+    /* ── invocation block ─────────────────── */
+    .invocations {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 22px;
+    }
+    .invocations pre {
+      margin: 0;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--soft-ink);
+      line-height: 1.7;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .invocations pre .cmt { color: var(--mute); }
+
+    /* ── companions table ─────────────────── */
+    .companions {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .companions th, .companions td {
+      padding: 12px 16px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .companions thead th {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mute);
+      font-weight: 500;
+      background: var(--paper-warm);
+      border-bottom: 1px solid var(--line);
+    }
+    .companions tbody tr:last-child td { border-bottom: none; }
+    .companions .skill {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--c-skill);
+      width: 270px;
+      overflow-wrap: anywhere;
+    }
+    .companions .skill a {
+      color: var(--c-skill);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--c-skill);
+    }
+    .companions .role { color: var(--ink); width: 30%; }
+    .companions .relation { color: var(--soft-ink); }
+
+    /* ── cross-cutting findings ───────────── */
+    .findings {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 26px;
+    }
+    .findings h4 {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      margin: 0 0 6px;
+      color: var(--ink);
+    }
+    .findings .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 14px;
+    }
+    .findings ul { font-size: 13px; color: var(--soft-ink); padding-left: 20px; margin: 8px 0 0; }
+    .findings li { margin-bottom: 8px; }
+    .findings li strong { color: var(--ink); }
+    .findings li code {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,0.025);
+      border: 1px solid var(--hairline);
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: var(--soft-ink);
+    }
+
+    /* ── footer ───────────────────────────── */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      font-size: 12px;
+      color: var(--mute);
+      font-family: var(--mono);
+      padding-top: 22px;
+      border-top: 1px solid var(--hairline);
+      margin-top: 36px;
+      flex-wrap: wrap;
+    }
+    footer a { color: var(--soft-ink); text-decoration: none; border-bottom: 1px solid var(--hairline); }
+    footer a:hover { color: var(--c-skill); border-bottom-color: var(--c-skill); }
+
+    @media (max-width: 1280px) {
+      .bond-sections { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 1100px) {
+      body { padding: 36px 32px; }
+      h1 { font-size: 34px; }
+      .split { grid-template-columns: 1fr; }
+      .bond-sections { grid-template-columns: 1fr; }
+      header { flex-direction: column; align-items: flex-start; }
+      .meta-block { text-align: left; }
+      .companions { font-size: 12px; }
+      .companions th, .companions td { padding: 10px 12px; }
+      .companions .skill { width: auto; }
+    }
+
+    @media print {
+      @page { size: 1500px 1100px; margin: 0; }
+      body { background: white; padding: 36px 44px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+
+    <header>
+      <div class="title-block">
+        <p class="eyebrow">Skill in the pipeline &middot; stage 03</p>
+        <h1>PRD Author &mdash; <em>discovery becomes a slice-shaped spec</em>.</h1>
+        <p class="lede">Reads a discovery output and writes a <strong>bond_v1</strong> PRD &mdash; goal, metrics, requirements, walking-skeleton + thickening slices, test shape per slice, demo-readiness checklist, and a <code style="font-family:var(--mono); font-size:13px;">plan-mode-seed</code> block that maps 1:1 to Cursor Plan mode. Idempotent &mdash; the author&rsquo;s edits are signal, never silently overwritten.</p>
+      </div>
+      <div class="meta-block">
+        <strong>Skill:</strong> /prd-author-custom<br>
+        <strong>Coexists with:</strong> /agent-prd<br>
+        <strong>Stage:</strong> 03 &middot; PRD<br>
+        <strong>Output:</strong> <a href="../../../06-Resources/PRDs/">06-Resources/PRDs/&lt;Feature&gt;.md</a>
+      </div>
+    </header>
+
+    <p class="section-label">Where it sits in the pipeline</p>
+    <div class="pipeline-strip">
+      <span class="strip-label">Pipeline stages</span>
+      <span class="strip-stage">01 Idea</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">02 Discovery</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage is-here">03 PRD</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">04 Critique</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">05 spec_ready</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">06 Design</span>
+      <span class="strip-arrow">&rarr;</span>
+      <span class="strip-stage">07 Build</span>
+    </div>
+
+    <p class="section-label">The bond_v1 shape &mdash; frontmatter + 11 sections, fixed order</p>
+    <div class="bond-shape">
+
+      <div class="bond-frontmatter">
+<span class="key">prd_shape:</span> bond_v1
+<span class="key">prd_id:</span> &lt;slug&gt;-YYYY-MM-DD
+<span class="key">created_date:</span> YYYY-MM-DD
+<span class="key">last_bond_run:</span> YYYY-MM-DD HH:MM
+<span class="key">lifecycle:</span> spec_ready  <span style="color: var(--mute);"># idea | discovery | design | spec_ready | develop | uat | deployed | parked</span>
+<span class="key">critique_status:</span> pending  <span style="color: var(--mute);"># pending | running | must_fixes_pending | must_fixes_folded</span>
+<span class="key">design_pass_status:</span> not_applicable  <span style="color: var(--mute);"># not_applicable | pending | scheduled | in_progress | done</span>
+<span class="key">related_prds:</span> [&lt;Sibling_PRD&gt;.md, ...]
+      </div>
+
+      <div class="bond-sections">
+
+        <div class="bond-section">
+          <div><span class="num">01</span><span class="name">Goal</span></div>
+          <p class="body">One paragraph: what shifts when this ships. One paragraph: the evidence grounding (sales, customer, ICP, signal). No implementation detail.</p>
+        </div>
+
+        <div class="bond-section">
+          <div><span class="num">02</span><span class="name">Users</span></div>
+          <p class="body">Primary user (narrative). Secondary users (narrative each). <strong>Out-of-scope user roles</strong> with reasoning.</p>
+        </div>
+
+        <div class="bond-section">
+          <div><span class="num">03</span><span class="name">Success metrics</span></div>
+          <p class="body">2&ndash;4 metrics. Each: name, definition, target with timeframe, measurement source. Plus a <strong>Note on measurability</strong> &mdash; catches aspirational-metric anti-pattern.</p>
+        </div>
+
+        <div class="bond-section">
+          <div><span class="num">04</span><span class="name">Requirements</span></div>
+          <p class="body">Outcome-shaped, numbered. No implementation prescription. One sentence each, user-observable behaviour. 5&ndash;10 typical.</p>
+        </div>
+
+        <div class="bond-section">
+          <div><span class="num">05</span><span class="name">Slices</span></div>
+          <p class="body">The heart of the PRD. Table: <code style="font-family:var(--mono); font-size:11px;"># &middot; Name &middot; Walking-skeleton? &middot; Demo outcome &middot; Layers &middot; Depends on</code>. Slice 1 = walking skeleton, end-to-end, observable in one sentence.</p>
+        </div>
+
+        <div class="bond-section required-extension">
+          <div><span class="num">5b</span><span class="name">Test shape per slice</span></div>
+          <p class="body">Required subsection. Table: unit / integration / e2e / a11y per slice. PR review enforces. Promoted from per-PRD must-fix &rarr; required by skill 2026-04-29.</p>
+        </div>
+
+        <div class="bond-section required-extension">
+          <div><span class="num">5c</span><span class="name">Slice 1 demo readiness</span></div>
+          <p class="body">Required checklist. Pre-vetted demo content &middot; dependency-failure fallback rehearsed &middot; defect example off-camera &middot; wireframe walkthrough if Slice 1 is engineering-gated. Protects the first steerco demo.</p>
+        </div>
+
+        <div class="bond-section">
+          <div><span class="num">06</span><span class="name">Plan mode seed</span></div>
+          <p class="body">Fenced <code style="font-family:var(--mono); font-size:11px;">plan-mode-seed</code> block, mechanically generated from the Slices table. One line per slice. <strong>1:1 paste into Cursor Plan mode</strong> &mdash; the load-bearing contract.</p>
+        </div>
+
+        <div class="bond-section">
+          <div><span class="num">07</span><span class="name">Risks</span></div>
+          <p class="body">4&ndash;8 risks. Each: name, description, <strong>mitigation (required, not optional)</strong>. PRDs with external deps add a <strong>Technical failure modes</strong> subsection.</p>
+        </div>
+
+        <div class="bond-section required-extension">
+          <div><span class="num">7&prime;</span><span class="name">Technical failure modes</span></div>
+          <p class="body">Required subsection when the PRD touches vendors, APIs, realtime stacks, or external datasources. Idempotency, cache, timeout, vendor lock-in. Promoted to required 2026-04-29.</p>
+        </div>
+
+        <div class="bond-section">
+          <div><span class="num">08</span><span class="name">Out of scope</span></div>
+          <p class="body">Table: out-of-scope &middot; why &middot; future cycle? Each row = explicit exclusion + reason + return-window flag.</p>
+        </div>
+
+        <div class="bond-section">
+          <div><span class="num">09</span><span class="name">Open questions</span></div>
+          <p class="body">Table: question &middot; blocks &middot; owner / next step. Followed by a <strong>&ldquo;None of these block slice-1 build&rdquo;</strong> subsection with stub assumptions.</p>
+        </div>
+
+        <div class="bond-section">
+          <div><span class="num">10</span><span class="name">Design pointers</span></div>
+          <p class="body">Paste-ready for Claude Design / a human designer &mdash; no skill in the loop. Subsections: context, surfaces, critical UX questions, failure-mode UX, a11y, constraints, what NOT to prescribe, design slice ordering.</p>
+        </div>
+
+        <div class="bond-section required-extension">
+          <div><span class="num">10&prime;</span><span class="name">A11y subsection</span></div>
+          <p class="body">Non-negotiable. <code>lang</code> attribute on translated content &middot; keyboard parity &middot; <code>aria-live</code> &middot; contrast for outdoor / low-light &middot; tap targets. Promoted to required 2026-04-29.</p>
+        </div>
+
+        <div class="bond-section required-extension">
+          <div><span class="num">11</span><span class="name">Build handoff</span></div>
+          <p class="body">Required when vault-PRD &amp; codebase live in different repos. Repo-split callout &middot; how-to-use in Plan mode &middot; handoff snapshot table &middot; source-of-truth rule. Added 2026-04-29.</p>
+        </div>
+
+      </div>
+
+      <div class="bond-legend">
+        <span class="swatch-base"></span>Required from day-one
+        <span class="swatch-cross"></span>Required extension &mdash; promoted from per-PRD must-fix on 2026-04-29 (walkthrough-2)
+      </div>
+
+    </div>
+
+    <p class="section-label">The load-bearing rule &mdash; idempotence on the PRD file</p>
+    <div class="rule">
+      <h4>Author edits are signal &mdash; the skill never silently overwrites</h4>
+      <p>Before writing, the skill checks if the target file already exists and compares the file mtime against the frontmatter <code>last_bond_run</code>:</p>
+      <ul>
+        <li><strong>File doesn&rsquo;t exist</strong> &rarr; write fresh.</li>
+        <li><strong>File exists, no human edits since last run</strong> (mtime matches <code>last_bond_run</code>) &rarr; safe to overwrite. Write directly.</li>
+        <li><strong>File exists, edited since last run</strong> &rarr; <strong>stop</strong>. Surface a diff. Ask: <em>Overwrite</em> (lose edits) &middot; <em>Merge</em> (skill picks edits where they conflict; user reviews) &middot; <em>Save-as</em> (write to <code>&lt;filename&gt;.bond.md</code>) &middot; <em>Abort</em>.</li>
+      </ul>
+      <div class="why">Without this rule, every <code>--rerun</code> would clobber the author&rsquo;s manual revisions. The PRD would degrade with every refresh. Idempotence makes the skill safe to invoke without fear &mdash; even on a heavily-edited PRD.</div>
+    </div>
+
+    <p class="section-label">Required input contract &mdash; the skill refuses to draft without one of these</p>
+    <div class="contract-list">
+      <div class="opt">
+        <h5>1. Discovery output (default path)</h5>
+        <p>Output of <code>/initiative-discovery-custom</code>. Required fields:</p>
+        <ul>
+          <li><code>discovery.problemStatement</code>, <code>discovery.userSegments[]</code> (with <code>is_primary</code>), <code>discovery.stakeholders[]</code></li>
+          <li><code>discovery.evidenceLog[]</code>, <code>discovery.evidenceGaps[]</code>, <code>discovery.icpSegmentMatch</code></li>
+          <li><code>discovery.candidateSlices[]</code> &middot; <code>discovery.openQuestions[]</code> (with <code>blocks</code> + <code>owner</code>)</li>
+        </ul>
+      </div>
+      <div class="opt">
+        <h5>2. <code>--no-discovery</code> override</h5>
+        <p>Requires a one-line reason (e.g. &ldquo;migrating legacy PRD; original discovery is the existing PRD body&rdquo;). Reason gets logged in frontmatter as <code>discovery_skipped_reason:</code>.</p>
+      </div>
+      <div class="opt">
+        <h5>3. <code>--reshape &lt;existing-prd&gt;</code></h5>
+        <p>Input is the existing PRD file. Skill extracts what it can (Goal, Users, Risks) and asks the user to fill any missing sections inline. Used to migrate legacy PRDs to the bond_v1 shape.</p>
+      </div>
+      <p style="font-size: 12.5px; color: var(--mute); margin: 14px 0 0;">If none of the three apply, the skill <strong>stops</strong> and prompts the user to run <code>/initiative-discovery-custom</code> first.</p>
+    </div>
+
+    <p class="section-label">How to invoke</p>
+    <div class="invocations">
+      <pre>/prd-author-custom                              <span class="cmt"># author from active discovery output</span>
+/prd-author-custom &lt;discovery-file&gt;             <span class="cmt"># author from a specific discovery file</span>
+/prd-author-custom --reshape &lt;existing-prd&gt;     <span class="cmt"># migrate an existing PRD to bond_v1 shape</span>
+/prd-author-custom --no-discovery               <span class="cmt"># author without discovery (REQUIRES reason logged in frontmatter)</span></pre>
+    </div>
+
+    <p class="section-label">Hard refusals &mdash; the skill stops and asks before generating</p>
+    <div class="split">
+      <div class="panel panel-trap">
+        <p class="tag">Refusals &middot; structural</p>
+        <h4>Stops cold on these</h4>
+        <ul>
+          <li><strong>No discovery output and no <code>--no-discovery</code> reason</strong> &rarr; &ldquo;Run <code>/initiative-discovery-custom</code> first.&rdquo;</li>
+          <li><strong>Existing PRD edited since last run</strong> &rarr; diff + ask before overwriting.</li>
+          <li><strong>A metric with no measurement source</strong> &rarr; &ldquo;Name the source or drop the metric.&rdquo;</li>
+          <li><strong>A risk with no mitigation</strong> &rarr; &ldquo;Add one or remove the risk.&rdquo;</li>
+          <li><strong>A slice with no observable demo outcome</strong> &rarr; &ldquo;If it&rsquo;s a refactor, fold into the slice it supports.&rdquo;</li>
+        </ul>
+      </div>
+      <div class="panel panel-trap">
+        <p class="tag">Refusals &middot; cross-cutting</p>
+        <h4>Walkthrough-2 must-fixes, enforced</h4>
+        <ul>
+          <li><strong>Slice 1 not a walking skeleton</strong> &rarr; &ldquo;Touches only &lt;layers&gt;. Thicken slice 1 or move the missing layer in.&rdquo;</li>
+          <li><strong>Test shape per slice missing</strong> &rarr; &ldquo;Cross-cutting must-fix. Fill or mark <code>n/a</code> with reason.&rdquo;</li>
+          <li><strong>Slice 1 demo readiness checklist missing</strong> &rarr; &ldquo;First-demo risk is unprotected.&rdquo;</li>
+          <li><strong>External-dependency PRD with no Technical failure modes subsection</strong> &rarr; &ldquo;Spec at minimum: unavailable, idempotency, vendor lock-in.&rdquo;</li>
+          <li><strong>Translated content with no <code>lang</code> attribute requirement</strong> &rarr; &ldquo;Non-negotiable for screen readers.&rdquo;</li>
+          <li><strong>Build handoff section missing</strong> when vault &amp; codebase repos differ &rarr; &ldquo;Add the repo-split contract.&rdquo;</li>
+          <li><strong>Body Status line out of sync with frontmatter</strong> &rarr; &ldquo;Update body so external reviewers see pipeline state without parsing YAML.&rdquo;</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="section-label">Cross-cutting findings &mdash; promoted into bond_v1 on 2026-04-29</p>
+    <div class="findings">
+      <p class="tag">Walkthrough-2 evidence &middot; folded once, applies forever</p>
+      <h4>Six findings that became required-by-skill</h4>
+      <ul>
+        <li><strong>Test shape per slice</strong> &mdash; was a GAP on every PRD critiqued in walkthrough-2. Now required (section 5b).</li>
+        <li><strong>Slice 1 demo readiness</strong> &mdash; was SOFT on every product critique. Now required (section 5c).</li>
+        <li><strong>Technical failure modes</strong> subsection in Risks &mdash; was GAP on engineering-heavy PRDs. Required for any PRD with external dependencies.</li>
+        <li><strong>A11y subsection</strong> in Design pointers &mdash; the <code>lang</code> attribute on translated content was the original walkthrough-1 catch. Non-negotiable.</li>
+        <li><strong>Build handoff</strong> section &mdash; addresses the GitHub-vault &rarr; codebase-repo split. Without it, the developer has no operational pickup contract.</li>
+        <li><strong>Body Status line in sync with frontmatter</strong> &mdash; surfaces pipeline state to readers without expanding YAML.</li>
+      </ul>
+      <p style="margin-top: 14px;">Cross-cutting findings ledger: <a href="../sessions/2026-04-29-walkthrough-2-critiques.md" style="color: var(--c-skill); border-bottom: 1px dotted var(--c-skill); text-decoration: none;">plans/skill-pipeline/sessions/2026-04-29-walkthrough-2-critiques.md</a>.</p>
+    </div>
+
+    <p class="section-label">Coexists with /agent-prd &mdash; different shape, different downstream consumer</p>
+    <div class="panel panel-skill" style="border-left: 4px solid var(--c-skill); padding: 22px 26px;">
+      <p style="margin: 0 0 10px;"><strong>Two PRD authors live in the catalogue.</strong> They serve different loops &mdash; pick by downstream consumer.</p>
+      <ul style="font-size: 13px; color: var(--soft-ink); padding-left: 20px; margin: 8px 0 0;">
+        <li><code style="font-family:var(--mono); font-size:11.5px;">/prd-author-custom</code> &mdash; <strong>this skill.</strong> Slice + plan-mode-seed shape, for Cursor Plan mode in a discovery&rarr;PRD&rarr;build pipeline. Idempotent. Refuses to draft without discovery.</li>
+        <li><code style="font-family:var(--mono); font-size:11.5px;">/agent-prd</code> &mdash; wizard-driven, work-package + BDD shape, for direct agent implementation. Different downstream consumer.</li>
+      </ul>
+    </div>
+
+    <p class="section-label">Companion skills &mdash; what runs before, after, alongside</p>
+    <table class="companions">
+      <thead>
+        <tr>
+          <th>Skill</th>
+          <th>What it does</th>
+          <th>Relation to this one</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="skill"><a href="./initiative-discovery.html">/initiative-discovery-custom</a></td>
+          <td class="role">Vault scan, ICP cross-check, evidence harvest, candidate slicing.</td>
+          <td class="relation"><strong>Required upstream.</strong> This skill refuses to draft without its output (or an explicit <code>--no-discovery</code> reason).</td>
+        </tr>
+        <tr>
+          <td class="skill"><a href="./critique-product.html">/critique-product-custom</a></td>
+          <td class="role">7-row product / outcome / UX-risk critique. PASS / SOFT / GAP per row.</td>
+          <td class="relation"><strong>Downstream gate.</strong> Runs first in the critique pair (frames the why). Must-fixes loop back to this skill via <code>--rerun</code>.</td>
+        </tr>
+        <tr>
+          <td class="skill"><a href="./critique-engineering.html">/critique-engineering-custom</a></td>
+          <td class="role">9-row engineering / feasibility critique. Always produces &ge;1 cheaper alternative shape.</td>
+          <td class="relation"><strong>Downstream gate.</strong> Runs second in the critique pair (sharpens the how). Must-fixes loop back to this skill.</td>
+        </tr>
+        <tr>
+          <td class="skill"><a href="../friday-signal-cadence.html">/weekly-market-intel-custom</a></td>
+          <td class="role">Weekly Friday Signal brief &mdash; the outside-in evidence stream.</td>
+          <td class="relation"><strong>Indirect input.</strong> Discovery reads it; the PRD inherits its citations through the discovery output.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="section-label">Canonical bond_v1 references in the vault</p>
+    <div class="panel panel-skill" style="border-left: 4px solid var(--c-skill); padding: 22px 26px;">
+      <p style="margin: 0 0 10px;">Four PRDs in the vault are authored in this exact shape and have all bond_v1 must-fixes folded. Use them as reference when reviewing the skill&rsquo;s output:</p>
+      <ul style="font-size: 13px; color: var(--soft-ink); padding-left: 20px; margin: 8px 0 0;">
+        <li><a href="../../../06-Resources/PRDs/Multilingual_Content.md" style="color: var(--c-skill); border-bottom: 1px dotted var(--c-skill); text-decoration: none;">Multilingual_Content.md</a> &mdash; single-feature PRD; walkthrough 1 reference; 1 GAP + 5 SOFTs surfaced and folded.</li>
+        <li><a href="../../../06-Resources/PRDs/AI_Assistant_in_Chat_Surface.md" style="color: var(--c-skill); border-bottom: 1px dotted var(--c-skill); text-decoration: none;">AI_Assistant_in_Chat_Surface.md</a> &mdash; cross-PRD initiative; demonstrates cross-PRD slice dependencies in the bond_v1 shape.</li>
+        <li><a href="../../../06-Resources/PRDs/Employee_Chat_and_Groups.md" style="color: var(--c-skill); border-bottom: 1px dotted var(--c-skill); text-decoration: none;">Employee_Chat_and_Groups.md</a> &mdash; reshaped from agent-prd shape; demonstrates <code>--reshape</code> mode.</li>
+        <li><a href="../../../06-Resources/PRDs/AI_Assistant_FAQ.md" style="color: var(--c-skill); border-bottom: 1px dotted var(--c-skill); text-decoration: none;">AI_Assistant_FAQ.md</a> &mdash; reshaped; demonstrates engine-shared coordination + the forward-compatible-shape pattern in Risks.</li>
+      </ul>
+    </div>
+
+    <footer>
+      <span>plans/skill-pipeline/skills/prd-author.html</span>
+      <span>v1 &middot; 2026-05-04</span>
+      <span>
+        <a href="../pipeline-flow.html">&larr; pipeline-flow</a> &middot;
+        <a href="../running-the-pipeline.html">running it</a> &middot;
+        <a href="./initiative-discovery.html">initiative-discovery</a> &middot;
+        <a href="./critique-product.html">critique-product</a> &middot;
+        <a href="./critique-engineering.html">critique-engineering</a> &middot;
+        <a href="../friday-signal-cadence.html">friday-signal cadence</a> &middot;
+        <a href="../README.md">README</a>
+      </span>
+    </footer>
+
+  </div>
+</body>
+</html>
